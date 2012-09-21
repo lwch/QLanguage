@@ -1,13 +1,5 @@
 #include "TestList.h"
 
-class A
-{
-};
-
-class B
-{
-};
-
 TEST_CASE(TestList_Construct)
 {
     int l[5] = {1, 2, 3, 4, 5};

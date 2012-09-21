@@ -110,6 +110,7 @@ namespace QLanguage
 
             typedef __rbtree_iterator_base<T> parent;
             typedef iterator<T> iterator_parent;
+            typedef __rbtree_iterator<T> self;
         public:
             __rbtree_iterator() : __rbtree_iterator_base<T>()
             {
@@ -124,28 +125,28 @@ namespace QLanguage
                 return parent::node->data;
             }
 
-            typename iterator_parent::self& operator++()
+            self& operator++()
             {
                 parent::inc();
                 return *this;
             }
 
-            typename iterator_parent::self operator++(int)
+            self operator++(int)
             {
-                typename parent::self tmp = *this;
+                self tmp = *this;
                 ++*this;
                 return tmp;
             }
 
-            typename iterator_parent::self& operator--()
+            self& operator--()
             {
                 parent::dec();
                 return *this;
             }
 
-            typename iterator_parent::self operator--(int)
+            self operator--(int)
             {
-                typename parent::self tmp = *this;
+                self tmp = *this;
                 --*this;
                 return tmp;
             }
@@ -157,6 +158,7 @@ namespace QLanguage
         protected:
             typedef __rbtree_iterator<T> iterator;
             typedef __rbtree_iterator_base<T> parent;
+            typedef __rbtree_const_iterator<T> self;
         public:
             __rbtree_const_iterator() : __rbtree_iterator_base<T>()
             {
@@ -175,28 +177,28 @@ namespace QLanguage
                 return parent::node->data;
             }
 
-            typename parent::self& operator++()
+            self& operator++()
             {
                 parent::inc();
                 return *this;
             }
 
-            typename parent::self operator++(int)
+            self operator++(int)
             {
-                typename parent::self tmp = *this;
+                self tmp = *this;
                 ++*this;
                 return tmp;
             }
 
-            typename parent::self& operator--()
+            self& operator--()
             {
                 parent::dec();
                 return *this;
             }
 
-            typename parent::self operator--(int)
+            self operator--(int)
             {
-                typename parent::self tmp = *this;
+                self tmp = *this;
                 --*this;
                 return tmp;
             }
@@ -254,11 +256,25 @@ namespace QLanguage
                 return insert_unique(x, root, NULL);
             }
 
-            inline iterator erase(const key_type& x)
+            inline void erase(iterator position)
+            {
+                erase(position.node);
+            }
+
+            inline void erase(const key_type& x)
             {
                 iterator i = find(x);
                 erase(i.node);
-                return i;
+            }
+
+            inline void erase(iterator first, iterator last)
+            {
+                if(first == begin() && last == end())
+                {
+                    clear();
+                    return;
+                }
+                while(first != last) erase(first++);
             }
 
             inline iterator find(const key_type& x)
@@ -274,6 +290,11 @@ namespace QLanguage
                 header->left = header;
                 header->right = header;
                 node_count = 0;
+            }
+
+            inline size_type size()const
+            {
+                return node_count;
             }
 
             inline iterator maximum()const
@@ -304,13 +325,6 @@ namespace QLanguage
             inline const_iterator end()const
             {
                 return header;
-            }
-
-            inline self& operator<<(const pair<bool, const value_type&> x)
-            {
-                if(x.first) insert_equal(x.second, root, NULL);
-                else insert_unique(x.second, root, NULL);
-                return *this;
             }
         protected:
             inline iterator find(const key_type& x, link_type node)
@@ -401,8 +415,8 @@ namespace QLanguage
                     if(y != right(z)) // 被删除的节点作为根的子树的高度>1
                     {
                         x_parent = parent(y);
-                        if(x) parent(x) = x_parent;
-                        left(x_parent) = x;
+                        if(x) parent(x) = parent(y);
+                        left(parent(y)) = x;
 
                         // 将y替换为要删除的节点
                         right(y) = right(z);
@@ -434,6 +448,16 @@ namespace QLanguage
                     {
                         if(left(parent(z)) == z) left(parent(z)) = x;
                         else right(parent(z)) = x;
+                    }
+                    if (left(header) == z)
+                    {
+                        if (!right(z)) left(header) = parent(z);
+                        else left(header) = minimum(x);
+                    }
+                    if (right(header) == z)
+                    {
+                        if (!left(z)) right(header) = parent(z);
+                        else right(header) = maximum(x);
                     }
                 }
 
