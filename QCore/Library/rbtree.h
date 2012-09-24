@@ -31,7 +31,7 @@ namespace QLanguage
         };
 
         template <typename T>
-        struct __rbtree_iterator_base
+        struct __rbtree_iterator_base : public bidirectional_iterator
         {
         protected:
             template <typename Key, typename Value, typename KeyOfValue, typename Less_Compare, typename Equal_Compare>
@@ -60,7 +60,7 @@ namespace QLanguage
                 else
                 {
                     link_type y = node->parent;
-                    while(y && node == y->right)
+                    while(node == y->right)
                     {
                         node = y;
                         y = y->parent;
@@ -156,8 +156,9 @@ namespace QLanguage
         struct __rbtree_const_iterator : public const_iterator<T>, public __rbtree_iterator_base<T>
         {
         protected:
-            typedef __rbtree_iterator<T> iterator;
-            typedef __rbtree_iterator_base<T> parent;
+            typedef __rbtree_iterator<T>       iterator;
+            typedef __rbtree_iterator_base<T>  parent;
+            typedef const_iterator<T>          iterator_type;
             typedef __rbtree_const_iterator<T> self;
         public:
             __rbtree_const_iterator() : __rbtree_iterator_base<T>()
@@ -172,7 +173,7 @@ namespace QLanguage
             {
             }
 
-            typename parent::reference operator*()const
+            typename iterator_type::reference operator*()const
             {
                 return parent::node->data;
             }
@@ -211,7 +212,6 @@ namespace QLanguage
         {
         protected:
             typedef Key                  key_type;
-            typedef Value                value_type;
             typedef __rbtree_node<Value> node_type;
             typedef node_type*           link_type;
             typedef rbtree<Key, Value, KeyOfValue, Less_Compare, Equal_Compare> self;
@@ -224,10 +224,13 @@ namespace QLanguage
             Less_Compare  less_compare;
             Equal_Compare equal_compare;
         public:
+            typedef Value                          value_type;
             typedef size_t                         size_type;
             typedef ptrdiff_t                      difference_type;
             typedef __rbtree_iterator<Value>       iterator;
             typedef __rbtree_const_iterator<Value> const_iterator;
+            typedef reverse_iterator<const_iterator, value_type, size_type, difference_type> const_reverse_iterator;
+            typedef reverse_iterator<iterator, value_type, size_type, difference_type> reverse_iterator;
         protected:
             size_type node_count;
             link_type header;
@@ -248,12 +251,14 @@ namespace QLanguage
 
             inline iterator insert_equal(const value_type& x)
             {
-                return insert_equal(x, root, NULL);
+                // TOFIX root不正确
+                return insert_equal(x, parent(header), NULL);
             }
 
             inline pair<iterator, bool> insert_unique(const value_type& x)
             {
-                return insert_unique(x, root, NULL);
+                // TOFIX root不正确
+                return insert_unique(x, parent(header), NULL);
             }
 
             inline void erase(iterator position)
@@ -282,6 +287,11 @@ namespace QLanguage
                 return find(x, root);
             }
 
+            inline const_iterator find(const key_type& x)const
+            {
+                return find(x, root);
+            }
+
             inline void clear()
             {
                 clear(root);
@@ -295,6 +305,11 @@ namespace QLanguage
             inline size_type size()const
             {
                 return node_count;
+            }
+
+            inline bool empty()const
+            {
+                return node_count == 0;
             }
 
             inline iterator maximum()const
@@ -317,6 +332,16 @@ namespace QLanguage
                 return header->left;
             }
 
+            inline reverse_iterator rbegin()
+            {
+                return header;
+            }
+
+            inline const_reverse_iterator rbegin()const
+            {
+                return header;
+            }
+
             inline iterator end()
             {
                 return header;
@@ -325,6 +350,86 @@ namespace QLanguage
             inline const_iterator end()const
             {
                 return header;
+            }
+
+            inline reverse_iterator rend()
+            {
+                return header->left;
+            }
+
+            inline const_reverse_iterator rend()const
+            {
+                return header->left;
+            }
+
+            iterator lower_bound(const key_type& x)
+            {
+                link_type y = header;
+                link_type z = parent(y);
+
+                while(z)
+                {
+                    if(!less_compare(key(z->data), x)) y = z, z = left(z);
+                    else z = right(z);
+                }
+                return y;
+            }
+
+            const_iterator lower_bound(const key_type& x)const
+            {
+                link_type y = header;
+                link_type z = parent(y);
+
+                while(z)
+                {
+                    if(!less_compare(key(z->data), x)) y = z, z = left(z);
+                    else z = right(z);
+                }
+                return y;
+            }
+
+            iterator upper_bound(const key_type& x)
+            {
+                link_type y = header;
+                link_type z = parent(y);
+
+                while(z)
+                {
+                    if(less_compare(x, key(z->data))) y = z, z = left(z);
+                    else z = right(z);
+                }
+                return y;
+            }
+
+            const_iterator upper_bound(const key_type& x)const
+            {
+                link_type y = header;
+                link_type z = parent(y);
+
+                while(z)
+                {
+                    if(less_compare(x, key(z->data))) y = z, z = left(z);
+                    else z = right(z);
+                }
+                return y;
+            }
+
+            pair<iterator, iterator> equal_range(const key_type& x)
+            {
+                return pair<iterator, iterator>(lower_bound(x), upper_bound(x));
+            }
+
+            pair<const_iterator, const_iterator> equal_range(const key_type& x)const
+            {
+                return pair<const_iterator, const_iterator>(lower_bound(x), upper_bound(x));
+            }
+
+            size_type count(const key_type& x)const
+            {
+                pair<const_iterator, const_iterator> p = equal_range(x);
+                size_type n = 0;
+                distance(p.first, p.second, n);
+                return n;
             }
         protected:
             inline iterator find(const key_type& x, link_type node)
@@ -349,16 +454,25 @@ namespace QLanguage
                 {
                     node = Value_Alloc::allocate();
                     construct(node, x);
-                    parent(node) = _parent;
-                    insert_rebalance(node, root);
-                    ++node_count;
-                    if(node == root)
+                    if(_parent == NULL) // root node
                     {
-                        header->parent = node;
-                        node->parent = header;
+                        root = node;
+                        parent(root) = header;
+                        parent(header) = root;
+                        left(header) = root;
+                        right(header) = root;
                     }
-                    header->left = minimum(root);
-                    header->right = maximum(root);
+                    else if(_parent == left(header) && node == left(_parent))
+                    {
+                        left(header) = node;
+                    }
+                    else if(_parent == right(header) && node == right(_parent))
+                    {
+                        right(header) = node;
+                    }
+                    if(_parent) parent(node) = _parent;
+                    insert_rebalance(node, parent(header));
+                    ++node_count;
                     return iterator(node);
                 }
             }
@@ -375,16 +489,25 @@ namespace QLanguage
                 {
                     node = Value_Alloc::allocate();
                     construct(node, x);
-                    parent(node) = _parent;
-                    insert_rebalance(node, root);
-                    ++node_count;
-                    if(node == root)
+                    if(_parent == NULL) // root node
                     {
-                        header->parent = node;
-                        node->parent = header;
+                        root = node;
+                        parent(root) = header;
+                        parent(header) = root;
+                        left(header) = root;
+                        right(header) = root;
                     }
-                    header->left = minimum(root);
-                    header->right = maximum(root);
+                    else if(_parent == left(header) && node == left(_parent))
+                    {
+                        left(header) = node;
+                    }
+                    else if(_parent == right(header) && node == right(_parent))
+                    {
+                        right(header) = node;
+                    }
+                    if(_parent) parent(node) = _parent;
+                    insert_rebalance(node, parent(header));
+                    ++node_count;
                     return pair<iterator, bool>(node, true);
                 }
             }
@@ -451,12 +574,12 @@ namespace QLanguage
                     }
                     if (left(header) == z)
                     {
-                        if (!right(z)) left(header) = parent(z);
+                        if(!right(z)) left(header) = parent(z);
                         else left(header) = minimum(x);
                     }
                     if (right(header) == z)
                     {
-                        if (!left(z)) right(header) = parent(z);
+                        if(!left(z)) right(header) = parent(z);
                         else right(header) = maximum(x);
                     }
                 }

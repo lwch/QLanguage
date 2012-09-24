@@ -1,6 +1,8 @@
 #ifndef _QLANGUAGE_LIBRARY_ALGO_H_
 #define _QLANGUAGE_LIBRARY_ALGO_H_
 
+#include "iterator.h"
+
 namespace QLanguage
 {
     namespace Library
@@ -31,9 +33,21 @@ namespace QLanguage
         }
 
         template <typename Iterator, typename Distance>
-        inline void distance(Iterator first, Iterator last, Distance& n)
+        inline void __distance(Iterator first, Iterator last, Distance& n, const bidirectional_iterator&)
+        {
+            while(first != last) { ++first; ++n; }
+        }
+
+        template <typename Iterator, typename Distance>
+        inline void __distance(Iterator first, Iterator last, Distance& n, const random_access_iterator&)
         {
             n += last - first;
+        }
+
+        template <typename Iterator, typename Distance>
+        inline void distance(Iterator first, Iterator last, Distance& n)
+        {
+            __distance(first, last, n, first);
         }
 
         template <typename Iterator1, typename Iterator2, typename Difference1, typename Difference2>

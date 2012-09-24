@@ -11,14 +11,17 @@ namespace QLanguage
         template <typename T, typename Size = size_t, typename Difference = ptrdiff_t>
         struct iterator
         {
-            typedef T                               value_type;
-            typedef Difference                      difference_type;
-            typedef T*                              pointer;
-            typedef T&                              reference;
-            typedef const T*                        const_pointer;
-            typedef const T&                        const_reference;
-            typedef iterator<T, Size, Difference>   self;
+            typedef T                             value_type;
+            typedef Difference                    difference_type;
+            typedef T*                            pointer;
+            typedef T&                            reference;
+            typedef const T*                      const_pointer;
+            typedef const T&                      const_reference;
+            typedef iterator<T, Size, Difference> self;
         };
+
+        struct bidirectional_iterator { };
+        struct random_access_iterator { };
 
         template <typename T, typename Size = size_t, typename Difference = ptrdiff_t>
         struct const_iterator : public iterator<T>

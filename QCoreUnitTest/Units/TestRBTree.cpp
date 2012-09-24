@@ -23,7 +23,19 @@ TEST_CASE(TestRBTree)
     TEST_ASSERT(tree.size() != 3, "invalid tree size!");
     for(int i = 0; i < 10; ++i)
     {
-        tree.insert_equal(i);
+        tree.insert_equal(i); // TOFIX i == 2时root不正确
+        switch(i)
+        {
+        case 1:
+            TEST_ASSERT(tree.count(i) != 3, "invalid tree node count with %d!", i);
+            break;
+        case 2:
+            TEST_ASSERT(tree.count(i) != 2, "invalid tree node count with %d!", i);
+            break;
+        default:
+            TEST_ASSERT(tree.count(i) != 1, "invalid tree node count with %d!", i);
+            break;
+        }
     }
     TEST_ASSERT(tree.size() != 13, "invalid tree size!");
     tree.erase(tree.begin());
