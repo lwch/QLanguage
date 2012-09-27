@@ -16,14 +16,27 @@ namespace QLanguage
         class Console
         {
         public:
-            static void Write(const string& s, ...)
+            static void Write(string s, ...)
             {
-                printf(s.c_str());
+                va_list args;
+
+                va_start(args, s);
+                vprintf(s.c_str(), args);
+                va_end(args);
             }
 
-            static void WriteLine(const string& s, ...)
+            static void Write(const string& s, va_list args)
             {
-                Write(s);
+                vprintf(s.c_str(), args);
+            }
+
+            static void WriteLine(string s, ...)
+            {
+                va_list args;
+
+                va_start(args, s);
+                Write(s, args);
+                va_end(args);
                 Write("\r\n");
             }
 

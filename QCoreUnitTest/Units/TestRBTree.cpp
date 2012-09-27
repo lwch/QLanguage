@@ -1,6 +1,9 @@
 #include "TestRBTree.h"
+#include <time.h>
 
 typedef rbtree<int, int, identity<int> > tree_type;
+
+#define TEST_SPEED_INSERT_COUNT 10000
 
 TEST_CASE(TestRBTree)
 {
@@ -37,13 +40,45 @@ TEST_CASE(TestRBTree)
             break;
         }
     }
+    TEST_ASSERT(*tree.minimum() != 0, "invalid minimum of tree: %d", *tree.minimum());
+    TEST_ASSERT(*tree.maximum() != 9, "invalid maximum of tree: %d", *tree.maximum());
     TEST_ASSERT(tree.size() != 13, "invalid tree size!");
     tree.erase(tree.begin());
+    TEST_ASSERT(*tree.minimum() != 1, "invalid minimum of tree: %d", *tree.minimum());
+    TEST_ASSERT(*tree.maximum() != 9, "invalid maximum of tree: %d", *tree.maximum());
     TEST_ASSERT(tree.size() != 12, "invalid tree size!");
     tree.erase(1);
+    TEST_ASSERT(*tree.minimum() != 1, "invalid minimum of tree: %d", *tree.minimum());
+    TEST_ASSERT(*tree.maximum() != 9, "invalid maximum of tree: %d", *tree.maximum());
     TEST_ASSERT(tree.size() != 11, "invalid tree size!");
     tree.erase(tree.begin(), ++++++tree.begin());
+    TEST_ASSERT(*tree.minimum() != 2, "invalid minimum of tree: %d", *tree.minimum());
+    TEST_ASSERT(*tree.maximum() != 9, "invalid maximum of tree: %d", *tree.maximum());
     TEST_ASSERT(tree.size() != 8, "invalid tree size!");
     tree.erase(tree.begin(), tree.end());
+    TEST_ASSERT(tree.minimum() != tree.end(), "invalid minimum iterator of tree!");
+    TEST_ASSERT(tree.maximum() != tree.end(), "invalid maximum iterator of tree!");
     TEST_ASSERT(tree.size(), "tree is not empty!");
+    TEST_ASSERT(!tree.empty(), "tree is not empty!");
+}
+
+TEST_CASE(TestRBTree_Speed)
+{
+    tree_type tree;
+
+    srand(clock());
+
+    TIME_START;
+    for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+    {
+        tree.insert_equal(rand());
+    }
+    SHOW_TIME_COST_SECONDS;
+
+    TIME_START;
+    for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+    {
+        tree.find(rand());
+    }
+    SHOW_TIME_COST_SECONDS;
 }

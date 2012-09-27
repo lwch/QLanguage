@@ -219,7 +219,6 @@ namespace QLanguage
             #define red   node_type::red
             #define black node_type::black
 
-            link_type     root;
             KeyOfValue    key;
             Less_Compare  less_compare;
             Equal_Compare equal_compare;
@@ -235,13 +234,13 @@ namespace QLanguage
             size_type node_count;
             link_type header;
         public:
-            rbtree() : root(NULL), node_count(0)
+            rbtree() : node_count(0)
             {
                 header = Value_Alloc::allocate();
-                header->color = red;
-                header->parent = root;
-                header->left = header;
-                header->right = header;
+                header->color  = red;
+                parent(header) = NULL;
+                left(header)   = header;
+                right(header)  = header;
             }
 
             ~rbtree()
@@ -284,21 +283,20 @@ namespace QLanguage
 
             inline iterator find(const key_type& x)
             {
-                return find(x, root);
+                return find(x, parent(header));
             }
 
             inline const_iterator find(const key_type& x)const
             {
-                return find(x, root);
+                return find(x, parent(header));
             }
 
             inline void clear()
             {
-                clear(root);
-                root = NULL;
-                header->parent = root;
-                header->left = header;
-                header->right = header;
+                clear(parent(header));
+                parent(header) = NULL;
+                left(header)   = header;
+                right(header)  = header;
                 node_count = 0;
             }
 
@@ -312,24 +310,26 @@ namespace QLanguage
                 return node_count == 0;
             }
 
-            inline iterator maximum()const
+            inline const_iterator maximum()const
             {
-                return maximum(root);
+                const_iterator i = maximum(parent(header));
+                return i == NULL ? header : i;
             }
 
-            inline iterator minimum()const
+            inline const_iterator minimum()const
             {
-                return minimum(root);
+                const_iterator i = minimum(parent(header));
+                return i == NULL ? header : i;
             }
 
             inline iterator begin()
             {
-                return header->left;
+                return left(header);
             }
 
             inline const_iterator begin()const
             {
-                return header->left;
+                return left(header);
             }
 
             inline reverse_iterator rbegin()
@@ -354,12 +354,12 @@ namespace QLanguage
 
             inline reverse_iterator rend()
             {
-                return header->left;
+                return left(header);
             }
 
             inline const_reverse_iterator rend()const
             {
-                return header->left;
+                return left(header);
             }
 
             iterator lower_bound(const key_type& x)
@@ -456,11 +456,10 @@ namespace QLanguage
                     construct(node, x);
                     if(_parent == NULL) // root node
                     {
-                        root = node;
-                        parent(root) = header;
-                        parent(header) = root;
-                        left(header) = root;
-                        right(header) = root;
+                        parent(node) = header;
+                        parent(header) = node;
+                        left(header) = node;
+                        right(header) = node;
                     }
                     else if(_parent == left(header) && node == left(_parent))
                     {
@@ -491,11 +490,10 @@ namespace QLanguage
                     construct(node, x);
                     if(_parent == NULL) // root node
                     {
-                        root = node;
-                        parent(root) = header;
-                        parent(header) = root;
-                        left(header) = root;
-                        right(header) = root;
+                        parent(node) = header;
+                        parent(header) = node;
+                        left(header) = node;
+                        right(header) = node;
                     }
                     else if(_parent == left(header) && node == left(_parent))
                     {
@@ -547,8 +545,7 @@ namespace QLanguage
                     }
                     else x_parent = y;
 
-                    if(root == z) root = y;
-                    else if(left(parent(z)) == z) left(parent(z)) = y;
+                    if(left(parent(z)) == z) left(parent(z)) = y;
                     else right(parent(z)) = y;
 
                     parent(y) = parent(z);
@@ -566,12 +563,8 @@ namespace QLanguage
                     // 被删除节点只有一个子节点，直接将其子节点替换为被删除节点即可
                     x_parent = parent(y);
                     if(x) parent(x) = parent(y);
-                    if(root == z) root = x;
-                    else
-                    {
-                        if(left(parent(z)) == z) left(parent(z)) = x;
-                        else right(parent(z)) = x;
-                    }
+                    if(left(parent(z)) == z) left(parent(z)) = x;
+                    else right(parent(z)) = x;
                     if (left(header) == z)
                     {
                         if(!right(z)) left(header) = parent(z);
@@ -586,7 +579,7 @@ namespace QLanguage
 
                 if(y->color == black) // 要删除的那个点为黑色
                 {
-                    while(x != root && (!x || x->color == black)) // 迭代直到x不为黑色或根节点为止
+                    while(x != parent(header) && (!x || x->color == black)) // 迭代直到x不为黑色或根节点为止
                     {
                         if(left(x_parent) == x) // 被删除节点为左孩子
                         {
@@ -596,7 +589,7 @@ namespace QLanguage
                             {
                                 w->color = black;
                                 x_parent->color = red;
-                                l_rotate(x_parent, root);
+                                l_rotate(x_parent, parent(header));
                                 w = right(x_parent);
                             }
 
@@ -615,7 +608,7 @@ namespace QLanguage
                                 {
                                     if(left(w)) left(w)->color = black;
                                     w->color = red;
-                                    r_rotate(w, root);
+                                    r_rotate(w, parent(header));
                                     w = right(x_parent);
                                 }
 
@@ -623,7 +616,7 @@ namespace QLanguage
                                 w->color = x_parent->color;
                                 x_parent->color = black;
                                 if(right(w)) right(w)->color = black;
-                                l_rotate(x_parent, root);
+                                l_rotate(x_parent, parent(header));
                                 break;
                             }
                         }
@@ -634,7 +627,7 @@ namespace QLanguage
                             {
                                 w->color = black;
                                 x_parent->color = red;
-                                r_rotate(x_parent, root);
+                                r_rotate(x_parent, parent(header));
                                 w = left(x_parent);
                             }
 
@@ -651,14 +644,14 @@ namespace QLanguage
                                 {
                                     if(right(w)) right(w)->color = black;
                                     w->color = red;
-                                    l_rotate(w, root);
+                                    l_rotate(w, parent(header));
                                     w = left(x_parent);
                                 }
 
                                 w->color = x_parent->color;
                                 x_parent->color = black;
                                 if(left(w)) left(w)->color = black;
-                                r_rotate(x_parent, root);
+                                r_rotate(x_parent, parent(header));
                                 break;
                             }
                         }
@@ -728,12 +721,16 @@ namespace QLanguage
 
             inline static link_type maximum(link_type x)
             {
+                if(!x) return NULL;
+
                 while(right(x)) x = right(x);
                 return x;
             }
 
             inline static link_type minimum(link_type x)
             {
+                if(!x) return NULL;
+
                 while(left(x)) x = left(x);
                 return x;
             }

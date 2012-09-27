@@ -54,8 +54,15 @@ namespace QLanguage
                 *parent::finish = Traits::eof();
             }
 
-            basic_string(const basic_string<T>& s) : parent(s)
+            basic_string(const basic_string<T>& s)
             {
+                const typename parent::size_type n = s.size();
+                typename parent::size_type _1 = n + 1;
+                typename parent::size_type _2 = _1 * 2;
+                reserve(_2 <= MAX_STRING_RESERVE_SIZE ? _2 : _1);
+                copy(s.begin(), s.begin() + n, begin());
+                parent::finish = parent::start + n;
+                *parent::finish = Traits::eof();
             }
 
             basic_string(const basic_string<T>& s, typename parent::size_type pos, typename parent::size_type n = npos) : parent()
