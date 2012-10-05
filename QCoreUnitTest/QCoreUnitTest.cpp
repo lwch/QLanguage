@@ -8,9 +8,9 @@
 #include "../QCore/vld/vld.h"
 #endif
 
-#include "Units/TestVector.h"
+int retCode = 0;
 
 int main()
 {
-    return 0;
+    return retCode;
 }

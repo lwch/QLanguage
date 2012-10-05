@@ -12,6 +12,8 @@ namespace QLanguage
 
     namespace UnitTest
     {
+        #define TEST_SPEED_INSERT_COUNT 10000
+
         #define PrintMessage(fmt, ...) \
         Console::SetColor(false, true, false, true); \
         Console::WriteLine(fmt, ##__VA_ARGS__); \
@@ -34,14 +36,28 @@ namespace QLanguage
 
         #define TEST_CASE(moduleName) \
         extern void Case_##moduleName(); \
+        extern int  retCode; \
         class Test##moduleName \
         { \
         public: \
             Test##moduleName() \
             { \
-                PrintMessage(#moduleName); \
-                Case_##moduleName(); \
-                PrintInformation(string::format("%s run successed!", #moduleName)); \
+                try \
+                { \
+                    PrintMessage(#moduleName); \
+                    Case_##moduleName(); \
+                    PrintInformation(string::format("%s run successed!", #moduleName)); \
+                } \
+                catch(const char* e) \
+                { \
+                    PrintError(e); \
+                    --retCode; \
+                } \
+                catch(const error<string>& e) \
+                { \
+                    PrintError(e.description); \
+                    --retCode; \
+                } \
             } \
         } Test##moduleName; \
         void Case_##moduleName()

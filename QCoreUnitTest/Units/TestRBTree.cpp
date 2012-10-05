@@ -3,8 +3,6 @@
 
 typedef rbtree<int, int, identity<int> > tree_type;
 
-#define TEST_SPEED_INSERT_COUNT 10000
-
 TEST_CASE(TestRBTree)
 {
     tree_type tree;
