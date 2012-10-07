@@ -37,75 +37,75 @@ namespace QLanguage
                 return tmp;
             }
 
-            parent::reference operator*()
+            inline typename parent::reference operator*()
             {
                 return *node;
             }
 
-            self& operator++()
+            inline self& operator++()
             {
                 ++node;
                 return *this;
             }
 
-            self operator++(int)
+            inline self operator++(int)
             {
                 self tmp = *this;
                 ++*this;
                 return tmp;
             }
 
-            self& operator--()
+            inline self& operator--()
             {
                 --node;
                 return *this;
             }
 
-            self operator--(int)
+            inline self operator--(int)
             {
                 self tmp = *this;
                 --*this;
                 return tmp;
             }
 
-            self operator+(Distance n)const
+            inline self operator+(Distance n)const
             {
                 return self(node + n);
             }
 
-            self& operator+=(Distance n)
+            inline self& operator+=(Distance n)
             {
                 node += n;
                 return *this;
             }
 
-            self operator-(Distance n)const
+            inline self operator-(Distance n)const
             {
                 return self(node - n);
             }
 
-            self& operator-=(Distance n)
+            inline self& operator-=(Distance n)
             {
                 node -= n;
                 return *this;
             }
 
-            const bool operator==(const self& x)const
+            inline const bool operator==(const self& x)const
             {
                 return node == x.node;
             }
 
-            const bool operator!=(const self& x)const
+            inline const bool operator!=(const self& x)const
             {
                 return node != x.node;
             }
 
-            T& operator[](Distance n)
+            inline T& operator[](Distance n)
             {
                 return node[n];
             }
 
-            operator link_type()const
+            inline operator link_type()const
             {
                 return node;
             }
@@ -133,75 +133,75 @@ namespace QLanguage
             {
             }
 
-            parent::reference operator*()
+            inline typename parent::reference operator*()
             {
                 return *node;
             }
 
-            self& operator++()
+            inline self& operator++()
             {
                 ++node;
                 return *this;
             }
 
-            self operator++(int)
+            inline self operator++(int)
             {
                 self tmp = *this;
                 ++*this;
                 return tmp;
             }
 
-            self& operator--()
+            inline self& operator--()
             {
                 --node;
                 return *this;
             }
 
-            self operator--(int)
+            inline self operator--(int)
             {
                 self tmp = *this;
                 --*this;
                 return tmp;
             }
 
-            self operator+(Distance n)const
+            inline self operator+(Distance n)const
             {
                 return self(node + n);
             }
 
-            self& operator+=(Distance n)
+            inline self& operator+=(Distance n)
             {
                 node += n;
                 return *this;
             }
 
-            self operator-(Distance n)const
+            inline self operator-(Distance n)const
             {
                 return self(node - n);
             }
 
-            self& operator-=(Distance n)
+            inline self& operator-=(Distance n)
             {
                 node -= n;
                 return *this;
             }
 
-            const bool operator==(const self& x)const
+            inline const bool operator==(const self& x)const
             {
                 return node == x.node;
             }
 
-            const bool operator!=(const self& x)const
+            inline const bool operator!=(const self& x)const
             {
                 return node != x.node;
             }
 
-            T& operator[](Distance n)
+            inline T& operator[](Distance n)
             {
                 return node[n];
             }
 
-            operator link_type()const
+            inline operator link_type()const
             {
                 return node;
             }
@@ -400,7 +400,7 @@ namespace QLanguage
 
             void erase(iterator position)
             {
-                destruct((iterator::pointer)position, has_destruct(*position));
+                destruct(&*position, has_destruct(*position));
                 if (position + 1 != end())
                 {
                     copy(position + 1, end(), position);
