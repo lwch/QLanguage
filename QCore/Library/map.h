@@ -14,7 +14,7 @@ namespace QLanguage
             typedef Key                key_type;
             typedef T                  data_type;
             typedef pair<const Key, T> value_type;
-            typedef rbtree<key_type, value_type, select1st<value_type> > instance_type;
+            typedef rbtree<key_type, value_type, select1st<value_type>, LessCompare, EqualCompare> instance_type;
 
             instance_type instance;
         public:

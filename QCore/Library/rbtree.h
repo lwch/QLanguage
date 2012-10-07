@@ -250,13 +250,11 @@ namespace QLanguage
 
             inline iterator insert_equal(const value_type& x)
             {
-                // TOFIX root不正确
                 return insert_equal(x, parent(header), NULL);
             }
 
             inline pair<iterator, bool> insert_unique(const value_type& x)
             {
-                // TOFIX root不正确
                 return insert_unique(x, parent(header), NULL);
             }
 

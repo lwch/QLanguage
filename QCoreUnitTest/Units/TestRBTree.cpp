@@ -23,7 +23,7 @@ TEST_CASE(TestRBTree)
     TEST_ASSERT(tree.size() != 3, "invalid tree size!");
     for(int i = 0; i < 10; ++i)
     {
-        tree.insert_equal(i); // TOFIX i == 2时root不正确
+        tree.insert_equal(i);
         switch(i)
         {
         case 1:
