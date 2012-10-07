@@ -60,7 +60,7 @@ namespace QLanguage
                 free(p);
             }
 
-            static void deallocate(T* p, size_t)
+            static void deallocate(T* p, size_t n)
             {
                 free(p);
             }

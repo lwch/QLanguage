@@ -8,6 +8,11 @@
 #include "../QCore/vld/vld.h"
 #endif
 
+#include "Units/TestBase.h"
+
+using namespace QLanguage;
+using namespace QLanguage::Library;
+
 int retCode = 0;
 
 int main()
