@@ -1,8 +1,6 @@
 #include "TestVector.h"
-#include "../../QCore/Library/string.h"
-#include <vector>
 
-TEST_CASE(TestVector_Construct)
+TEST_CASE(TestVector)
 {
     int l[5] = {1, 2, 3, 4, 5};
     vector<int> a;
@@ -14,12 +12,29 @@ TEST_CASE(TestVector_Construct)
     {
         a.push_back(i);
         TEST_ASSERT(a.size()  != i + 1, "invalid vector size: %d!", a.size());
-        TEST_ASSERT(a.front() != 0, "invalid vector front value: %d!", i);
-        TEST_ASSERT(a.back()  != i, "invalid vector back value: %d!", i);
+        TEST_ASSERT(a.front() != 0, "invalid vector front value: %d!", a.front());
+        TEST_ASSERT(a.back()  != i, "invalid vector back value: %d!", a.back());
         TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");
     }
     TEST_ASSERT(a.empty(), "vector is not empty!");
-    //a.insert(++++a.begin(), 0);
+
+    a.insert(++++a.begin(), 0);
+    TEST_ASSERT(a[2] != 0, "invalid vector value of index 2!");
+    TEST_ASSERT(a.size() != 11, "invalid vector size: %d!", a.size());
+
+    for(int i = 0; i < 3; ++i)
+    {
+        a.pop_back();
+        TEST_ASSERT(a.size()  != 11 - i - 1, "invalid vector size: %d!", a.size());
+        TEST_ASSERT(a.front() != 0, "invalid vector front value: %d!", a.front());
+        TEST_ASSERT(a.back()  != 10 - i - 2, "invalid vector back value: %d!", a.back());
+        TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");
+    }
+    TEST_ASSERT(a.empty(), "vector is not empty!");
+
+    a.erase(++++a.begin());
+    TEST_ASSERT(a[2] == 0, "invalid vector value of index 2!");
+    TEST_ASSERT(a.size() != 7, "invalid vector size: %d!", a.size());
 }
 
 TEST_CASE(TestVector_Speed)

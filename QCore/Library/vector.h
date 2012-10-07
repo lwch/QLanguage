@@ -10,6 +10,203 @@ namespace QLanguage
 {
     namespace Library
     {
+        template <typename T, typename Distance>
+        class __vector_iterator : public iterator<T>
+        {
+        protected:
+            template <typename C, typename D>
+            friend class __vector_const_iterator;
+
+            typedef iterator<T>                    parent;
+            typedef __vector_iterator<T, Distance> self;
+            typedef T*                             link_type;
+
+            link_type node;
+        public:
+            __vector_iterator() : node(NULL)
+            {
+            }
+
+            __vector_iterator(link_type x) : node(x)
+            {
+            }
+
+            static const __vector_iterator<T, Distance> null()
+            {
+                static __vector_iterator<T, Distance> tmp;
+                return tmp;
+            }
+
+            parent::reference operator*()
+            {
+                return *node;
+            }
+
+            self& operator++()
+            {
+                ++node;
+                return *this;
+            }
+
+            self operator++(int)
+            {
+                self tmp = *this;
+                ++*this;
+                return tmp;
+            }
+
+            self& operator--()
+            {
+                --node;
+                return *this;
+            }
+
+            self operator--(int)
+            {
+                self tmp = *this;
+                --*this;
+                return tmp;
+            }
+
+            self operator+(Distance n)const
+            {
+                return self(node + n);
+            }
+
+            self& operator+=(Distance n)
+            {
+                node += n;
+                return *this;
+            }
+
+            self operator-(Distance n)const
+            {
+                return self(node - n);
+            }
+
+            self& operator-=(Distance n)
+            {
+                node -= n;
+                return *this;
+            }
+
+            const bool operator==(const self& x)const
+            {
+                return node == x.node;
+            }
+
+            const bool operator!=(const self& x)const
+            {
+                return node != x.node;
+            }
+
+            T& operator[](Distance n)
+            {
+                return node[n];
+            }
+
+            operator link_type()const
+            {
+                return node;
+            }
+        };
+
+        template <typename T, typename Distance>
+        class __vector_const_iterator : public const_iterator<T>
+        {
+        protected:
+            typedef const_iterator<T>                    parent;
+            typedef __vector_const_iterator<T, Distance> self;
+            typedef const T*                             link_type;
+
+            link_type node;
+        public:
+            __vector_const_iterator() : node(NULL)
+            {
+            }
+
+            __vector_const_iterator(link_type x) : node(x)
+            {
+            }
+
+            __vector_const_iterator(const __vector_iterator<T, Distance>& x) : node(x.node)
+            {
+            }
+
+            parent::reference operator*()
+            {
+                return *node;
+            }
+
+            self& operator++()
+            {
+                ++node;
+                return *this;
+            }
+
+            self operator++(int)
+            {
+                self tmp = *this;
+                ++*this;
+                return tmp;
+            }
+
+            self& operator--()
+            {
+                --node;
+                return *this;
+            }
+
+            self operator--(int)
+            {
+                self tmp = *this;
+                --*this;
+                return tmp;
+            }
+
+            self operator+(Distance n)const
+            {
+                return self(node + n);
+            }
+
+            self& operator+=(Distance n)
+            {
+                node += n;
+                return *this;
+            }
+
+            self operator-(Distance n)const
+            {
+                return self(node - n);
+            }
+
+            self& operator-=(Distance n)
+            {
+                node -= n;
+                return *this;
+            }
+
+            const bool operator==(const self& x)const
+            {
+                return node == x.node;
+            }
+
+            const bool operator!=(const self& x)const
+            {
+                return node != x.node;
+            }
+
+            T& operator[](Distance n)
+            {
+                return node[n];
+            }
+
+            operator link_type()const
+            {
+                return node;
+            }
+        };
+
         template <typename T>
         class vector
         {
@@ -20,9 +217,9 @@ namespace QLanguage
             typedef const T&  const_reference;
             typedef size_t    size_type;
             typedef ptrdiff_t difference_type;
-            typedef const T* const_iterator;
+            typedef __vector_const_iterator<value_type, difference_type> const_iterator;
             typedef reverse_iterator<const_iterator, value_type, size_type, difference_type> const_reverse_iterator;
-            typedef T* iterator;
+            typedef __vector_iterator<value_type, difference_type> iterator;
             typedef reverse_iterator<iterator, value_type, size_type, difference_type> reverse_iterator;
         protected:
             typedef vector<T>    self;
@@ -32,8 +229,9 @@ namespace QLanguage
             iterator finish;
             iterator end_of_element;
         public:
-            vector() : start(0), finish(0), end_of_element(0)
+            vector()
             {
+                start = finish = end_of_element = NULL;
             }
 
             vector(const size_type& count, const T& x)
@@ -73,7 +271,7 @@ namespace QLanguage
             ~vector()
             {
                 destruct(start, end_of_element);
-                if (start != 0) Alloc::deallocate(start, end_of_element - start);
+                if (start != iterator::null()) Alloc::deallocate(start, end_of_element - start);
             }
 
             void reserve(const size_type& count)
@@ -202,7 +400,7 @@ namespace QLanguage
 
             void erase(iterator position)
             {
-                destruct(position, has_destruct(*position));
+                destruct((iterator::pointer)position, has_destruct(*position));
                 if (position + 1 != end())
                 {
                     copy(position + 1, end(), position);

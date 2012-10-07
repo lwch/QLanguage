@@ -1,5 +1,4 @@
 #include "TestRBTree.h"
-#include <time.h>
 
 typedef rbtree<int, int, identity<int> > tree_type;
 

@@ -24,8 +24,15 @@ namespace QLanguage
         struct random_access_iterator { };
 
         template <typename T, typename Size = size_t, typename Difference = ptrdiff_t>
-        struct const_iterator : public iterator<T>
+        struct const_iterator
         {
+            typedef const T                             value_type;
+            typedef const Difference                    difference_type;
+            typedef const T*                            pointer;
+            typedef const T&                            reference;
+            typedef const T*                            const_pointer;
+            typedef const T&                            const_reference;
+            typedef const_iterator<T, Size, Difference> self;
         };
 
         template <typename Iterator, typename T, typename Size = size_t, typename Difference = ptrdiff_t>
@@ -92,7 +99,7 @@ namespace QLanguage
 
             inline self operator+(Difference count)const
             {
-                return Difference(pThis - count);
+                return self(pThis - count);
             }
 
             inline self& operator+=(Difference count)
@@ -103,7 +110,7 @@ namespace QLanguage
 
             inline self operator-(Difference count)const
             {
-                return Difference(pThis + count);
+                return self(pThis + count);
             }
 
             inline self& operator-=(Difference count)

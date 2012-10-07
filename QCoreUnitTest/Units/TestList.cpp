@@ -1,6 +1,6 @@
 #include "TestList.h"
 
-TEST_CASE(TestList_Construct)
+TEST_CASE(TestList)
 {
     int l[5] = {1, 2, 3, 4, 5};
     list<int> a;
@@ -8,59 +8,61 @@ TEST_CASE(TestList_Construct)
     list<int> c(10);
     list<int> d(b);
     list<int> e(l, l + sizeof(l) / sizeof(int));
-}
-
-TEST_CASE(TestList_Assignment)
-{
-    list<int> a;
-    list<int>::iterator b = a.begin();
-    TEST_ASSERT(b == NULL, "invalid pointer!");
-    list<int>::const_iterator const c = a.begin();
-    TEST_ASSERT(c == NULL, "invalid pointer!");
-    list<int>::reverse_iterator d = a.rbegin();
-    TEST_ASSERT(d != a.rend(), "invalid pointer!");
-    list<int>::const_reverse_iterator const e = a.rbegin();
-    TEST_ASSERT(e != a.rend(), "invalid pointer!");
-    list<int>::iterator f = a.end();
-    TEST_ASSERT(f == NULL, "invalid pointer!");
-    list<int>::const_iterator const g = a.end();
-    TEST_ASSERT(g == NULL, "invalid pointer!");
-    list<int>::reverse_iterator h = a.rend();
-    TEST_ASSERT(h != a.rbegin(), "invalid pointer!");
-    list<int>::const_reverse_iterator const i = a.rend();
-    TEST_ASSERT(i != a.rbegin(), "invalid pointer!");
-    list<int>::reference j = a.front();
-    list<int>::const_reference const k = a.front();
-    list<int>::reference l = a.back();
-    list<int>::const_reference const m = a.back();
-    bool const n = a.empty();
-    TEST_ASSERT(!n, "a is empty!");
-    list<int>::size_type const o = a.size();
-    TEST_ASSERT(o != 0, "invalid size!");
-}
-
-TEST_CASE(TestList_Operation)
-{
-    list<int> a;
-    a.push_back(1);
-    TEST_ASSERT(a.size() != 1, "invalid size!");
-    TEST_ASSERT(a[0] != 1, "invalid value!");
-    a.pop_back();
-    TEST_ASSERT(a.size() != 0, "invalid size!");
-    a.insert(a.begin(), 1);
-    TEST_ASSERT(a.size() != 1, "invalid size!");
-    TEST_ASSERT(a[0] != 1, "invalid value!");
-    a.erase(a.begin());
-    TEST_ASSERT(a.size() != 0, "invalid size!");
-    list<int> b(10, 1);
-    a = b;
-    TEST_ASSERT(a.size() != 10, "invalid size!");
-    for(list<int>::iterator i = a.begin(); i != a.end(); ++i)
+    for(int i = 0; i < 10; ++i)
     {
-        TEST_ASSERT(*i != 1, "invalid value!");
+        a.push_back(i);
+        TEST_ASSERT(a.size()  != i + 1, "invalid list size: %d!", a.size());
+        TEST_ASSERT(a.front() != 0, "invalid list front value: %d!", a.front());
+        TEST_ASSERT(a.back()  != i, "invalid list back value: %d!", a.back());
+        TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");
     }
-    a[0] = 100;
-    TEST_ASSERT(a[0] != 100, "invalid value!");
-    const list<int>::value_type v = a.at(0);
-    TEST_ASSERT(v != 100, "invalid value!");
+    TEST_ASSERT(a.empty(), "list is not empty!");
+
+    a.insert(++++a.begin(), 0);
+    TEST_ASSERT(a[2] != 0, "invalid list value of index 2!");
+    TEST_ASSERT(a.size() != 11, "invalid list size: %d!", a.size());
+
+    for(int i = 0; i < 3; ++i)
+    {
+        a.pop_back();
+        TEST_ASSERT(a.size()  != 11 - i - 1, "invalid list size: %d!", a.size());
+        TEST_ASSERT(a.front() != 0, "invalid list front value: %d!", a.front());
+        TEST_ASSERT(a.back()  != 10 - i - 2, "invalid list back value: %d!", a.back());
+        TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");
+    }
+    TEST_ASSERT(a.empty(), "list is not empty!");
+
+    a.erase(++++a.begin());
+    TEST_ASSERT(a[2] == 0, "invalid list value of index 2!");
+    TEST_ASSERT(a.size() != 7, "invalid list size: %d!", a.size());
+
+    for(int i = 0; i < 3; ++i)
+    {
+        a.pop_front();
+        TEST_ASSERT(a.size()  != 7 - i - 1, "invalid list size: %d!", a.size());
+        TEST_ASSERT(a.front() != i + 1, "invalid list front value: %d!", a.front());
+        TEST_ASSERT(a.back()  != 6, "invalid list back value: %d!", a.back());
+        TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");
+    }
+}
+
+TEST_CASE(TestList_Speed)
+{
+    list<int> a;
+
+    srand(clock());
+
+    TIME_START;
+    for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+    {
+        a.push_back(rand());
+    }
+    SHOW_TIME_COST_SECONDS;
+
+    TIME_START;
+    for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+    {
+        find(a.begin(), a.end(), rand());
+    }
+    SHOW_TIME_COST_SECONDS;
 }

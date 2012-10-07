@@ -304,12 +304,12 @@ namespace QLanguage
 
             inline reference back()
             {
-                return *end();
+                return *--end();
             }
 
             inline const_reference back()const
             {
-                return *end();
+                return *--end();
             }
 
             void clear()

@@ -90,12 +90,12 @@ namespace QLanguage
                 }
             }
 
-            bool operator==(const __rbtree_iterator_base<T>& x)const
+            const bool operator==(const __rbtree_iterator_base<T>& x)const
             {
                 return node == x.node;
             }
 
-            bool operator!=(const __rbtree_iterator_base<T>& x)const
+            const bool operator!=(const __rbtree_iterator_base<T>& x)const
             {
                 return node != x.node;
             }
