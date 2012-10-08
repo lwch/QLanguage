@@ -100,7 +100,7 @@ namespace QLanguage
                     obj* current = chunk_list[i];
                     while(current)
                     {
-                        fprintf(fp, "0x%08X\n", current);
+                        fprintf(fp, "0x%08X\n", (int)current);
                         current = current->next;
                     }
                     fprintf(fp, "\n");

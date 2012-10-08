@@ -253,7 +253,7 @@ namespace QLanguage
                 return basic_string<T2>();
             }
 
-            static const basic_string<char> format(const char* fmt, ...)
+            static const basic_string<char> format(char* fmt, ...)
             {
                 va_list l;
                 va_start(l, fmt);
@@ -271,12 +271,12 @@ namespace QLanguage
                 result.finish = result.begin() + len;
                 result.end_of_element = result.finish;
                 #endif
-                result.back() = char_traits<char>::eof();
+                *result.finish = char_traits<char>::eof();
                 va_end(l);
                 return result;
             }
 
-            static const basic_string<wchar_t> format(const wchar_t* fmt, ...)
+            static const basic_string<wchar_t> format(wchar_t* fmt, ...)
             {
                 va_list l;
                 va_start(l, fmt);
@@ -290,7 +290,7 @@ namespace QLanguage
                 #else if defined(_LINUX)
                 throw error<const wchar_t*>(L"doesn't support");
                 #endif
-                result.back() = char_traits<wchar_t>::eof();
+                *result.finish = char_traits<wchar_t>::eof();
                 va_end(l);
                 return result;
             }
@@ -325,6 +325,16 @@ namespace QLanguage
             typename parent::self& operator=(T c)
             {
                 return assign(&c, &c + 1);
+            }
+
+            const bool operator!=(const basic_string<T>& s)const
+            {
+                if(size() != s.size()) return true;
+                for(size_type i = 0; i < size(); ++i)
+                {
+                    if(at(i) != s[i]) return true;
+                }
+                return false;
             }
         };
 

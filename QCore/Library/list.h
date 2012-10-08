@@ -329,7 +329,6 @@ namespace QLanguage
 
             iterator insert(const iterator& position, const T& x)
             {
-                if(!inRange(position)) throw "out of range";
                 link_type tmp = Node_Alloc::allocate();
                 construct(tmp, x);
                 tmp->prev = position.node->prev;
@@ -368,7 +367,6 @@ namespace QLanguage
 
             void erase(const iterator& position)
             {
-                if(!inRange(position)) throw "out of range";
                 position.node->prev->next = position.node->next;
                 position.node->next->prev = position.node->prev;
                 destruct(&position.node->data, has_destruct(position.node->data));
@@ -427,16 +425,6 @@ namespace QLanguage
             inline value_type at(size_type n)
             {
                 return operator[](n);
-            }
-        protected:
-            bool inRange(const iterator& position)
-            {
-                for(iterator i = begin(); i != end(); ++i)
-                {
-                    if(*i == *position) return true;
-                }
-                if(position == end()) return true;
-                return false;
             }
         };
     }

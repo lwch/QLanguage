@@ -434,8 +434,8 @@ namespace QLanguage
             {
                 if(node)
                 {
-                    if(less_compare(key(x), key(node->data))) return find(x, left(node));
-                    else if(equal_compare(key(x), key(node->data))) return node;
+                    if(less_compare(x, key(node->data))) return find(x, left(node));
+                    else if(equal_compare(x, key(node->data))) return node;
                     else return find(x, right(node));
                 }
                 return NULL;
