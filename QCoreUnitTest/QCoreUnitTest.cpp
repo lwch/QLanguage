@@ -10,6 +10,15 @@
 
 #include "Units/TestBase.h"
 
+#include "Units/TestList.h"
+#include "Units/TestMap.h"
+#include "Units/TestMemoryPool.h"
+#include "Units/TestRBTree.h"
+#include "Units/TestSet.h"
+#include "Units/TestString.h"
+#include "Units/TestTraits.h"
+#include "Units/TestVector.h"
+
 using namespace QLanguage;
 using namespace QLanguage::Library;
 

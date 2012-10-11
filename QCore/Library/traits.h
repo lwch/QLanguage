@@ -112,15 +112,13 @@ namespace QLanguage
         template <typename T>
         inline typename __type_traits<T*>::has_destruct* has_destruct(T*)
         {
-            static_assert(false, "Please use const T& not T*");
-            return static_cast<typename __type_traits<T>::has_destruct*>(0);
+            return static_cast<typename __type_traits<T*>::has_destruct*>(0);
         }
 
         template <typename T>
         inline typename __type_traits<const T*>::has_destruct* has_destruct(const T*)
         {
-            static_assert(false, "Please use const T& not const T*");
-            return static_cast<typename __type_traits<T>::has_destruct*>(0);
+            return static_cast<typename __type_traits<const T*>::has_destruct*>(0);
         }
 
         template <typename T>
@@ -132,59 +130,59 @@ namespace QLanguage
         template <typename T>
         inline typename __type_traits<T*>::is_POD* is_POD(T*)
         {
-            return static_cast<typename __type_traits<T>::is_POD*>(0);
+            return static_cast<typename __type_traits<T*>::is_POD*>(0);
         }
 
         template <typename T>
         inline typename __type_traits<const T*>::is_POD* is_POD(const T*)
         {
-            return static_cast<typename __type_traits<T>::is_POD*>(0);
+            return static_cast<typename __type_traits<const T*>::is_POD*>(0);
         }
 
         template <typename T>
-        inline const bool compare_type(T, T)
+        inline const bool type_compare(T, T)
         {
             return true;
         }
 
         template <typename T1, typename T2>
-        inline const bool compare_type(T1, T2)
+        inline const bool type_compare(T1, T2)
         {
             return false;
         }
 
         template <typename T>
-        inline const bool compare_type(T*, T*)
+        inline const bool type_compare(T*, T*)
         {
             return true;
         }
 
         template <typename T1, typename T2>
-        inline const bool compare_type(T1*, T2*)
+        inline const bool type_compare(T1*, T2*)
         {
             return false;
         }
 
         template <typename T>
-        inline const bool compare_type(const T*, const T*)
+        inline const bool type_compare(const T*, const T*)
         {
             return true;
         }
 
         template <typename T1, typename T2>
-        inline const bool compare_type(const T1*, const T2*)
+        inline const bool type_compare(const T1*, const T2*)
         {
             return false;
         }
 
         template <typename T1, typename T2>
-        inline const bool compare_type(const T1*, T2*)
+        inline const bool type_compare(const T1*, T2*)
         {
             return false;
         }
 
         template <typename T1, typename T2>
-        inline const bool compare_type(T1*, const T2*)
+        inline const bool type_compare(T1*, const T2*)
         {
             return false;
         }
