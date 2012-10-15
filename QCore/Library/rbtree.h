@@ -101,16 +101,16 @@ namespace QLanguage
             }
         };
 
-        template <typename T>
-        struct __rbtree_iterator : public iterator<T>, __rbtree_iterator_base<T>
+        template <typename T, typename Size, typename Distance>
+        struct __rbtree_iterator : public __iterator<T, Size, Distance>, __rbtree_iterator_base<T>
         {
         protected:
-            template <typename C>
+            template <typename C, typename S, typename D>
             friend struct __rbtree_const_iterator;
 
-            typedef __rbtree_iterator_base<T> parent;
-            typedef iterator<T> iterator_parent;
-            typedef __rbtree_iterator<T> self;
+            typedef __rbtree_iterator_base<T>            parent;
+            typedef __iterator<T, Size, Distance>        iterator_parent;
+            typedef __rbtree_iterator<T, Size, Distance> self;
         public:
             __rbtree_iterator() : __rbtree_iterator_base<T>()
             {
@@ -152,14 +152,14 @@ namespace QLanguage
             }
         };
 
-        template <typename T>
-        struct __rbtree_const_iterator : public const_iterator<T>, public __rbtree_iterator_base<T>
+        template <typename T, typename Size, typename Distance>
+        struct __rbtree_const_iterator : public __const_iterator<T, Size, Distance>, public __rbtree_iterator_base<T>
         {
         protected:
-            typedef __rbtree_iterator<T>       iterator;
-            typedef __rbtree_iterator_base<T>  parent;
-            typedef const_iterator<T>          iterator_type;
-            typedef __rbtree_const_iterator<T> self;
+            typedef __rbtree_iterator<T, Size, Distance>       iterator;
+            typedef __rbtree_iterator_base<T>                  parent;
+            typedef __const_iterator<T, Size, Distance>        iterator_type;
+            typedef __rbtree_const_iterator<T, Size, Distance> self;
         public:
             __rbtree_const_iterator() : __rbtree_iterator_base<T>()
             {
@@ -225,11 +225,11 @@ namespace QLanguage
         public:
             typedef Value                          value_type;
             typedef size_t                         size_type;
-            typedef ptrdiff_t                      difference_type;
-            typedef __rbtree_iterator<Value>       iterator;
-            typedef __rbtree_const_iterator<Value> const_iterator;
-            typedef reverse_iterator<const_iterator, value_type, size_type, difference_type> const_reverse_iterator;
-            typedef reverse_iterator<iterator, value_type, size_type, difference_type> reverse_iterator;
+            typedef ptrdiff_t                      distance_type;
+            typedef __rbtree_iterator<value_type, size_type, distance_type> iterator;
+            typedef __rbtree_const_iterator<value_type, size_type, distance_type> const_iterator;
+            typedef reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
+            typedef reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
         protected:
             size_type node_count;
             link_type header;

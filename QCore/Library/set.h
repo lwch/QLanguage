@@ -18,7 +18,7 @@ namespace QLanguage
             instance_type instance;
         public:
             typedef typename instance_type::size_type              size_type;
-            typedef typename instance_type::difference_type        difference_type;
+            typedef typename instance_type::distance_type          distance_type;
             typedef typename instance_type::iterator               iterator;
             typedef typename instance_type::const_iterator         const_iterator;
             typedef typename instance_type::reverse_iterator       reverse_iterator;

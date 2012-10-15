@@ -249,7 +249,7 @@ namespace QLanguage
             template <typename T2>
             static const basic_string<T2> format(const T* fmt, ...)
             {
-                throw error<char*>("Doesn't support!");
+                throw error<char*>("Doesn't support!", __FILE__, __LINE__);
                 return basic_string<T2>();
             }
 
@@ -288,7 +288,7 @@ namespace QLanguage
                 vswprintf(result.begin(), fmt, l);
                 result.finish = result.begin() + len;
                 #else if defined(_LINUX)
-                throw error<const wchar_t*>(L"doesn't support");
+                throw error<const wchar_t*>(L"doesn't support", __FILE__, __LINE__);
                 #endif
                 *result.finish = char_traits<wchar_t>::eof();
                 va_end(l);

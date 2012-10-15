@@ -7,10 +7,10 @@ namespace QLanguage
 {
     namespace Library
     {
-        template <typename T>
+        template <typename T, typename Size, typename Distance>
         struct __list_iterator;
 
-        template <typename T>
+        template <typename T, typename Size, typename Distance>
         struct __list_const_iterator;
 
         template <typename T>
@@ -29,16 +29,10 @@ namespace QLanguage
             }
         };
 
-        template <typename T>
-        struct __list_iterator
+        template <typename T, typename Size, typename Distance>
+        struct __list_iterator : public __iterator<T, Size, Distance>
         {
-            typedef __list_iterator<T> iterator;
-            typedef T                  value_type;
-            typedef ptrdiff_t          difference_type;
-            typedef T*                 pointer;
-            typedef T&                 reference;
-            typedef const T*           const_pointer;
-            typedef const T&           const_reference;
+            typedef __list_iterator<T, Size, Distance> iterator;
             typedef __list_node<T>*    link_type;
             typedef void*              void_pointer;
 
@@ -48,7 +42,7 @@ namespace QLanguage
             {
             }
 
-            __list_iterator(const __list_const_iterator<T>& x) : node(x.node)
+            __list_iterator(const __list_const_iterator<T, Size, Distance>& x) : node(x.node)
             {
             }
 
@@ -98,18 +92,12 @@ namespace QLanguage
             }
         };
 
-        template <typename T>
-        struct __list_const_iterator
+        template <typename T, typename Size, typename Distance>
+        struct __list_const_iterator : public __const_iterator<T, Size, Distance>
         {
-            typedef __list_iterator<T>       iterator;
-            typedef __list_const_iterator<T> const_iterator;
-            typedef T                        value_type;
-            typedef ptrdiff_t                difference_type;
-            typedef T*                       pointer;
-            typedef T&                       reference;
-            typedef const T*                 const_pointer;
-            typedef const T&                 const_reference;
-            typedef __list_node<T>*          link_type;
+            typedef __list_iterator<T, Size, Distance>       iterator;
+            typedef __list_const_iterator<T, Size, Distance> const_iterator;
+            typedef __list_node<T>* link_type;
 
             link_type node;
 
@@ -173,17 +161,17 @@ namespace QLanguage
         public:
             typedef T                        value_type;
             typedef T*                       pointer;
-            typedef __list_iterator<T>       iterator;
-            typedef __list_const_iterator<T> const_iterator;
             typedef T&                       reference;
             typedef const T&                 const_reference;
             typedef size_t                   size_type;
-            typedef ptrdiff_t                difference_type;
-            typedef reverse_iterator<const_iterator, value_type, size_type, difference_type> const_reverse_iterator;
-            typedef reverse_iterator<iterator, value_type, size_type, difference_type> reverse_iterator;
+            typedef ptrdiff_t                distance_type;
+            typedef __list_iterator<T, size_type, distance_type> iterator;
+            typedef __list_const_iterator<T, size_type, distance_type> const_iterator;
+            typedef reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
+            typedef reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
         protected:
-            typedef __list_node<T>*           link_type;
-            typedef list<T>                   self;
+            typedef __list_node<T>*            link_type;
+            typedef list<T>                    self;
             typedef allocator<__list_node<T> > Node_Alloc;
 
             link_type node;

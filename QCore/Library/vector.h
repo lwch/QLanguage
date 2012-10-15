@@ -10,16 +10,16 @@ namespace QLanguage
 {
     namespace Library
     {
-        template <typename T, typename Distance>
-        class __vector_iterator : public iterator<T>
+        template <typename T, typename Size, typename Distance>
+        class __vector_iterator : public __iterator<T, Size, Distance>
         {
         protected:
-            template <typename C, typename D>
+            template <typename C, typename S, typename D>
             friend class __vector_const_iterator;
 
-            typedef iterator<T>                    parent;
-            typedef __vector_iterator<T, Distance> self;
-            typedef T*                             link_type;
+            typedef __iterator<T, Size, Distance>        parent;
+            typedef __vector_iterator<T, Size, Distance> self;
+            typedef T*                                   link_type;
 
             link_type node;
         public:
@@ -31,9 +31,9 @@ namespace QLanguage
             {
             }
 
-            static const __vector_iterator<T, Distance> null()
+            static const self null()
             {
-                static __vector_iterator<T, Distance> tmp;
+                static self tmp;
                 return tmp;
             }
 
@@ -111,13 +111,13 @@ namespace QLanguage
             }
         };
 
-        template <typename T, typename Distance>
-        class __vector_const_iterator : public const_iterator<T>
+        template <typename T, typename Size, typename Distance>
+        class __vector_const_iterator : public __const_iterator<T, Size, Distance>
         {
         protected:
-            typedef const_iterator<T>                    parent;
-            typedef __vector_const_iterator<T, Distance> self;
-            typedef const T*                             link_type;
+            typedef __const_iterator<T, Size, Distance>        parent;
+            typedef __vector_const_iterator<T, Size, Distance> self;
+            typedef const T*                                   link_type;
 
             link_type node;
         public:
@@ -129,8 +129,14 @@ namespace QLanguage
             {
             }
 
-            __vector_const_iterator(const __vector_iterator<T, Distance>& x) : node(x.node)
+            __vector_const_iterator(const __vector_iterator<T, Size, Distance>& x) : node(x.node)
             {
+            }
+
+            static const self null()
+            {
+                static self tmp;
+                return tmp;
             }
 
             inline typename parent::reference operator*()
@@ -216,11 +222,11 @@ namespace QLanguage
             typedef T&        reference;
             typedef const T&  const_reference;
             typedef size_t    size_type;
-            typedef ptrdiff_t difference_type;
-            typedef __vector_const_iterator<value_type, difference_type> const_iterator;
-            typedef reverse_iterator<const_iterator, value_type, size_type, difference_type> const_reverse_iterator;
-            typedef __vector_iterator<value_type, difference_type> iterator;
-            typedef reverse_iterator<iterator, value_type, size_type, difference_type> reverse_iterator;
+            typedef ptrdiff_t distance_type;
+            typedef __vector_const_iterator<value_type, size_type, distance_type> const_iterator;
+            typedef reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
+            typedef __vector_iterator<value_type, size_type, distance_type> iterator;
+            typedef reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
         protected:
             typedef vector<T>    self;
             typedef allocator<T> Alloc;
@@ -236,7 +242,7 @@ namespace QLanguage
 
             vector(const size_type& count, const T& x)
             {
-                if(count <= 0) throw error<const char*>("out of range");
+                if(count <= 0) throw error<const char*>("out of range", __FILE__, __LINE__);
                 start = Alloc::allocate(count);
                 uninitialized_fill_n(start, count, x);
                 finish = start + count;
@@ -245,7 +251,7 @@ namespace QLanguage
 
             vector(const size_type& count)
             {
-                if(count <= 0) throw error<const char*>("out of range");
+                if(count <= 0) throw error<const char*>("out of range", __FILE__, __LINE__);
                 start = Alloc::allocate(count);
                 uninitialized_fill_n(start, count, T());
                 finish = start + count;

@@ -50,12 +50,12 @@ namespace QLanguage
             __distance(first, last, n, first);
         }
 
-        template <typename Iterator1, typename Iterator2, typename Difference1, typename Difference2>
-        inline Iterator1 __search(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2, Difference1*, Difference2*)
+        template <typename Iterator1, typename Iterator2, typename Distance1, typename Distance2>
+        inline Iterator1 __search(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2, Distance1*, Distance2*)
         {
-            Difference1 d1 = 0;
+            Distance1 d1 = 0;
             distance(first1, last1, d1);
-            Difference2 d2 = 0;
+            Distance2 d2 = 0;
             distance(first2, last2, d2);
 
             if(d1 < d2) return last1;
@@ -81,7 +81,7 @@ namespace QLanguage
         template <typename Iterator1, typename Iterator2>
         inline Iterator1 search(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2)
         {
-            return __search(first1, last1, first2, last2, difference_type(first1), difference_type(first2));
+            return __search(first1, last1, first2, last2, distance_type(first1), distance_type(first2));
         }
     }
 }

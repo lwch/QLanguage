@@ -9,12 +9,16 @@ namespace QLanguage
         class error
         {
         public:
-            error(T description)
+            error(T description, const char* fileName, size_t line)
             {
                 this->description = description;
+                this->fileName = fileName;
+                this->line = line;
             }
         public:
-            T description;
+            T           description;
+            const char* fileName;
+            size_t      line;
         };
     }
 }
