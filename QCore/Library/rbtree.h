@@ -4,6 +4,7 @@
 #include "function.h"
 #include "pair.h"
 #include "iterator.h"
+#include "construct.h"
 
 namespace QLanguage
 {

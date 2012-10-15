@@ -2,6 +2,7 @@
 #define _QLANGUAGE_LIBRARY_LIST_H_
 
 #include "iterator.h"
+#include "construct.h"
 
 namespace QLanguage
 {
