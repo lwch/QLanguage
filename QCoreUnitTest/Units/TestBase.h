@@ -32,7 +32,7 @@ namespace QLanguage
         #define SHOW_TIME_COST_SECONDS PrintInformation("time cost: %f seconds", (double)(clock() - _clock_start_) / (double)CLOCKS_PER_SEC); }
 
         #define TEST_ASSERT(expression, fmt, ...) \
-        if(expression) throw error<string>(string::format(fmt, ##__VA_ARGS__));
+        if(expression) throw error<string>(string::format(fmt, ##__VA_ARGS__), __FILE__, __LINE__);
 
         #define TEST_CASE(moduleName) \
         extern void Case_##moduleName(); \

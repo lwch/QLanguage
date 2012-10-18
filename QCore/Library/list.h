@@ -77,7 +77,7 @@ namespace QLanguage
                 return tmp;
             }
 
-            inline reference operator*()const
+            inline typename __iterator<T, Size, Distance>::reference operator*()const
             {
                 return node->data;
             }
@@ -140,7 +140,7 @@ namespace QLanguage
                 return tmp;
             }
 
-            inline const_reference operator*()const
+            inline typename __const_iterator<T, Size, Distance>::const_reference operator*()const
             {
                 return node->data;
             }

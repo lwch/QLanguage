@@ -1,6 +1,8 @@
 #ifndef _QLANGUAGE_LIBRARY_ERROR_H_
 #define _QLANGUAGE_LIBRARY_ERROR_H_
 
+#include <stdio.h>
+
 namespace QLanguage
 {
     namespace Library

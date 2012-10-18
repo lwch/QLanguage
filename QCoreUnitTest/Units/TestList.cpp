@@ -1,5 +1,7 @@
 #include "TestList.h"
 
+#include "../../QCore/Library/algo.h"
+
 TEST_CASE(TestList)
 {
     int l[5] = {1, 2, 3, 4, 5};

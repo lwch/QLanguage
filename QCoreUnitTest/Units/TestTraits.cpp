@@ -1,12 +1,22 @@
 #include "TestTraits.h"
 
+struct A {};
+struct B {};
+class  C {};
+class  D {};
+
+struct E : public A {};
+class  F : public A {};
+struct G : public C {};
+class  H : public C {};
+
+struct I : virtual public A {};
+class  J : virtual public A {};
+struct K : virtual public C {};
+struct L : virtual public C {};
+
 TEST_CASE(TestTraits)
 {
-    struct A {};
-    struct B {};
-    class  C  {};
-    class  D  {};
-
     TEST_ASSERT(!type_compare(A(), A()), "invalid type_compare with A and A!");
     TEST_ASSERT(type_compare(A(), B()), "invalid type_compare with A and B!");
     TEST_ASSERT(!type_compare(C(), C()), "invalid type_compare with C and C!");
@@ -28,11 +38,6 @@ TEST_CASE(TestTraits)
     TEST_ASSERT(type_compare(static_cast<const C*>(0), static_cast<C*>(0)), "invalid type_compare with const C* and C*!");
     TEST_ASSERT(type_compare(static_cast<C*>(0), static_cast<const C*>(0)), "invalid type_compare with C* and const C*!");
     TEST_ASSERT(type_compare(static_cast<const C*>(0), static_cast<const D*>(0)), "invalid type_compare with const C* and const D*!");
-
-    struct E : public A {};
-    class  F : public A {};
-    struct G : public C {};
-    class  H : public C {};
 
     TEST_ASSERT(type_compare(A(), E()), "invalid type_compare with A and E!");
     TEST_ASSERT(type_compare(A(), F()), "invalid type_compare with A and F!");
@@ -61,11 +66,6 @@ TEST_CASE(TestTraits)
     TEST_ASSERT(type_compare(static_cast<C*>(0), static_cast<const H*>(0)), "invalid type_compare with C* and const H*!");
     TEST_ASSERT(type_compare(static_cast<const C*>(0), static_cast<H*>(0)), "invalid type_compare with const C* and H*!");
     TEST_ASSERT(type_compare(static_cast<const C*>(0), static_cast<const H*>(0)), "invalid type_compare with const C* and const H*!");
-
-    struct I : virtual public A {};
-    class  J : virtual public A {};
-    struct K : virtual public C {};
-    struct L : virtual public C {};
 
     TEST_ASSERT(type_compare(A(), I()), "invalid type_compare with A and I!");
     TEST_ASSERT(type_compare(A(), J()), "invalid type_compare with A and J!");
