@@ -100,7 +100,7 @@ public:
         return node != x.node;
     }
 
-    inline T& operator[](Distance n)
+    inline typename parent::value_type& operator[](Distance n)
     {
         return node[n];
     }
@@ -202,7 +202,7 @@ public:
         return node != x.node;
     }
 
-    inline T& operator[](Distance n)
+    inline typename parent::value_type& operator[](Distance n)
     {
         return node[n];
     }
@@ -475,7 +475,7 @@ public:
 
     self& append(const T* s, size_type pos, size_type n)
     {
-        const size_type sSize = s.size();
+        const size_type sSize = char_traits<T>::length(s);
         if(pos > sSize || pos < 0) THROW_OUT_OF_RANGE;
         const size_type nLength = n == npos ? sSize - pos : min(n, sSize - pos);
         return append(s, s + nLength);
@@ -631,6 +631,27 @@ public:
         return result;
     }
 
+    inline self operator+(const self& s)
+    {
+        self tmp(*this);
+        tmp += s;
+        return tmp;
+    }
+
+    inline self operator+(const T* s)
+    {
+        self tmp(*this);
+        tmp += s;
+        return tmp;
+    }
+
+    inline self operator+(const T& c)
+    {
+        self tmp(*this);
+        tmp += c;
+        return tmp;
+    }
+
     inline self& operator+=(const self& s)
     {
         return append(s);
@@ -661,6 +682,31 @@ public:
     inline self& operator=(T c)
     {
         return assign(&c, &c + 1);
+    }
+
+    inline const_reference operator[](size_type n)const
+    {
+        return *(begin() + n);
+    }
+
+    inline reference operator[](size_type n)
+    {
+        return *(begin() + n);
+    }
+
+    inline const value_type at(size_type n)const
+    {
+        return operator[](n);
+    }
+
+    const bool operator==(const self& s)const
+    {
+        if(size() != s.size()) return false;
+        for(size_type i = 0; i < size(); ++i)
+        {
+            if(at(i) != s[i]) return false;
+        }
+        return true;
     }
 
     const bool operator!=(const self& s)const

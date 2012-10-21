@@ -7,6 +7,36 @@ namespace QLanguage
 {
     namespace Library
     {
+#ifdef min
+#undef min
+#endif
+        template <typename T>
+        inline const T& min(const T& a, const T& b)
+        {
+            return a < b ? a : b;
+        }
+
+        template <typename T, typename Compare>
+        inline const T& min(const T& a, const T& b, Compare compare)
+        {
+            return compare(a, b) ? a : b;
+        }
+
+#ifdef max
+#undef max
+#endif
+        template <typename T>
+        inline const T& max(const T& a, const T& b)
+        {
+            return a < b ? b : a;
+        }
+
+        template <typename T, typename Compare>
+        inline const T& max(const T& a, const T& b, Compare compare)
+        {
+            return compare(a, b) ? b : a;
+        }
+
         template <class Iterator, class Size, class T>
         inline Iterator fill_n(Iterator first, Size count, const T& x)
         {

@@ -98,7 +98,7 @@ public:
         return node != x.node;
     }
 
-    inline T& operator[](Distance n)
+    inline typename parent::value_type& operator[](Distance n)
     {
         return node[n];
     }
@@ -200,7 +200,7 @@ public:
         return node != x.node;
     }
 
-    inline T& operator[](Distance n)
+    inline typename parent::value_type& operator[](Distance n)
     {
         return node[n];
     }
