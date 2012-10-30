@@ -3,9 +3,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(QCore)
 
-IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+IF(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
 ADD_DEFINITIONS(-fpermissive)
-ENDIF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+ENDIF(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
 
 #FILE(GLOB Combinator_Headers "Combinator/*.h")
 #FILE(GLOB Combinator_Sources "Combinator/*.cpp")

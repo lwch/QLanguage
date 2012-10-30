@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include "string.h"
 
-#ifdef _WINDOWS
+#ifdef WIN32
 #include <windows.h>
 #endif
 
@@ -40,7 +40,7 @@ namespace QLanguage
                 Write("\r\n");
             }
 
-            #ifdef _WINDOWS
+            #ifdef WIN32
             static void SetColor(bool red, bool green, bool blue, bool light)
             {
                 WORD color = 0;
@@ -51,7 +51,7 @@ namespace QLanguage
                 SetConsoleTextAttribute(GetStdHandle(STD_INPUT_HANDLE), color);
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
             }
-            #else if defined(_LINUX)
+            #elif defined(unix)
             static void SetColor(bool red, bool green, bool blue, bool light)
             {
                 char color = 0;

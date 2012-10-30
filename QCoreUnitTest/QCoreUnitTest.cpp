@@ -1,10 +1,10 @@
 #include <stdio.h>
 
-#ifdef _WINDOWS
+#ifdef WIN32
 #include <windows.h>
 #endif
 
-#if defined(_DEBUG) && defined(_WINDOWS)
+#if defined(_DEBUG) && defined(WIN32)
 #include "../QCore/vld/vld.h"
 #endif
 

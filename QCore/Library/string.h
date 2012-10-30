@@ -9,6 +9,8 @@
 
 #include "char_traits.h"
 
+#include <stdarg.h>
+
 NAMESPACE_QLANGUAGE_LIBRARY_START
 template <typename T, typename Size, typename Distance>
 class __basic_string_iterator : public __iterator<T, Size, Distance>
@@ -595,12 +597,12 @@ public:
         va_start(l, fmt);
         basic_string<T> result;
         int len = 0;
-#ifdef _WINDOWS
+#ifdef WIN32
         len = _vscprintf(fmt, l);
         result.reserve(len + 1);
         vsprintf(result.begin(), fmt, l);
         result.finish = result.begin() + len;
-#else if defined(_LINUX)
+#elif defined(unix)
         char* res = NULL;
         len = vasprintf(&res, fmt, l);
         result.start = res;
@@ -618,12 +620,12 @@ public:
         va_start(l, fmt);
         basic_string<T> result;
         int len = 0;
-#ifdef _WINDOWS
+#ifdef WIN32
         len = _vscwprintf(fmt, l);
         result.reserve(len + 1);
         vswprintf(result.begin(), fmt, l);
         result.finish = result.begin() + len;
-#else if defined(_LINUX)
+#elif defined(unix)
         throw error<const wchar_t*>(L"doesn't support", __FILE__, __LINE__);
 #endif
         *result.finish = char_traits<wchar_t>::eof();
