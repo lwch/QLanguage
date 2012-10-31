@@ -1,6 +1,7 @@
 .code16
     .set BaseOfStack, 0x7C00
     .set SYSSEG, 0x1000
+	.set SYSOFFSET, 0
     .set SYSLEN, 50
 .text
     mov %cs, %ax
@@ -10,12 +11,13 @@
     mov $BaseOfStack, %sp
     
 LoadSystem:
-    mov $0x0000, %dx
-    mov $0x0001, %cx
-    mov $SYSSEG, %ax
+	mov $SYSSEG, %ax
     mov %ax, %es
-    mov $0x0000, %bx
-    mov $0x200 + SYSLEN, %ax
+	mov $SYSOFFSET, %bx # %es : %bx
+	mov $2, %ah # 读磁盘
+	mov $0, %dx # 磁头 / 驱动器
+    mov $2, %cx # 柱面 / 扇区
+    mov $SYSLEN, %al # 扇区数
     int $0x13
     jnc Success
     mov $0x0000, %dx
@@ -24,6 +26,6 @@ LoadSystem:
     jmp LoadSystem
 
 Success:
-    jmp $0x1000
+    jmp $SYSSEG, $SYSOFFSET
     .org   510
     .word  0xAA55

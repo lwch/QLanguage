@@ -1,6 +1,7 @@
-call DispStr
-
-jmp .
+.code16
+.text
+	call DispStr
+	jmp .
 
 DispStr:
     mov $BootMessage, %ax

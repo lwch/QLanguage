@@ -13,9 +13,9 @@ head.asm.o: head.asm
 
 os.img: main.asm.o head.asm.o
 	$(LD) main.asm.o -o main.elf -Tmain.ld
-	$(OBJCOPY) -R .pdr -R .comment -R.note -S -O binary main.elf main.bin
+	$(OBJCOPY) -R.pdr -R.comment -R.note -S -O binary main.elf main.bin
 	$(LD) head.asm.o -o head.elf -Thead.ld
-	$(OBJCOPY) -R .pdr -R .comment -R.note -S -O binary head.elf head.binos.img
+	$(OBJCOPY) -R.pdr -R.comment -R.note -S -O binary head.elf head.bin
 
 clean:
 	@rm -f main.s.o os.elf os.img
