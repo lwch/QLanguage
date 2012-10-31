@@ -1,7 +1,9 @@
-AS=as
-CC=gcc
-LD=ld
-OBJCOPY=objcopy
+AS  = as
+GCC = gcc
+LD  = ld
+OBJCOPY = objcopy
+
+OBJCOPY_FLAGS = -R.pdr -R.comment -R.note -S -O binary
 
 all: os.img
 
@@ -13,9 +15,9 @@ head.asm.o: head.asm
 
 os.img: main.asm.o head.asm.o
 	$(LD) main.asm.o -o main.elf -Tmain.ld
-	$(OBJCOPY) -R.pdr -R.comment -R.note -S -O binary main.elf main.bin
+	$(OBJCOPY) $(OBJCOPY_FLAGS) main.elf main.bin
 	$(LD) head.asm.o -o head.elf -Thead.ld
-	$(OBJCOPY) -R.pdr -R.comment -R.note -S -O binary head.elf head.bin
+	$(OBJCOPY) $(OBJCOPY_FLAGS) head.elf head.bin
 
 clean:
 	@rm -f main.s.o os.elf os.img
