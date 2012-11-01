@@ -5,19 +5,25 @@ OBJCOPY = objcopy
 
 OBJCOPY_FLAGS = -R.pdr -R.comment -R.note -S -O binary
 
-all: os.img
+all: out/boot.bin out/head.bin
 
-main.asm.o: main.asm
+out/boot.asm.o: src/boot/boot.asm
 	$(AS) $< -o $@
 
-head.asm.o: head.asm
+out/head.asm.o: src/boot/head.asm
 	$(AS) $< -o $@
 
-os.img: main.asm.o head.asm.o
-	$(LD) main.asm.o -o main.elf -Tmain.ld
-	$(OBJCOPY) $(OBJCOPY_FLAGS) main.elf main.bin
-	$(LD) head.asm.o -o head.elf -Thead.ld
-	$(OBJCOPY) $(OBJCOPY_FLAGS) head.elf head.bin
+out/boot.elf: out/boot.asm.o
+	$(LD) $< -o $@ -Tboot.ld
+
+out/boot.bin: out/boot.elf
+	$(OBJCOPY) $(OBJCOPY_FLAGS) $< $@
+
+out/head.elf: out/head.asm.o
+	$(LD) $< -o $@ -Thead.ld
+	
+out/head.bin: out/head.elf
+	$(OBJCOPY) $(OBJCOPY_FLAGS) $< $@
 
 clean:
-	@rm -f main.s.o os.elf os.img
+	@rm -fr out/*

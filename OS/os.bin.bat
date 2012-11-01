@@ -1,1 +1,2 @@
-copy /b main.bin+head.bin os.bin
+cd out
+copy /b boot.bin+head.bin "../final/os.bin"
