@@ -5,7 +5,7 @@ OBJCOPY = objcopy
 
 OBJCOPY_FLAGS = -R.pdr -R.comment -R.note -S -O binary
 
-all: out/boot.bin out/head.bin
+all: out/make_bin
 
 out/boot.asm.o: src/boot/boot.asm
 	$(AS) $< -o $@
@@ -24,6 +24,10 @@ out/head.elf: out/head.asm.o
 	
 out/head.bin: out/head.elf
 	$(OBJCOPY) $(OBJCOPY_FLAGS) $< $@
+
+out/make_bin: tools/make_bin.cpp
+	$(GCC) $< -o $@
+	@out/make_bin out/boot.bin out/head.bin final/os.bin
 
 clean:
 	@rm -fr out/*
