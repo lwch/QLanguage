@@ -11,7 +11,7 @@ out/boot.asm.o: src/boot/boot.asm
 	$(AS) $< -o $@
 
 out/head.asm.o: src/boot/head.asm
-	$(AS) $< -o $@
+	$(AS) $< -o $@ -Isrc/boot
 
 out/boot.elf: out/boot.asm.o
 	$(LD) $< -o $@ -Tboot.ld

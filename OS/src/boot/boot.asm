@@ -2,7 +2,7 @@
     .set BaseOfStack, 0x7C00
     .set SYSSEG, 0x1000
 	.set SYSOFFSET, 0
-    .set SYSLEN, 50
+    .set SYSLEN, 4
 .text
     mov %cs, %ax
     mov %ax, %ds
