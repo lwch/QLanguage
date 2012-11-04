@@ -55,13 +55,4 @@ LABEL_BEGIN:
 
 LABEL_CODE32:
 .code32
-	mov $(SelectorVideo), %ax
-	mov %ax, %gs
-	
-	movl $0, %edi
-	movb $0xC, %ah
-	mov  $'P', %al
-	
-	mov %ax, %gs:(%edi)
-	
-	jmp .
+	mov $10000, %esp
