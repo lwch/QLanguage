@@ -72,16 +72,16 @@ LABEL_CODE32:
 	
 	mov $(init + 0x10000), %esi
 	mov $0x12000, %edi
-	mov $1280, %ecx
+	mov $0xFFFF, %ecx
 	call memcpy
 	
 	ljmpl $SelectorKernel, $0x0
 memcpy:
 	mov (%esi), %eax
-	add $4, %esi
+	inc %esi
 	mov %eax, (%edi)
-	add $4, %edi
-	sub $1, %ecx
+	inc %edi
+	dec %ecx
 	jnz memcpy
 	ret
 init:
