@@ -3,7 +3,7 @@ GCC = gcc
 LD  = ld
 OBJCOPY = objcopy
 
-GCC_FLAGS = -fomit-frame-pointer -Wall -nostdlib -nostdinc -ansi -c
+GCC_FLAGS = -Wall -nostdlib -nostdinc -ansi -c
 
 OBJCOPY_FLAGS = -R.pdr -R.comment -R.note -S -O binary
 
@@ -19,13 +19,13 @@ out/init.c.o: src/init/init.cpp
 	$(GCC) $(GCC_FLAGS) $< -o $@
 	
 out/kernel.elf: out/init.c.o
-	$(LD) $< -o $@ -Tkernel.ld
+	$(LD) out/init.c.o -o $@ -Tkernel.ld
 	
 out/kernel.bin: out/kernel.elf
 	$(OBJCOPY) $(OBJCOPY_FLAGS) $< $@
 
 out/boot.elf: out/boot.asm.o
-	$(LD) $< $@ -Tboot.ld
+	$(LD) $< -o $@ -Tboot.ld
 
 out/boot.bin: out/boot.elf
 	$(OBJCOPY) $(OBJCOPY_FLAGS) $< $@
