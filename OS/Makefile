@@ -3,7 +3,7 @@ GCC = gcc
 LD  = ld
 OBJCOPY = objcopy
 
-GCC_FLAGS = -Wall -nostdlib -nostdinc -ansi -c
+GCC_FLAGS = -O0 -Wall -nostdlib -nostdinc -ansi -c
 
 OBJCOPY_FLAGS = -R.pdr -R.comment -R.note -S -O binary
 

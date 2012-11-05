@@ -85,3 +85,11 @@ memcpy:
 	jnz memcpy
 	ret
 init:
+	mov $SelectorData, %ax
+	mov %ax, %ds
+	mov %ax, %es
+	mov %ax, %fs
+	mov %ax, %gs
+	mov %ax, %ss
+
+	mov $0x20000, %esp
