@@ -5,6 +5,7 @@ PROJECT(QCore)
 
 IF(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
 ADD_DEFINITIONS(-fpermissive)
+SET(CMAKE_CXX_FLAGS "-Wno-write-strings")
 ENDIF(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
 
 #FILE(GLOB Combinator_Headers "Combinator/*.h")

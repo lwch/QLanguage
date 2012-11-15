@@ -52,10 +52,24 @@ namespace QLanguage
                     }
                     return p;
                 }
-                const int i = INDEX(ROUND_UP(n));
+                const size_t size = ROUND_UP(n);
+                const int i = INDEX(size);
                 obj* p = chunk_list[i];
                 if(p == 0)
                 {
+                    for(int j = i + 1; j < MAX_COUNT; ++j)
+                    {
+                        p = chunk_list[j];
+                        if(p != 0)
+                        {
+                            chunk_list[j] = chunk_list[j]->next;
+                            const int l = INDEX(size - (j + 1) * ALIGN);
+                            obj* q = (obj*)((char*)p + size);
+                            q->next = chunk_list[l];
+                            chunk_list[l] = q;
+                            return reinterpret_cast<T*>(p);
+                        }
+                    }
                     return refill<T>(i, h);
                 }
                 chunk_list[i] = p->next;
@@ -91,6 +105,7 @@ namespace QLanguage
                 return result;
             }
 
+            #ifdef _DEBUG
             void dump()
             {
                 FILE* fp = fopen("MemoryPool", "w+");
@@ -107,6 +122,7 @@ namespace QLanguage
                 }
                 fclose(fp);
             }
+            #endif
         protected:
             struct obj
             {
