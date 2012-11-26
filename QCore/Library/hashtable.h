@@ -3,6 +3,7 @@
 
 #include "hash.h"
 #include "vector.h"
+#include "function.h"
 
 namespace QLanguage
 {
@@ -38,6 +39,12 @@ namespace QLanguage
             typename Compare>
         class __hashtable_iterator_base : public bidirectional_iterator
         {
+            template <typename K, typename V, typename KOV,
+                size_t MBL,
+                bool R,
+                typename H,
+                typename C>
+            friend class hashtable;
         protected:
             typedef hashtable<HASHTABLE_TEMPLATE_ACHIEVE> hashtable_type;
             typedef __hashtable_iterator_base<HASHTABLE_TEMPLATE_ACHIEVE> self;
@@ -49,6 +56,8 @@ namespace QLanguage
             // I have no default construct.
             // Because iterator must belong to hashtable.
             __hashtable_iterator_base(node_type* node, hashtable_type& hashtable);
+        protected:
+            void inc();
         };
 
         template <typename Key, typename Value, typename KeyOfValue,
@@ -67,13 +76,17 @@ namespace QLanguage
             typedef node_type* link_type;
             typedef hashtable<Key, Value, KeyOfValue, Max_Bucket_Length, Resize, Hash, Compare> self;
             typedef allocator<__hashtable_bucket_node<Value> > Alloc;
+            typedef __hashtable_bucket_node<size_type> node_size_type;
+            typedef allocator<node_size_type> Node_Size_Alloc;
+            typedef vector<link_type> buckets_type;
 
-            vector<link_type> buckets;
-            size_type         length;
-            KeyOfValue        key;
-            Hash              hash;
-            Compare           compare;
+            buckets_type buckets;
+            size_type    length;
+            KeyOfValue   key;
+            Hash         hash;
+            Compare      compare;
         public:
+            hashtable();
             hashtable(size_type size);
             ~hashtable();
 

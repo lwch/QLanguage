@@ -5,6 +5,21 @@ namespace QLanguage
 {
     namespace Library
     {
+        template <typename T>
+        struct __container_traits
+        {
+            typedef typename T::value_type       value_type;
+            typedef typename T::pointer          pointer;
+            typedef typename T::reference        reference;
+            typedef typename T::const_reference  const_reference;
+            typedef typename T::size_type        size_type;
+            typedef typename T::distance_type    distance_type;
+            typedef typename T::const_iterator   const_iterator;
+            typedef typename T::const_reverse_iterator const_reverse_iterator;
+            typedef typename T::iterator         iterator;
+            typedef typename T::reverse_iterator reverse_iterator;
+        };
+
         struct __true_type
         {
         };
