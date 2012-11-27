@@ -13,24 +13,7 @@ namespace QLanguage
     typename Compare> \
     __VA_ARGS__ hashtable<HASHTABLE_TEMPLATE_ACHIEVE>
 
-        template <typename T>
-        __hashtable_bucket_node<T>::__hashtable_bucket_node(const T& x)
-            : data(x)
-            , next(NULL)
-        {
-        }
-
-        template <typename Key, typename Value, typename KeyOfValue,
-            size_t Max_Bucket_Length,
-            bool Resize,
-            typename Hash,
-            typename Compare>
-            __hashtable_iterator_base<HASHTABLE_TEMPLATE_ACHIEVE>::__hashtable_iterator_base(node_type* node, hashtable_type& hashtable)
-            : current(node)
-            , hashtable(hashtable)
-        {
-        }
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
         template <typename Key, typename Value, typename KeyOfValue,
             size_t Max_Bucket_Length,
             bool Resize,
@@ -38,19 +21,47 @@ namespace QLanguage
             typename Compare>
             void __hashtable_iterator_base<HASHTABLE_TEMPLATE_ACHIEVE>::inc()
         {
-            current = current->next;
-            if (current == NULL)
+            node_type* prev = node;
+            node = node->next;
+            if (node == prev)
             {
-                HASH_KEY_TYPE bucket = hashtable.index(current->data);
+                HASH_KEY_TYPE bucket = hashtable.index(node->data);
                 typename __container_traits<typename hashtable_type::buckets_type>::size_type size = hashtable.buckets.size();
-                while(++bucket < size && current = reinterpret_cast<typename hashtable_type::node_size_type*>(hashtable[bucket])->next && current == NULL);
+                while(++bucket < size && node = reinterpret_cast<typename hashtable_type::node_size_type*>(hashtable[bucket])->next && node == hashtable[bucket]);
             }
         }
-
-        HASHTABLE_ACHIEVE_HEADER()::hashtable()
+        
+        template <typename Key, typename Value, typename KeyOfValue,
+            size_t Max_Bucket_Length,
+            bool Resize,
+            typename Hash,
+            typename Compare>
+            void __hashtable_iterator_base<HASHTABLE_TEMPLATE_ACHIEVE>::dec()
         {
+            node_type* prev = node;
+            node = node->prev;
+            if (node == prev)
+            {
+                HASH_KEY_TYPE bucket = hashtable.index(node->data);
+                while(--bucket >= 0 && node = reinterpret_cast<typename hashtable_type::node_size_type*>(hashtable[bucket])->next && node == hashtable[bucket]);
+            }
         }
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+        HASHTABLE_ACHIEVE_HEADER()::hashtable()
+            : length(0)
+        {
+            const size_type defaultSize = 11;
+            buckets.reserve(defaultSize);
+            for(typename __container_traits<buckets_type>::size_type i = 0; i < defaultSize; ++i)
+            {
+                node_size_type* node = Node_Size_Alloc::allocate();
+                construct(node, 0);
+                node->prev = node;
+                node->next = node;
+                buckets.push_back(reinterpret_cast<link_type>(node));
+            }
+        }
+        
         HASHTABLE_ACHIEVE_HEADER()::hashtable(size_type size)
             : length(0)
         {
@@ -59,6 +70,8 @@ namespace QLanguage
             {
                 node_size_type* node = Node_Size_Alloc::allocate();
                 construct(node, 0);
+                node->prev = node;
+                node->next = node;
                 buckets.push_back(reinterpret_cast<link_type>(node));
             }
         }
@@ -76,8 +89,9 @@ namespace QLanguage
         {
             for(typename __container_traits<buckets_type>::iterator i = buckets.begin(); i != buckets.end(); ++i)
             {
+                link_type header = *i;
                 link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(*i))->next;
-                while(current)
+                while(current != header)
                 {
                     link_type next = current->next;
                     destruct(&current->data, has_destruct(current->data));
@@ -88,6 +102,43 @@ namespace QLanguage
                 reinterpret_cast<node_size_type*>(*i)->next = NULL;
             }
             length = 0;
+        }
+        
+        HASHTABLE_ACHIEVE_HEADER(typename hashtable<HASHTABLE_TEMPLATE_ACHIEVE>::iterator)::insert_equal(const value_type& x)
+        {
+            node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(key(x))]);
+            link_type tail = reinterpret_cast<link_type>(head->prev);
+            link_type node = Alloc::allocate();
+            construct(node, x);
+            head->prev = reinterpret_cast<node_size_type*>(node);
+            node->prev = tail;
+            node->next = reinterpret_cast<link_type>(head);
+            tail->next = node;
+            ++head->data;
+            return iterator(node, *this);
+        }
+        
+        HASHTABLE_ACHIEVE_HEADER(pair<typename hashtable<HASHTABLE_TEMPLATE_ACHIEVE>::iterator, bool>)::insert_unique(const value_type& x)
+        {
+            node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(key(x))]);
+            link_type current = reinterpret_cast<link_type>(head->next);
+            while (current != reinterpret_cast<link_type>(head))
+            {
+                if (compare(key(x), key(current->data)))
+                {
+                    return pair<iterator, bool>(iterator(reinterpret_cast<link_type>(head), *this), false);
+                }
+                current = current->next;
+            }
+            link_type tail = reinterpret_cast<link_type>(head->prev);
+            link_type node = Alloc::allocate();
+            construct(node, x);
+            head->prev = reinterpret_cast<node_size_type*>(node);
+            node->prev = tail;
+            node->next = reinterpret_cast<link_type>(head);
+            tail->next = node;
+            ++head->data;
+            return pair<iterator, bool>(iterator(node, *this), true);
         }
     }
 }
