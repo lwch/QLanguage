@@ -106,7 +106,7 @@ namespace QLanguage
         
         HASHTABLE_ACHIEVE_HEADER(typename hashtable<HASHTABLE_TEMPLATE_ACHIEVE>::iterator)::insert_equal(const value_type& x)
         {
-            node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(key(x))]);
+            node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(x)]);
             link_type tail = reinterpret_cast<link_type>(head->prev);
             link_type node = Alloc::allocate();
             construct(node, x);
@@ -120,7 +120,7 @@ namespace QLanguage
         
         HASHTABLE_ACHIEVE_HEADER(pair<typename hashtable<HASHTABLE_TEMPLATE_ACHIEVE>::iterator, bool>)::insert_unique(const value_type& x)
         {
-            node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(key(x))]);
+            node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(x)]);
             link_type current = reinterpret_cast<link_type>(head->next);
             while (current != reinterpret_cast<link_type>(head))
             {
