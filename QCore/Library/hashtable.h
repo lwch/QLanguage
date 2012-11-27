@@ -121,7 +121,7 @@ namespace QLanguage
         public:
             __hashtable_iterator(typename base::node_type* node, typename base::hashtable_type& hashtable) : base(node, hashtable) {}
             
-            inline typename __container_traits<hashtable<HASHTABLE_TEMPLATE_ACHIEVE> >::reference operator*()const
+            inline typename __container_traits<typename base::hashtable_type>::reference operator*()const
             {
                 return *(*this);
             }
@@ -162,7 +162,7 @@ namespace QLanguage
         public:
             __hashtable_const_iterator(typename base::node_type* node, typename base::hashtable_type& hashtable) : base(node, hashtable) {}
             
-            inline typename __container_traits<hashtable<HASHTABLE_TEMPLATE_ACHIEVE> >::reference operator*()const
+            inline typename __container_traits<typename base::hashtable_type>::reference operator*()const
             {
                 return *(*this);
             }
