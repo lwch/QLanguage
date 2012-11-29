@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:41
+	filename: 	\QCoreUnitTest\Units\TestString.cpp
+	file path:	\QCoreUnitTest\Units
+	file base:	TestString
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "TestString.h"
 
 TEST_CASE(TestString)

@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:31
+	filename: 	\QCore\Library\Console.h
+	file path:	\QCore\Library
+	file base:	Console
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #ifndef _QLANGUAGE_LIBRARY_CONSOLE_H_
 #define _QLANGUAGE_LIBRARY_CONSOLE_H_
 

@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:35
+	filename: 	\QCore\Library\pair.h
+	file path:	\QCore\Library
+	file base:	pair
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #ifndef _QLANGUAGE_LIBRARY_PAIR_H_
 #define _QLANGUAGE_LIBRARY_PAIR_H_
 

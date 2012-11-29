@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:37
+	filename: 	\QCoreUnitTest\QCoreUnitTest.cpp
+	file path:	\QCoreUnitTest
+	file base:	QCoreUnitTest
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include <stdio.h>
 
 #ifdef WIN32

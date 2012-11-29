@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:40
+	filename: 	\QCoreUnitTest\Units\TestSet.cpp
+	file path:	\QCoreUnitTest\Units
+	file base:	TestSet
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "TestSet.h"
 
 typedef set<int> set_type;

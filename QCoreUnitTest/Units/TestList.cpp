@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:38
+	filename: 	\QCoreUnitTest\Units\TestList.cpp
+	file path:	\QCoreUnitTest\Units
+	file base:	TestList
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "TestList.h"
 
 #include "../../QCore/Library/algo.h"

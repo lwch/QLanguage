@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:39
+	filename: 	\QCoreUnitTest\Units\TestMemoryPool.cpp
+	file path:	\QCoreUnitTest\Units
+	file base:	TestMemoryPool
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "TestMemoryPool.h"
 
 TEST_CASE(TestMemoryPool)

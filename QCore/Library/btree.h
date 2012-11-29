@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:31
+	filename: 	\QCore\Library\btree.h
+	file path:	\QCore\Library
+	file base:	btree
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #ifndef _QLANGUAGE_LIBRARY_BTREE_H_
 #define _QLANGUAGE_LIBRARY_BTREE_H_
 

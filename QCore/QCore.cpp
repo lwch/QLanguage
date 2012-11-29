@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:37
+	filename: 	\QCore\QCore.cpp
+	file path:	\QCore
+	file base:	QCore
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "Library/algo.h"
 #include "Library/allocator.h"
 #include "Library/btree.h"

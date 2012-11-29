@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:32
+	filename: 	\QCore\Library\definition.h
+	file path:	\QCore\Library
+	file base:	definition
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #ifndef _QLANGUAGE_LIBRARY_DEFINITION_H_
 #define _QLANGUAGE_LIBRARY_DEFINITION_H_
 

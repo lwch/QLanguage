@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:35
+	filename: 	\QCore\Library\memory.h
+	file path:	\QCore\Library
+	file base:	memory
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #ifndef _QLANGUAGE_LIBRARY_MEMORY_H_
 #define _QLANGUAGE_LIBRARY_MEMORY_H_
 

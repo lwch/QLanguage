@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:39
+	filename: 	\QCoreUnitTest\Units\TestMap.cpp
+	file path:	\QCoreUnitTest\Units
+	file base:	TestMap
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "TestMap.h"
 
 typedef map<int, int> map_type;

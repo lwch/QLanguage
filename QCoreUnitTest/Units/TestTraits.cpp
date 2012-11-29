@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:41
+	filename: 	\QCoreUnitTest\Units\TestTraits.cpp
+	file path:	\QCoreUnitTest\Units
+	file base:	TestTraits
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "TestTraits.h"
 
 struct A {};

@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:29
+	filename: 	\QCore\Library\algo.h
+	file path:	\QCore\Library
+	file base:	algo
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #ifndef _QLANGUAGE_LIBRARY_ALGO_H_
 #define _QLANGUAGE_LIBRARY_ALGO_H_
 
@@ -112,6 +124,14 @@ namespace QLanguage
         inline Iterator1 search(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2)
         {
             return __search(first1, last1, first2, last2, distance_type(first1), distance_type(first2));
+        }
+
+        template <typename T>
+        inline void swap(T& a, T& b)
+        {
+            T tmp = a;
+            a = b;
+            b = tmp;
         }
     }
 }

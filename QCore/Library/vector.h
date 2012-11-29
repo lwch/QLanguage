@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:37
+	filename: 	\QCore\Library\vector.h
+	file path:	\QCore\Library
+	file base:	vector
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #ifndef _QLANGUAGE_LIBRARY_VECTOR_H_
 #define _QLANGUAGE_LIBRARY_VECTOR_H_
 
@@ -104,6 +116,11 @@ public:
     }
 
     inline operator link_type()const
+    {
+        return node;
+    }
+
+    inline link_type operator->()const
     {
         return node;
     }

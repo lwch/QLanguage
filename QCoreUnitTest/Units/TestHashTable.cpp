@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:38
+	filename: 	\QCoreUnitTest\Units\TestHashTable.cpp
+	file path:	\QCoreUnitTest\Units
+	file base:	TestHashTable
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "TestHashTable.h"
 
 #include "../../QCore/Library/function.h"

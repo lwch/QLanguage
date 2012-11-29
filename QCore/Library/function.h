@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:33
+	filename: 	\QCore\Library\function.h
+	file path:	\QCore\Library
+	file base:	function
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #ifndef _QLANGUAGE_LIBRARY_FUNCTION_H_
 #define _QLANGUAGE_LIBRARY_FUNCTION_H_
 

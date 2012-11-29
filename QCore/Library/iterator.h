@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:34
+	filename: 	\QCore\Library\iterator.h
+	file path:	\QCore\Library
+	file base:	iterator
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #ifndef _QLANGUAGE_LIBRARY_ITERATOR_H_
 #define _QLANGUAGE_LIBRARY_ITERATOR_H_
 

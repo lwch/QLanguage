@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2012/11/29
+	created:	29:11:2012   23:40
+	filename: 	\QCoreUnitTest\Units\TestRBTree.cpp
+	file path:	\QCoreUnitTest\Units
+	file base:	TestRBTree
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "TestRBTree.h"
 
 typedef rbtree<int, int, identity<int> > tree_type;
