@@ -118,10 +118,46 @@ HASHTABLE_ACHIEVE_HEADER(inline typename hashtable<HASHTABLE_TEMPLATE_ACHIEVE>::
     return insert_equal_noresize(x);
 }
 
+HASHTABLE_ACHIEVE_HEADER(inline void)::insert_equal(const value_type* first, const value_type* last)
+{
+    while (first != last)
+    {
+        insert_equal(*first);
+        ++first;
+    }
+}
+
+HASHTABLE_ACHIEVE_HEADER(inline void)::insert_equal(const_iterator first, const_iterator last)
+{
+    while (first != last)
+    {
+        insert_equal(*first);
+        ++first;
+    }
+}
+
 HASHTABLE_ACHIEVE_HEADER(inline pair<typename hashtable<HASHTABLE_TEMPLATE_ACHIEVE>::iterator, bool>)::insert_unique(const value_type& x)
 {
     if (willResize(index(x, buckets.size()))) resize();
     return insert_unique_noresize(x);
+}
+
+HASHTABLE_ACHIEVE_HEADER(inline void)::insert_unique(const value_type* first, const value_type* last)
+{
+    while (first != last)
+    {
+        insert_unique(*first);
+        ++first;
+    }
+}
+
+HASHTABLE_ACHIEVE_HEADER(inline void)::insert_unique(const_iterator first, const_iterator last)
+{
+    while (first != last)
+    {
+        insert_unique(*first);
+        ++first;
+    }
 }
 
 HASHTABLE_ACHIEVE_HEADER(void)::erase(iterator position)

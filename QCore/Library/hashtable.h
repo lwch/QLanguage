@@ -245,7 +245,11 @@ public:
     void resize();
 
     iterator insert_equal(const value_type& x);
+    void insert_equal(const value_type* first, const value_type* last);
+    void insert_equal(const_iterator first, const_iterator last);
     pair<iterator, bool> insert_unique(const value_type& x);
+    void insert_unique(const value_type* first, const value_type* last);
+    void insert_unique(const_iterator first, const_iterator last);
 
     void erase(iterator position);
 protected:
