@@ -22,6 +22,7 @@
 
 #include "Units/TestBase.h"
 
+#include "Units/TestHashTable.h"
 #include "Units/TestList.h"
 #include "Units/TestMap.h"
 #include "Units/TestMemoryPool.h"

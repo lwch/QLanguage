@@ -34,9 +34,10 @@ public:
     typedef self* link_type;
 
     value_type data;
+    link_type  prev;
     link_type  next;
 
-    __hashtable_bucket_node(const T& x) : data(x), next(NULL) {}
+    __hashtable_bucket_node(const T& x) : data(x), next(NULL), prev(NULL) {}
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename Key, typename Value, typename KeyOfValue,
@@ -213,7 +214,6 @@ protected:
     typedef allocator<__hashtable_bucket_node<Value> > Alloc;
     typedef __hashtable_bucket_node<size_t> node_size_type;
     typedef allocator<node_size_type> Node_Size_Alloc;
-    typedef vector<link_type> buckets_type;
 public:
     typedef Value        value_type;
     typedef Value*       pointer;
@@ -225,6 +225,8 @@ public:
     typedef __hashtable_const_iterator<HASHTABLE_TEMPLATE_ACHIEVE, size_type, distance_type> const_iterator;
     typedef reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
     typedef reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
+
+    typedef vector<link_type> buckets_type;
 protected:
     buckets_type buckets;
     size_type    length;
@@ -241,6 +243,16 @@ public:
         return length;
     }
 
+    inline bool empty()const
+    {
+        return length == 0;
+    }
+
+    inline typename __container_traits<buckets_type>::size_type bucket_size()const
+    {
+        return buckets.size();
+    }
+
     void clear();
     void resize();
 
@@ -252,7 +264,32 @@ public:
     void insert_unique(const_iterator first, const_iterator last);
 
     void erase(iterator position);
+
+    iterator find(const key_type& k);
+    const_iterator find(const key_type& k)const;
+
+    size_type count(const key_type& k)const;
+
+    pair<iterator, iterator> equal_range(const key_type& k);
+    pair<const_iterator, const_iterator> equal_range(const key_type& k)const;
+
+    iterator begin();
+    const_iterator begin()const;
+
+    reverse_iterator rbegin();
+    const_reverse_iterator rbegin()const;
+
+    iterator end();
+    const_iterator end()const;
+
+    reverse_iterator rend();
+    const_reverse_iterator rend()const;
 protected:
+    inline HASH_KEY_TYPE index(const key_type& k)
+    {
+        return hash(k) % buckets.size();
+    }
+
     inline HASH_KEY_TYPE index(const value_type& x, typename __container_traits<buckets_type>::size_type sz)
     {
         return hash(key(x)) % sz;
