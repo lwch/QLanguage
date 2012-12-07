@@ -8,37 +8,25 @@ ADD_DEFINITIONS(-fpermissive)
 SET(CMAKE_CXX_FLAGS "-Wno-write-strings")
 ENDIF(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
 
-#FILE(GLOB Combinator_Headers "Combinator/*.h")
-#FILE(GLOB Combinator_Sources "Combinator/*.cpp")
-#SET (Combinator ${Combinator_Headers} ${Combinator_Sources})
-#SOURCE_GROUP(Combinator FILES ${Combinator})
-
-#FILE(GLOB Global_Headers "Global/*.h")
-#FILE(GLOB Global_Sources "Global/*.cpp")
-#SET (Global ${Global_Headers} ${Global_Sources})
-#SOURCE_GROUP(Global FILES ${Global})
-
-#FILE(GLOB Lexer_Headers "Lexer/*.h")
-#FILE(GLOB Lexer_Sources "Lexer/*.cpp")
-#SET (Lexer ${Lexer_Headers} ${Lexer_Sources})
-#SOURCE_GROUP(Lexer FILES ${Lexer})
-
-#FILE(GLOB Tools_Headers "Tools/*.h")
-#FILE(GLOB Tools_Sources "Tools/*.cpp")
-#SET (Tools ${Tools_Headers} ${Tools_Sources})
-#SOURCE_GROUP(Tools FILES ${Tools})
-
 FILE(GLOB Library_Headers "Library/*.h")
 FILE(GLOB Library_Sources "Library/*.cpp")
 SET (Library ${Library_Headers} ${Library_Sources})
 SOURCE_GROUP(Library FILES ${Library})
 
+FILE(GLOB Library_Regex_Headers "Library/regex/*.h")
+FILE(GLOB Library_Regex_Sources "Library/regex/*.cpp")
+SET (Library_Regex ${Library_Regex_Headers} ${Library_Regex_Sources})
+SOURCE_GROUP(Library\\regex FILES ${Library_Regex})
+
+FILE(GLOB Library_Combinator_Headers "Library/combinator/*.h")
+FILE(GLOB Library_Combinator_Sources "Library/combinator/*.cpp")
+SET (Library_Combinator ${Library_Combinator_Headers} ${Library_Combinator_Sources})
+SOURCE_GROUP(Library\\combinator FILES ${Library_Combinator})
+
 SET (FILES
-#    ${Combinator}
-#	${Global}
-#	${Lexer}
-#	${Tools}
 	${Library}
+	${Library_Regex}
+	${Library_Combinator}
 	QCore.cpp
 )
 
