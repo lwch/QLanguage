@@ -13,6 +13,8 @@
 #ifndef _QLANGUAGE_LIBRARY_FUNCTION_H_
 #define _QLANGUAGE_LIBRARY_FUNCTION_H_
 
+#include "string.h"
+
 namespace QLanguage
 {
     namespace Library
@@ -234,6 +236,15 @@ namespace QLanguage
             inline typename parent::result_type operator()(typename parent::first_argument_const_reference, typename parent::second_argument_const_reference y)const
             {
                 return y;
+            }
+        };
+
+        struct emptystring : public unary_function<string, bool>
+        {
+            typedef unary_function<string, bool> parent;
+            inline bool operator()(const string& x)const
+            {
+                return x.size() == 0;
             }
         };
     }

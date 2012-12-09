@@ -10,6 +10,11 @@
 	purpose:	
 *********************************************************************/
 
+#include "Library/combinator/combinator.cpp"
+#include "Library/combinator/alt.cpp"
+#include "Library/combinator/ref.cpp"
+#include "Library/combinator/seq.cpp"
+#include "Library/combinator/while.cpp"
 #include "Library/algo.h"
 #include "Library/allocator.h"
 #include "Library/btree.h"

@@ -15,15 +15,15 @@
 #include "seq.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
-    template <typename I, typename O, typename IOO>
-    bool CombinatorSeq<I, O, IOO>::parse(const I& input, O& output)
+    template <typename I, typename O, typename IOO, typename E>
+    bool CombinatorSeq<I, O, IOO, E>::parse(const I& input, O& output)
     {
         O result1, result2;
-        if (first.parse(input, result1))
+        if (first && first->parse(input, result1))
         {
-            if (second.parse(input(result1), result2))
+            if (second && second->parse(Combinator<I, O, IOO, E>::input(result1), result2))
             {
-                output = result1.and(result2);
+                output = result1 + result2;
                 return true;
             }
         }

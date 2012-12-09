@@ -77,6 +77,11 @@ namespace QLanguage
                 free(p);
             }
 
+            static void deallocateWithSize(T* p)
+            {
+                free(p);
+            }
+
             static T* reallocate(T* p, size_t old_size, size_t n)
             {
                 const size_t size = n * sizeof(T);
@@ -136,6 +141,12 @@ namespace QLanguage
             {
                 MemoryPool* pool = getPool();
                 pool->deallocate<T>(p, n * sizeof(T));
+            }
+
+            static void deallocateWithSize(T* p, size_t n)
+            {
+                MemoryPool* pool = getPool();
+                pool->deallocate<T>(p, n);
             }
 
             static T* reallocate(T* p, size_t old_size, size_t n)

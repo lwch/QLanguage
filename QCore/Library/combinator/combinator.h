@@ -13,6 +13,8 @@
 #define _QLANGUAGE_LIBRARY_COMBINATOR_COMBINATOR_H_
 
 #include "../definition.h"
+#include "../allocator.h"
+#include "../construct.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
     template <typename O>
@@ -38,8 +40,9 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     /* I: Input Type                                                        */
     /* O: Output Type                                                       */
     /* IOO: InputOfOutput                                                   */
+    /* E: End of input                                                      */
     /************************************************************************/
-    template <typename I, typename O, typename IOO>
+    template <typename I, typename O, typename IOO, typename E>
     class Combinator
     {
     public:
@@ -47,25 +50,35 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual ~Combinator() {}
 
         virtual bool parse(const I& input, O& output)=0;
+
+        virtual void destruct()=0;
+
+        typedef size_t size_type;
+        virtual const size_type objSize()const=0;
     protected:
         IOO input;
+        E   end;
     };
 
     /************************************************************************/
     /* CombinatorNode is the topest interface                               */
     /************************************************************************/
-    template <typename I, typename O, typename IOO>
+    template <typename I, typename O, typename IOO, typename E>
     class CombinatorNode
     {
+        typedef CombinatorNode<I, O, IOO, E> self;
     public:
         CombinatorNode() : pCombinator(NULL) {}
-        CombinatorNode(const Combinator<I, O, IOO>* pCombinator) : pCombinator(pCombinator) {}
-        CombinatorNode(const CombinatorNode<I, O, IOO>& node) : pCombinator(node.pCombinator) {}
-        virtual ~CombinatorNode() {}
+        CombinatorNode(Combinator<I, O, IOO, E>* pCombinator) : pCombinator(pCombinator) {}
+        CombinatorNode(const self& node) : pCombinator(node.pCombinator) {}
+        virtual ~CombinatorNode();
 
         virtual bool parse(const I& input, O& output);
+
+        self operator+(const self& node);
+        self operator|(const self& node);
     protected:
-        Combinator<I, O, IOO>* pCombinator;
+        Combinator<I, O, IOO, E>* pCombinator;
     };
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
