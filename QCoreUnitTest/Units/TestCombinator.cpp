@@ -31,13 +31,14 @@ public:
     }
 };
 
-typedef CombinatorNode<string, TestCombinatorResult, TestCombinatorResultSelector, emptystring> CombinatorNode_Type;
+typedef CombinatorRule<string, TestCombinatorResult, TestCombinatorResultSelector, emptystring> CombinatorRule_Type;
 
 TEST_CASE(TestCombinator)
 {
-    CombinatorNode_Type a, b, c;
-    CombinatorNode_Type d = a + b;
-    CombinatorNode_Type e = c | d;
+    CombinatorRule_Type a, b, c, d, e;
+    CombinatorRule_Type f = a + b;
+    CombinatorRule_Type g = c | f;
+    a = d + e;
     TestCombinatorResult result;
-    e.parse("test", result);
+    g.parse("test", result);
 }

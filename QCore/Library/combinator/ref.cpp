@@ -18,7 +18,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     template <typename I, typename O, typename IOO, typename E>
     bool CombinatorRef<I, O, IOO, E>::parse(const I& input, O& output)
     {
-        return ref.parse(input, output);
+        return ref ? ref->parse(input, output) : false;
     }
 NAMESPACE_QLANGUAGE_LIBRARY_END
 

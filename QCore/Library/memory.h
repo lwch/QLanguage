@@ -34,6 +34,7 @@ namespace QLanguage
 
             ~MemoryPool()
             {
+                // check memory leaked
                 clear();
             }
 

@@ -18,9 +18,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     template <typename I, typename O, typename IOO, typename E>
     class CombinatorRef : public Combinator<I, O, IOO, E>
     {
-        typedef CombinatorNode<I, O, IOO, E> node_type;
+        typedef CombinatorRef<I, O, IOO, E> self;
+        typedef Combinator<I, O, IOO, E>* combinator_type;
     public:
-        CombinatorRef(node_type& ref) : ref(ref) {}
+        CombinatorRef(combinator_type& ref) : ref(ref) {}
         virtual ~CombinatorRef() {}
 
         virtual bool parse(const I& input, O& output);
@@ -28,7 +29,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
         virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }
     protected:
-        node_type& ref;
+        combinator_type& ref;
     };
 NAMESPACE_QLANGUAGE_LIBRARY_END
 

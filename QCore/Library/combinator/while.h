@@ -21,7 +21,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         typedef Combinator<I, O, IOO, E> combinator_type;
         typedef int                      size_type;
     public:
-        CombinatorWhile(const combinator_type* pCombinator, size_type size) : pCombinator(pCombinator), size(size) {}
+        CombinatorWhile(combinator_type* pCombinator, size_type size) : pCombinator(pCombinator), size(size) {}
         virtual ~CombinatorWhile() {}
 
         virtual bool parse(const I& input, O& output);
