@@ -6,8 +6,8 @@
 	file base:	memory
 	file ext:	h
 	author:		lwch
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef _QLANGUAGE_LIBRARY_MEMORY_H_
@@ -45,6 +45,7 @@ namespace QLanguage
                 {
                     block* next = current->next;
                     free(current->data);
+                    // crash
                     free(current);
                     current = next;
                 }

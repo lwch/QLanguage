@@ -100,13 +100,31 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename I, typename O, typename IOO, typename E>
+    CombinatorRule<I, O, IOO, E>::CombinatorRule()
+        : parent()
+    {
+        typedef allocator<CombinatorRef<I, O, IOO, E> > Alloc;
+        pRef = Alloc::allocate();
+        construct<CombinatorRef<I, O, IOO, E>, Combinator<I, O, IOO, E>*&>(pRef, parent::pCombinator);
+    }
+
+    template <typename I, typename O, typename IOO, typename E>
+    CombinatorRule<I, O, IOO, E>::~CombinatorRule()
+    {
+        if (pRef)
+        {
+            const typename Combinator<I, O, IOO, E>::size_type size = pRef->objSize();
+            pRef->destruct();
+            typedef allocator<void> Alloc;
+            Alloc::deallocateWithSize(pRef, size);
+            pRef = NULL;
+        }
+    }
+
+    template <typename I, typename O, typename IOO, typename E>
     inline Combinator<I, O, IOO, E>* CombinatorRule<I, O, IOO, E>::getCombinator()
     {
-        // memory leaked
-        typedef allocator<CombinatorRef<I, O, IOO, E> > Alloc;
-        CombinatorRef<I, O, IOO, E>* pRef = Alloc::allocate();
-        construct<CombinatorRef<I, O, IOO, E>, Combinator<I, O, IOO, E>*&>(pRef, parent::pCombinator);
-        return pRef;
+        return pRef ? pRef : parent::pCombinator;
     }
 
     template <typename I, typename O, typename IOO, typename E>
