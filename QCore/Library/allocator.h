@@ -122,37 +122,37 @@ namespace QLanguage
             static T* allocate()
             {
                 MemoryPool* pool = getPool();
-                return pool->allocate<T>(sizeof(T), free_handler);
+                return reinterpret_cast<T*>(pool->allocate(sizeof(T), free_handler));
             }
 
             static T* allocate(size_t n)
             {
                 MemoryPool* pool = getPool();
-                return pool->allocate<T>(n * sizeof(T), free_handler);
+                return reinterpret_cast<T*>(pool->allocate(n * sizeof(T), free_handler));
             }
 
             static void deallocate(T* p)
             {
                 MemoryPool* pool = getPool();
-                pool->deallocate<T>(p, sizeof(T));
+                pool->deallocate(p, sizeof(T));
             }
 
             static void deallocate(T* p, size_t n)
             {
                 MemoryPool* pool = getPool();
-                pool->deallocate<T>(p, n * sizeof(T));
+                pool->deallocate(p, n * sizeof(T));
             }
 
             static void deallocateWithSize(T* p, size_t n)
             {
                 MemoryPool* pool = getPool();
-                pool->deallocate<T>(p, n);
+                pool->deallocate(p, n);
             }
 
             static T* reallocate(T* p, size_t old_size, size_t n)
             {
                 MemoryPool* pool = getPool();
-                return pool->reallocate<T>(p, old_size, n * sizeof(T), free_handler);
+                return pool->reallocate(p, old_size, n * sizeof(T), free_handler);
             }
         public:
             static void(*free_handler)(size_t);

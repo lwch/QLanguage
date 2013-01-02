@@ -133,6 +133,68 @@ namespace QLanguage
             a = b;
             b = tmp;
         }
+
+        template <typename Iterator>
+        inline void iterator_swap(Iterator a, Iterator b)
+        {
+            typename iterator_traits<Iterator>::value_type v = *a;
+            *a = *b;
+            *b = v;
+        }
+
+        template <typename Iterator, typename Compare>
+        void sort(Iterator first, Iterator last, Compare cmp)
+        {
+            if (first != last)
+            {
+                Iterator left = first;
+                Iterator right = last;
+                Iterator pivot = left++;
+
+                while (left != right)
+                {
+                    if (cmp(*left, *pivot)) ++left;
+                    else
+                    {
+                        while ((left != right) && cmp(*pivot, *right)) --right;
+                        iterator_swap(left, right);
+                    }
+                }
+
+                if (cmp(*pivot, *left)) --left;
+                iterator_swap(first, left);
+
+                sort(first, left, cmp);
+                sort(right, last, cmp);
+            }
+        }
+
+        template <typename Iterator>
+        inline void sort(Iterator first, Iterator last)
+        {
+            if (first != last)
+            {
+                Iterator left = first;
+                Iterator right = last;
+                Iterator pivot = left++;
+
+                while (left != right)
+                {
+                    if (*left < *pivot) ++left;
+                    else
+                    {
+                        while (left != right && *pivot < *right) --right;
+                        iterator_swap(left, right);
+                    }
+                }
+
+                if (*pivot < *left) --left;
+                iterator_swap(first, left);
+
+                sort(first, left);
+                sort(right, last);
+            }
+        }
     }
 }
 

@@ -13,240 +13,83 @@
 #ifndef _QLANGUAGE_LIBRARY_MEMORY_H_
 #define _QLANGUAGE_LIBRARY_MEMORY_H_
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "callstack.h"
+#include "definition.h"
 
-namespace QLanguage
+NAMESPACE_QLANGUAGE_LIBRARY_START
+
+#pragma pack(1)
+class MemoryPool
 {
-    namespace Library
+protected:
+#define ALIGN     sizeof(void*)
+#define MAX_BYTES 128
+#define MAX_COUNT (MAX_BYTES / ALIGN)
+
+    typedef size_t size_type;
+public:
+    MemoryPool();
+    ~MemoryPool();
+
+    void clear();
+
+    void* allocate(size_type n, void(*h)(size_type));
+    void deallocate(void* p, size_type n);
+    void* reallocate(void* p, size_t old_size, size_t new_size, void(*h)(size_type));
+
+#ifdef _DEBUG
+    void dump();
+#endif
+protected:
+    struct obj
     {
-        class MemoryPool
-        {
-        protected:
-            #define ALIGN     sizeof(void*)
-            #define MAX_BYTES 128
-            #define MAX_COUNT (MAX_BYTES / ALIGN)
-        public:
-            MemoryPool() : chunk_count(0), free_list(0)
-            {
-                for(int i = 0; i < MAX_COUNT; ++i) chunk_list[i] = 0;
-            }
+#ifdef _DEBUG
+        bool      released;
+#endif
+        obj*      next;
+    };
 
-            ~MemoryPool()
-            {
-                // check memory leaked
-                clear();
-            }
+    struct block
+    {
+        block* next;
+        void*  data;
+#ifdef _DEBUG
+        size_type size;
+#endif
+    };
 
-            void clear()
-            {
-                block* current = free_list;
-                while(current)
-                {
-                    block* next = current->next;
-                    free(current->data);
-                    // crash
-                    free(current);
-                    current = next;
-                }
-                free_list = NULL;
-            }
+#ifdef _DEBUG
+    struct use
+    {
+        obj* data;
+        use* next;
+    };
+#endif
 
-            template <typename T>
-            T* allocate(size_t n, void(*h)(size_t))
-            {
-                if(n == 0) return 0;
-                if(n > MAX_BYTES)
-                {
-                    T* p = (T*)malloc(n);
-                    while(p == 0)
-                    {
-                        h(n);
-                        p = (T*)malloc(n);
-                    }
-                    return p;
-                }
-                const size_t size = ROUND_UP(n);
-                const int i = INDEX(size);
-                obj* p = chunk_list[i];
-                if(p == 0)
-                {
-                    for(int j = i + 1; j < MAX_COUNT; ++j)
-                    {
-                        p = chunk_list[j];
-                        if(p != 0)
-                        {
-                            chunk_list[j] = chunk_list[j]->next;
-                            const int l = INDEX(size - (j + 1) * ALIGN);
-                            obj* q = (obj*)((char*)p + size);
-                            q->next = chunk_list[l];
-                            chunk_list[l] = q;
-                            return reinterpret_cast<T*>(p);
-                        }
-                    }
-                    return refill<T>(i, h);
-                }
-                chunk_list[i] = p->next;
-                return reinterpret_cast<T*>(p);
-            }
+    obj*      chunk_list[MAX_COUNT];
+    block*    free_list;
+#ifdef _DEBUG
+    use*      use_list;
+#endif
 
-            template <typename T>
-            void deallocate(T* p, size_t n)
-            {
-                if(p == 0) return;
-                if(n > MAX_BYTES)
-                {
-                    free(p);
-                    return;
-                }
-                const int i = INDEX(ROUND_UP(n));
-                reinterpret_cast<obj*>(p)->next = chunk_list[i];
-                chunk_list[i] = reinterpret_cast<obj*>(p);
-            }
+    const size_type ROUND_UP(size_type bytes)const;
+    const size_type ROUND_DOWN(size_type bytes)const;
+    const int INDEX(size_type bytes)const;
+    const size_type obj_count(int i)const;
 
-            template <typename T>
-            T* reallocate(T* p, size_t old_size, size_t new_size, void(*h)(size_t))
-            {
-                if(old_size > MAX_BYTES && new_size > MAX_BYTES)
-                {
-                    return realloc(p, new_size);
-                }
-                if(ROUND_UP(old_size) == ROUND_UP(new_size)) return p;
-                T* result = allocate<T>(new_size, h);
-                const size_t copy_size = new_size > old_size ? old_size : new_size;
-                memcpy(result, p, copy_size);
-                deallocate<T>(p, old_size);
-                return result;
-            }
+    void* refill(int i, void(*h)(size_type));
 
-            #ifdef _DEBUG
-            void dump()
-            {
-                FILE* fp = fopen("MemoryPool", "w+");
-                for(int i = 0; i < MAX_COUNT; ++i)
-                {
-                    fprintf(fp, "size: %d count: %d\n", (i + 1) * ALIGN, obj_count(i));
-                    obj* current = chunk_list[i];
-                    while(current)
-                    {
-                        fprintf(fp, "0x%08X\n", (int)current);
-                        current = current->next;
-                    }
-                    fprintf(fp, "\n");
-                }
-                fclose(fp);
-            }
-            #endif
-        protected:
-            struct obj
-            {
-                obj* next;
-            };
+#ifdef _DEBUG
+    void addUseInfo(obj* ptr);
 
-            struct block
-            {
-                block* next;
-                void*  data;
-            };
+    enum {headerSize = sizeof(obj) - sizeof(obj*)};
+    CallStack callStack;
+#else
+    enum {headerSize = 0};
+#endif
+};
+#pragma pack()
 
-            obj*   chunk_list[MAX_COUNT];
-            size_t chunk_count;
-            block* free_list;
-
-            inline size_t ROUND_UP(size_t bytes)const
-            {
-                return (bytes + ALIGN - 1) & ~(ALIGN - 1);
-            }
-
-            inline size_t ROUND_DOWN(size_t bytes)const
-            {
-                return bytes & ~(ALIGN - 1);
-            }
-
-            inline int INDEX(size_t bytes)const
-            {
-                return (int)((bytes + ALIGN - 1) / ALIGN - 1);
-            }
-
-            inline size_t obj_count(int i)const
-            {
-                size_t result = 0;
-                obj* current = chunk_list[i];
-                while(current)
-                {
-                    ++result;
-                    current = current->next;
-                }
-                return result;
-            }
-
-            template <typename T>
-            T* refill(int i, void(*h)(size_t))
-            {
-                const int count = 20;
-                const int preSize = (i + 1) * ALIGN;
-                char* p = (char*)malloc(preSize * count);
-                while(p == 0)
-                {
-                    h(preSize * count);
-                    p = (char*)malloc(preSize * count);
-                }
-                block* pBlock = (block*)malloc(sizeof(block));
-                while(pBlock == 0)
-                {
-                    h(sizeof(block));
-                    pBlock = (block*)malloc(sizeof(block));
-                }
-                pBlock->data = p;
-                pBlock->next = free_list;
-                free_list = pBlock;
-                obj* current = (obj*)(p + preSize);
-                for(int j = 0; j < count - 1; ++j)
-                {
-                    current->next = chunk_list[i];
-                    chunk_list[i] = current;
-                    current = (obj*)((char*)current + preSize);
-                }
-                chunk_count += count - 1;
-                //rebalance();
-                return reinterpret_cast<T*>(p);
-            }
-
-            void rebalance()
-            {
-                for(int i = MAX_COUNT - 1; i > 0; --i)
-                {
-                    const size_t avge = chunk_count / MAX_COUNT;
-                    size_t count = obj_count(i);
-                    if(count > avge)
-                    {
-                        const size_t preSize = ROUND_DOWN((i + 1) * ALIGN / 2);
-                        const int j = INDEX(preSize);
-                        for(size_t k = count; k > avge; --k)
-                        {
-                            obj* chunk = chunk_list[i];
-                            chunk_list[i] = chunk_list[i]->next;
-                            if(i % 2 == 1)
-                            {
-                                chunk->next = (obj*)((char*)chunk + preSize);
-                                chunk->next->next = chunk_list[j];
-                                chunk_list[j] = chunk;
-                            }
-                            else
-                            {
-                                chunk->next = chunk_list[j];
-                                chunk_list[j] = chunk;
-                                obj* next = (obj*)((char*)chunk + preSize);
-                                next->next = chunk_list[j + 1];
-                                chunk_list[j + 1] = next;
-                            }
-                            ++chunk_count;
-                        }
-                    }
-                }
-            }
-        };
-    }
-}
+NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

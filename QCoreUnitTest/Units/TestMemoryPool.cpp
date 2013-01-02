@@ -20,8 +20,8 @@ TEST_CASE(TestMemoryPool)
     {
         for(int j = 0; j < 100; ++j)
         {
-            void* p = pool.allocate<void>(i, NULL);
-            pool.deallocate<void>(p, i);
+            void* p = pool.allocate(i, NULL);
+            pool.deallocate(p, i);
         }
     }
     SHOW_TIME_COST_SECONDS;

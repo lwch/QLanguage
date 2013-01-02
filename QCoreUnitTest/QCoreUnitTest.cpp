@@ -17,7 +17,7 @@
 #endif
 
 #if defined(_DEBUG) && defined(WIN32)
-#include "../QCore/vld/vld.h"
+//#include "../QCore/vld/vld.h"
 #endif
 
 #include "Units/TestBase.h"
