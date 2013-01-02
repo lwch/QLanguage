@@ -33,26 +33,6 @@ public:
 
 typedef CombinatorRule<string, TestCombinatorResult, TestCombinatorResultSelector, emptystring> CombinatorRule_Type;
 
-class A
-{
-public:
-    virtual ~A()
-    {
-        printf("a\n");
-    }
-};
-
-class B : public A
-{
-public:
-    B(int b) {}
-
-    virtual ~B()
-    {
-        printf("b\n");
-    }
-};
-
 TEST_CASE(TestCombinator)
 {
     CombinatorRule_Type a, b, c, d, e;

@@ -16,10 +16,6 @@
 #include <windows.h>
 #endif
 
-#if defined(_DEBUG) && defined(WIN32)
-//#include "../QCore/vld/vld.h"
-#endif
-
 #include "Units/TestBase.h"
 
 #include "Units/TestHashTable.h"
