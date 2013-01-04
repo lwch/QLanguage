@@ -75,7 +75,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         CombinatorNode() : pCombinator(NULL), pSize(NULL) {}
         CombinatorNode(Combinator<I, O, IOO, E>* ptr) : pCombinator(ptr), pSize(NULL) { inc(); }
         CombinatorNode(const self& node) : pCombinator(node.pCombinator), pSize(node.pSize) { inc(); }
-        virtual ~CombinatorNode() { }//dec(); }
+        virtual ~CombinatorNode() { dec(); }
 
         virtual bool parse(const I& input, O& output);
         virtual Combinator<I, O, IOO, E>* getCombinator();

@@ -258,6 +258,7 @@ public:
     ~rbtree()
     {
         clear();
+		Value_Alloc::deallocate(header);
     }
 
     inline iterator insert_equal(const value_type& x)
