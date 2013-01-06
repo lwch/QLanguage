@@ -45,16 +45,27 @@ protected:
     {
 #ifdef _DEBUG
         bool      released;
+
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__) // Only windows can get callstack
+#define CALLSTACK_MAX_DEPTH 30
+        UINT_PTR  callStack[CALLSTACK_MAX_DEPTH];
+        DWORD     dwCallStackDepth; // Real depth
+#endif
+
 #endif
         obj*      next;
     };
 
     struct block
     {
-        block* next;
-        void*  data;
+        block*    next;
+        void*     data;
 #ifdef _DEBUG
         size_type size;
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+        UINT_PTR  callStack[CALLSTACK_MAX_DEPTH];
+        DWORD     dwCallStackDepth;
+#endif
 #endif
     };
 
@@ -82,10 +93,12 @@ protected:
 #ifdef _DEBUG
     void addUseInfo(obj* ptr);
 
-    enum {headerSize = sizeof(obj) - sizeof(obj*)};
+    enum { headerSize = sizeof(obj) - sizeof(obj*) };
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     CallStack callStack;
+#endif
 #else
-    enum {headerSize = 0};
+    enum { headerSize = 0 };
 #endif
 };
 #pragma pack()

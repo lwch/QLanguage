@@ -16,7 +16,7 @@
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 
-#if defined(_DEBUG) && defined(WIN32)
+#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
 
 #pragma comment( lib, "Dbghelp.lib" )
 #pragma comment( lib, "Psapi.lib" )
@@ -25,6 +25,7 @@ bool CallStack::loaded = false;
 
 CallStack::CallStack()
 {
+    hProcess = GetCurrentProcess();
     DWORD dwOptions = SymGetOptions();
     dwOptions |= SYMOPT_LOAD_LINES;
     dwOptions |= SYMOPT_DEBUG;
@@ -41,37 +42,20 @@ CallStack::~CallStack()
 {
 }
 
-void CallStack::stackTrace()
+DWORD CallStack::stackTrace(UINT_PTR* pCallStack, DWORD dwMaxDepth)
 {
-    CONTEXT context;
-    memset(&context, 0, sizeof(context));
-
-    context.ContextFlags = CONTEXT_FULL;
-
-    __asm
+    CaptureStackBackTrace(0, dwMaxDepth, (PVOID*)pCallStack, NULL);
+    DWORD dwCount = 0;
+    while (dwCount < dwMaxDepth)
     {
-        call FakeFuncCall
-FakeFuncCall:
-        pop eax
-        mov context.Eip, eax
-        mov context.Ebp, ebp
-        mov context.Esp, esp
+        if (pCallStack[dwCount] == 0) break;
+        ++dwCount;
     }
-
-    const int iMax = 20;
-    QWORD stackArray[iMax] = {0};
-
-    stackWalk(stackArray, iMax, &context);
-
-    for (int i = 0; i < iMax && stackArray[i] != 0; ++i)
-    {
-        getFuncName(stackArray[i]);
-    }
+    return dwCount;
 }
 
 bool CallStack::loadAllModules()
 {
-    HANDLE hProcess = GetCurrentProcess();
     const int iMax = 4096;
     HMODULE hModule[iMax] = {0};
 
@@ -97,121 +81,52 @@ bool CallStack::loadAllModules()
     return true;
 }
 
-void CallStack::stackWalk(QWORD* pStackArray, DWORD dwMaxDepth, CONTEXT* pContext)
+void CallStack::getFuncInfo(UINT_PTR dwFunc, FuncInfo& info)
 {
-    STACKFRAME stackFrame;
-    STACKFRAME64 stackFrame64;
-
-    HANDLE hProcess = GetCurrentProcess();
-    HANDLE hThread  = GetCurrentThread();
-
-    DWORD dwDepth = 0;
-
-    if (isX64()) memset(&stackFrame64, 0, sizeof(stackFrame64));
-    else memset(&stackFrame, 0, sizeof(stackFrame));
-
-    bool bSuccessed = true;
-
-    __try
-    {
-        if (isX64())
-        {
-            stackFrame64.AddrPC.Offset    = pContext->Eip;
-            stackFrame64.AddrPC.Mode      = AddrModeFlat;
-            stackFrame64.AddrStack.Offset = pContext->Esp;
-            stackFrame64.AddrStack.Mode   = AddrModeFlat;
-            stackFrame64.AddrFrame.Offset = pContext->Ebp;
-            stackFrame64.AddrFrame.Mode   = AddrModeFlat;
-
-            while (bSuccessed && (dwDepth < dwMaxDepth))
-            {
-                bSuccessed = StackWalk64(IMAGE_FILE_MACHINE_I386,
-                    hProcess,
-                    hThread,
-                    &stackFrame64,
-                    pContext,
-                    NULL,
-                    SymFunctionTableAccess64,
-                    SymGetModuleBase64,
-                    NULL) != FALSE;
-                pStackArray[dwDepth] = stackFrame64.AddrPC.Offset;
-                ++dwDepth;
-
-                if (!bSuccessed) break;
-                if (stackFrame64.AddrFrame.Offset == 0) break;
-            }
-        }
-        else
-        {
-            stackFrame.AddrPC.Offset    = pContext->Eip;
-            stackFrame.AddrPC.Mode      = AddrModeFlat;
-            stackFrame.AddrStack.Offset = pContext->Esp;
-            stackFrame.AddrStack.Mode   = AddrModeFlat;
-            stackFrame.AddrFrame.Offset = pContext->Ebp;
-            stackFrame.AddrFrame.Mode   = AddrModeFlat;
-
-            while (bSuccessed && (dwDepth < dwMaxDepth))
-            {
-                bSuccessed = StackWalk(IMAGE_FILE_MACHINE_I386,
-                    hProcess,
-                    hThread,
-                    &stackFrame,
-                    pContext,
-                    NULL,
-                    SymFunctionTableAccess,
-                    SymGetModuleBase,
-                    NULL) != FALSE;
-                pStackArray[dwDepth] = stackFrame.AddrPC.Offset;
-                ++dwDepth;
-
-                if (!bSuccessed) break;
-                if (stackFrame.AddrFrame.Offset == 0) break;
-            }
-        }
-    }
-    __except (EXCEPTION_EXECUTE_HANDLER)
-    {
-    }
-}
-
-void CallStack::getFuncName(QWORD dwFunc)
-{
-    const int iMaxNameLength = 4096;
-    HANDLE hProcess = GetCurrentProcess();
-
+    memset(szBuffer, 0, sizeof(szBuffer));
     if (isX64())
     {
-        char szSymbol[iMaxNameLength + sizeof(IMAGEHLP_SYMBOL64)] = {0};
-        PIMAGEHLP_SYMBOL64 symbol = (PIMAGEHLP_SYMBOL64)szSymbol;
-        symbol->SizeOfStruct  = sizeof(szSymbol);
-        symbol->MaxNameLength = iMaxNameLength;
+        PIMAGEHLP_SYMBOL64 symbol = (PIMAGEHLP_SYMBOL64)szBuffer;
+        symbol->SizeOfStruct  = sizeof(szBuffer);
+        symbol->MaxNameLength = sizeof(szBuffer) - sizeof(IMAGEHLP_SYMBOL64);
 
         DWORD64 dwDisplacement = 0;
 
-        if (SymGetSymFromAddr64(hProcess, dwFunc, &dwDisplacement, symbol)) ;
-        else throw error<char*>("Unknown function name", __FILE__, __LINE__);
+        if (SymGetSymFromAddr64(hProcess, dwFunc, &dwDisplacement, symbol))
+        {
+            strcpy_s(info.szFuncName, sizeof(info.szFuncName), symbol->Name);
+        }
 
         IMAGEHLP_LINE64 imageHelpLine;
         imageHelpLine.SizeOfStruct = sizeof(imageHelpLine);
 
-        if (SymGetLineFromAddr64(hProcess, dwFunc, (PDWORD)&dwDisplacement, &imageHelpLine)) ;
+        if (SymGetLineFromAddr64(hProcess, dwFunc, (PDWORD)&dwDisplacement, &imageHelpLine))
+        {
+            strcpy_s(info.szFilePath, sizeof(info.szFilePath), imageHelpLine.FileName);
+            info.dwLineNumber = imageHelpLine.LineNumber;
+        }
     }
     else
     {
-        char szSymbol[iMaxNameLength + sizeof(IMAGEHLP_SYMBOL)] = {0};
-        PIMAGEHLP_SYMBOL symbol = (PIMAGEHLP_SYMBOL)szSymbol;
-        symbol->SizeOfStruct  = sizeof(szSymbol);
-        symbol->MaxNameLength = iMaxNameLength;
+        PIMAGEHLP_SYMBOL symbol = (PIMAGEHLP_SYMBOL)szBuffer;
+        symbol->SizeOfStruct  = sizeof(szBuffer);
+        symbol->MaxNameLength = sizeof(szBuffer) - sizeof(IMAGEHLP_SYMBOL);
 
         DWORD dwDisplacement = 0;
 
-        if (SymGetSymFromAddr(hProcess, (DWORD)dwFunc, &dwDisplacement, symbol)) ;
-        else throw error<char*>("Unknown function name", __FILE__, __LINE__);
+        if (SymGetSymFromAddr(hProcess, (DWORD)dwFunc, &dwDisplacement, symbol))
+        {
+            strcpy_s(info.szFuncName, sizeof(info.szFuncName), symbol->Name);
+        }
 
         IMAGEHLP_LINE imageHelpLine;
         imageHelpLine.SizeOfStruct = sizeof(imageHelpLine);
 
-        if (SymGetLineFromAddr(hProcess, (DWORD)dwFunc, &dwDisplacement, &imageHelpLine)) ;
+        if (SymGetLineFromAddr(hProcess, (DWORD)dwFunc, &dwDisplacement, &imageHelpLine))
+        {
+            strcpy_s(info.szFilePath, sizeof(info.szFilePath), imageHelpLine.FileName);
+            info.dwLineNumber = imageHelpLine.LineNumber;
+        }
     }
 }
 

@@ -13,6 +13,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+#include "Console.h"
+#endif
+
+
 #include "memory.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
@@ -32,7 +37,20 @@ MemoryPool::~MemoryPool()
     while (use_list)
     {
         use *ptr = use_list, *next = use_list->next;
-        if (!ptr->data->released) throw error<char*>("chunk leaked", __FILE__, __LINE__); 
+        if (!ptr->data->released)
+        {
+            obj* pObj = ptr->data;
+            Console::SetColor(true, false, false, true);
+#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+            for (DWORD j = 0; j < pObj->dwCallStackDepth; ++j)
+            {
+                CallStack::FuncInfo funcInfo;
+                callStack.getFuncInfo(pObj->callStack[j], funcInfo);
+                printf("MemoryLeaked: %s\nFile: %s in line %d", funcInfo.szFuncName, funcInfo.szFilePath, funcInfo.dwLineNumber);
+            }
+#endif
+            throw error<char*>("chunk leaked", __FILE__, __LINE__); 
+        }
         free(ptr);
         use_list = next;
     }
@@ -46,9 +64,23 @@ void MemoryPool::clear()
     while(current)
     {
         block* next = current->next;
-        free(current->data);
-        // crash
-        free(current);
+        // why add try catch is ok?
+        try
+        {
+            free(current->data);
+            free(current);
+        }
+        catch (...)
+        {
+#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+            for (DWORD i = 0; i < current->dwCallStackDepth; ++i)
+            {
+                CallStack::FuncInfo info;
+                callStack.getFuncInfo(current->callStack[i], info);
+                printf("ERROR: %s\n%s on line %d", info.szFuncName, info.szFilePath, info.dwLineNumber);
+            }
+#endif
+        }
         current = next;
     }
     free_list = NULL;
@@ -81,6 +113,11 @@ void* MemoryPool::allocate(size_type n, void(*h)(size_type))
                 const int l = INDEX(size - (j + 1) * ALIGN);
                 obj* q = (obj*)((char*)p + size + headerSize);
 #ifdef _DEBUG
+
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+                memset(p->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
+                p->dwCallStackDepth = callStack.stackTrace(p->callStack, CALLSTACK_MAX_DEPTH);
+#endif
                 p->released = false;
                 q->released = true;
 #endif
@@ -92,6 +129,11 @@ void* MemoryPool::allocate(size_type n, void(*h)(size_type))
         return refill(i, h);
     }
 #ifdef _DEBUG
+
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+    memset(chunk_list[i]->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
+    chunk_list[i]->dwCallStackDepth = callStack.stackTrace(chunk_list[i]->callStack, CALLSTACK_MAX_DEPTH);
+#endif
     chunk_list[i]->released = false;
 #endif
     chunk_list[i] = p->next;
@@ -109,11 +151,21 @@ void MemoryPool::deallocate(void* p, size_type n)
     const int i = INDEX(ROUND_UP(n));
 #ifdef _DEBUG
     p = (char*)p - (int)headerSize;
-    if (reinterpret_cast<obj*>(p)->released) throw error<char*>("chunk has already released", __FILE__, __LINE__);
-    reinterpret_cast<obj*>(p)->released = true;
+    obj* ptr = reinterpret_cast<obj*>(p);
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+//     for (DWORD j = 0; j < ptr->dwCallStackDepth; ++j)
+//     {
+//         CallStack::FuncInfo funcInfo;
+//         callStack.getFuncInfo(ptr->callStack[j], funcInfo);
+//         printf("MemoryLeaked: %s\nFile: %s in line %d\n", funcInfo.szFuncName, funcInfo.szFilePath, funcInfo.dwLineNumber);
+//     }
+    memset(ptr->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
 #endif
-    reinterpret_cast<obj*>(p)->next = chunk_list[i];
-    chunk_list[i] = reinterpret_cast<obj*>(p);
+    if (ptr->released) throw error<char*>("chunk has already released", __FILE__, __LINE__);
+    ptr->released = true;
+#endif
+    ptr->next = chunk_list[i];
+    chunk_list[i] = ptr;
 }
 
 void* MemoryPool::reallocate(void* p, size_t old_size, size_t new_size, void(*h)(size_type))
@@ -192,6 +244,10 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
         h(sizeof(block));
         pBlock = (block*)malloc(sizeof(block));
     }
+#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+    memset(pBlock->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
+    pBlock->dwCallStackDepth = callStack.stackTrace(pBlock->callStack, CALLSTACK_MAX_DEPTH);
+#endif
     pBlock->data = p;
     pBlock->next = free_list;
     free_list = pBlock;
@@ -199,6 +255,10 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
     obj* current = (obj*)p;
 #ifdef _DEBUG
     addUseInfo(current);
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+    memset(current->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
+    current->dwCallStackDepth = callStack.stackTrace(current->callStack, CALLSTACK_MAX_DEPTH);
+#endif
     current->released = false;
 #endif
     current = (obj*)((char*)current + preSize);

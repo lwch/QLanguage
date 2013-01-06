@@ -13,7 +13,7 @@
 #ifndef _QLANGUAGE_LIBRARY_CALLSTACK_H_
 #define _QLANGUAGE_LIBRARY_CALLSTACK_H_
 
-#if defined(_DEBUG) && defined(WIN32)
+#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
 
 #include <windows.h>
 #include <WinDNS.h>
@@ -30,13 +30,23 @@ public:
     CallStack();
     ~CallStack();
 
-    void stackTrace();
+    struct FuncInfo
+    {
+        char  szFuncName[512];
+        char  szFilePath[1024];
+        DWORD dwLineNumber;
+    };
+
+    DWORD stackTrace(UINT_PTR* pCallStack, DWORD dwMaxDepth);
+    void getFuncInfo(UINT_PTR dwFunc, FuncInfo& info);
 protected:
     bool loadAllModules();
-    void stackWalk(QWORD* pStackArray, DWORD dwMaxDepth, CONTEXT* pContext);
-    void getFuncName(QWORD dwFunc);
 
     static bool loaded;
+
+    enum { maxBufferLength = 4096 };
+    char szBuffer[maxBufferLength];
+    HANDLE hProcess;
 };
 
 NAMESPACE_QLANGUAGE_LIBRARY_END
