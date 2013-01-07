@@ -164,8 +164,8 @@ void MemoryPool::deallocate(void* p, size_type n)
     if (ptr->released) throw error<char*>("chunk has already released", __FILE__, __LINE__);
     ptr->released = true;
 #endif
-    ptr->next = chunk_list[i];
-    chunk_list[i] = ptr;
+    reinterpret_cast<obj*>(p)->next = chunk_list[i];
+    chunk_list[i] = reinterpret_cast<obj*>(p);
 }
 
 void* MemoryPool::reallocate(void* p, size_t old_size, size_t new_size, void(*h)(size_type))
