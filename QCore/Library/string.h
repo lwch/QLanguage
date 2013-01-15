@@ -305,7 +305,7 @@ public:
         const size_type _1 = n + 1;
         const size_type _2 = _1 * 2;
         reserve(_2 <= MAX_STRING_RESERVE_SIZE ? _2 : _1);
-        copy(s.begin(), s.begin() + n, begin());
+        copy(s.begin(), s.end(), begin());
         finish = start + n;
         *finish = Traits::eof();
     }
@@ -387,7 +387,7 @@ public:
         {
             iterator tmp = Alloc::allocate(count);
             copy(begin(), end(), tmp);
-            Alloc::deallocate(start, old_size);
+            Alloc::deallocate(start, capacity());
             start = tmp;
             finish = tmp + old_size;
             end_of_element = start + count;

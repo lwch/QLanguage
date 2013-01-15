@@ -49,7 +49,7 @@ MemoryPool::~MemoryPool()
                 printf("MemoryLeaked: %s\nFile: %s in line %d", funcInfo.szFuncName, funcInfo.szFilePath, funcInfo.dwLineNumber);
             }
 #endif
-            throw error<char*>("chunk leaked", __FILE__, __LINE__); 
+            throw error<char*>("chunk leaked", __FILE__, __LINE__);
         }
         free(ptr);
         use_list = next;
@@ -110,7 +110,7 @@ void* MemoryPool::allocate(size_type n, void(*h)(size_type))
             if(p != 0)
             {
                 chunk_list[j] = chunk_list[j]->next;
-                const int l = INDEX(size - (j + 1) * ALIGN);
+                const int l = INDEX((j + 1) * ALIGN - size);
                 obj* q = (obj*)((char*)p + size + headerSize);
 #ifdef _DEBUG
 
