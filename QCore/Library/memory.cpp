@@ -46,7 +46,7 @@ MemoryPool::~MemoryPool()
             {
                 CallStack::FuncInfo funcInfo;
                 callStack.getFuncInfo(pObj->callStack[j], funcInfo);
-                printf("MemoryLeaked: %s\nFile: %s in line %d", funcInfo.szFuncName, funcInfo.szFilePath, funcInfo.dwLineNumber);
+                printf("MemoryLeaked: %s\nFile: %s in line %d\n", funcInfo.szFuncName, funcInfo.szFilePath, funcInfo.dwLineNumber);
             }
 #endif
             throw error<char*>("chunk leaked", __FILE__, __LINE__);
@@ -104,6 +104,7 @@ void* MemoryPool::allocate(size_type n, void(*h)(size_type))
     obj* p = chunk_list[i];
     if(p == 0)
     {
+#ifdef NDEBUG
         for(int j = i + 1; j < MAX_COUNT; ++j)
         {
             p = chunk_list[j];
@@ -112,20 +113,12 @@ void* MemoryPool::allocate(size_type n, void(*h)(size_type))
                 chunk_list[j] = chunk_list[j]->next;
                 const int l = INDEX((j + 1) * ALIGN - size);
                 obj* q = (obj*)((char*)p + size + headerSize);
-#ifdef _DEBUG
-
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-                memset(p->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
-                p->dwCallStackDepth = callStack.stackTrace(p->callStack, CALLSTACK_MAX_DEPTH);
-#endif
-                p->released = false;
-                q->released = true;
-#endif
                 q->next = chunk_list[l];
                 chunk_list[l] = q;
                 return (char*)p + headerSize;
             }
         }
+#endif
         return refill(i, h);
     }
 #ifdef _DEBUG
