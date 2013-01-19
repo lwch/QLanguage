@@ -23,7 +23,21 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         CombinatorAlt(combinator_type* first, combinator_type* second) : first(first), second(second) {}
         virtual ~CombinatorAlt() {}
 
-        virtual bool parse(const I& input, O& output);
+        virtual bool parse(const I& input, O& output)
+        {
+            O result1, result2;
+            if (first && first->parse(input, result1))
+            {
+                output = result1;
+                return true;
+            }
+            if (second && second->parse(input, result2))
+            {
+                output = result2;
+                return true;
+            }
+            return false;
+        }
 
         virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
         virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }

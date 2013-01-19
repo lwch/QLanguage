@@ -24,7 +24,45 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         CombinatorWhile(combinator_type* pCombinator, size_type size) : pCombinator(pCombinator), size(size) {}
         virtual ~CombinatorWhile() {}
 
-        virtual bool parse(const I& input, O& output);
+        virtual bool parse(const I& input, O& output)
+        {
+            if (!pCombinator) return false;
+            if (size == -1)
+            {
+                O result;
+                while (true)
+                {
+                    if (!end(input) && pCombinator->parse(input, result))
+                    {
+                        output = output + result;
+                        input = input(result);
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                O result;
+                for (size_type i = 0; i < size; ++i)
+                {
+                    if (!end(input) && pCombinator->parse(input, result))
+                    {
+                        output = output + result;
+                        input = input(result);
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
 
         virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
         virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }

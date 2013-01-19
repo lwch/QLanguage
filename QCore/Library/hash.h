@@ -26,7 +26,10 @@ namespace QLanguage
         public:
             typedef T value_type;
 
-            const HASH_KEY_TYPE operator()(const value_type&)const {}
+            const HASH_KEY_TYPE operator()(const value_type&)const
+            {
+                return 0;
+            }
         };
 
         template <>

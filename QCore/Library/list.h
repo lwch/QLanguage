@@ -180,8 +180,8 @@ namespace QLanguage
             typedef ptrdiff_t                distance_type;
             typedef __list_iterator<T, size_type, distance_type> iterator;
             typedef __list_const_iterator<T, size_type, distance_type> const_iterator;
-            typedef reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
-            typedef reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
+            typedef __reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
+            typedef __reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
         protected:
             typedef __list_node<T>*            link_type;
             typedef list<T>                    self;

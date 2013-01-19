@@ -25,7 +25,7 @@ TEST_CASE(TestList)
     for(int i = 0; i < 10; ++i)
     {
         a.push_back(i);
-        TEST_ASSERT(a.size()  != i + 1, "invalid list size: %d!", a.size());
+        TEST_ASSERT(a.size()  != (list<int>::size_type)(i + 1), "invalid list size: %d!", a.size());
         TEST_ASSERT(a.front() != 0, "invalid list front value: %d!", a.front());
         TEST_ASSERT(a.back()  != i, "invalid list back value: %d!", a.back());
         TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");
@@ -39,7 +39,7 @@ TEST_CASE(TestList)
     for(int i = 0; i < 3; ++i)
     {
         a.pop_back();
-        TEST_ASSERT(a.size()  != 11 - i - 1, "invalid list size: %d!", a.size());
+        TEST_ASSERT(a.size()  != (list<int>::size_type)(11 - i - 1), "invalid list size: %d!", a.size());
         TEST_ASSERT(a.front() != 0, "invalid list front value: %d!", a.front());
         TEST_ASSERT(a.back()  != 10 - i - 2, "invalid list back value: %d!", a.back());
         TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");
@@ -53,7 +53,7 @@ TEST_CASE(TestList)
     for(int i = 0; i < 3; ++i)
     {
         a.pop_front();
-        TEST_ASSERT(a.size()  != 7 - i - 1, "invalid list size: %d!", a.size());
+        TEST_ASSERT(a.size()  != (list<int>::size_type)(7 - i - 1), "invalid list size: %d!", a.size());
         TEST_ASSERT(a.front() != i + 1, "invalid list front value: %d!", a.front());
         TEST_ASSERT(a.back()  != 6, "invalid list back value: %d!", a.back());
         TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");

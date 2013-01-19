@@ -31,8 +31,9 @@ public:
     typedef self*            link_type;
     enum color_type          { red, black };
 
-    __rbtree_node(const T& x) : data(x), parent(0), left(0), right(0), color(red)
+    __rbtree_node(const T& x) : data(x), color(red)
     {
+        parent = left = right = NULL;
     }
 
     link_type parent;
@@ -240,8 +241,8 @@ public:
     typedef ptrdiff_t                      distance_type;
     typedef __rbtree_iterator<value_type, size_type, distance_type> iterator;
     typedef __rbtree_const_iterator<value_type, size_type, distance_type> const_iterator;
-    typedef reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
-    typedef reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
+    typedef __reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
+    typedef __reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
 protected:
     size_type node_count;
     link_type header;

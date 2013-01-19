@@ -24,7 +24,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         CombinatorRef(combinator_type& ref) : ref(ref) {}
         virtual ~CombinatorRef() {}
 
-        virtual bool parse(const I& input, O& output);
+        virtual inline bool parse(const I& input, O& output)
+        {
+            return ref ? ref->parse(input, output) : false;
+        }
 
         virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
         virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }

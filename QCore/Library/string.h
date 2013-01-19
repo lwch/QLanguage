@@ -24,6 +24,10 @@
 #include <stdarg.h>
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
+#ifdef MSVC
+#pragma warning(disable:4996)
+#endif
+
 template <typename T, typename Size, typename Distance>
 class __basic_string_iterator : public __iterator<T, Size, Distance>
 {
@@ -240,9 +244,9 @@ public:
     typedef size_t    size_type;
     typedef ptrdiff_t distance_type;
     typedef __basic_string_const_iterator<value_type, size_type, distance_type> const_iterator;
-    typedef reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
+    typedef __reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
     typedef __basic_string_iterator<value_type, size_type, distance_type> iterator;
-    typedef reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
+    typedef __reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
 protected:
 #define MAX_STRING_RESERVE_SIZE 512
     typedef char_traits<T> Traits;
@@ -603,7 +607,7 @@ public:
         return basic_string<T2>();
     }
 
-    static const basic_string<char> format(char* fmt, ...)
+    static const basic_string<char> format(const char* fmt, ...)
     {
         va_list l;
         va_start(l, fmt);
@@ -626,7 +630,7 @@ public:
         return result;
     }
 
-    static const basic_string<wchar_t> format(wchar_t* fmt, ...)
+    static const basic_string<wchar_t> format(const wchar_t* fmt, ...)
     {
         va_list l;
         va_start(l, fmt);

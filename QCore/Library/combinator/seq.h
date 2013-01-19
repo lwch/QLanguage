@@ -23,7 +23,19 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         CombinatorSeq(combinator_type* first, combinator_type* second) : first(first), second(second) {}
         virtual ~CombinatorSeq() {}
 
-        virtual bool parse(const I& input, O& output);
+        virtual bool parse(const I& input, O& output)
+        {
+            O result1, result2;
+            if (first && first->parse(input, result1))
+            {
+                if (second && second->parse(Combinator<I, O, IOO, E>::input(result1), result2))
+                {
+                    output = result1 + result2;
+                    return true;
+                }
+            }
+            return false;
+        }
 
         virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
         virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }

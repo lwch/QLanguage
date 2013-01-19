@@ -17,9 +17,6 @@
 #include "../construct.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
-    template <typename I, typename O, typename IOO, typename E>
-    class CombinatorRef;
-
     template <typename O>
     class CombinatorResult
     {
@@ -36,7 +33,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     {
     public:
         template <typename I, typename O>
-        const I operator()(const CombinatorResult<O>& result)const;
+        inline const I operator()(const CombinatorResult<O>& result)const
+        {
+            return result.result;
+        }
     };
 
     /************************************************************************/
@@ -61,55 +61,6 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     protected:
         IOO input;
         E   end;
-    };
-
-    template <typename I, typename O, typename IOO, typename E>
-    class CombinatorNode
-    {
-        template <typename A, typename B, typename C, typename D>
-        friend class CombinatorRule;
-
-        typedef CombinatorNode<I, O, IOO, E> self;
-        typedef size_t                       size_type;
-    public:
-        CombinatorNode() : pCombinator(NULL), pSize(NULL) {}
-        CombinatorNode(Combinator<I, O, IOO, E>* ptr) : pCombinator(ptr), pSize(NULL) { inc(); }
-        CombinatorNode(const self& node) : pCombinator(node.pCombinator), pSize(node.pSize) { inc(); }
-        virtual ~CombinatorNode() { dec(); }
-
-        virtual bool parse(const I& input, O& output);
-        virtual Combinator<I, O, IOO, E>* getCombinator();
-
-        self operator+(const self& node);
-        self operator|(const self& node);
-        self& operator=(const self& node);
-    protected:
-        void inc();
-        void dec();
-    protected:
-        Combinator<I, O, IOO, E>* pCombinator;
-        size_type*                pSize;
-    };
-
-    /************************************************************************/
-    /* CombinatorRule is the topest interface                               */
-    /************************************************************************/
-    template <typename I, typename O, typename IOO, typename E>
-    class CombinatorRule : public CombinatorNode<I, O, IOO, E>
-    {
-        typedef CombinatorNode<I, O, IOO, E> parent;
-        typedef CombinatorRule<I, O, IOO, E> self;
-    public:
-        CombinatorRule();
-        CombinatorRule(const parent& node) : parent(node), pRef(NULL) {}
-        virtual ~CombinatorRule();
-
-        virtual Combinator<I, O, IOO, E>* getCombinator();
-
-        self& operator=(const parent& node);
-        self& operator=(const self& rule);
-    protected:
-        CombinatorRef<I, O, IOO, E>* pRef;
     };
 NAMESPACE_QLANGUAGE_LIBRARY_END
 

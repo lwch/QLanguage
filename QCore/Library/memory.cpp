@@ -17,14 +17,13 @@
 #include "Console.h"
 #endif
 
-
 #include "memory.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 MemoryPool::MemoryPool() : free_list(NULL)
 {
-    for(int i = 0; i < MAX_COUNT; ++i) chunk_list[i] = 0;
+    for(UINT i = 0; i < MAX_COUNT; ++i) chunk_list[i] = 0;
 
 #ifdef _DEBUG
     use_list = NULL;
@@ -39,9 +38,9 @@ MemoryPool::~MemoryPool()
         use *ptr = use_list, *next = use_list->next;
         if (!ptr->data->released)
         {
-            obj* pObj = ptr->data;
             Console::SetColor(true, false, false, true);
 #if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+            obj* pObj = ptr->data;
             for (DWORD j = 0; j < pObj->dwCallStackDepth; ++j)
             {
                 CallStack::FuncInfo funcInfo;
@@ -49,7 +48,7 @@ MemoryPool::~MemoryPool()
                 printf("MemoryLeaked: %s\nFile: %s in line %d\n", funcInfo.szFuncName, funcInfo.szFilePath, funcInfo.dwLineNumber);
             }
 #endif
-            throw error<char*>("chunk leaked", __FILE__, __LINE__);
+            throw error<const char*>("chunk leaked", __FILE__, __LINE__);
         }
         free(ptr);
         use_list = next;
@@ -154,7 +153,7 @@ void MemoryPool::deallocate(void* p, size_type n)
 //     }
     memset(ptr->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
 #endif
-    if (ptr->released) throw error<char*>("chunk has already released", __FILE__, __LINE__);
+    if (ptr->released) throw error<const char*>("chunk has already released", __FILE__, __LINE__);
     ptr->released = true;
 #endif
     reinterpret_cast<obj*>(p)->next = chunk_list[i];
@@ -179,7 +178,7 @@ void* MemoryPool::reallocate(void* p, size_t old_size, size_t new_size, void(*h)
 void MemoryPool::dump()
 {
     FILE* fp = fopen("MemoryPool", "w+");
-    for(int i = 0; i < MAX_COUNT; ++i)
+    for(UINT i = 0; i < MAX_COUNT; ++i)
     {
         fprintf(fp, "size: %d count: %d\n", (i + 1) * ALIGN, obj_count(i));
         obj* current = chunk_list[i];

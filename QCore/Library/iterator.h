@@ -48,7 +48,7 @@ namespace QLanguage
         };
 
         template <typename Iterator, typename T, typename Size = size_t, typename Distance = ptrdiff_t>
-        struct reverse_iterator
+        struct __reverse_iterator
         {
             typedef T                                             value_type;
             typedef Distance                                      distance_type;
@@ -56,20 +56,20 @@ namespace QLanguage
             typedef T&                                            reference;
             typedef const T*                                      const_pointer;
             typedef const T&                                      const_reference;
-            typedef reverse_iterator<Iterator, T, Size, Distance> self;
+            typedef __reverse_iterator<Iterator, T, Size, Distance> self;
         protected:
             Iterator pThis;
         public:
-            reverse_iterator()
+            __reverse_iterator()
             {
             }
 
-            reverse_iterator(Iterator x) : pThis(x)
+            __reverse_iterator(Iterator x) : pThis(x)
             {
             }
 
             template <typename OtherIterator>
-            reverse_iterator(const reverse_iterator<OtherIterator, T, Size, Distance>& x) : pThis(x.base())
+            __reverse_iterator(const __reverse_iterator<OtherIterator, T, Size, Distance>& x) : pThis(x.base())
             {
             }
 

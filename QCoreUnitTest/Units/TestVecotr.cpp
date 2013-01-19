@@ -23,7 +23,7 @@ TEST_CASE(TestVector)
     for(int i = 0; i < 10; ++i)
     {
         a.push_back(i);
-        TEST_ASSERT(a.size()  != i + 1, "invalid vector size: %d!", a.size());
+        TEST_ASSERT(a.size()  != (vector<int>::size_type)(i + 1), "invalid vector size: %d!", a.size());
         TEST_ASSERT(a.front() != 0, "invalid vector front value: %d!", a.front());
         TEST_ASSERT(a.back()  != i, "invalid vector back value: %d!", a.back());
         TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");
@@ -37,7 +37,7 @@ TEST_CASE(TestVector)
     for(int i = 0; i < 3; ++i)
     {
         a.pop_back();
-        TEST_ASSERT(a.size()  != 11 - i - 1, "invalid vector size: %d!", a.size());
+        TEST_ASSERT(a.size()  != (vector<int>::size_type)(11 - i - 1), "invalid vector size: %d!", a.size());
         TEST_ASSERT(a.front() != 0, "invalid vector front value: %d!", a.front());
         TEST_ASSERT(a.back()  != 10 - i - 2, "invalid vector back value: %d!", a.back());
         TEST_ASSERT(a.begin() == a.end(), "invalid iterator!");

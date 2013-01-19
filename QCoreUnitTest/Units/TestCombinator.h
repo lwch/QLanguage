@@ -13,7 +13,7 @@
 #define _QCORE_UNIT_TEST_LIBRARY_COMBINATOR_H_
 
 #include "TestBase.h"
-#include "../../QCore/Library/combinator/combinator.cpp"
+#include "../../QCore/Library/combinator/rule.h"
 
 using namespace QLanguage;
 using namespace QLanguage::Library;
