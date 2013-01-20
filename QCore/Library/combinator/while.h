@@ -15,61 +15,46 @@
 #include "combinator.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
+namespace combinator
+{
     template <typename I, typename O, typename IOO, typename E>
     class CombinatorWhile : public Combinator<I, O, IOO, E>
     {
         typedef Combinator<I, O, IOO, E> combinator_type;
         typedef int                      size_type;
     public:
-        CombinatorWhile(combinator_type* pCombinator, size_type size) : pCombinator(pCombinator), size(size) {}
+        CombinatorWhile(combinator_type* pCombinator, bool bOnceMore) : pCombinator(pCombinator), bOnceMore(bOnceMore) {}
         virtual ~CombinatorWhile() {}
 
         virtual bool parse(const I& input, O& output)
         {
             if (!pCombinator) return false;
-            if (size == -1)
+            O result;
+            if (bOnceMore && (end(input) || !pCombinator->parse(input, result))) return false;
+            while (true)
             {
-                O result;
-                while (true)
+                if (!end(input) && pCombinator->parse(input, result))
                 {
-                    if (!end(input) && pCombinator->parse(input, result))
-                    {
-                        output = output + result;
-                        input = input(result);
-                    }
-                    else
-                    {
-                        return true;
-                    }
+                    output = output + result;
+                    input = input(result);
                 }
-                return true;
-            }
-            else
-            {
-                O result;
-                for (size_type i = 0; i < size; ++i)
+                else
                 {
-                    if (!end(input) && pCombinator->parse(input, result))
-                    {
-                        output = output + result;
-                        input = input(result);
-                    }
-                    else
-                    {
-                        return true;
-                    }
+                    return this->hook(this);
                 }
-                return true;
             }
-            return false;
+            return this->hook(this);
         }
+
+        virtual inline bool hook(const combinator_type* pCombinator) { return true; }
 
         virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
         virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }
     protected:
         combinator_type* pCombinator;
-        size_type        size;
+        bool             bOnceMore;
     };
+}
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

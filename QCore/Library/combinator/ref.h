@@ -15,13 +15,15 @@
 #include "combinator.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
+namespace combinator
+{
     template <typename I, typename O, typename IOO, typename E>
     class CombinatorRef : public Combinator<I, O, IOO, E>
     {
         typedef CombinatorRef<I, O, IOO, E> self;
-        typedef Combinator<I, O, IOO, E>* combinator_type;
+        typedef Combinator<I, O, IOO, E> combinator_type;
     public:
-        CombinatorRef(combinator_type& ref) : ref(ref) {}
+        CombinatorRef(combinator_type*& ref) : ref(ref) {}
         virtual ~CombinatorRef() {}
 
         virtual inline bool parse(const I& input, O& output)
@@ -29,11 +31,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return ref ? ref->parse(input, output) : false;
         }
 
+        virtual inline bool hook(const combinator_type* pCombinator) { return true; }
+
         virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
         virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }
     protected:
-        combinator_type& ref;
+        combinator_type*& ref;
     };
+}
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

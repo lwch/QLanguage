@@ -15,6 +15,8 @@
 #include "combinator.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
+namespace combinator
+{
     template <typename I, typename O, typename IOO, typename E>
     class CombinatorAlt : public Combinator<I, O, IOO, E>
     {
@@ -29,15 +31,17 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             if (first && first->parse(input, result1))
             {
                 output = result1;
-                return true;
+                return this->hook(this);
             }
             if (second && second->parse(input, result2))
             {
                 output = result2;
-                return true;
+                return this->hook(this);
             }
             return false;
         }
+
+        virtual inline bool hook(const combinator_type* pCombinator) { return true; }
 
         virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
         virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }
@@ -45,6 +49,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         combinator_type* first;
         combinator_type* second;
     };
+}
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

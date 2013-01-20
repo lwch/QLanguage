@@ -17,6 +17,8 @@
 #include "../construct.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
+namespace combinator
+{
     template <typename O>
     class CombinatorResult
     {
@@ -48,6 +50,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     template <typename I, typename O, typename IOO, typename E>
     class Combinator
     {
+        typedef Combinator<I, O, IOO, E> self;
     public:
         Combinator() {}
         virtual ~Combinator() {}
@@ -56,12 +59,15 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
         virtual void destruct()=0;
 
+        virtual bool hook(const self* pCombinator)=0;
+
         typedef size_t size_type;
         virtual const size_type objSize()const=0;
     protected:
         IOO input;
         E   end;
     };
+}
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

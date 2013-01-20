@@ -22,6 +22,8 @@
 #include "while.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
+namespace combinator
+{
     template <typename I, typename O, typename IOO, typename E>
     class CombinatorNode
     {
@@ -161,6 +163,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     protected:
         CombinatorRef<I, O, IOO, E>* pRef;
     };
+}
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif
