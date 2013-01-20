@@ -21,6 +21,7 @@
 
 #include "char_traits.h"
 
+#include <stdlib.h>
 #include <stdarg.h>
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
@@ -621,9 +622,10 @@ public:
 #elif defined(unix)
         char* res = NULL;
         len = vasprintf(&res, fmt, l);
-        result.start = res;
+        result.reserve(len + 1);
+        copy(res, res + len, result.begin());
         result.finish = result.begin() + len;
-        result.end_of_element = result.finish;
+        free(res);
 #endif
         *result.finish = char_traits<char>::eof();
         va_end(l);

@@ -13,10 +13,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef WIN32
 #include "Console.h"
-#endif
-
+#include "typedef.h"
 #include "memory.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
@@ -173,25 +171,6 @@ void* MemoryPool::reallocate(void* p, size_t old_size, size_t new_size, void(*h)
     deallocate(p, old_size);
     return result;
 }
-
-#ifdef _DEBUG
-void MemoryPool::dump()
-{
-    FILE* fp = fopen("MemoryPool", "w+");
-    for(UINT i = 0; i < MAX_COUNT; ++i)
-    {
-        fprintf(fp, "size: %d count: %d\n", (i + 1) * ALIGN, obj_count(i));
-        obj* current = chunk_list[i];
-        while(current)
-        {
-            fprintf(fp, "0x%08X\n", (int)current);
-            current = current->next;
-        }
-        fprintf(fp, "\n");
-    }
-    fclose(fp);
-}
-#endif
 
 inline const size_t MemoryPool::ROUND_UP(size_type bytes)const
 {

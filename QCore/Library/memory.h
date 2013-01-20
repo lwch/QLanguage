@@ -36,10 +36,6 @@ public:
     void* allocate(size_type n, void(*h)(size_type));
     void deallocate(void* p, size_type n);
     void* reallocate(void* p, size_t old_size, size_t new_size, void(*h)(size_type));
-
-#ifdef _DEBUG
-    void dump();
-#endif
 protected:
     struct obj
     {

@@ -6,8 +6,8 @@
 	file base:	TestBase
 	file ext:	h
 	author:		lwch
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef _QCORE_UNIT_TEST_TESTBASE_H_

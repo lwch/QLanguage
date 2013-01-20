@@ -26,7 +26,7 @@ namespace regex
     class CombinatorSeq : public combinator::CombinatorSeq<I, O, IOO, E>
     {
         typedef combinator::CombinatorSeq<I, O, IOO, E> parent;
-        typedef Combinator<I, O, IOO, E> combinator_type;
+        typedef combinator::Combinator<I, O, IOO, E> combinator_type;
     public:
         CombinatorSeq(combinator_type* first, combinator_type* second) : parent(first, second) {}
         virtual ~CombinatorSeq() {}
@@ -52,7 +52,7 @@ namespace regex
         {
             typedef allocator<CombinatorSeq<I, O, IOO, E> > Alloc;
             CombinatorSeq<I, O, IOO, E>* pSeq = Alloc::allocate();
-            construct(pSeq, getCombinator(), const_cast<self&>(node).getCombinator());
+            construct(pSeq, this->getCombinator(), const_cast<self&>(node).getCombinator());
             return self(pSeq);
         }
     };

@@ -317,7 +317,6 @@ public:
     {
         for(typename __container_traits<buckets_type>::iterator i = buckets.begin(); i != buckets.end(); ++i)
         {
-            link_type header = *i;
             link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(*i))->next;
             while(current)
             {
