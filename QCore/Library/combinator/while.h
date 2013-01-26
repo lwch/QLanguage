@@ -29,27 +29,22 @@ namespace combinator
         virtual bool parse(const I& input, O& output)
         {
             if (!pCombinator) return false;
-            O result;
-            if (bOnceMore && (end(input) || !pCombinator->parse(input, result))) return false;
+            if (bOnceMore && (end(input) || !pCombinator->parse(input, output))) return false;
             while (true)
             {
-                if (!end(input) && pCombinator->parse(input, result))
+                if (!end(input) && pCombinator->parse(input, output))
                 {
-                    output = output + result;
-                    input = input(result);
+                    input = input(output);
                 }
                 else
                 {
-                    return this->hook(this);
+                    return true;
                 }
             }
-            return this->hook(this);
+            return false;
         }
 
-        virtual inline bool hook(const combinator_type* pCombinator) { return true; }
-
-        virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
-        virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }
+        RELEASE_ACHIEVE
     protected:
         combinator_type* pCombinator;
         bool             bOnceMore;

@@ -31,11 +31,13 @@ namespace combinator
             return ref ? ref->parse(input, output) : false;
         }
 
-        virtual inline bool hook(const combinator_type* pCombinator) { return true; }
+        void setRef(combinator_type*& ref)
+        {
+            this->ref = ref;
+        }
 
-        virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
-        virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }
-    protected:
+        RELEASE_ACHIEVE
+    public:
         combinator_type*& ref;
     };
 }

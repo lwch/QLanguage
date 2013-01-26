@@ -12,30 +12,26 @@
 #include "../../QCore/Library/function.h"
 #include "TestRegex.h"
 
-class TestCombinatorResult : public CombinatorResult<string>
+typedef regex::CombinatorNFAContext<char, string> NFAContext;
+
+struct AlwaysFalse : public unary_function<NFAContext, bool>
 {
-public:
-    TestCombinatorResult operator+(const TestCombinatorResult& result)
+    inline const bool operator()(const NFAContext&)const
     {
-        return TestCombinatorResult();
+        return false;
     }
 };
 
-class TestCombinatorResultSelector : public DefaultCombinatorResultSelector
-{
-public:
-    const string operator()(const TestCombinatorResult& result)const
-    {
-        return result.result;
-    }
-};
-
-typedef regex::CombinatorNode<string, TestCombinatorResult, TestCombinatorResultSelector, emptystring> CombinatorRule_Type;
+typedef regex::CombinatorCh<char, NFAContext, NFAContext, identity<NFAContext>, AlwaysFalse> ch;
+typedef regex::CombinatorRule<NFAContext, NFAContext, identity<NFAContext>, AlwaysFalse> Rule_Type;
 
 TEST_CASE(TestRegex)
 {
-    CombinatorRule_Type a, b;
-    CombinatorRule_Type c = a + b;
-    TestCombinatorResult result;
-    c.parse("test", result);
+    ch ch_a('a'), ch_b('b');
+    Rule_Type a = ch_a, b = ch_b;
+    Rule_Type c = a + b;
+
+    NFAContext nfaContext;
+    TEST_ASSERT(!c.parse(nfaContext, nfaContext), "Failed to pase!");
+    nfaContext.clear();
 }

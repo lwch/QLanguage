@@ -19,6 +19,10 @@
 NAMESPACE_QLANGUAGE_LIBRARY_START
 namespace combinator
 {
+#define RELEASE_ACHIEVE \
+virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); } \
+virtual inline const typename QLanguage::Library::combinator::Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }
+
     template <typename O>
     class CombinatorResult
     {
@@ -58,8 +62,6 @@ namespace combinator
         virtual bool parse(const I& input, O& output)=0;
 
         virtual void destruct()=0;
-
-        virtual bool hook(const self* pCombinator)=0;
 
         typedef size_t size_type;
         virtual const size_type objSize()const=0;

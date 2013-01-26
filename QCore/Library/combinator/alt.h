@@ -27,24 +27,18 @@ namespace combinator
 
         virtual bool parse(const I& input, O& output)
         {
-            O result1, result2;
-            if (first && first->parse(input, result1))
+            if (first && first->parse(input, output))
             {
-                output = result1;
-                return this->hook(this);
+                return true;
             }
-            if (second && second->parse(input, result2))
+            if (second && second->parse(input, output))
             {
-                output = result2;
-                return this->hook(this);
+                return true;
             }
             return false;
         }
 
-        virtual inline bool hook(const combinator_type* pCombinator) { return true; }
-
-        virtual inline void destruct() { QLanguage::Library::destruct(this, has_destruct(*this)); }
-        virtual inline const typename Combinator<I, O, IOO, E>::size_type objSize()const { return sizeof(*this); }
+        RELEASE_ACHIEVE
     protected:
         combinator_type* first;
         combinator_type* second;

@@ -21,6 +21,12 @@ namespace QLanguage
 {
     namespace Library
     {
+        template <typename T>
+        inline void construct(T* p)
+        {
+            new (p) T();
+        }
+
         template <typename T1, typename T2>
         inline void construct(T1* p, const T2& value)
         {
