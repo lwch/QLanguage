@@ -13,12 +13,10 @@
 #define _QCORE_UINT_TEST_LIBRARY_REGEX_H_
 
 #include "TestBase.h"
-#include "../../QCore/Library/combinator/rule.h"
 #include "../../QCore/Library/regex/regex.h"
 
 using namespace QLanguage;
 using namespace QLanguage::Library;
-using namespace QLanguage::Library::combinator;
 using namespace QLanguage::Library::regex;
 
 #endif

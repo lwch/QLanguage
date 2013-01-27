@@ -27,12 +27,15 @@ namespace combinator
 
         virtual bool parse(const I& input, O& output)
         {
-            if (first && first->parse(input, output))
+            O result;
+            if (first && first->parse(input, result))
             {
+                output += result;
                 return true;
             }
-            if (second && second->parse(input, output))
+            if (second && second->parse(input, result))
             {
+                output += result;
                 return true;
             }
             return false;

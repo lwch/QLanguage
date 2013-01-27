@@ -226,6 +226,11 @@ public:
     {
         return node;
     }
+
+    inline link_type operator->()const
+    {
+        return node;
+    }
 };
 
 template <typename T>
@@ -291,7 +296,7 @@ public:
 
     ~vector()
     {
-        destruct(start, end_of_element);
+        destruct(start, finish);
         if (start != iterator::null()) Alloc::deallocate(start, end_of_element - start);
     }
 

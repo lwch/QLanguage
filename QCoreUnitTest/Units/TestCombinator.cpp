@@ -20,6 +20,11 @@ public:
     {
         return TestCombinatorResult();
     }
+
+    inline TestCombinatorResult& operator+=(const TestCombinatorResult& x)
+    {
+        return *this;
+    }
 };
 
 class TestCombinatorResultSelector : public DefaultCombinatorResultSelector

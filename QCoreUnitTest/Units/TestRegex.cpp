@@ -9,29 +9,17 @@
 	
 	purpose:	
 *********************************************************************/
-#include "../../QCore/Library/function.h"
 #include "TestRegex.h"
 
-typedef regex::CombinatorNFAContext<char, string> NFAContext;
-
-struct AlwaysFalse : public unary_function<NFAContext, bool>
-{
-    inline const bool operator()(const NFAContext&)const
-    {
-        return false;
-    }
-};
-
-typedef regex::CombinatorCh<char, NFAContext, NFAContext, identity<NFAContext>, AlwaysFalse> ch;
-typedef regex::CombinatorRule<NFAContext, NFAContext, identity<NFAContext>, AlwaysFalse> Rule_Type;
+typedef regex::Rule<char, string> Rule_Type;
 
 TEST_CASE(TestRegex)
 {
-    ch ch_a('a'), ch_b('b');
-    Rule_Type a = ch_a, b = ch_b;
+    Rule_Type::Context context;
+    Rule_Type a('a', context), b('b', context);
     Rule_Type c = a + b;
 
-    NFAContext nfaContext;
-    TEST_ASSERT(!c.parse(nfaContext, nfaContext), "Failed to pase!");
-    nfaContext.clear();
+#ifdef _DEBUG
+    c.print();
+#endif
 }
