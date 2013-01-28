@@ -90,6 +90,8 @@ namespace regex
         typedef Rule<Char_Type, String_Type> self;
         typedef allocator<State> State_Alloc;
     public:
+        Rule(Context& context) : context(context), pStart(NULL), pEnd(NULL) {}
+
         Rule(const Char_Type& x, Context& context) : context(context)
         {
             pStart = State_Alloc::allocate();
@@ -116,12 +118,63 @@ namespace regex
         self operator+(const self& x)
         {
             self a = *this;
-            for (int i = 0, m = x.edges.size(); i < m; ++i)
-            {
-                a.edges.push_back(x.edges[i]);
-            }
+            copyEdges(x, a);
             a.edges.push_back(Edge(a.pEnd, x.pStart));
-            pEnd = x.pEnd;
+            a.pEnd = x.pEnd;
+            return a;
+        }
+
+        self operator|(const self& x)
+        {
+            self a(context);
+            copyEdges(*this, a);
+            copyEdges(x, a);
+
+            a.pStart = State_Alloc::allocate();
+            construct(a.pStart);
+
+            a.pEnd = State_Alloc::allocate();
+            construct(a.pEnd);
+
+            context.states.insert(a.pStart);
+            context.states.insert(a.pEnd);
+
+            a.edges.push_back(Edge(a.pStart, pStart));
+            a.edges.push_back(Edge(a.pStart, x.pStart));
+            a.edges.push_back(Edge(pEnd, a.pEnd));
+            a.edges.push_back(Edge(x.pEnd, a.pEnd));
+            return a;
+        }
+
+        self operator*()
+        {
+            self a(context);
+            copyEdges(*this, a);
+
+            a.pStart = a.pEnd = State_Alloc::allocate();
+            construct(a.pStart);
+
+            context.states.insert(a.pStart);
+
+            a.edges.push_back(Edge(a.pStart, pStart));
+            a.edges.push_back(Edge(pEnd, a.pEnd));
+            return a;
+        }
+
+        self operator+()
+        {
+            self a(context);
+            copyEdges(*this, a);
+
+            a.pStart = pStart;
+            a.pEnd = State_Alloc::allocate();
+            construct(a.pEnd);
+
+            context.states.insert(a.pEnd);
+
+            a.edges.push_back(Edge(pEnd, a.pEnd));
+            a.edges.push_back(Edge(a.pEnd, pStart));
+            a.edges.push_back(Edge(pEnd, a.pEnd));
             return a;
         }
 
@@ -158,6 +211,14 @@ namespace regex
             printf("start: %03d -> end: %03d\n", pStart->idx, pEnd->idx);
         }
 #endif
+    protected:
+        inline void copyEdges(const self& from, self& to)
+        {
+            for (int i = 0, m = from.edges.size(); i < m; ++i)
+            {
+                to.edges.push_back(from.edges[i]);
+            }
+        }
     protected:
         State *pStart, *pEnd;
         vector<Edge> edges;
