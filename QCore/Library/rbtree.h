@@ -21,7 +21,7 @@
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 
-    template <typename T>
+template <typename T>
 struct __rbtree_node
 {
 protected:
@@ -111,6 +111,11 @@ public:
     const bool operator!=(const __rbtree_iterator_base<T>& x)const
     {
         return node != x.node;
+    }
+
+    inline T* operator->()const
+    {
+        return &node->data;
     }
 };
 
@@ -251,9 +256,16 @@ public:
     {
         header = Value_Alloc::allocate();
         header->color  = red;
-        parent(header) = NULL;
-        left(header)   = header;
-        right(header)  = header;
+        header->parent = NULL;
+        header->left   = header;
+        header->right  = header;
+    }
+
+    rbtree(const self& x)
+    {
+        header = Value_Alloc::allocate();
+        header->color = red;
+        copyFrom(x);
     }
 
     ~rbtree()
@@ -442,6 +454,39 @@ public:
         size_type n = 0;
         distance(p.first, p.second, n);
         return n;
+    }
+
+    self& operator=(const self& x)
+    {
+        if (&x != this)
+        {
+            clear();
+            copyFrom(x);
+        }
+        return *this;
+    }
+
+    void copyFrom(const self& x)
+    {
+        if (x.header->parent)
+        {
+            link_type node = Value_Alloc::allocate();
+
+            construct(node, x.header->parent->data);
+            node->color  = x.header->parent->color;
+            node->parent = header;
+
+            copyFrom(node->left, x.header->parent->left, node);
+            copyFrom(node->right, x.header->parent->right, node);
+
+            header->parent = node;
+            header->left   = minimum(node);
+            header->right  = maximum(node);
+        }
+        node_count    = x.node_count;
+        equal_compare = x.equal_compare;
+        less_compare  = x.less_compare;
+        key           = x.key;
     }
 protected:
     inline iterator find(const key_type& x, link_type node)
@@ -745,6 +790,21 @@ protected:
 
         while(left(x)) x = left(x);
         return x;
+    }
+
+    void copyFrom(link_type& node, const link_type from, link_type parent)
+    {
+        if (from)
+        {
+            node = Value_Alloc::allocate();
+
+            construct(node, from->data);
+            node->parent = parent;
+            node->color = from->color;
+
+            copyFrom(node->left, from->left, node);
+            copyFrom(node->right, from->right, node);
+        }
     }
 
     inline static link_type& parent(link_type node)

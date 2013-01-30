@@ -51,6 +51,16 @@ namespace regex
             {
                 data.string_value = x;
             }
+
+            const bool operator<(const Edge& x)const
+            {
+                return pFrom < x.pFrom;
+            }
+
+            const bool operator==(const Edge& x)const
+            {
+                return pFrom == x.pFrom && pTo == x.pTo;
+            }
         };
     public:
         struct State
@@ -100,7 +110,7 @@ namespace regex
             pEnd = State_Alloc::allocate();
             construct(pEnd);
 
-            edges.push_back(Edge(x, pStart, pEnd));
+            edges.insert(Edge(x, pStart, pEnd));
 
             context.states.insert(pStart);
             context.states.insert(pEnd);
@@ -119,7 +129,7 @@ namespace regex
         {
             self a = *this;
             copyEdges(x, a);
-            a.edges.push_back(Edge(a.pEnd, x.pStart));
+            a.edges.insert(Edge(a.pEnd, x.pStart));
             a.pEnd = x.pEnd;
             return a;
         }
@@ -139,10 +149,10 @@ namespace regex
             context.states.insert(a.pStart);
             context.states.insert(a.pEnd);
 
-            a.edges.push_back(Edge(a.pStart, pStart));
-            a.edges.push_back(Edge(a.pStart, x.pStart));
-            a.edges.push_back(Edge(pEnd, a.pEnd));
-            a.edges.push_back(Edge(x.pEnd, a.pEnd));
+            a.edges.insert(Edge(a.pStart, pStart));
+            a.edges.insert(Edge(a.pStart, x.pStart));
+            a.edges.insert(Edge(pEnd, a.pEnd));
+            a.edges.insert(Edge(x.pEnd, a.pEnd));
             return a;
         }
 
@@ -156,8 +166,8 @@ namespace regex
 
             context.states.insert(a.pStart);
 
-            a.edges.push_back(Edge(a.pStart, pStart));
-            a.edges.push_back(Edge(pEnd, a.pEnd));
+            a.edges.insert(Edge(a.pStart, pStart));
+            a.edges.insert(Edge(pEnd, a.pEnd));
             return a;
         }
 
@@ -172,9 +182,9 @@ namespace regex
 
             context.states.insert(a.pEnd);
 
-            a.edges.push_back(Edge(pEnd, a.pEnd));
-            a.edges.push_back(Edge(a.pEnd, pStart));
-            a.edges.push_back(Edge(pEnd, a.pEnd));
+            a.edges.insert(Edge(pEnd, a.pEnd));
+            a.edges.insert(Edge(a.pEnd, pStart));
+            a.edges.insert(Edge(pEnd, a.pEnd));
             return a;
         }
 
@@ -192,7 +202,7 @@ namespace regex
 #ifdef _DEBUG
         void print()
         {
-            for (typename vector<Edge>::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
+            for (typename set<Edge>::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
             {
                 printf("%03d -> %03d", i->pFrom->idx, i->pTo->idx);
                 switch (i->edge_type)
@@ -214,15 +224,15 @@ namespace regex
     protected:
         inline void copyEdges(const self& from, self& to)
         {
-            for (int i = 0, m = from.edges.size(); i < m; ++i)
+            for (set<Edge>::const_iterator i = from.edges.begin(), m = from.edges.end(); i != m; ++i)
             {
-                to.edges.push_back(from.edges[i]);
+                to.edges.insert(*i);
             }
         }
     protected:
         State *pStart, *pEnd;
-        vector<Edge> edges;
-        Context&     context;
+        set<Edge> edges;
+        Context&  context;
     };
 }
 NAMESPACE_QLANGUAGE_LIBRARY_END

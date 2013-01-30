@@ -26,6 +26,7 @@ namespace QLanguage
             typedef T key_type;
             typedef T value_type;
             typedef rbtree<key_type, value_type, identity<value_type>, LessCompare, EqualCompare> instance_type;
+            typedef set<T, LessCompare, EqualCompare> self;
 
             instance_type instance;
         public:
@@ -35,6 +36,12 @@ namespace QLanguage
             typedef typename instance_type::const_iterator         const_iterator;
             typedef typename instance_type::reverse_iterator       reverse_iterator;
             typedef typename instance_type::const_reverse_iterator const_reverse_iterator;
+
+            set() {}
+
+            set(const self& x) : instance(x.instance) {}
+
+            ~set() {}
 
             inline pair<iterator, bool> insert(const value_type& x)
             {
@@ -124,6 +131,12 @@ namespace QLanguage
             inline const_reverse_iterator rend()const
             {
                 return instance.rend();
+            }
+
+            inline self& operator=(const self& x)
+            {
+                if (&x != this) instance = x.instance;
+                return *this;
             }
         };
     }

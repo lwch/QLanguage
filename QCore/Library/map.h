@@ -27,6 +27,7 @@ namespace QLanguage
             typedef T            data_type;
             typedef pair<Key, T> value_type;
             typedef rbtree<key_type, value_type, select1st<value_type>, LessCompare, EqualCompare> instance_type;
+            typedef map<Key, T, LessCompare, EqualCompare> self;
 
             instance_type instance;
         public:
@@ -36,6 +37,12 @@ namespace QLanguage
             typedef typename instance_type::const_iterator         const_iterator;
             typedef typename instance_type::reverse_iterator       reverse_iterator;
             typedef typename instance_type::const_reverse_iterator const_reverse_iterator;
+
+            map() {}
+
+            map(const self& x) : instance(x.instance) {}
+
+            ~map() {}
 
             inline pair<iterator, bool> insert(const value_type& x)
             {
@@ -120,6 +127,12 @@ namespace QLanguage
             inline data_type& operator[](const key_type& key)
             {
                 return (*instance.insert_unique(value_type(key, data_type())).first).second;
+            }
+
+            inline self& operator=(const self& x)
+            {
+                if (&x != this) instance = x.instance;
+                return *this;
             }
         };
     }
