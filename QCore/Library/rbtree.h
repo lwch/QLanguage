@@ -276,12 +276,12 @@ public:
 
     inline iterator insert_equal(const value_type& x)
     {
-        return insert_equal(x, parent(header), NULL);
+        return insert_equal(x, header->parent, NULL);
     }
 
     inline pair<iterator, bool> insert_unique(const value_type& x)
     {
-        return insert_unique(x, parent(header), NULL);
+        return insert_unique(x, header->parent, NULL);
     }
 
     inline void erase(iterator position)
@@ -307,20 +307,20 @@ public:
 
     inline iterator find(const key_type& x)
     {
-        return find(x, parent(header));
+        return find(x, header->parent);
     }
 
     inline const_iterator find(const key_type& x)const
     {
-        return find(x, parent(header));
+        return find(x, header->parent);
     }
 
     inline void clear()
     {
-        clear(parent(header));
-        parent(header) = NULL;
-        left(header)   = header;
-        right(header)  = header;
+        clear(header->parent);
+        header->parent = NULL;
+        header->left   = header;
+        header->left  = header;
         node_count = 0;
     }
 
@@ -336,24 +336,24 @@ public:
 
     inline const_iterator maximum()const
     {
-        const_iterator i = maximum(parent(header));
+        const_iterator i = maximum(header->parent);
         return i == NULL ? header : i;
     }
 
     inline const_iterator minimum()const
     {
-        const_iterator i = minimum(parent(header));
+        const_iterator i = minimum(header->parent);
         return i == NULL ? header : i;
     }
 
     inline iterator begin()
     {
-        return left(header);
+        return header->left;
     }
 
     inline const_iterator begin()const
     {
-        return left(header);
+        return header->left;
     }
 
     inline reverse_iterator rbegin()
@@ -402,12 +402,12 @@ public:
     const_iterator lower_bound(const key_type& x)const
     {
         link_type y = header;
-        link_type z = parent(y);
+        link_type z = y->parent;
 
         while(z)
         {
-            if(!less_compare(key(z->data), x)) y = z, z = left(z);
-            else z = right(z);
+            if(!less_compare(key(z->data), x)) y = z, z = z->left;
+            else z = z->right;
         }
         return y;
     }
@@ -420,7 +420,7 @@ public:
         while(z)
         {
             if(less_compare(x, key(z->data))) y = z, z = left(z);
-            else z = right(z);
+            else z = z->right;
         }
         return y;
     }
@@ -428,12 +428,12 @@ public:
     const_iterator upper_bound(const key_type& x)const
     {
         link_type y = header;
-        link_type z = parent(y);
+        link_type z = y->parent;
 
         while(z)
         {
-            if(less_compare(x, key(z->data))) y = z, z = left(z);
-            else z = right(z);
+            if(less_compare(x, key(z->data))) y = z, z = z->left;
+            else z = z->right;
         }
         return y;
     }
@@ -493,9 +493,9 @@ protected:
     {
         if(node)
         {
-            if(less_compare(x, key(node->data))) return find(x, left(node));
+            if(less_compare(x, key(node->data))) return find(x, node->left);
             else if(equal_compare(x, key(node->data))) return node;
-            else return find(x, right(node));
+            else return find(x, node->right);
         }
         return NULL;
     }
@@ -504,8 +504,8 @@ protected:
     {
         if(node != NULL)
         {
-            if(less_compare(key(x), key(node->data))) return insert_equal(x, left(node), node);
-            else return insert_equal(x, right(node), node);
+            if(less_compare(key(x), key(node->data))) return insert_equal(x, node->left, node);
+            else return insert_equal(x, node->right, node);
         }
         else
         {
@@ -513,21 +513,21 @@ protected:
             construct(node, x);
             if(_parent == NULL) // root node
             {
-                parent(node) = header;
-                parent(header) = node;
-                left(header) = node;
-                right(header) = node;
+                node->parent = header;
+                header->parent = node;
+                header->left = node;
+                header->right = node;
             }
-            else if(_parent == left(header) && node == left(_parent))
+            else if(_parent == header->left && node == _parent->left)
             {
-                left(header) = node;
+                header->left = node;
             }
-            else if(_parent == right(header) && node == right(_parent))
+            else if(_parent == header->right && node == _parent->right)
             {
-                right(header) = node;
+                header->right = node;
             }
-            if(_parent) parent(node) = _parent;
-            insert_rebalance(node, parent(header));
+            if(_parent) node->parent = _parent;
+            insert_rebalance(node, header->parent);
             ++node_count;
             return iterator(node);
         }
@@ -537,9 +537,9 @@ protected:
     {
         if(node != NULL)
         {
-            if(less_compare(key(x), key(node->data))) return insert_unique(x, left(node), node);
+            if(less_compare(key(x), key(node->data))) return insert_unique(x, node->left, node);
             else if(equal_compare(key(x), key(node->data))) return pair<iterator, bool>(node, false);
-            else return insert_unique(x, right(node), node);
+            else return insert_unique(x, node->right, node);
         }
         else
         {
@@ -547,21 +547,21 @@ protected:
             construct(node, x);
             if(_parent == NULL) // root node
             {
-                parent(node) = header;
-                parent(header) = node;
-                left(header) = node;
-                right(header) = node;
+                node->parent   = header;
+                header->parent = node;
+                header->left   = node;
+                header->right  = node;
             }
-            else if(_parent == left(header) && node == left(_parent))
+            else if(_parent == header->left && node == _parent->left)
             {
-                left(header) = node;
+                header->left = node;
             }
-            else if(_parent == right(header) && node == right(_parent))
+            else if(_parent == header->right && node == _parent->right)
             {
-                right(header) = node;
+                header->right = node;
             }
-            if(_parent) parent(node) = _parent;
-            insert_rebalance(node, parent(header));
+            if(_parent) node->parent = _parent;
+            insert_rebalance(node, header->parent);
             ++node_count;
             return pair<iterator, bool>(node, true);
         }
@@ -572,40 +572,40 @@ protected:
         // y为被删除的节点
         // x为被删除的节点的孩子
         link_type y = z, x = NULL, x_parent = NULL;
-        if(!left(y)) x = right(y);
+        if(!y->left) x = y->right;
         else
         {
-            if(!right(y)) x = left(y);
+            if(!y->right) x = y->left;
             else
             {
-                y = right(y);
-                while(left(y)) y = left(y);
-                x = right(y);
+                y = y->right;
+                while(y->left) y = y->left;
+                x = y->right;
             }
         }
 
         if(y != z)
         {
             // 将y替换为被删除的节点
-            parent(left(z)) = y;
-            left(y) = left(z);
+            z->left->parent = y;
+            y->left = z->left;
 
-            if(y != right(z)) // 被删除的节点作为根的子树的高度>1
+            if(y != z->right) // 被删除的节点作为根的子树的高度>1
             {
-                x_parent = parent(y);
-                if(x) parent(x) = parent(y);
-                left(parent(y)) = x;
+                x_parent = y->parent;
+                if(x) x->parent = y->parent;
+                y->parent->left = x;
 
                 // 将y替换为要删除的节点
-                right(y) = right(z);
-                parent(right(z)) = y;
+                y->right = z->right;
+                z->right->parent = y;
             }
             else x_parent = y;
 
-            if(left(parent(z)) == z) left(parent(z)) = y;
-            else right(parent(z)) = y;
+            if(z->parent->left == z) z->parent->left = y;
+            else z->parent->right = y;
 
-            parent(y) = parent(z);
+            y->parent = z->parent;
 
             // 交换要删除节点和被删除节点的颜色
             typename node_type::color_type tmp = y->color;
@@ -618,97 +618,97 @@ protected:
         else
         {
             // 被删除节点只有一个子节点，直接将其子节点替换为被删除节点即可
-            x_parent = parent(y);
-            if(x) parent(x) = parent(y);
-            if(left(parent(z)) == z) left(parent(z)) = x;
-            else right(parent(z)) = x;
-            if (left(header) == z)
+            x_parent = y->parent;
+            if(x) x->parent = y->parent;
+            if(z->parent->left == z) z->parent->left = x;
+            else z->parent->right = x;
+            if (header->left == z)
             {
-                if(!right(z)) left(header) = parent(z);
-                else left(header) = minimum(x);
+                if(!z->right) header->left = z->parent;
+                else header->left = minimum(x);
             }
-            if (right(header) == z)
+            if (header->right == z)
             {
-                if(!left(z)) right(header) = parent(z);
-                else right(header) = maximum(x);
+                if(!z->left) header->right = z->parent;
+                else header->right = maximum(x);
             }
         }
 
         if(y->color == black) // 要删除的那个点为黑色
         {
-            while(x != parent(header) && (!x || x->color == black)) // 迭代直到x不为黑色或根节点为止
+            while(x != header->parent && (!x || x->color == black)) // 迭代直到x不为黑色或根节点为止
             {
-                if(left(x_parent) == x) // 被删除节点为左孩子
+                if(x_parent->left == x) // 被删除节点为左孩子
                 {
-                    link_type w = right(x_parent); // 其兄弟节点
+                    link_type w = x_parent->right; // 其兄弟节点
                     // case1
                     if(w->color == red)
                     {
                         w->color = black;
                         x_parent->color = red;
-                        l_rotate(x_parent, parent(header));
-                        w = right(x_parent);
+                        l_rotate(x_parent, header->parent);
+                        w = x_parent->right;
                     }
 
                     // case2
-                    if((!left(w) || left(w)->color == black) &&
-                        (!right(w) || right(w)->color == black))
+                    if((!w->left || w->left->color == black) &&
+                        (!w->right || w->right->color == black))
                     {
                         w->color = red;
                         x = x_parent;
-                        x_parent = parent(x_parent);
+                        x_parent = x_parent->parent;
                     }
                     else
                     {
                         // case3
-                        if(!right(w) || right(w)->color == black)
+                        if(!w->right || w->right->color == black)
                         {
-                            if(left(w)) left(w)->color = black;
+                            if(w->left) w->left->color = black;
                             w->color = red;
-                            r_rotate(w, parent(header));
-                            w = right(x_parent);
+                            r_rotate(w, header->parent);
+                            w = x_parent->right;
                         }
 
                         // case4
                         w->color = x_parent->color;
                         x_parent->color = black;
-                        if(right(w)) right(w)->color = black;
-                        l_rotate(x_parent, parent(header));
+                        if(w->right) w->right->color = black;
+                        l_rotate(x_parent, header->parent);
                         break;
                     }
                 }
                 else // 被删除节点为右孩子
                 {
-                    link_type w = left(x_parent);
+                    link_type w = x_parent->left;
                     if(w->color == red)
                     {
                         w->color = black;
                         x_parent->color = red;
-                        r_rotate(x_parent, parent(header));
-                        w = left(x_parent);
+                        r_rotate(x_parent, header->parent);
+                        w = x_parent->left;
                     }
 
-                    if((!right(w) || right(w)->color == black) &&
-                        (!left(w) || left(w)->color == black))
+                    if((!w->right || w->right->color == black) &&
+                        (!w->left || w->left->color == black))
                     {
                         w->color = red;
                         x = x_parent;
-                        x_parent = parent(x_parent);
+                        x_parent = x_parent->parent;
                     }
                     else
                     {
-                        if(!left(w) || left(w)->color == black)
+                        if(!w->left || w->left->color == black)
                         {
-                            if(right(w)) right(w)->color = black;
+                            if(w->right) w->right->color = black;
                             w->color = red;
-                            l_rotate(w, parent(header));
-                            w = left(x_parent);
+                            l_rotate(w, header->parent);
+                            w = x_parent->left;
                         }
 
                         w->color = x_parent->color;
                         x_parent->color = black;
-                        if(left(w)) left(w)->color = black;
-                        r_rotate(x_parent, parent(header));
+                        if(w->left) w->left->color = black;
+                        r_rotate(x_parent, header->parent);
                         break;
                     }
                 }
@@ -722,44 +722,88 @@ protected:
 
     void insert_rebalance(link_type node, link_type& root)
     {
-        while(node != root && parent(node)->color == red)
+        while(node != root && node->parent->color == red)
         {
-            link_type u = uncle(node), p = parent(node), g = parent(p);
-            if(u != NULL && u->color == red)
+            link_type p = node->parent, g = p->parent, u = NULL;// g->left == p ? g->right : g->left;
+//             if(u != NULL && u->color == red)
+//             {
+//                 // 若父节点和叔父节点都为红色，则
+//                 // 1.直接修改这2个节点的颜色和祖父节点的颜色
+//                 // 2.递归向上调整
+//                 p->color = black;
+//                 u->color = black;
+//                 g->color = red;
+//                 node = g;
+//             }
+//             else if(p == g->left)
+//             {
+//                 if(node == p->right) // 内侧旋转
+//                 {
+//                     node = p;
+//                     l_rotate(node, root);
+//                 }
+//                 p = node->parent;
+//                 g = p->parent;
+//                 p->color = black;
+//                 g->color = red;
+//                 r_rotate(g, root); // 外侧旋转
+//             }
+//             else
+//             {
+//                 if(node == p->left)
+//                 {
+//                     node = p;
+//                     r_rotate(node, root);
+//                 }
+//                 p = node->parent;
+//                 g = p->parent;
+//                 p->color = black;
+//                 g->color = red;
+//                 l_rotate(g, root);
+//             }
+            if (p == g->left)
             {
-                // 若父节点和叔父节点都为红色，则
-                // 1.直接修改这2个节点的颜色和祖父节点的颜色
-                // 2.递归向上调整
-                p->color = black;
-                u->color = black;
-                g->color = red;
-                node = g;
-            }
-            else if(p == left(g))
-            {
-                if(node == right(p)) // 内侧旋转
+                u = g->right;
+                if (u && u->color == red)
                 {
-                    node = p;
-                    l_rotate(node, root);
+                    p->color = black;
+                    u->color = black;
+                    g->color = red;
+                    node = g;
                 }
-                p = parent(node);
-                g = parent(p);
-                p->color = black;
-                g->color = red;
-                r_rotate(g, root); // 外侧旋转
+                else
+                {
+                    if (node == p->right)
+                    {
+                        node = p;
+                        l_rotate(node, root);
+                    }
+                    node->parent->color = black;
+                    node->parent->parent->color = red;
+                    r_rotate(node->parent->parent, root);
+                }
             }
             else
             {
-                if(node == left(p))
+                u = g->left;
+                if (u && u->color == red)
                 {
-                    node = p;
-                    r_rotate(node, root);
+                    p->color = black;
+                    u->color = black;
+                    g->color = red;
+                    node = g;
                 }
-                p = parent(node);
-                g = parent(p);
-                p->color = black;
-                g->color = red;
-                l_rotate(g, root);
+                else
+                {
+                    if (node == p->left)
+                    {
+                        node = node->parent;
+                        r_rotate(node, root);
+                    }
+                    node->parent->color = black;
+                    node->parent->parent->color = red;
+                    l_rotate(node->parent->parent, root);
+                }
             }
         }
         root->color = black;
@@ -769,8 +813,8 @@ protected:
     {
         if(node != NULL)
         {
-            clear(left(node));
-            clear(right(node));
+            clear(node->left);
+            clear(node->right);
             destruct(&node->data, has_destruct(node->data));
             Value_Alloc::deallocate(node);
         }
@@ -780,7 +824,7 @@ protected:
     {
         if(!x) return NULL;
 
-        while(right(x)) x = right(x);
+        while(x->right) x = x->right;
         return x;
     }
 
@@ -788,7 +832,7 @@ protected:
     {
         if(!x) return NULL;
 
-        while(left(x)) x = left(x);
+        while(x->left) x = x->left;
         return x;
     }
 
@@ -807,58 +851,32 @@ protected:
         }
     }
 
-    inline static link_type& parent(link_type node)
-    {
-        return node->parent;
-    }
-
-    inline static link_type& left(link_type node)
-    {
-        return node->left;
-    }
-
-    inline static link_type& right(link_type node)
-    {
-        return node->right;
-    }
-
-    inline static link_type& grandparent(link_type node)
-    {
-        return parent(parent(node));
-    }
-
-    inline static link_type& uncle(link_type node)
-    {
-        link_type g = grandparent(node);
-        return left(g) == parent(node) ? right(g) : left(g);
-    }
-
     inline static void r_rotate(link_type node, link_type& root)
     {
-        link_type tmp = left(node);
-        left(node) = right(tmp);
-        if(right(tmp) != NULL) parent(right(tmp)) = node;
-        parent(tmp) = parent(node);
+        link_type tmp = node->left;
+        node->left = tmp->right;
+        if(tmp->right != NULL) tmp->right->parent = node;
+        tmp->parent = node->parent;
 
         if(node == root) root = tmp;
-        else if(node == left(parent(node))) left(parent(node)) = tmp;
-        else right(parent(node)) = tmp;
-        right(tmp) = node;
-        parent(node) = tmp;
+        else if(node == node->parent->left) node->parent->left = tmp;
+        else node->parent->right = tmp;
+        tmp->right = node;
+        node->parent = tmp;
     }
 
     inline static void l_rotate(link_type node, link_type& root)
     {
-        link_type tmp = right(node);
-        right(node) = left(tmp);
-        if(left(tmp) != NULL) parent(left(tmp)) = node;
-        parent(tmp) = parent(node);
+        link_type tmp = node->right;
+        node->right = tmp->left;
+        if(tmp->left != NULL) tmp->left->parent = node;
+        tmp->parent = node->parent;
 
         if(node == root) root = tmp;
-        else if(node == left(parent(node))) left(parent(node)) = tmp;
-        else right(parent(node)) = tmp;
-        left(tmp) = node;
-        parent(node) = tmp;
+        else if(node == node->parent->left) node->parent->left = tmp;
+        else node->parent->right = tmp;
+        tmp->left = node;
+        node->parent = tmp;
     }
 };
 

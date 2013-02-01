@@ -16,10 +16,10 @@ typedef regex::Rule<char, string> Rule_Type;
 TEST_CASE(TestRegex)
 {
     Rule_Type::Context context;
-    Rule_Type a('a', context), b('b', context);
-    Rule_Type c = *(a + b) | +a;
+    Rule_Type a('a', context), b('b', context), d('d', context);
+    Rule_Type result = (a - d) + +b;
 
 #ifdef _DEBUG
-    c.print();
+    result.print();
 #endif
 }

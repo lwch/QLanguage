@@ -17,6 +17,7 @@
 
 #include "../vector.h"
 #include "../set.h"
+#include "../map.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 namespace regex
@@ -127,64 +128,116 @@ namespace regex
 
         self operator+(const self& x)
         {
-            self a = *this;
-            copyEdges(x, a);
-            a.edges.insert(Edge(a.pEnd, x.pStart));
-            a.pEnd = x.pEnd;
+            self a = clone(*this), b = clone(x);
+            copyEdges(b, a);
+            a.edges.insert(Edge(a.pEnd, b.pStart));
+            a.pEnd = b.pEnd;
+            return a;
+        }
+
+        self operator-(const self& x)
+        {
+            self a = clone(*this);
+
+            if (edges.size() == 1 && x.edges.size() == 1 &&
+                edges.begin()->edge_type == Edge::TChar && x.edges.begin()->edge_type == Edge::TChar)
+            {
+                State* _pStart = State_Alloc::allocate();
+                construct(_pStart);
+
+                State* _pEnd   = State_Alloc::allocate();
+                construct(_pEnd);
+
+                context.states.insert(_pStart);
+                context.states.insert(_pEnd);
+
+                a.edges.insert(Edge(_pStart, a.pStart));
+                a.edges.insert(Edge(a.pEnd, _pEnd));
+
+                const Char_Type chStart = edges.begin()->data.char_value;
+                const Char_Type chEnd   = x.edges.begin()->data.char_value;
+                for (Char_Type ch = chStart + 1; ch < chEnd; ++ch)
+                {
+                    self y(ch, context);
+                    copyEdges(y, a);
+                    a.edges.insert(Edge(_pStart, y.pStart));
+                    a.edges.insert(Edge(y.pEnd, _pEnd));
+                }
+
+                self b = clone(x);
+                copyEdges(b, a);
+
+                a.edges.insert(Edge(_pStart, b.pStart));
+                a.edges.insert(Edge(b.pEnd, _pEnd));
+
+                a.pStart = _pStart;
+                a.pEnd   = _pEnd;
+            }
+            else
+            {
+                throw error<char*>("doesn't support", __FILE__, __LINE__);
+            }
             return a;
         }
 
         self operator|(const self& x)
         {
-            self a(context);
-            copyEdges(*this, a);
-            copyEdges(x, a);
+            self a = clone(*this), b = clone(x);
+            copyEdges(b, a);
 
-            a.pStart = State_Alloc::allocate();
-            construct(a.pStart);
+            State* _pStart = State_Alloc::allocate();
+            construct(_pStart);
 
-            a.pEnd = State_Alloc::allocate();
-            construct(a.pEnd);
+            State* _pEnd = State_Alloc::allocate();
+            construct(_pEnd);
 
-            context.states.insert(a.pStart);
-            context.states.insert(a.pEnd);
+            context.states.insert(_pStart);
+            context.states.insert(_pEnd);
 
-            a.edges.insert(Edge(a.pStart, pStart));
-            a.edges.insert(Edge(a.pStart, x.pStart));
-            a.edges.insert(Edge(pEnd, a.pEnd));
-            a.edges.insert(Edge(x.pEnd, a.pEnd));
+            a.edges.insert(Edge(_pStart, a.pStart));
+            a.edges.insert(Edge(_pStart, b.pStart));
+            a.edges.insert(Edge(a.pEnd, _pEnd));
+            a.edges.insert(Edge(x.pEnd, _pEnd));
+
+            a.pStart = _pStart;
+            a.pEnd   = _pEnd;
+
             return a;
         }
 
         self operator*()
         {
-            self a(context);
-            copyEdges(*this, a);
+            self a = clone(*this);
 
-            a.pStart = a.pEnd = State_Alloc::allocate();
-            construct(a.pStart);
+            State* pState = State_Alloc::allocate();
+            construct(pState);
 
-            context.states.insert(a.pStart);
+            context.states.insert(pState);
 
-            a.edges.insert(Edge(a.pStart, pStart));
-            a.edges.insert(Edge(pEnd, a.pEnd));
+            a.edges.insert(Edge(pState, a.pStart));
+            a.edges.insert(Edge(a.pEnd, pState));
+
+            a.pStart = a.pEnd = pState;
+
             return a;
         }
 
         self operator+()
         {
-            self a(context);
-            copyEdges(*this, a);
+            self a = clone(*this), b = clone(*this);
+            copyEdges(b, a);
 
-            a.pStart = pStart;
-            a.pEnd = State_Alloc::allocate();
-            construct(a.pEnd);
+            State* _pEnd   = State_Alloc::allocate();
+            construct(_pEnd);
 
-            context.states.insert(a.pEnd);
+            context.states.insert(_pEnd);
 
-            a.edges.insert(Edge(pEnd, a.pEnd));
-            a.edges.insert(Edge(a.pEnd, pStart));
-            a.edges.insert(Edge(pEnd, a.pEnd));
+            a.edges.insert(Edge(a.pEnd, _pEnd));
+            a.edges.insert(Edge(_pEnd, b.pStart));
+            a.edges.insert(Edge(b.pEnd, _pEnd));
+
+            a.pEnd = _pEnd;
+
             return a;
         }
 
@@ -222,12 +275,48 @@ namespace regex
         }
 #endif
     protected:
-        inline void copyEdges(const self& from, self& to)
+        static void copyEdges(const self& from, self& to)
         {
             for (set<Edge>::const_iterator i = from.edges.begin(), m = from.edges.end(); i != m; ++i)
             {
                 to.edges.insert(*i);
             }
+        }
+
+        static self clone(const self& x)
+        {
+            self result(x.context);
+
+            map<State*, State*> statesMap;
+            for (set<Edge>::const_iterator i = x.edges.begin(), m = x.edges.end(); i != m; ++i)
+            {
+                State *pFrom = statesMap[i->pFrom], *pTo = statesMap[i->pTo];
+                if (pFrom == NULL)
+                {
+                    pFrom = statesMap[i->pFrom] = State_Alloc::allocate();
+                    construct(pFrom);
+
+                    x.context.states.insert(pFrom);
+                }
+
+                if (pTo == NULL)
+                {
+                    pTo = statesMap[i->pTo] = State_Alloc::allocate();
+                    construct(pTo);
+
+                    x.context.states.insert(pTo);
+                }
+
+                Edge edge(*i);
+                edge.pFrom = pFrom;
+                edge.pTo   = pTo;
+                result.edges.insert(edge);
+            }
+
+            result.pStart = statesMap[x.pStart];
+            result.pEnd   = statesMap[x.pEnd];
+
+            return result;
         }
     protected:
         State *pStart, *pEnd;
