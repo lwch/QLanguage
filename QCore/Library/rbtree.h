@@ -543,7 +543,7 @@ protected:
         }
         else
         {
-            node = Value_Alloc::allocate();
+            link_type pNode = node = Value_Alloc::allocate();
             construct(node, x);
             if(_parent == NULL) // root node
             {
@@ -561,9 +561,9 @@ protected:
                 header->right = node;
             }
             if(_parent) node->parent = _parent;
-            insert_rebalance(node, header->parent);
+            insert_rebalance(pNode, header->parent);
             ++node_count;
-            return pair<iterator, bool>(node, true);
+            return pair<iterator, bool>(pNode, true);
         }
     }
 
@@ -851,7 +851,7 @@ protected:
         }
     }
 
-    inline static void r_rotate(link_type node, link_type& root)
+    static void r_rotate(link_type node, link_type& root)
     {
         link_type tmp = node->left;
         node->left = tmp->right;
@@ -865,7 +865,7 @@ protected:
         node->parent = tmp;
     }
 
-    inline static void l_rotate(link_type node, link_type& root)
+    static void l_rotate(link_type node, link_type& root)
     {
         link_type tmp = node->right;
         node->right = tmp->left;

@@ -62,6 +62,18 @@ TEST_CASE(TestMap)
     }
     TEST_ASSERT(map.size() != 10, "tree is not empty!");
     TEST_ASSERT(map.empty(), "tree is not empty!");
+
+    map_type m;
+    m[0] = 0;
+    m[3] = 3;
+    try
+    {
+        m[2] = 2;
+    }
+    catch (...)
+    {
+        PrintError("error to set map key: 2, value: 2!");
+    }
 }
 
 TEST_CASE(TestMap_Speed)
