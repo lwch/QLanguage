@@ -63,7 +63,7 @@ namespace regex
                 return pFrom == x.pFrom && pTo == x.pTo;
             }
         };
-    public:
+
         struct State
         {
 #ifdef _DEBUG
@@ -83,7 +83,7 @@ namespace regex
             State() {}
 #endif
         };
-
+    public:
         struct Context
         {
             set<State*> states;
@@ -108,7 +108,21 @@ namespace regex
             pStart = State_Alloc::allocate();
             construct(pStart);
 
-            pEnd = State_Alloc::allocate();
+            pEnd   = State_Alloc::allocate();
+            construct(pEnd);
+
+            edges.insert(Edge(x, pStart, pEnd));
+
+            context.states.insert(pStart);
+            context.states.insert(pEnd);
+        }
+
+        Rule(const String_Type& x, Context& context) : context(context)
+        {
+            pStart = State_Alloc::allocate();
+            construct(pStart);
+
+            pEnd   = State_Alloc::allocate();
             construct(pEnd);
 
             edges.insert(Edge(x, pStart, pEnd));
@@ -197,11 +211,18 @@ namespace regex
             a.edges.insert(Edge(_pStart, a.pStart));
             a.edges.insert(Edge(_pStart, b.pStart));
             a.edges.insert(Edge(a.pEnd, _pEnd));
-            a.edges.insert(Edge(x.pEnd, _pEnd));
+            a.edges.insert(Edge(b.pEnd, _pEnd));
 
             a.pStart = _pStart;
             a.pEnd   = _pEnd;
 
+            return a;
+        }
+
+        inline self opt()
+        {
+            self a = clone(*this);
+            a.edges.insert(Edge(a.pStart, a.pEnd));
             return a;
         }
 

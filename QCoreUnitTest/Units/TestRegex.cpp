@@ -17,7 +17,7 @@ TEST_CASE(TestRegex)
 {
     Rule_Type::Context context;
     Rule_Type a('a', context), b('b', context), d('d', context);
-    Rule_Type result = (a - d) + +b;
+    Rule_Type result = (a - d).opt() + (+b | (a + b));
 
 #ifdef _DEBUG
     result.print();
