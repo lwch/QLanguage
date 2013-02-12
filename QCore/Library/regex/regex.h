@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/12/07
 	created:	7:12:2012   22:46
 	filename: 	\QCore\Library\regex\regex.h
@@ -114,7 +114,7 @@ namespace regex
 
             const bool operator<(const EpsilonNFA_Edge& x)const
             {
-                return (uint)pFrom + pTo < (uint)x.pFrom + x.pTo;
+                return (ulong)pFrom + pTo < (ulong)x.pFrom + x.pTo;
             }
 
             const bool operator==(const EpsilonNFA_Edge& x)const
@@ -225,7 +225,7 @@ namespace regex
 
             const bool operator<(const DFA_Edge& x)const
             {
-                return (uint)pFrom + pTo < (uint)x.pFrom + x.pTo;
+                return (ulong)pFrom + pTo < (ulong)x.pFrom + x.pTo;
             }
 
             const bool operator==(const DFA_Edge& x)const
@@ -517,7 +517,7 @@ namespace regex
                     construct(pState, info.states);
 
                     pair<DFA_State*, bool> p = getDFAState(pState, c);
-                    if (p.second) // Èç¹ûÕâ¸ö×´Ì¬ÒÑ´æÔÚ
+                    if (p.second) // å¦‚æœè¿™ä¸ªçŠ¶æ€å·²å­˜åœ¨
                     {
                         destruct(pState, has_destruct(*pState));
                         DFA_State_Alloc::deallocate(pState);
@@ -539,7 +539,7 @@ namespace regex
                     construct(pState, info.states);
 
                     pair<DFA_State*, bool> p = getDFAState(pState, c);
-                    if (p.second) // Èç¹ûÕâ¸ö×´Ì¬ÒÑ´æÔÚ
+                    if (p.second) // å¦‚æœè¿™ä¸ªçŠ¶æ€å·²å­˜åœ¨
                     {
                         destruct(pState, has_destruct(*pState));
                         DFA_State_Alloc::deallocate(pState);
@@ -558,14 +558,14 @@ namespace regex
 #ifdef _DEBUG
         void printEpsilonNFA()
         {
-            printf("-------- ¦Å- NFA Start --------\n");
+            printf("-------- Îµ- NFA Start --------\n");
             for (typename set<EpsilonNFA_Edge>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
             {
                 printf("%03d -> %03d", i->pFrom->idx, i->pTo->idx);
                 switch (i->edgeType())
                 {
                 case EpsilonNFA_Edge::TEpsilon:
-                    printf("(¦Å)");
+                    printf("(Îµ)");
                     break;
                 case EpsilonNFA_Edge::TChar:
                     printf("(%c)", i->data.char_value);
@@ -580,7 +580,7 @@ namespace regex
                 printf("\n");
             }
             printf("start: %03d -> end: %03d\n", pEpsilonStart->idx, pEpsilonEnd->idx);
-            printf("--------- ¦Å- NFA End ---------\n");
+            printf("--------- Îµ- NFA End ---------\n");
         }
 
         void printDFA()

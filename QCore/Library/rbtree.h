@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:	2012/11/29
 	created:	29:11:2012   23:36
 	filename: 	\QCore\Library\rbtree.h
@@ -572,8 +572,8 @@ protected:
 
     void erase(link_type z)
     {
-        // yÎª±»É¾³ýµÄ½Úµã
-        // xÎª±»É¾³ýµÄ½ÚµãµÄº¢×Ó
+        // yä¸ºè¢«åˆ é™¤çš„èŠ‚ç‚¹
+        // xä¸ºè¢«åˆ é™¤çš„èŠ‚ç‚¹çš„å­©å­
         link_type y = z, x = NULL, x_parent = NULL;
         if(y->left == NULL) x = y->right;
         else if(y->right == NULL) x = y->left;
@@ -586,17 +586,17 @@ protected:
 
         if(y != z)
         {
-            // ½«yÌæ»»Îª±»É¾³ýµÄ½Úµã
+            // å°†yæ›¿æ¢ä¸ºè¢«åˆ é™¤çš„èŠ‚ç‚¹
             z->left->parent = y;
             y->left = z->left;
 
-            if(y != z->right) // ±»É¾³ýµÄ½Úµã×÷Îª¸ùµÄ×ÓÊ÷µÄ¸ß¶È>1
+            if(y != z->right) // è¢«åˆ é™¤çš„èŠ‚ç‚¹ä½œä¸ºæ ¹çš„å­æ ‘çš„é«˜åº¦>1
             {
                 x_parent = y->parent;
                 if(x) x->parent = y->parent;
                 y->parent->left = x;
 
-                // ½«yÌæ»»ÎªÒªÉ¾³ýµÄ½Úµã
+                // å°†yæ›¿æ¢ä¸ºè¦åˆ é™¤çš„èŠ‚ç‚¹
                 y->right = z->right;
                 z->right->parent = y;
             }
@@ -608,17 +608,17 @@ protected:
 
             y->parent = z->parent;
 
-            // ½»»»ÒªÉ¾³ý½ÚµãºÍ±»É¾³ý½ÚµãµÄÑÕÉ«
+            // äº¤æ¢è¦åˆ é™¤èŠ‚ç‚¹å’Œè¢«åˆ é™¤èŠ‚ç‚¹çš„é¢œè‰²
             typename node_type::color_type tmp = y->color;
             y->color = z->color;
             z->color = tmp;
 
-            // ÖØÉèyÎªÒªÉ¾³ýµÄµã
+            // é‡è®¾yä¸ºè¦åˆ é™¤çš„ç‚¹
             y = z;
         }
         else
         {
-            // ±»É¾³ý½ÚµãÖ»ÓÐÒ»¸ö×Ó½Úµã£¬Ö±½Ó½«Æä×Ó½ÚµãÌæ»»Îª±»É¾³ý½Úµã¼´¿É
+            // è¢«åˆ é™¤èŠ‚ç‚¹åªæœ‰ä¸€ä¸ªå­èŠ‚ç‚¹ï¼Œç›´æŽ¥å°†å…¶å­èŠ‚ç‚¹æ›¿æ¢ä¸ºè¢«åˆ é™¤èŠ‚ç‚¹å³å¯
             x_parent = y->parent;
             if(x) x->parent = y->parent;
 
@@ -637,13 +637,13 @@ protected:
             }
         }
 
-        if(y->color == black) // ÒªÉ¾³ýµÄÄÇ¸öµãÎªºÚÉ«
+        if(y->color == black) // è¦åˆ é™¤çš„é‚£ä¸ªç‚¹ä¸ºé»‘è‰²
         {
-            while(x != header->parent && (x == NULL || x->color == black)) // µü´úÖ±µ½x²»ÎªºÚÉ«»ò¸ù½ÚµãÎªÖ¹
+            while(x != header->parent && (x == NULL || x->color == black)) // è¿­ä»£ç›´åˆ°xä¸ä¸ºé»‘è‰²æˆ–æ ¹èŠ‚ç‚¹ä¸ºæ­¢
             {
-                if(x_parent->left == x) // ±»É¾³ý½ÚµãÎª×óº¢×Ó
+                if(x_parent->left == x) // è¢«åˆ é™¤èŠ‚ç‚¹ä¸ºå·¦å­©å­
                 {
-                    link_type w = x_parent->right; // ÆäÐÖµÜ½Úµã
+                    link_type w = x_parent->right; // å…¶å…„å¼ŸèŠ‚ç‚¹
                     // case1
                     if(w->color == red)
                     {
@@ -682,7 +682,7 @@ protected:
                         break;
                     }
                 }
-                else // ±»É¾³ý½ÚµãÎªÓÒº¢×Ó
+                else // è¢«åˆ é™¤èŠ‚ç‚¹ä¸ºå³å­©å­
                 {
                     link_type w = x_parent->left;
                     if(w->color == red)
@@ -734,9 +734,9 @@ protected:
             link_type p = node->parent, g = p->parent, u = NULL;// g->left == p ? g->right : g->left;
 //             if(u != NULL && u->color == red)
 //             {
-//                 // Èô¸¸½ÚµãºÍÊå¸¸½Úµã¶¼ÎªºìÉ«£¬Ôò
-//                 // 1.Ö±½ÓÐÞ¸ÄÕâ2¸ö½ÚµãµÄÑÕÉ«ºÍ×æ¸¸½ÚµãµÄÑÕÉ«
-//                 // 2.µÝ¹éÏòÉÏµ÷Õû
+//                 // è‹¥çˆ¶èŠ‚ç‚¹å’Œå”çˆ¶èŠ‚ç‚¹éƒ½ä¸ºçº¢è‰²ï¼Œåˆ™
+//                 // 1.ç›´æŽ¥ä¿®æ”¹è¿™2ä¸ªèŠ‚ç‚¹çš„é¢œè‰²å’Œç¥–çˆ¶èŠ‚ç‚¹çš„é¢œè‰²
+//                 // 2.é€’å½’å‘ä¸Šè°ƒæ•´
 //                 p->color = black;
 //                 u->color = black;
 //                 g->color = red;
@@ -744,7 +744,7 @@ protected:
 //             }
 //             else if(p == g->left)
 //             {
-//                 if(node == p->right) // ÄÚ²àÐý×ª
+//                 if(node == p->right) // å†…ä¾§æ—‹è½¬
 //                 {
 //                     node = p;
 //                     l_rotate(node, root);
@@ -753,7 +753,7 @@ protected:
 //                 g = p->parent;
 //                 p->color = black;
 //                 g->color = red;
-//                 r_rotate(g, root); // Íâ²àÐý×ª
+//                 r_rotate(g, root); // å¤–ä¾§æ—‹è½¬
 //             }
 //             else
 //             {
