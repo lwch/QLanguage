@@ -17,9 +17,11 @@ TEST_CASE(TestRegex)
 {
     Rule_Type::Context context;
     Rule_Type a('a', context), b('b', context), d('d', context);
-    Rule_Type result = (a - d).opt() + (+b | (a + b));
+    Rule_Type result = (a - d).opt() + (+b | !(a + b));
+    result.buildDFA();
 
 #ifdef _DEBUG
-    result.print();
+    result.printEpsilonNFA();
+    result.printDFA();
 #endif
 }

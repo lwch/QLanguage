@@ -19,7 +19,7 @@ namespace QLanguage
 {
     namespace Library
     {
-#define HASH_KEY_TYPE UINT
+#define HASH_KEY_TYPE uint
         template <typename T>
         class hash
         {

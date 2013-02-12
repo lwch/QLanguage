@@ -17,9 +17,9 @@ namespace QLanguage
 {
     namespace Library
     {
-        typedef unsigned short USHORT;
-        typedef unsigned int   UINT;
-        typedef unsigned char  BYTE;
+        typedef unsigned short ushort;
+        typedef unsigned int   uint;
+        typedef unsigned char  uchar;
     }
 }
 

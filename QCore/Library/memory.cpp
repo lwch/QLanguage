@@ -21,7 +21,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 MemoryPool::MemoryPool() : free_list(NULL)
 {
-    for(UINT i = 0; i < MAX_COUNT; ++i) chunk_list[i] = 0;
+    for(uint i = 0; i < MAX_COUNT; ++i) chunk_list[i] = 0;
 
 #ifdef _DEBUG
     use_list = NULL;

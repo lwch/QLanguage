@@ -133,6 +133,16 @@ namespace QLanguage
                 return instance.rend();
             }
 
+            inline pair<iterator, iterator> equal_range(const key_type& x)
+            {
+                return instance.equal_range(x);
+            }
+
+            inline pair<const_iterator, const_iterator> equal_range(const key_type& x)const
+            {
+                return instance.equal_range(x);
+            }
+
             inline self& operator=(const self& x)
             {
                 if (&x != this) instance = x.instance;

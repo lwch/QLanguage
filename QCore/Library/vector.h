@@ -412,6 +412,11 @@ public:
         destruct<T>(finish, has_destruct(*finish));
     }
 
+    inline void pop_front()
+    {
+        erase(begin());
+    }
+
     inline iterator insert(iterator position, const T& x)
     {
         const size_type pos = position - begin();

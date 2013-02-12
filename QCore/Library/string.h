@@ -738,6 +738,11 @@ public:
         }
         return false;
     }
+
+    const bool operator<(const self& s)const
+    {
+        return size() < s.size();
+    }
 };
 
 typedef basic_string<char> string;

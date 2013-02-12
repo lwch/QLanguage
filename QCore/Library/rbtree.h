@@ -264,7 +264,10 @@ public:
     rbtree(const self& x)
     {
         header = Value_Alloc::allocate();
-        header->color = red;
+        header->color  = red;
+        header->parent = NULL;
+        header->left   = header;
+        header->right  = header;
         copyFrom(x);
     }
 
@@ -572,16 +575,13 @@ protected:
         // y为被删除的节点
         // x为被删除的节点的孩子
         link_type y = z, x = NULL, x_parent = NULL;
-        if(!y->left) x = y->right;
+        if(y->left == NULL) x = y->right;
+        else if(y->right == NULL) x = y->left;
         else
         {
-            if(!y->right) x = y->left;
-            else
-            {
-                y = y->right;
-                while(y->left) y = y->left;
-                x = y->right;
-            }
+            y = y->right;
+            while(y->left) y = y->left;
+            x = y->right;
         }
 
         if(y != z)
@@ -602,7 +602,8 @@ protected:
             }
             else x_parent = y;
 
-            if(z->parent->left == z) z->parent->left = y;
+            if (z == header->parent) header->parent = y;
+            else if(z->parent->left == z) z->parent->left = y;
             else z->parent->right = y;
 
             y->parent = z->parent;
@@ -620,23 +621,25 @@ protected:
             // 被删除节点只有一个子节点，直接将其子节点替换为被删除节点即可
             x_parent = y->parent;
             if(x) x->parent = y->parent;
-            if(z->parent->left == z) z->parent->left = x;
+
+            if (z == header->parent) header->parent = x;
+            else if(z->parent->left == z) z->parent->left = x;
             else z->parent->right = x;
             if (header->left == z)
             {
-                if(!z->right) header->left = z->parent;
+                if(z->right == NULL) header->left = z->parent;
                 else header->left = minimum(x);
             }
             if (header->right == z)
             {
-                if(!z->left) header->right = z->parent;
+                if(z->left == NULL) header->right = z->parent;
                 else header->right = maximum(x);
             }
         }
 
         if(y->color == black) // 要删除的那个点为黑色
         {
-            while(x != header->parent && (!x || x->color == black)) // 迭代直到x不为黑色或根节点为止
+            while(x != header->parent && (x == NULL || x->color == black)) // 迭代直到x不为黑色或根节点为止
             {
                 if(x_parent->left == x) // 被删除节点为左孩子
                 {
@@ -650,9 +653,11 @@ protected:
                         w = x_parent->right;
                     }
 
+                    if (w == NULL) break;
+
                     // case2
-                    if((!w->left || w->left->color == black) &&
-                        (!w->right || w->right->color == black))
+                    if((w->left == NULL || w->left->color == black) &&
+                       (w->right == NULL || w->right->color == black))
                     {
                         w->color = red;
                         x = x_parent;
@@ -661,7 +666,7 @@ protected:
                     else
                     {
                         // case3
-                        if(!w->right || w->right->color == black)
+                        if(w->right == NULL || w->right->color == black)
                         {
                             if(w->left) w->left->color = black;
                             w->color = red;
@@ -688,8 +693,10 @@ protected:
                         w = x_parent->left;
                     }
 
-                    if((!w->right || w->right->color == black) &&
-                        (!w->left || w->left->color == black))
+                    if (w == NULL) break;
+
+                    if((w->right == NULL || w->right->color == black) &&
+                       (w->left == NULL || w->left->color == black))
                     {
                         w->color = red;
                         x = x_parent;
@@ -697,7 +704,7 @@ protected:
                     }
                     else
                     {
-                        if(!w->left || w->left->color == black)
+                        if(w->left == NULL || w->left->color == black)
                         {
                             if(w->right) w->right->color = black;
                             w->color = red;
