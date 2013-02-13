@@ -195,6 +195,26 @@ namespace QLanguage
                 sort(right, last);
             }
         }
+
+        template <typename Iterator, typename Value>
+        inline void toArray(Iterator first, Iterator last, Value* pArray)
+        {
+            size_t idx = 0;
+            while (first != last) { pArray[idx++] = *first; ++first; }
+        }
+
+        template <typename Value, typename Size_Type>
+        inline const bool compareArray(const Value* pArray1, Size_Type size1, const Value* pArray2, Size_Type size2)
+        {
+            if (size1 != size2) return false;
+
+            --size2;
+            while (size1--)
+            {
+                if (pArray1[size2--] != pArray2[size2]) return false;
+            }
+            return true;
+        }
     }
 }
 

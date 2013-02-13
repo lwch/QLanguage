@@ -37,7 +37,7 @@ MemoryPool::~MemoryPool()
         if (!ptr->data->released)
         {
             Console::SetColor(true, false, false, true);
-#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
             obj* pObj = ptr->data;
             for (DWORD j = 0; j < pObj->dwCallStackDepth; ++j)
             {
@@ -69,7 +69,7 @@ void MemoryPool::clear()
         }
         catch (...)
         {
-#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
             for (DWORD i = 0; i < current->dwCallStackDepth; ++i)
             {
                 CallStack::FuncInfo info;
@@ -120,7 +120,7 @@ void* MemoryPool::allocate(size_type n, void(*h)(size_type))
     }
 #ifdef _DEBUG
 
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     memset(chunk_list[i]->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
     chunk_list[i]->dwCallStackDepth = callStack.stackTrace(chunk_list[i]->callStack, CALLSTACK_MAX_DEPTH);
 #endif
@@ -142,7 +142,7 @@ void MemoryPool::deallocate(void* p, size_type n)
 #ifdef _DEBUG
     p = (char*)p - (int)headerSize;
     obj* ptr = reinterpret_cast<obj*>(p);
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
 //     for (DWORD j = 0; j < ptr->dwCallStackDepth; ++j)
 //     {
 //         CallStack::FuncInfo funcInfo;
@@ -215,7 +215,7 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
         h(sizeof(block));
         pBlock = (block*)malloc(sizeof(block));
     }
-#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     memset(pBlock->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
     pBlock->dwCallStackDepth = callStack.stackTrace(pBlock->callStack, CALLSTACK_MAX_DEPTH);
 #endif
@@ -226,7 +226,7 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
     obj* current = (obj*)p;
 #ifdef _DEBUG
     addUseInfo(current);
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     memset(current->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
     current->dwCallStackDepth = callStack.stackTrace(current->callStack, CALLSTACK_MAX_DEPTH);
 #endif

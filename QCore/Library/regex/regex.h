@@ -17,6 +17,7 @@
 
 #include "../set.h"
 #include "../map.h"
+#include "../hashset.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 namespace regex
@@ -25,6 +26,8 @@ namespace regex
     class Rule
     {
     protected:
+        struct EpsilonNFA_Edge;
+
         struct EpsilonNFA_State
         {
 #ifdef _DEBUG
@@ -120,6 +123,15 @@ namespace regex
             const bool operator==(const EpsilonNFA_Edge& x)const
             {
                 return pFrom == x.pFrom && pTo == x.pTo;
+            }
+        };
+
+        class _hash
+        {
+        public:
+            const HASH_KEY_TYPE operator()(const EpsilonNFA_Edge& x)const
+            {
+                return (ulong)x.pFrom + (ulong)x.pTo;
             }
         };
 
@@ -267,13 +279,13 @@ namespace regex
                 return *this;
             }
         };
-    public:
+public:
         struct Context
         {
             set<EpsilonNFA_State*> epsilonNFA_States;
             set<DFA_State*>        dfa_States;
 
-            ~Context()
+            void clear()
             {
                 for (typename set<EpsilonNFA_State*>::iterator i = epsilonNFA_States.begin(), m = epsilonNFA_States.end(); i != m; ++i)
                 {
@@ -288,6 +300,11 @@ namespace regex
                     DFA_State_Alloc::deallocate(*i);
                 }
                 dfa_States.clear();
+            }
+
+            ~Context()
+            {
+                clear();
             }
         };
     protected:
@@ -309,11 +326,9 @@ namespace regex
 
             context.epsilonNFA_States.insert(pEpsilonStart);
             context.epsilonNFA_States.insert(pEpsilonEnd);
-
-            chars.insert(x);
         }
 
-        Rule(const String_Type& x, Context& context) : context(context), pDFAStart(NULL)
+        Rule(const String_Type& x, Context& context) : pDFAStart(NULL), context(context)
         {
             pEpsilonStart = EpsilonNFA_State_Alloc::allocate();
             construct(pEpsilonStart);
@@ -325,8 +340,6 @@ namespace regex
 
             context.epsilonNFA_States.insert(pEpsilonStart);
             context.epsilonNFA_States.insert(pEpsilonEnd);
-
-            strings.insert(x);
         }
 
         Rule(const self& x) : context(x.context)
@@ -338,9 +351,6 @@ namespace regex
             pDFAStart = x.pDFAStart;
             pDFAEnds  = x.pDFAEnds;
             dfa_Edges = x.dfa_Edges;
-
-            chars   = x.chars;
-            strings = x.strings;
         }
 
         ~Rule() {}
@@ -444,7 +454,7 @@ namespace regex
 
         self operator+()
         {
-            self a = cloneEpsilonNFA(*this), b = cloneEpsilonNFA(*this);
+            self a = cloneEpsilonNFA(*this);
             
             a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(a.pEpsilonEnd, a.pEpsilonStart));
 
@@ -454,7 +464,7 @@ namespace regex
         self operator!()
         {
             self a = cloneEpsilonNFA(*this);
-            for (typename set<EpsilonNFA_Edge>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashset<EpsilonNFA_Edge, _hash>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 if (i->isChar() || i->isString()) i->negate();
             }
@@ -555,11 +565,23 @@ namespace regex
             }
         }
 
+        void clear()
+        {
+            pEpsilonStart = pEpsilonEnd = NULL;
+            epsilonNFA_Edges.clear();
+
+            pDFAStart = NULL;
+            pDFAEnds.clear();
+            dfa_Edges.clear();
+
+            context.clear();
+        }
+
 #ifdef _DEBUG
         void printEpsilonNFA()
         {
             printf("-------- ε- NFA Start --------\n");
-            for (typename set<EpsilonNFA_Edge>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
             {
                 printf("%03d -> %03d", i->pFrom->idx, i->pTo->idx);
                 switch (i->edgeType())
@@ -612,8 +634,9 @@ namespace regex
             {
                 printf("%03d ", (*i)->idx);
             }
-
-            printf("\n-------------------------------\n");
+            printf("\n");
+#if DEBUG_LEVEL == 3
+            printf("-------------------------------\n");
 
             for (typename set<DFA_State*>::const_iterator i = tmp.begin(), m = tmp.end(); i != m; ++i)
             {
@@ -624,14 +647,14 @@ namespace regex
                 }
                 printf("\n");
             }
-
+#endif
             printf("----------- DFA End -----------\n");
         }
 #endif
     protected:
         static void copyEpsilonNFA_Edges(const self& from, self& to)
         {
-            for (typename set<EpsilonNFA_Edge>::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 to.epsilonNFA_Edges.insert(*i);
             }
@@ -642,7 +665,7 @@ namespace regex
             self result(x.context);
 
             map<EpsilonNFA_State*, EpsilonNFA_State*> statesMap;
-            for (typename set<EpsilonNFA_Edge>::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 EpsilonNFA_State *pFrom = statesMap[i->pFrom], *pTo = statesMap[i->pTo];
                 if (pFrom == NULL)
@@ -650,7 +673,7 @@ namespace regex
                     pFrom = statesMap[i->pFrom] = EpsilonNFA_State_Alloc::allocate();
                     construct(pFrom);
 
-                    x.context.epsilonNFA_States.insert(pFrom);
+                    result.context.epsilonNFA_States.insert(pFrom);
                 }
 
                 if (pTo == NULL)
@@ -658,7 +681,7 @@ namespace regex
                     pTo = statesMap[i->pTo] = EpsilonNFA_State_Alloc::allocate();
                     construct(pTo);
 
-                    x.context.epsilonNFA_States.insert(pTo);
+                    result.context.epsilonNFA_States.insert(pTo);
                 }
 
                 EpsilonNFA_Edge edge(*i);
@@ -686,7 +709,7 @@ namespace regex
                 while (!tmp.empty())
                 {
                     EpsilonNFA_State* pState = *tmp.begin();
-                    for (typename set<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges.begin(), n = epsilonNFA_Edges.end(); j != n; ++j)
+                    for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator j = epsilonNFA_Edges.begin(), n = epsilonNFA_Edges.end(); j != n; ++j)
                     {
                         if (j->pFrom == pState)
                         {
@@ -709,7 +732,7 @@ namespace regex
             set<EpsilonNFA_State*> result;
             for (typename set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
             {
-                for (typename set<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges.begin(), n = epsilonNFA_Edges.end(); j != n; ++j)
+                for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator j = epsilonNFA_Edges.begin(), n = epsilonNFA_Edges.end(); j != n; ++j)
                 {
                     if (j->pFrom == *i && j->isChar() &&
                         j->data.char_value == c && j->isNot() == bNot) result.insert(j->pTo);
@@ -723,7 +746,7 @@ namespace regex
             set<EpsilonNFA_State*> result;
             for (typename set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
             {
-                for (typename set<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges.begin(), n = epsilonNFA_Edges.end(); j != n; ++j)
+                for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator j = epsilonNFA_Edges.begin(), n = epsilonNFA_Edges.end(); j != n; ++j)
                 {
                     if (j->pFrom == *i && j->isString() &&
                         j->data.string_value == s && j->isNot() == bNot) result.insert(j->pTo);
@@ -752,14 +775,11 @@ namespace regex
         }
     protected:
         EpsilonNFA_State *pEpsilonStart, *pEpsilonEnd;
-        set<EpsilonNFA_Edge> epsilonNFA_Edges;
+        hashset<EpsilonNFA_Edge, _hash> epsilonNFA_Edges;
 
         DFA_State*      pDFAStart;
         set<DFA_State*> pDFAEnds;
         set<DFA_Edge>   dfa_Edges;
-
-        set<Char_Type>   chars;
-        set<String_Type> strings;
 
         Context& context;
     };

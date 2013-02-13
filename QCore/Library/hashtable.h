@@ -27,7 +27,6 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 template <typename T>
 class __hashtable_bucket_node
 {
-protected:
     typedef __hashtable_bucket_node<T> self;
 public:
     typedef T     value_type;
@@ -43,37 +42,25 @@ public:
     }
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename Key, typename Value, typename KeyOfValue,
-    size_t Max_Bucket_Length,
-    bool Resize,
-    typename Hash,
-    typename Compare>
-class hashtable;
-///////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename Key, typename Value, typename KeyOfValue,
-    size_t Max_Bucket_Length,
-    bool Resize,
-    typename Hash,
-    typename Compare>
+template <typename T, typename HashTable_Type>
 class __hashtable_iterator_base : public bidirectional_iterator
 {
     template <typename K, typename V, typename KOV,
-        size_t MBL,
-        bool R,
-        typename H,
-        typename C>
-        friend class hashtable;
+              size_t MBL,
+              bool R,
+              typename H,
+              typename C>
+    friend class hashtable;
 protected:
-    typedef hashtable<HASHTABLE_TEMPLATE_ACHIEVE> hashtable_type;
-    typedef __hashtable_iterator_base<HASHTABLE_TEMPLATE_ACHIEVE> self;
-    typedef __hashtable_bucket_node<Value>        node_type;
+    typedef __hashtable_iterator_base<T, HashTable_Type> self;
+    typedef __hashtable_bucket_node<T>                   node_type;
 
     node_type*      node;
-    hashtable_type& ht;
+    HashTable_Type& ht;
 public:
     // I have no default construct.
     // Because iterator must belong to hashtable.
-    __hashtable_iterator_base(node_type* node, hashtable_type& hashtable) : node(node), ht(hashtable) {}
+    __hashtable_iterator_base(node_type* node, HashTable_Type& hashtable) : node(node), ht(hashtable) {}
 
     inline const bool operator==(const self& x)const
     {
@@ -85,7 +72,7 @@ public:
         return node != x.node;
     }
 
-    inline typename __container_traits<hashtable_type>::reference operator*()const
+    inline typename __container_traits<HashTable_Type>::reference operator*()const
     {
         return node->data;
     }
@@ -115,6 +102,11 @@ public:
         --(*this);
         return tmp;
     }
+
+    inline T* operator->()
+    {
+        return &node->data;
+    }
 protected:
     void inc()
     {
@@ -122,9 +114,9 @@ protected:
         node = node->next;
         if (node == NULL)
         {
-            HASH_KEY_TYPE bucket = ht.index(node->data);
-            typename __container_traits<typename hashtable_type::buckets_type>::size_type size = ht.buckets.size();
-            while(++bucket < size && node = reinterpret_cast<typename hashtable_type::node_size_type*>(ht[bucket])->next && node == ht[bucket]);
+            HASH_KEY_TYPE bucket = ht.index(prev->data);
+            typename __container_traits<typename HashTable_Type::buckets_type>::size_type size = ht.buckets.size();
+            while(++bucket < size && (node = ht.buckets[bucket]) == NULL);
         }
     }
 
@@ -133,13 +125,13 @@ protected:
         HASH_KEY_TYPE idx = ht.index(ht.key(node->data));
         node_type* prev = node;
         node = node->prev;
-        if (node == ht.buckets[idx])
+        if (node == NULL)
         {
-            while (--idx >= 0 && reinterpret_cast<typename hashtable_type::node_size_type*>(ht.buckets[idx])->data > 0)
+            while (--idx >= 0 && reinterpret_cast<typename HashTable_Type::node_size_type*>(ht.buckets[idx])->data > 0)
             {
-                typedef typename hashtable_type::link_type link_type;
-                typedef typename hashtable_type::node_size_type node_size_type;
-                link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(ht.buckets[idx])->next);
+                typedef typename HashTable_Type::link_type link_type;
+                typedef typename HashTable_Type::node_size_type node_size_type;
+                link_type current = ht.buckets[idx];
                 while (current) current = current->next;
                 node = current;
                 return;
@@ -149,22 +141,20 @@ protected:
     }
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename Key, typename Value, typename KeyOfValue,
-    size_t Max_Bucket_Length,
-    bool Resize,
-    typename Hash,
-    typename Compare,
-    typename Size, typename Distance>
-class __hashtable_iterator : public __iterator<typename __container_traits<hashtable<HASHTABLE_TEMPLATE_ACHIEVE> >::value_type, Size, Distance>
-    , public __hashtable_iterator_base<HASHTABLE_TEMPLATE_ACHIEVE>
+template <typename T, typename HashTable_Type, typename Size, typename Distance>
+class __hashtable_iterator : public __iterator<typename __container_traits<HashTable_Type>::value_type, Size, Distance>
+    , public __hashtable_iterator_base<T, HashTable_Type>
 {
 protected:
-    typedef __hashtable_iterator<HASHTABLE_TEMPLATE_ACHIEVE, Size, Distance> self;
-    typedef __hashtable_iterator_base<HASHTABLE_TEMPLATE_ACHIEVE>            base;
-public:
-    __hashtable_iterator(typename base::node_type* node, typename base::hashtable_type& hashtable) : base(node, hashtable) {}
+    template <typename T1, typename H, typename S, typename D>
+    friend class __hashtable_const_iterator;
 
-    inline typename __container_traits<typename base::hashtable_type>::reference operator*()const
+    typedef __hashtable_iterator<T, HashTable_Type, Size, Distance> self;
+    typedef __hashtable_iterator_base<T, HashTable_Type>            base;
+public:
+    __hashtable_iterator(typename base::node_type* node, HashTable_Type& hashtable) : base(node, hashtable) {}
+
+    inline typename __container_traits<HashTable_Type>::reference operator*()const
     {
         return *(*this);
     }
@@ -190,29 +180,23 @@ public:
     }
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename Key, typename Value, typename KeyOfValue,
-    size_t Max_Bucket_Length,
-    bool Resize,
-    typename Hash,
-    typename Compare,
-    typename Size, typename Distance>
-class __hashtable_const_iterator : public __const_iterator<typename __container_traits<hashtable<HASHTABLE_TEMPLATE_ACHIEVE> >::value_type, Size, Distance>
-    , public __hashtable_iterator_base<HASHTABLE_TEMPLATE_ACHIEVE>
+template <typename T, typename HashTable_Type, typename Size, typename Distance>
+class __hashtable_const_iterator : public __const_iterator<typename __container_traits<HashTable_Type>::value_type, Size, Distance>
+    , public __hashtable_iterator_base<T, HashTable_Type>
 {
 protected:
-    typedef __hashtable_const_iterator<HASHTABLE_TEMPLATE_ACHIEVE, Size, Distance> self;
-    typedef __hashtable_iterator_base<HASHTABLE_TEMPLATE_ACHIEVE>                  base;
+    typedef __hashtable_iterator<T, HashTable_Type, Size, Distance>       iterator;
+    typedef __hashtable_const_iterator<T, HashTable_Type, Size, Distance> self;
+    typedef __hashtable_iterator_base<T, HashTable_Type>                  base;
 public:
-    __hashtable_const_iterator(typename base::node_type* node, typename base::hashtable_type& hashtable) : base(node, hashtable) {}
+    __hashtable_const_iterator(typename base::node_type* node, HashTable_Type& hashtable) : base(node, hashtable) {}
 
-    inline typename __container_traits<typename base::hashtable_type>::reference operator*()const
-    {
-        return *(*this);
-    }
+    __hashtable_const_iterator(const iterator& i) : base(i.node, i.ht) {}
 
     inline self& operator++()
     {
-        return ++(*this);
+        base::inc();
+        return *this;
     }
 
     inline self operator++(int)
@@ -238,14 +222,20 @@ template <typename Key, typename Value, typename KeyOfValue,
     typename Compare = equal_to<Key> >
 class hashtable
 {
-protected:
-    typedef Key                            key_type;
-    typedef __hashtable_bucket_node<Value> node_type;
-    typedef node_type* link_type;
     typedef hashtable<Key, Value, KeyOfValue, Max_Bucket_Length, Resize, Hash, Compare> self;
-    typedef allocator<__hashtable_bucket_node<Value> > Alloc;
+    typedef Key                             key_type;
+    typedef __hashtable_bucket_node<Value>  node_type;
+    typedef node_type*                      link_type;
     typedef __hashtable_bucket_node<size_t> node_size_type;
-    typedef allocator<node_size_type> Node_Size_Alloc;
+
+    typedef allocator<node_type>            Alloc;
+    typedef allocator<node_size_type>       Node_Size_Alloc;
+
+    typedef vector<link_type>               buckets_type;
+    typedef vector<size_t>                  buckets_length_type;
+
+    template <typename T, typename H>
+    friend class __hashtable_iterator_base;
 public:
     typedef Value        value_type;
     typedef Value*       pointer;
@@ -253,49 +243,51 @@ public:
     typedef const Value& const_reference;
     typedef size_t       size_type;
     typedef ptrdiff_t    distance_type;
-    typedef __hashtable_iterator<HASHTABLE_TEMPLATE_ACHIEVE, size_type, distance_type> iterator;
-    typedef __hashtable_const_iterator<HASHTABLE_TEMPLATE_ACHIEVE, size_type, distance_type> const_iterator;
+    typedef __hashtable_iterator<value_type, self, size_type, distance_type> iterator;
+    typedef __hashtable_const_iterator<value_type, self, size_type, distance_type> const_iterator;
     typedef __reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
     typedef __reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
-
-    typedef vector<link_type> buckets_type;
 protected:
-    buckets_type buckets;
-    size_type    length;
-    KeyOfValue   key;
-    Hash         hash;
-    Compare      compare;
+    size_type           length;
+    KeyOfValue          key;
+    Hash                hash;
+    Compare             compare;
+    buckets_type        buckets;
+    buckets_length_type buckets_length;
 public:
     hashtable() : length(0)
     {
-        const size_type defaultSize = 11;
+        static const size_type defaultSize = 11;
         buckets.reserve(defaultSize);
-        for(typename __container_traits<buckets_type>::size_type i = 0; i < defaultSize; ++i)
+        buckets_length.reserve(defaultSize);
+
+        for (typename __container_traits<buckets_type>::size_type i = 0; i < defaultSize; ++i)
         {
-            node_size_type* node = Node_Size_Alloc::allocate();
-            construct(node, node_size_type(0));
-            buckets.push_back(reinterpret_cast<link_type>(node));
+            buckets.push_back(NULL);
+            buckets_length.push_back(0);
         }
     }
 
-    hashtable(size_type size) : length(0)
+    // TODO
+//     hashtable(size_type size) : length(0)
+//     {
+//         buckets.reserve(size);
+//         for(typename __container_traits<buckets_type>::size_type i = 0; i < size; ++i)
+//         {
+//             node_size_type* node = Node_Size_Alloc::allocate();
+//             construct(node, 0);
+//             buckets.push_back(reinterpret_cast<link_type>(node));
+//         }
+//     }
+
+    hashtable(const self& x)
     {
-        buckets.reserve(size);
-        for(typename __container_traits<buckets_type>::size_type i = 0; i < size; ++i)
-        {
-            node_size_type* node = Node_Size_Alloc::allocate();
-            construct(node, 0);
-            buckets.push_back(reinterpret_cast<link_type>(node));
-        }
+        copyFrom(x);
     }
 
     ~hashtable()
     {
         clear();
-        for(typename __container_traits<buckets_type>::size_type i = 0; i < buckets.size(); ++i)
-        {
-            Node_Size_Alloc::deallocate(reinterpret_cast<node_size_type*>(buckets[i]));
-        }
     }
 
     inline size_type size()const
@@ -315,18 +307,19 @@ public:
 
     void clear()
     {
-        for(typename __container_traits<buckets_type>::iterator i = buckets.begin(); i != buckets.end(); ++i)
+        for (typename __container_traits<buckets_type>::size_type i = 0, m = buckets.size(); i < m; ++i)
         {
-            link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(*i))->next;
-            while(current)
+            link_type current = buckets[i];
+            while (current)
             {
                 link_type next = current->next;
                 destruct(&current->data, has_destruct(current->data));
+                destruct(&current, has_destruct(*current));
                 Alloc::deallocate(current);
                 current = next;
             }
-            reinterpret_cast<node_size_type*>(*i)->data = 0;
-            reinterpret_cast<node_size_type*>(*i)->next = NULL;
+            buckets[i] = NULL;
+            buckets_length[i] = 0;
         }
         length = 0;
     }
@@ -336,30 +329,31 @@ public:
         const typename __container_traits<buckets_type>::size_type old_size = buckets.size();
         const typename __container_traits<buckets_type>::size_type new_size = old_size == 0 ? 2 : old_size * 2;
         buckets_type tmp(new_size);
+        buckets_length_type tmpL(new_size);
 
-        for (typename __container_traits<buckets_type>::size_type i = 0; i < new_size; ++i)
-        {
-            node_size_type* pNode = Node_Size_Alloc::allocate();
-            construct(pNode, 0);
-            tmp[i] = reinterpret_cast<link_type>(pNode);
-        }
+//         for (typename __container_traits<buckets_type>::size_type i = 0; i < new_size; ++i)
+//         {
+//             tmp[i] = NULL;
+//             tmpL[i] = 0;
+//         }
 
-        for (typename __container_traits<buckets_type>::iterator i = buckets.begin(), m = buckets.end(); i != m; ++i)
+        for (typename __container_traits<buckets_type>::size_type i = 0, m = buckets.size(); i < m; ++i)
         {
-            node_size_type* head = reinterpret_cast<node_size_type*>(*i);
-            link_type current = reinterpret_cast<link_type>(head->next);
+            link_type current = buckets[i];
             while (current)
             {
                 link_type next = current->next;
                 HASH_KEY_TYPE idx = index(current->data, new_size);
-                current->next = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(tmp[idx])->next);
-                current->prev = tmp[idx];
-                if (reinterpret_cast<node_size_type*>(tmp[idx])->next) reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(tmp[idx])->next)->prev = current;
-                reinterpret_cast<node_size_type*>(tmp[idx])->next = reinterpret_cast<node_size_type*>(current);
+                current->next = tmp[idx];
+                current->prev = NULL;
+                if (tmp[idx]) tmp[idx]->prev = current;
+                tmp[idx] = current;
                 current = next;
+                ++tmpL[idx];
             }
         }
         swap(buckets, tmp);
+        swap(buckets_length, tmpL);
     }
 
     inline iterator insert_equal(const value_type& x)
@@ -412,47 +406,27 @@ public:
 
     void erase(iterator position)
     {
-        typename iterator::node_type* pNode = position.node;
-        key_type k = key(pNode->data);
-        if (pNode)
+        link_type p = position.node;
+        if (p)
         {
-            node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(pNode->data, buckets.size())]);
-            link_type current = reinterpret_cast<link_type>(head->next);
-            if (current == pNode)
+            HASH_KEY_TYPE idx = index(key(p->data));
+            if (p->prev)
             {
-                head->next = reinterpret_cast<node_size_type*>(current->next);
-                if (current->next) current->next->prev = reinterpret_cast<link_type>(head);
-                destruct(&current->data, has_destruct(&current->data));
-                Alloc::deallocate(current);
-                --head->data;
-                --length;
+                p->prev->next = p->next;
+                p->next->prev = p->prev;
             }
-            else
-            {
-                link_type next = current->next;
-                while (next)
-                {
-                    if (pNode == next)
-                    {
-                        current->next = next->next;
-                        if (next->next) next->next->prev = current;
-                        destruct(&next->data, has_destruct(&next->data));
-                        Alloc::deallocate(next);
-                        --head->data;
-                        --length;
-                        break;
-                    }
-                    current = next;
-                    next = current->next;
-                }
-            }
+            else buckets[idx] = p->next;
+            destruct(&p->data, has_destruct(p->data));
+            destruct(p, has_destruct(*p));
+            Alloc::deallocate(p);
+            --buckets_length[idx];
         }
     }
 
     iterator find(const key_type& k)
     {
         HASH_KEY_TYPE idx = index(k);
-        link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[idx])->next);
+        link_type current = buckets[idx];
         while (current)
         {
             if (compare(k, key(current->data))) break;
@@ -464,7 +438,7 @@ public:
     const_iterator find(const key_type& k)const
     {
         HASH_KEY_TYPE idx = index(k);
-        link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[idx])->next);
+        link_type current = buckets[idx];
         while (current)
         {
             if (compare(k, key(current->data))) break;
@@ -477,7 +451,7 @@ public:
     {
         HASH_KEY_TYPE idx = index(k);
         size_type n = 0;
-        link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[idx])->next);
+        link_type current = buckets[idx];
         bool bStart = false;
 
         while (current)
@@ -496,7 +470,7 @@ public:
     pair<iterator, iterator> equal_range(const key_type& k)
     {
         HASH_KEY_TYPE idx = index(k);
-        link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[idx])->next);
+        link_type current = buckets[idx];
         bool bStart = false;
 
         link_type first = NULL;
@@ -518,7 +492,7 @@ public:
     pair<const_iterator, const_iterator> equal_range(const key_type& k)const
     {
         HASH_KEY_TYPE idx = index(k);
-        link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[idx])->next);
+        link_type current = buckets[idx];
         bool bStart = false;
 
         link_type first = NULL;
@@ -541,9 +515,9 @@ public:
     {
         for (typename __container_traits<buckets_type>::size_type i = 0; i < buckets.size(); ++i)
         {
-            if (reinterpret_cast<node_size_type*>(buckets[i])->data > 0)
+            if (buckets[i])
             {
-                return iterator(reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[i])->next), *this);
+                return iterator(buckets[i], *this);
             }
         }
         return end();
@@ -553,41 +527,41 @@ public:
     {
         for (typename __container_traits<buckets_type>::size_type i = 0; i < buckets.size(); ++i)
         {
-            if (reinterpret_cast<node_size_type*>(buckets[i])->data > 0)
+            if (buckets[i])
             {
-                return const_iterator(reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[i])->next), *this);
+                return const_iterator(buckets[i], (self&)*this);
             }
         }
         return end();
     }
 
-    reverse_iterator rbegin()
-    {
-        for (typename __container_traits<buckets_type>::size_type i = buckets.size() - 1; i >= 0; --i)
-        {
-            if (reinterpret_cast<node_size_type*>(buckets[i])->data > 0)
-            {
-                link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[i])->next);
-                while (current->next) current = current->next;
-                return reverse_iterator(iterator(current, *this));
-            }
-        }
-        return rend();
-    }
-
-    const_reverse_iterator rbegin()const
-    {
-        for (typename __container_traits<buckets_type>::size_type i = buckets.size() - 1; i >= 0; --i)
-        {
-            if (reinterpret_cast<node_size_type*>(buckets[i])->data > 0)
-            {
-                link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[i])->next);
-                while (current->next) current = current->next;
-                return const_reverse_iterator(const_iterator(current, *this));
-            }
-        }
-        return rend();
-    }
+//     reverse_iterator rbegin()
+//     {
+//         for (typename __container_traits<buckets_type>::size_type i = buckets.size() - 1; i >= 0; --i)
+//         {
+//             if (reinterpret_cast<node_size_type*>(buckets[i])->data > 0)
+//             {
+//                 link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[i])->next);
+//                 while (current->next) current = current->next;
+//                 return reverse_iterator(iterator(current, *this));
+//             }
+//         }
+//         return rend();
+//     }
+// 
+//     const_reverse_iterator rbegin()const
+//     {
+//         for (typename __container_traits<buckets_type>::size_type i = buckets.size() - 1; i >= 0; --i)
+//         {
+//             if (reinterpret_cast<node_size_type*>(buckets[i])->data > 0)
+//             {
+//                 link_type current = reinterpret_cast<link_type>(reinterpret_cast<node_size_type*>(buckets[i])->next);
+//                 while (current->next) current = current->next;
+//                 return const_reverse_iterator(const_iterator(current, *this));
+//             }
+//         }
+//         return rend();
+//     }
 
     inline iterator end()
     {
@@ -596,17 +570,26 @@ public:
 
     inline const_iterator end()const
     {
-        return const_iterator(0, *this);
+        return const_iterator(0, (self&)*this);
     }
 
-    inline reverse_iterator rend()
-    {
-        return reverse_iterator(end());
-    }
+//     inline reverse_iterator rend()
+//     {
+//         return reverse_iterator(end());
+//     }
+// 
+//     inline const_reverse_iterator rend()const
+//     {
+//         return const_reverse_iterator(end());
+//     }
 
-    inline const_reverse_iterator rend()const
+    self& operator=(const self& x)
     {
-        return const_reverse_iterator(end());
+        if (&x != this)
+        {
+            copyFrom(x);
+        }
+        return *this;
     }
 protected:
     inline HASH_KEY_TYPE index(const key_type& k)
@@ -621,16 +604,16 @@ protected:
 
     inline bool willResize(HASH_KEY_TYPE bucket_index)
     {
-        node_size_type* head = reinterpret_cast<node_size_type*>(buckets[bucket_index]);
-        return head->data + 1 > Max_Bucket_Length;
+        return buckets_length[bucket_index] + 1 > Max_Bucket_Length;
     }
 
     iterator insert_equal_noresize(const value_type& x)
     {
-        node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(x, buckets.size())]);
+        //node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(x, buckets.size())]);
+        HASH_KEY_TYPE idx = index(x, buckets.size());
         link_type node = Alloc::allocate();
         construct(node, x);
-        link_type current = reinterpret_cast<link_type>(head->next);
+        link_type current = buckets[idx];
         key_type k = key(x);
         while (current)
         {
@@ -640,24 +623,26 @@ protected:
                 node->prev = current;
                 if (current->next) current->next->prev = node;
                 current->next = node;
-                ++head->data;
+                ++buckets_length[idx];
+                ++length;
                 return iterator(node, *this);
             }
             current = current->next;
         }
-        node->next = reinterpret_cast<link_type>(head->next);
-        node->prev = reinterpret_cast<link_type>(head);
-        if (head->next) reinterpret_cast<link_type>(head->next)->prev = node;
-        head->next = reinterpret_cast<node_size_type*>(node);
-        ++head->data;
+        node->next = buckets[idx];
+        if (buckets[idx]) buckets[idx]->prev = node;
+        buckets[idx] = node;
+        ++buckets_length[idx];
+        ++length;
         return iterator(node, *this);
     }
 
     pair<iterator, bool> insert_unique_noresize(const value_type& x)
     {
-        node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(x, buckets.size())]);
-        link_type current = reinterpret_cast<link_type>(head->next);
-        while (current != reinterpret_cast<link_type>(head))
+        //node_size_type* head = reinterpret_cast<node_size_type*>(buckets[index(x, buckets.size())]);
+        HASH_KEY_TYPE idx = index(x, buckets.size());
+        link_type current = buckets[idx];
+        while (current)
         {
             if (compare(key(x), key(current->data)))
             {
@@ -667,12 +652,51 @@ protected:
         }
         link_type node = Alloc::allocate();
         construct(node, x);
-        node->next = reinterpret_cast<link_type>(head->next);
-        node->prev = reinterpret_cast<link_type>(head);
-        if (head->next) reinterpret_cast<link_type>(head->next)->prev = node;
-        head->next = reinterpret_cast<node_size_type*>(node);
-        ++head->data;
+        node->next = buckets[idx];
+        if (buckets[idx]) buckets[idx]->prev = node;
+        buckets[idx] = node;
+        ++buckets_length[idx];
+        ++length;
         return pair<iterator, bool>(iterator(node, *this), true);
+    }
+
+    void copyFrom(const self& x)
+    {
+        clear();
+
+        buckets.clear();
+        buckets_length.clear();
+
+        buckets.reserve(x.buckets.size());
+        buckets_length.reserve(x.buckets_length.size());
+
+        for (typename buckets_type::size_type i = 0, m = x.buckets.size(); i < m; ++i)
+        {
+            buckets.push_back(NULL);
+            buckets_length.push_back(0);
+        }
+
+        for (typename buckets_type::size_type i = 0, m = buckets.size(); i < m; ++i)
+        {
+            link_type pNode = x.buckets[i];
+            while (pNode)
+            {
+                link_type pNewNode = Alloc::allocate();
+                construct(pNewNode, pNode->data);
+
+                pNewNode->next = buckets[i];
+                if (buckets[i]) buckets[i]->prev = pNewNode;
+                buckets[i] = pNewNode;
+
+                pNode = pNode->next;
+            }
+
+        }
+        length         = x.length;
+        key            = x.key;
+        hash           = x.hash;
+        compare        = x.compare;
+        buckets_length = x.buckets_length;
     }
 };
 

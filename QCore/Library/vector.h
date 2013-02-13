@@ -439,6 +439,13 @@ public:
         --finish;
     }
 
+    void erase(iterator first, iterator last)
+    {
+        iterator i = copy(last, end(), first);
+        destruct(i, finish);
+        finish = finish - (last - first);
+    }
+
     self& operator=(const self& x)
     {
         if(&x == this) return *this;
@@ -471,6 +478,11 @@ public:
     inline const value_type at(size_type n)const
     {
         return operator[](n);
+    }
+
+    inline void clear()
+    {
+        erase(begin(), end());
     }
 protected:
     void insert_aux(const iterator position, const T& x)

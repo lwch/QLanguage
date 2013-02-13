@@ -42,7 +42,7 @@ protected:
 #ifdef _DEBUG
         bool      released;
 
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__) // Only windows can get callstack
+#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__) // Only windows can get callstack
 #define CALLSTACK_MAX_DEPTH 30
         UINT_PTR  callStack[CALLSTACK_MAX_DEPTH];
         DWORD     dwCallStackDepth; // Real depth
@@ -58,7 +58,7 @@ protected:
         void*     data;
 #ifdef _DEBUG
         size_type size;
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
         UINT_PTR  callStack[CALLSTACK_MAX_DEPTH];
         DWORD     dwCallStackDepth;
 #endif
@@ -90,7 +90,7 @@ protected:
     void addUseInfo(obj* ptr);
 
     enum { headerSize = sizeof(obj) - sizeof(obj*) };
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     CallStack callStack;
 #endif
 #else
