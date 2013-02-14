@@ -148,6 +148,13 @@ namespace QLanguage
                 if (&x != this) instance = x.instance;
                 return *this;
             }
+
+            inline const bool operator==(const self& x)const
+            {
+                if (&x == this) return true;
+
+                return instance == x.instance;
+            }
         };
     }
 }

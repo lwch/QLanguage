@@ -114,7 +114,7 @@ protected:
         node = node->next;
         if (node == NULL)
         {
-            HASH_KEY_TYPE bucket = ht.index(prev->data);
+            HASH_KEY_TYPE bucket = ht.index(ht.key(prev->data));
             typename __container_traits<typename HashTable_Type::buckets_type>::size_type size = ht.buckets.size();
             while(++bucket < size && (node = ht.buckets[bucket]) == NULL);
         }
@@ -153,11 +153,6 @@ protected:
     typedef __hashtable_iterator_base<T, HashTable_Type>            base;
 public:
     __hashtable_iterator(typename base::node_type* node, HashTable_Type& hashtable) : base(node, hashtable) {}
-
-    inline typename __container_traits<HashTable_Type>::reference operator*()const
-    {
-        return *(*this);
-    }
 
     inline self& operator++()
     {

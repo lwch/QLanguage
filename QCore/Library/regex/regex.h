@@ -17,7 +17,7 @@
 
 #include "../set.h"
 #include "../map.h"
-#include "../hashset.h"
+#include "../hashmap.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 namespace regex
@@ -129,9 +129,9 @@ namespace regex
         class _hash
         {
         public:
-            const HASH_KEY_TYPE operator()(const EpsilonNFA_Edge& x)const
+            const HASH_KEY_TYPE operator()(const EpsilonNFA_State* x)const
             {
-                return (ulong)x.pFrom + (ulong)x.pTo;
+                return (HASH_KEY_TYPE)x;
             }
         };
 
@@ -150,25 +150,11 @@ namespace regex
 #endif
             }
 
-            const bool operator==(const DFA_State& x)const
+            inline const bool operator==(const DFA_State& x)const
             {
                 if (&x == this) return true;
-                if (x.content.size() != content.size()) return false;
 
-                for (typename set<EpsilonNFA_State*>::const_iterator i = content.begin(), m = content.end(); i != m; ++i)
-                {
-                    bool bResult = false;
-                    for (typename set<EpsilonNFA_State*>::const_iterator j = x.content.begin(), n = x.content.end(); j != n; ++j)
-                    {
-                        if (*i == *j)
-                        {
-                            bResult = true;
-                            break;
-                        }
-                    }
-                    if (!bResult) return false;
-                }
-                return true;
+                return content == x.content;
             }
 
 #ifdef _DEBUG
@@ -322,7 +308,7 @@ public:
             pEpsilonEnd   = EpsilonNFA_State_Alloc::allocate();
             construct(pEpsilonEnd);
 
-            epsilonNFA_Edges.insert(EpsilonNFA_Edge(x, pEpsilonStart, pEpsilonEnd));
+            epsilonNFA_Edges[pEpsilonStart].push_back(EpsilonNFA_Edge(x, pEpsilonStart, pEpsilonEnd));
 
             context.epsilonNFA_States.insert(pEpsilonStart);
             context.epsilonNFA_States.insert(pEpsilonEnd);
@@ -336,7 +322,7 @@ public:
             pEpsilonEnd   = EpsilonNFA_State_Alloc::allocate();
             construct(pEpsilonEnd);
 
-            epsilonNFA_Edges.insert(EpsilonNFA_Edge(x, pEpsilonStart, pEpsilonEnd));
+            epsilonNFA_Edges[pEpsilonStart].push_back(EpsilonNFA_Edge(x, pEpsilonStart, pEpsilonEnd));
 
             context.epsilonNFA_States.insert(pEpsilonStart);
             context.epsilonNFA_States.insert(pEpsilonEnd);
@@ -359,7 +345,7 @@ public:
         {
             self a = cloneEpsilonNFA(*this), b = cloneEpsilonNFA(x);
             copyEpsilonNFA_Edges(b, a);
-            a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(a.pEpsilonEnd, b.pEpsilonStart));
+            a.epsilonNFA_Edges[a.pEpsilonEnd].push_back(EpsilonNFA_Edge(a.pEpsilonEnd, b.pEpsilonStart));
             a.pEpsilonEnd = b.pEpsilonEnd;
             return a;
         }
@@ -369,7 +355,8 @@ public:
             self a = cloneEpsilonNFA(*this);
 
             if (epsilonNFA_Edges.size() == 1 && x.epsilonNFA_Edges.size() == 1 &&
-                epsilonNFA_Edges.begin()->edge_type == EpsilonNFA_Edge::TChar && x.epsilonNFA_Edges.begin()->edge_type == EpsilonNFA_Edge::TChar)
+                epsilonNFA_Edges.begin()->second.size() == 1 && x.epsilonNFA_Edges.begin()->second.size() == 1 &&
+                epsilonNFA_Edges.begin()->second.begin()->edge_type == EpsilonNFA_Edge::TChar && x.epsilonNFA_Edges.begin()->second.begin()->edge_type == EpsilonNFA_Edge::TChar)
             {
                 EpsilonNFA_State* _pStart = EpsilonNFA_State_Alloc::allocate();
                 construct(_pStart);
@@ -380,24 +367,24 @@ public:
                 context.epsilonNFA_States.insert(_pStart);
                 context.epsilonNFA_States.insert(_pEnd);
 
-                a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(_pStart, a.pEpsilonStart));
-                a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(a.pEpsilonEnd, _pEnd));
+                a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, a.pEpsilonStart));
+                a.epsilonNFA_Edges[a.pEpsilonEnd].push_back(EpsilonNFA_Edge(a.pEpsilonEnd, _pEnd));
 
-                const Char_Type chStart = epsilonNFA_Edges.begin()->data.char_value;
-                const Char_Type chEnd   = x.epsilonNFA_Edges.begin()->data.char_value;
+                const Char_Type chStart = epsilonNFA_Edges.begin()->second.begin()->data.char_value;
+                const Char_Type chEnd   = x.epsilonNFA_Edges.begin()->second.begin()->data.char_value;
                 for (Char_Type ch = chStart + 1; ch < chEnd; ++ch)
                 {
                     self y(ch, context);
                     copyEpsilonNFA_Edges(y, a);
-                    a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(_pStart, y.pEpsilonStart));
-                    a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(y.pEpsilonEnd, _pEnd));
+                    a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, y.pEpsilonStart));
+                    a.epsilonNFA_Edges[y.pEpsilonEnd].push_back(EpsilonNFA_Edge(y.pEpsilonEnd, _pEnd));
                 }
 
                 self b = cloneEpsilonNFA(x);
                 copyEpsilonNFA_Edges(b, a);
 
-                a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(_pStart, b.pEpsilonStart));
-                a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(b.pEpsilonEnd, _pEnd));
+                a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, b.pEpsilonStart));
+                a.epsilonNFA_Edges[b.pEpsilonEnd].push_back(EpsilonNFA_Edge(b.pEpsilonEnd, _pEnd));
 
                 a.pEpsilonStart = _pStart;
                 a.pEpsilonEnd   = _pEnd;
@@ -423,10 +410,10 @@ public:
             context.epsilonNFA_States.insert(_pStart);
             context.epsilonNFA_States.insert(_pEnd);
 
-            a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(_pStart, a.pEpsilonStart));
-            a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(_pStart, b.pEpsilonStart));
-            a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(a.pEpsilonEnd, _pEnd));
-            a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(b.pEpsilonEnd, _pEnd));
+            a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, a.pEpsilonStart));
+            a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, b.pEpsilonStart));
+            a.epsilonNFA_Edges[a.pEpsilonEnd].push_back(EpsilonNFA_Edge(a.pEpsilonEnd, _pEnd));
+            a.epsilonNFA_Edges[b.pEpsilonEnd].push_back(EpsilonNFA_Edge(b.pEpsilonEnd, _pEnd));
 
             a.pEpsilonStart = _pStart;
             a.pEpsilonEnd   = _pEnd;
@@ -437,7 +424,7 @@ public:
         inline self opt()
         {
             self a = cloneEpsilonNFA(*this);
-            a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(a.pEpsilonStart, a.pEpsilonEnd));
+            a.epsilonNFA_Edges[a.pEpsilonStart].push_back(EpsilonNFA_Edge(a.pEpsilonStart, a.pEpsilonEnd));
             return a;
         }
 
@@ -456,7 +443,7 @@ public:
         {
             self a = cloneEpsilonNFA(*this);
             
-            a.epsilonNFA_Edges.insert(EpsilonNFA_Edge(a.pEpsilonEnd, a.pEpsilonStart));
+            a.epsilonNFA_Edges[a.pEpsilonEnd].push_back(EpsilonNFA_Edge(a.pEpsilonEnd, a.pEpsilonStart));
 
             return a;
         }
@@ -581,25 +568,28 @@ public:
         void printEpsilonNFA()
         {
             printf("-------- ε- NFA Start --------\n");
-            for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
             {
-                printf("%03d -> %03d", i->pFrom->idx, i->pTo->idx);
-                switch (i->edgeType())
+                for (typename vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
-                case EpsilonNFA_Edge::TEpsilon:
-                    printf("(ε)");
-                    break;
-                case EpsilonNFA_Edge::TChar:
-                    printf("(%c)", i->data.char_value);
-                    break;
-                case EpsilonNFA_Edge::TString:
-                    printf("(%s)", i->data.string_value.c_str());
-                    break;
-                default:
-                    break;
+                    printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
+                    switch (j->edgeType())
+                    {
+                    case EpsilonNFA_Edge::TEpsilon:
+                        printf("(ε)");
+                        break;
+                    case EpsilonNFA_Edge::TChar:
+                        printf("(%c)", j->data.char_value);
+                        break;
+                    case EpsilonNFA_Edge::TString:
+                        printf("(%s)", j->data.string_value.c_str());
+                        break;
+                    default:
+                        break;
+                    }
+                    if (j->isNot()) printf("(not)");
+                    printf("\n");
                 }
-                if (i->isNot()) printf("(not)");
-                printf("\n");
             }
             printf("start: %03d -> end: %03d\n", pEpsilonStart->idx, pEpsilonEnd->idx);
             printf("--------- ε- NFA End ---------\n");
@@ -654,9 +644,12 @@ public:
     protected:
         static void copyEpsilonNFA_Edges(const self& from, self& to)
         {
-            for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash>::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
             {
-                to.epsilonNFA_Edges.insert(*i);
+                for (typename vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+                {
+                    to.epsilonNFA_Edges[i->first].push_back(*j);
+                }
             }
         }
 
@@ -665,29 +658,32 @@ public:
             self result(x.context);
 
             map<EpsilonNFA_State*, EpsilonNFA_State*> statesMap;
-            for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash>::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
             {
-                EpsilonNFA_State *pFrom = statesMap[i->pFrom], *pTo = statesMap[i->pTo];
-                if (pFrom == NULL)
+                for (typename vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
-                    pFrom = statesMap[i->pFrom] = EpsilonNFA_State_Alloc::allocate();
-                    construct(pFrom);
+                    EpsilonNFA_State *pFrom = statesMap[j->pFrom], *pTo = statesMap[j->pTo];
+                    if (pFrom == NULL)
+                    {
+                        pFrom = statesMap[j->pFrom] = EpsilonNFA_State_Alloc::allocate();
+                        construct(pFrom);
 
-                    result.context.epsilonNFA_States.insert(pFrom);
+                        result.context.epsilonNFA_States.insert(pFrom);
+                    }
+
+                    if (pTo == NULL)
+                    {
+                        pTo = statesMap[j->pTo] = EpsilonNFA_State_Alloc::allocate();
+                        construct(pTo);
+
+                        result.context.epsilonNFA_States.insert(pTo);
+                    }
+
+                    EpsilonNFA_Edge edge(*j);
+                    edge.pFrom = pFrom;
+                    edge.pTo   = pTo;
+                    result.epsilonNFA_Edges[pFrom].push_back(edge);
                 }
-
-                if (pTo == NULL)
-                {
-                    pTo = statesMap[i->pTo] = EpsilonNFA_State_Alloc::allocate();
-                    construct(pTo);
-
-                    result.context.epsilonNFA_States.insert(pTo);
-                }
-
-                EpsilonNFA_Edge edge(*i);
-                edge.pFrom = pFrom;
-                edge.pTo   = pTo;
-                result.epsilonNFA_Edges.insert(edge);
             }
 
             result.pEpsilonStart = statesMap[x.pEpsilonStart];
@@ -709,17 +705,14 @@ public:
                 while (!tmp.empty())
                 {
                     EpsilonNFA_State* pState = *tmp.begin();
-                    for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator j = epsilonNFA_Edges.begin(), n = epsilonNFA_Edges.end(); j != n; ++j)
+                    for (typename vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[pState].begin(), n = epsilonNFA_Edges[pState].end(); j != n; ++j)
                     {
-                        if (j->pFrom == pState)
+                        if (j->isEpsilon())
                         {
-                            if (j->isEpsilon())
-                            {
-                                if (result.insert(j->pTo).second) tmp.insert(j->pTo);
-                            }
-                            else if (j->isChar()) chars.insert(pair<Char_Type, bool>(j->data.char_value, j->isNot()));
-                            else if (j->isString()) strings.insert(pair<String_Type, bool>(j->data.string_value, j->isNot()));
+                            if (result.insert(j->pTo).second) tmp.insert(j->pTo);
                         }
+                        else if (j->isChar()) chars.insert(pair<Char_Type, bool>(j->data.char_value, j->isNot()));
+                        else if (j->isString()) strings.insert(pair<String_Type, bool>(j->data.string_value, j->isNot()));
                     }
                     tmp.erase(pState);
                 }
@@ -732,10 +725,9 @@ public:
             set<EpsilonNFA_State*> result;
             for (typename set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
             {
-                for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator j = epsilonNFA_Edges.begin(), n = epsilonNFA_Edges.end(); j != n; ++j)
+                for (typename vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
                 {
-                    if (j->pFrom == *i && j->isChar() &&
-                        j->data.char_value == c && j->isNot() == bNot) result.insert(j->pTo);
+                    if (j->isChar() && j->data.char_value == c && j->isNot() == bNot) result.insert(j->pTo);
                 }
             }
             return result;
@@ -746,10 +738,9 @@ public:
             set<EpsilonNFA_State*> result;
             for (typename set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
             {
-                for (typename hashset<EpsilonNFA_Edge, _hash>::const_iterator j = epsilonNFA_Edges.begin(), n = epsilonNFA_Edges.end(); j != n; ++j)
+                for (typename vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
                 {
-                    if (j->pFrom == *i && j->isString() &&
-                        j->data.string_value == s && j->isNot() == bNot) result.insert(j->pTo);
+                    if (j->isString() && j->data.string_value == s && j->isNot() == bNot) result.insert(j->pTo);
                 }
             }
             return result;
@@ -775,7 +766,7 @@ public:
         }
     protected:
         EpsilonNFA_State *pEpsilonStart, *pEpsilonEnd;
-        hashset<EpsilonNFA_Edge, _hash> epsilonNFA_Edges;
+        hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash> epsilonNFA_Edges;
 
         DFA_State*      pDFAStart;
         set<DFA_State*> pDFAEnds;

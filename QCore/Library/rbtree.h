@@ -469,6 +469,12 @@ public:
         return *this;
     }
 
+    inline const bool operator==(const self& x)const
+    {
+        if (node_count != x.node_count) return false;
+        return equalNode(header->parent, x.header->parent);
+    }
+
     void copyFrom(const self& x)
     {
         if (x.header->parent)
@@ -731,43 +737,7 @@ protected:
     {
         while(node != root && node->parent->color == red)
         {
-            link_type p = node->parent, g = p->parent, u = NULL;// g->left == p ? g->right : g->left;
-//             if(u != NULL && u->color == red)
-//             {
-//                 // 若父节点和叔父节点都为红色，则
-//                 // 1.直接修改这2个节点的颜色和祖父节点的颜色
-//                 // 2.递归向上调整
-//                 p->color = black;
-//                 u->color = black;
-//                 g->color = red;
-//                 node = g;
-//             }
-//             else if(p == g->left)
-//             {
-//                 if(node == p->right) // 内侧旋转
-//                 {
-//                     node = p;
-//                     l_rotate(node, root);
-//                 }
-//                 p = node->parent;
-//                 g = p->parent;
-//                 p->color = black;
-//                 g->color = red;
-//                 r_rotate(g, root); // 外侧旋转
-//             }
-//             else
-//             {
-//                 if(node == p->left)
-//                 {
-//                     node = p;
-//                     r_rotate(node, root);
-//                 }
-//                 p = node->parent;
-//                 g = p->parent;
-//                 p->color = black;
-//                 g->color = red;
-//                 l_rotate(g, root);
-//             }
+            link_type p = node->parent, g = p->parent, u = NULL;
             if (p == g->left)
             {
                 u = g->right;
@@ -856,6 +826,24 @@ protected:
             copyFrom(node->left, from->left, node);
             copyFrom(node->right, from->right, node);
         }
+    }
+
+    const bool equalNode(link_type x, link_type y)const
+    {
+        if (x == NULL)
+        {
+            if (y != NULL) return false;
+            return true;
+        }
+        else if (y == NULL)
+        {
+            if (x != NULL) return false;
+            return true;
+        }
+        if (!equal_compare(x->data, y->data)) return false;
+        if (!equalNode(x->left, y->left))     return false;
+        if (!equalNode(x->right, y ->right))  return false;
+        return true;
     }
 
     static void r_rotate(link_type node, link_type& root)
