@@ -26,8 +26,6 @@ namespace regex
     class Rule
     {
     protected:
-        struct EpsilonNFA_Edge;
-
         struct EpsilonNFA_State
         {
 #ifdef _DEBUG
@@ -451,9 +449,12 @@ public:
         self operator!()
         {
             self a = cloneEpsilonNFA(*this);
-            for (typename hashset<EpsilonNFA_Edge, _hash>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
             {
-                if (i->isChar() || i->isString()) i->negate();
+                for (typename vector<EpsilonNFA_Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+                {
+                    if (j->isChar() || j->isString()) j->negate();
+                }
             }
             return a;
         }

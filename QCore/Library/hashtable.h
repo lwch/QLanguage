@@ -156,7 +156,8 @@ public:
 
     inline self& operator++()
     {
-        return ++(*this);
+        base::inc();
+        return *this;
     }
 
     inline self operator++(int)
