@@ -19,16 +19,36 @@ namespace QLanguage
 {
     namespace Library
     {
-#define HASH_KEY_TYPE uint
+#define HASH_KEY_TYPE ulong
         template <typename T>
         class hash
         {
         public:
             typedef T value_type;
 
-            const HASH_KEY_TYPE operator()(const value_type&)const
+            inline const HASH_KEY_TYPE operator()(const value_type&)const
             {
                 return 0;
+            }
+        };
+
+        template <typename T>
+        class hash<T*>
+        {
+        public:
+            inline const HASH_KEY_TYPE operator()(T* x)const
+            {
+                return reinterpret_cast<HASH_KEY_TYPE>(x);
+            }
+        };
+
+        template <typename T>
+        class hash<const T*>
+        {
+        public:
+            inline const HASH_KEY_TYPE operator()(const T* x)const
+            {
+                return reinterpret_cast<HASH_KEY_TYPE>(x);
             }
         };
 

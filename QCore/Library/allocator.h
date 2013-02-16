@@ -56,7 +56,7 @@ namespace QLanguage
             static T* allocate(size_t n)
             {
                 const size_t size = n * sizeof(T);
-                if(size <= 0) throw "bad allocate size";
+                if(size < 0) throw "bad allocate size";
                 T* result = (T*)malloc(size);
                 while(result == 0)
                 {
@@ -72,12 +72,12 @@ namespace QLanguage
                 free(p);
             }
 
-            static void deallocate(T* p, size_t n)
+            static void deallocate(T* p, size_t)
             {
                 free(p);
             }
 
-            static void deallocateWithSize(T* p)
+            static void deallocateWithSize(T* p, size_t)
             {
                 free(p);
             }

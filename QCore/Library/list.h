@@ -166,6 +166,11 @@ namespace QLanguage
             {
                 return node != x.node;
             }
+
+            inline T* operator->()
+            {
+                return &node->data;
+            }
         };
 
         template <typename T>

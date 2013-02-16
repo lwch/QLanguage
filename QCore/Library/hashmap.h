@@ -17,7 +17,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
 template <typename Key,
           typename T,
-          typename Hash = hash<T>,
+          typename Hash = hash<Key>,
           size_t Max_Bucket_Length = 11,
           bool Resize = true,
           typename Compare = equal_to<Key> >
