@@ -61,6 +61,16 @@ namespace QLanguage
                 return x;
             }
         };
+
+        template <>
+        class hash<string>
+        {
+        public:
+            inline const HASH_KEY_TYPE operator()(const string& x)const
+            {
+                return reinterpret_cast<HASH_KEY_TYPE>(x.c_str());
+            }
+        };
     }
 }
 

@@ -12,7 +12,7 @@
 
 #include "TestString.h"
 
-TEST_CASE(TestString)
+TEST_CASE(TestString, true)
 {
     const char* str = "fortest";
     string a, b(10), c(str), d(str, 3), e(10, 'a'), f(str, str + strlen(str));

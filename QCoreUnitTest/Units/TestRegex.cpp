@@ -13,7 +13,7 @@
 
 typedef regex::Rule<char, string> Rule_Type;
 
-TEST_CASE(TestRegex)
+TEST_CASE(TestRegex, true)
 {
 //     Rule_Type::Context context;
 //     Rule_Type a('a', context), b('b', context), d('d', context);

@@ -10,6 +10,9 @@
 	purpose:	
 *********************************************************************/
 
+#ifndef _QLANGUAGE_LIBRARY_HASHMAP_H_
+#define _QLANGUAGE_LIBRARY_HASHMAP_H_
+
 #include "definition.h"
 #include "hashtable.h"
 
@@ -138,3 +141,5 @@ public:
 };
 
 NAMESPACE_QLANGUAGE_LIBRARY_END
+
+#endif

@@ -15,7 +15,7 @@
 
 typedef map<int, int> map_type;
 
-TEST_CASE(TestMap)
+TEST_CASE(TestMap, true)
 {
     map_type map;
     pair<map_type::iterator, bool> i = map.insert(pair<int, int>(1, 1));
@@ -76,7 +76,11 @@ TEST_CASE(TestMap)
     }
 }
 
-TEST_CASE(TestMap_Speed)
+#ifdef TEST_SPEED
+TEST_CASE(TestMap_Speed, true)
+#else
+TEST_CASE(TestMap_Speed, false)
+#endif
 {
     map_type map;
 

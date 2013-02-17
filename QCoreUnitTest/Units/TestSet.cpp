@@ -15,7 +15,7 @@
 
 typedef set<int> set_type;
 
-TEST_CASE(TestSet)
+TEST_CASE(TestSet, true)
 {
     set_type set;
     pair<set_type::iterator, bool> i = set.insert(1);
@@ -69,7 +69,11 @@ TEST_CASE(TestSet)
     TEST_ASSERT(!set.empty(), "tree is not empty!");
 }
 
-TEST_CASE(TestSet_Speed)
+#ifdef TEST_SPEED
+TEST_CASE(TestSet_Speed, true)
+#else
+TEST_CASE(TestSet_Speed, false)
+#endif
 {
     set_type set;
 

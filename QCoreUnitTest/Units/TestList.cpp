@@ -15,7 +15,7 @@
 
 #include "../../QCore/Library/algo.h"
 
-TEST_CASE(TestList)
+TEST_CASE(TestList, true)
 {
     int l[5] = {1, 2, 3, 4, 5};
     list<int> a;
@@ -61,7 +61,11 @@ TEST_CASE(TestList)
     }
 }
 
-TEST_CASE(TestList_Speed)
+#ifdef TEST_SPEED
+TEST_CASE(TestList_Speed, true)
+#else
+TEST_CASE(TestList_Speed, false)
+#endif
 {
     list<int> a;
 

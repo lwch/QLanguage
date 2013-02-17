@@ -15,6 +15,8 @@
 
 #include "../../QCore/Library/error.h"
 #include "../../QCore/Library/Console.h"
+#include "../../QCore/Library/pair.h"
+#include "../../QCore/Library/string.h"
 
 #include <time.h>
 
@@ -24,6 +26,64 @@ namespace QLanguage
 
     namespace UnitTest
     {
+        class CaseMap
+        {
+        public:
+            typedef bool(*testPtr)();
+            typedef bool(*nameFilterPtr)(const string&);
+            #define MAX_CASE_COUNT 1024
+        public:
+            CaseMap() : iCaseCount(0), nameFilter(NULL) {}
+            ~CaseMap() {}
+
+            void pushCase(const pair<string, testPtr>& p, const char*, size_t)
+            {
+                if (iCaseCount >= MAX_CASE_COUNT) throw "too many case!";
+                caseArray[iCaseCount].caseName = p.first;
+                caseArray[iCaseCount++].func   = p.second;
+            }
+
+            const size_t runAllCase()const
+            {
+                size_t iSuccessed = 0;
+                // Why is always zero in MinGW?
+                for (size_t i = 0; i < iCaseCount; ++i)
+                {
+                    if (nameFilter)
+                    {
+                        if (nameFilter(caseArray[i].caseName) && caseArray[i].func()) ++iSuccessed;
+                    }
+                    else
+                    {
+                        if (caseArray[i].func()) ++iSuccessed;
+                    }
+                }
+                return iSuccessed;
+            }
+
+            inline const size_t caseCount()const { return iCaseCount; }
+
+            inline void clear()
+            {
+                iCaseCount = 0;
+            }
+
+            inline void setNameFilter(nameFilterPtr ptr)
+            {
+                nameFilter = ptr;
+            }
+        protected:
+            size_t iCaseCount;
+            struct
+            {
+                string  caseName;
+                testPtr func;
+            } caseArray[MAX_CASE_COUNT];
+            nameFilterPtr nameFilter;
+        };
+
+        extern CaseMap gCaseMap;
+
         #define TEST_SPEED_INSERT_COUNT 10000
 
         #define PrintMessage(fmt, ...) \
@@ -46,33 +106,47 @@ namespace QLanguage
         #define TEST_ASSERT(expression, fmt, ...) \
         if(expression) throw error<string>(string::format(fmt, ##__VA_ARGS__), __FILE__, __LINE__);
 
-        #define TEST_CASE(moduleName) \
+        #define TEST_CASE(moduleName, run) \
+        using namespace QLanguage::UnitTest; \
+        extern bool TestImpl##moduleName(); \
         extern void Case_##moduleName(); \
-        extern int  retCode; \
-        class Test##moduleName \
+        struct CaseMapImpl##moduleName \
         { \
-        public: \
-            Test##moduleName() \
+            CaseMapImpl##moduleName() \
             { \
-                try \
+                if (run) \
                 { \
-                    PrintMessage(#moduleName); \
-                    Case_##moduleName(); \
-                    PrintInformation(string::format("%s run successed!", #moduleName)); \
-                } \
-                catch(const char* e) \
-                { \
-                    PrintError(e); \
-                    --retCode; \
-                } \
-                catch(const error<string>& e) \
-                { \
-                    PrintError(e.description); \
-                    --retCode; \
+                    gCaseMap.pushCase(pair<string, typename CaseMap::testPtr>(#moduleName, TestImpl##moduleName), __FILE__, __LINE__); \
                 } \
             } \
-        } Test##moduleName; \
+        } caseMapImpl##moduleName; \
+        bool TestImpl##moduleName() \
+        { \
+            try \
+            { \
+                PrintMessage(#moduleName); \
+                Case_##moduleName(); \
+                PrintInformation(string::format("%s run successed!", #moduleName)); \
+                return true; \
+            } \
+            catch(const char* e) \
+            { \
+                PrintError(e); \
+                return false; \
+            } \
+            catch(const error<string>& e) \
+            { \
+                PrintError(e.description); \
+                return false; \
+            } \
+        } \
         void Case_##moduleName()
+
+        #define RUN_ALL_CASE gCaseMap.runAllCase()
+
+        #define ALL_CASE_COUNT gCaseMap.caseCount()
+
+        #define SET_NAME_FILTER(func) gCaseMap.setNameFilter(func);
     }
 }
 

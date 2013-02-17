@@ -32,10 +32,34 @@
 
 using namespace QLanguage;
 using namespace QLanguage::Library;
+using namespace QLanguage::UnitTest;
 
-int retCode = 0;
+inline bool nameFilter(const string&)
+{
+    return true;
+}
 
 int main()
 {
-    return retCode;
+    SET_NAME_FILTER(nameFilter);
+
+    clock_t t = clock();
+    size_t iResult = RUN_ALL_CASE;
+    t = clock() - t;
+
+    size_t iCount  = ALL_CASE_COUNT;
+    try
+    {
+        TEST_ASSERT(iResult != iCount, "some error!");
+        Console::SetColor(false, true, false, true);
+        Console::WriteLine("Run %d cases with time %.03f seconds successed!", iCount, (double)t / 1000);
+        Console::SetColor(true, true, true, false);
+    }
+    catch (const error<string>& e)
+    {
+        Console::SetColor(true, false, false, true);
+        Console::WriteLine(e.description);
+    }
+    return 0;
 }
+

@@ -13,7 +13,7 @@
 
 #include "TestVector.h"
 
-TEST_CASE(TestVector)
+TEST_CASE(TestVector, true)
 {
     int l[5] = {1, 2, 3, 4, 5};
     vector<int> a;
@@ -50,7 +50,11 @@ TEST_CASE(TestVector)
     TEST_ASSERT(a.size() != 7, "invalid vector size: %d!", a.size());
 }
 
-TEST_CASE(TestVector_Speed)
+#ifdef TEST_SPEED
+TEST_CASE(TestVector_Speed, true)
+#else
+TEST_CASE(TestVector_Speed, false)
+#endif
 {
     vector<int> a;
 
