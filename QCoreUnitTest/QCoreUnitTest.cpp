@@ -34,6 +34,16 @@ using namespace QLanguage;
 using namespace QLanguage::Library;
 using namespace QLanguage::UnitTest;
 
+#ifdef __MINGW32__
+namespace QLanguage
+{
+    namespace UnitTest
+    {
+        CaseMap gCaseMap;
+    }
+}
+#endif
+
 inline bool nameFilter(const string&)
 {
     return true;

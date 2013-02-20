@@ -12,6 +12,7 @@
 
 #include "TestBase.h"
 
+#ifndef __MINGW32__
 // Fuck MinGW with error!!!!
 namespace QLanguage
 {
@@ -20,3 +21,4 @@ namespace QLanguage
         CaseMap gCaseMap;
     }
 }
+#endif
