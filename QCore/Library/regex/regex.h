@@ -252,17 +252,6 @@ namespace regex
                 chars   = x.chars;
                 strings = x.strings;
             }
-
-            EpsilonClosureInfo& operator=(const EpsilonClosureInfo& x)
-            {
-                if (&x != this)
-                {
-                    states  = x.states;
-                    chars   = x.chars;
-                    strings = x.strings;
-                }
-                return *this;
-            }
         };
 public:
         struct Context
@@ -459,7 +448,8 @@ public:
 
         self operator!()
         {
-            self a = cloneEpsilonNFA(*this);
+            self a(context);
+            cloneEpsilonNFA(*this, a);
             for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 for (typename vector<EpsilonNFA_Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
@@ -519,19 +509,17 @@ public:
                     EpsilonClosureInfo info;
                     epsilonClosure(move(*t, i->first, i->second), info);
 
-                    DFA_State* pState = DFA_State_Alloc::allocate();
-                    construct(pState, info.states);
-
-                    DFA_State* p = getDFAState(pState, c);
+                    DFA_State* p = getDFAState(info.states, c);
                     if (p) // 如果这个状态已存在
                     {
-                        destruct(pState, has_destruct(*pState));
-                        DFA_State_Alloc::deallocate(pState);
-
                         dfa_Edges.insert(DFA_Edge(i->first, i->second, t, p));
                     }
                     else
                     {
+                        DFA_State* pState = DFA_State_Alloc::allocate();
+                        construct(pState, info.states);
+                        context.dfa_States.insert(pState);
+
                         if (isEndDFAStatus(pState)) pDFAEnds.insert(pState);
 
                         c_type ct(pState, info);
@@ -547,19 +535,17 @@ public:
                     EpsilonClosureInfo info;
                     epsilonClosure(move(*t, i->first, i->second), info);
 
-                    DFA_State* pState = DFA_State_Alloc::allocate();
-                    construct(pState, info.states);
-
-                    DFA_State* p = getDFAState(pState, c);
+                    DFA_State* p = getDFAState(info.states, c);
                     if (p) // 如果这个状态已存在
                     {
-                        destruct(pState, has_destruct(*pState));
-                        DFA_State_Alloc::deallocate(pState);
-
                         dfa_Edges.insert(DFA_Edge(i->first, i->second, t, p));
                     }
                     else
                     {
+                        DFA_State* pState = DFA_State_Alloc::allocate();
+                        construct(pState, info.states);
+                        context.dfa_States.insert(pState);
+
                         if (isEndDFAStatus(pState)) pDFAEnds.insert(pState);
 
                         c_type ct(pState, info);
@@ -759,13 +745,12 @@ public:
             return result;
         }
 
-        DFA_State* getDFAState(DFA_State* pNewState, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c)
+        DFA_State* getDFAState(const set<EpsilonNFA_State*>& t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c)
         {
-            for (typename list<pair<DFA_State*, EpsilonClosureInfo> >::const_iterator i = c[pNewState->content.size()].begin(), m = c[pNewState->content.size()].end(); i != m; ++i)
+            for (typename list<pair<DFA_State*, EpsilonClosureInfo> >::const_iterator i = c[t.size()].begin(), m = c[t.size()].end(); i != m; ++i)
             {
-                if (*i->first == *pNewState) return i->first;
+                if (i->first->content == t) return i->first;
             }
-            context.dfa_States.insert(pNewState);
             return NULL;
         }
 
