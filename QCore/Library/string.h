@@ -30,7 +30,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 #endif
 
 template <typename T, typename Size, typename Distance>
-class __basic_string_iterator : public __iterator<T, Size, Distance>
+class __basic_string_iterator : public __iterator<T, Size, Distance>, public random_access_iterator
 {
 protected:
     template <typename C, typename S, typename D>
@@ -131,7 +131,7 @@ public:
 };
 
 template <typename T, typename Size, typename Distance>
-class __basic_string_const_iterator : public __const_iterator<T, Size, Distance>
+class __basic_string_const_iterator : public __const_iterator<T, Size, Distance>, public random_access_iterator
 {
 protected:
     typedef __const_iterator<T, Size, Distance>              parent;
@@ -576,25 +576,25 @@ public:
         return *this;
     }
 
-    inline const size_type find(const self& s, size_type pos = 0)const
+    inline const long find(const self& s, size_type pos = 0)const
     {
         return find(s.begin(), pos, s.size());
     }
 
-    inline const size_type find(const T* s, size_type pos = 0)const
+    inline const long find(const T* s, size_type pos = 0)const
     {
         return find(s, pos, Traits::length(s));
     }
 
     template <typename Iterator>
-    const size_type find(Iterator first, size_type pos, size_type n)const
+    const long find(Iterator first, size_type pos, size_type n)const
     {
         if(pos + n > size()) return npos;
         const_iterator result = search(begin() + pos, end(), first, first + n);
         return result != end() ? result - begin() : npos;
     }
 
-    const size_type find(const T* first, size_type pos, size_type n)const
+    const long find(const T* first, size_type pos, size_type n)const
     {
         if(pos + n > size()) return npos;
         const_iterator result = search(begin() + pos, end(), first, first + n);

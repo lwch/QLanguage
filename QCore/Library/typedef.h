@@ -21,6 +21,18 @@ namespace QLanguage
         typedef unsigned int     uint;
         typedef unsigned char    uchar;
         typedef unsigned long    ulong;
+
+        template <typename T>
+        struct remove_const
+        {
+            typedef T no_const;
+        };
+
+        template <typename T>
+        struct remove_const<const T>
+        {
+            typedef T no_const;
+        };
     }
 }
 

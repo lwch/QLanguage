@@ -12,7 +12,7 @@
 
 #include "TestMemoryPool.h"
 
-TEST_CASE(TestMemoryPool, true)
+TEST_CASE(TestMemoryPool)
 {
     MemoryPool pool;
     TIME_START;

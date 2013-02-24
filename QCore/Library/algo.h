@@ -87,6 +87,12 @@ namespace QLanguage
         }
 
         template <typename Iterator, typename Distance>
+        inline void __distance(Iterator first, Iterator last, Distance& n, const char*)
+        {
+            __distance(first, last, n, random_access_iterator());
+        }
+
+        template <typename Iterator, typename Distance>
         inline void distance(Iterator first, Iterator last, Distance& n)
         {
             __distance(first, last, n, first);
@@ -95,9 +101,9 @@ namespace QLanguage
         template <typename Iterator1, typename Iterator2, typename Distance1, typename Distance2>
         inline Iterator1 __search(Iterator1 first1, Iterator1 last1, Iterator2 first2, Iterator2 last2, Distance1*, Distance2*)
         {
-            Distance1 d1 = 0;
+            typename remove_const<Distance1>::no_const d1 = 0;
             distance(first1, last1, d1);
-            Distance2 d2 = 0;
+            typename remove_const<Distance2>::no_const d2 = 0;
             distance(first2, last2, d2);
 
             if(d1 < d2) return last1;

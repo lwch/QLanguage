@@ -38,7 +38,7 @@ public:
 
 typedef CombinatorRule<string, TestCombinatorResult, TestCombinatorResultSelector, emptystring> CombinatorRule_Type;
 
-TEST_CASE(TestCombinator, true)
+TEST_CASE(TestCombinator)
 {
     CombinatorRule_Type a, b, c, d, e;
     CombinatorRule_Type f = a + b;

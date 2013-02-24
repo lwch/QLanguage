@@ -16,7 +16,7 @@
 
 typedef hashtable<int, int, identity<int> > hashtable_type;
 
-TEST_CASE(TestHashTable, true)
+TEST_CASE(TestHashTable)
 {
     hashtable_type hashtable;
     hashtable.insert_equal(10);

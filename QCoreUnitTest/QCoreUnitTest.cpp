@@ -44,8 +44,19 @@ namespace QLanguage
 }
 #endif
 
-inline bool nameFilter(const string&)
+size_t iSpeedCaseCount = 0;
+
+inline bool nameFilter(const string& name)
 {
+    if (name.find("Speed") != -1)
+    {
+        ++iSpeedCaseCount;
+#ifdef TEST_SPEED
+        return true;
+#else
+        return false;
+#endif
+    }
     return true;
 }
 
@@ -60,7 +71,11 @@ int main()
     size_t iCount  = ALL_CASE_COUNT;
     try
     {
+#ifdef TEST_SPEED
         TEST_ASSERT(iResult != iCount, "some error!");
+#else
+        TEST_ASSERT(iResult != (iCount - iSpeedCaseCount), "some error!");
+#endif
         Console::SetColor(false, true, false, true);
         Console::WriteLine("Run %d cases with time %.03f seconds successed!", iCount, (double)t / 1000);
         Console::SetColor(true, true, true, false);

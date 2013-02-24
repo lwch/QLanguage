@@ -27,7 +27,7 @@ class  J : virtual public A {};
 struct K : virtual public C {};
 struct L : virtual public C {};
 
-TEST_CASE(TestTraits, true)
+TEST_CASE(TestTraits)
 {
     TEST_ASSERT(!type_compare(A(), A()), "invalid type_compare with A and A!");
     TEST_ASSERT(type_compare(A(), B()), "invalid type_compare with A and B!");

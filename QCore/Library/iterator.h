@@ -151,7 +151,6 @@ namespace QLanguage
             typedef typename Iterator::reference       reference;
             typedef typename Iterator::const_pointer   const_pointer;
             typedef typename Iterator::const_reference const_reference;
-            typedef typename Iterator::self            self_type;
         };
 
         template <typename T>
@@ -163,7 +162,6 @@ namespace QLanguage
             typedef T&        reference;
             typedef const T*  const_pointer;
             typedef const T&  const_reference;
-            typedef T*        self_type;
         };
 
         template <typename T>
@@ -175,7 +173,6 @@ namespace QLanguage
             typedef T&        reference;
             typedef const T*  const_pointer;
             typedef const T&  const_reference;
-            typedef const T*  self_type;
         };
 
         template <typename Iterator>

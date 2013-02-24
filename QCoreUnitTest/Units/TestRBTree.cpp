@@ -15,7 +15,7 @@
 
 typedef rbtree<int, int, identity<int> > tree_type;
 
-TEST_CASE(TestRBTree, true)
+TEST_CASE(TestRBTree)
 {
     tree_type tree;
     tree_type::iterator i = tree.insert_equal(1);
@@ -72,11 +72,7 @@ TEST_CASE(TestRBTree, true)
     TEST_ASSERT(!tree.empty(), "tree is not empty!");
 }
 
-#ifdef TEST_SPEED
-TEST_CASE(TestRBTree_Speed, true)
-#else
-TEST_CASE(TestRBTree_Speed, false)
-#endif
+TEST_CASE(TestRBTree_Speed)
 {
     tree_type tree;
 

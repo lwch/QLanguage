@@ -106,7 +106,7 @@ namespace QLanguage
         #define TEST_ASSERT(expression, fmt, ...) \
         if(expression) throw error<string>(string::format(fmt, ##__VA_ARGS__), __FILE__, __LINE__);
 
-        #define TEST_CASE(moduleName, run) \
+        #define TEST_CASE(moduleName) \
         using namespace QLanguage::UnitTest; \
         extern bool TestImpl##moduleName(); \
         extern void Case_##moduleName(); \
@@ -114,10 +114,7 @@ namespace QLanguage
         { \
             CaseMapImpl##moduleName() \
             { \
-                if (run) \
-                { \
-                    gCaseMap.pushCase(pair<string, typename CaseMap::testPtr>(#moduleName, TestImpl##moduleName), __FILE__, __LINE__); \
-                } \
+                gCaseMap.pushCase(pair<string, typename CaseMap::testPtr>(#moduleName, TestImpl##moduleName), __FILE__, __LINE__); \
             } \
         } caseMapImpl##moduleName; \
         bool TestImpl##moduleName() \
