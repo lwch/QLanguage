@@ -13,6 +13,7 @@
 #ifndef _QLANGUAGE_LIBRARY_ALGO_H_
 #define _QLANGUAGE_LIBRARY_ALGO_H_
 
+#include "typedef.h"
 #include "iterator.h"
 
 namespace QLanguage

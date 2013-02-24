@@ -77,7 +77,7 @@ int main()
         TEST_ASSERT(iResult != (iCount - iSpeedCaseCount), "some error!");
 #endif
         Console::SetColor(false, true, false, true);
-        Console::WriteLine("Run %d cases with time %.03f seconds successed!", iCount, (double)t / 1000);
+        Console::WriteLine("Run %d cases with time %.03f seconds successed!", iResult, (double)t / 1000);
         Console::SetColor(true, true, true, false);
     }
     catch (const error<string>& e)
