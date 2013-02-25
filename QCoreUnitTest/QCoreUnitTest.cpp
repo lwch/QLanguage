@@ -48,7 +48,7 @@ size_t iSpeedCaseCount = 0;
 
 inline bool nameFilter(const string& name)
 {
-    if (name.find("Speed") != -1)
+    if (name.find("Speed") != -1U)
     {
         ++iSpeedCaseCount;
 #ifdef TEST_SPEED

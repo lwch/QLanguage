@@ -19,6 +19,7 @@
 #include "../map.h"
 #include "../hashmap.h"
 #include "../queue.h"
+#include "../stack.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 namespace regex
@@ -125,7 +126,7 @@ namespace regex
             }
         };
 
-        class _hash
+        class _hashEpsilonNFAState
         {
         public:
             const HASH_KEY_TYPE operator()(const EpsilonNFA_State* x)const
@@ -138,11 +139,12 @@ namespace regex
         {
             set<EpsilonNFA_State*> content;
             bool                   bFlag;
+            bool                   bEnd;
 #ifdef _DEBUG
             uint                   idx;
 #endif
 
-            DFA_State(const set<EpsilonNFA_State*>& x) : content(x), bFlag(false)
+            DFA_State(const set<EpsilonNFA_State*>& x) : content(x), bFlag(false), bEnd(false)
             {
 #ifdef _DEBUG
                 idx = inc();
@@ -220,14 +222,90 @@ namespace regex
                 else return TUnknown;
             }
 
-            const bool operator<(const DFA_Edge& x)const
+            inline const bool operator<(const DFA_Edge& x)const
             {
                 return (ulong)pFrom + pTo < (ulong)x.pFrom + x.pTo;
             }
 
-            const bool operator==(const DFA_Edge& x)const
+            inline const bool operator==(const DFA_Edge& x)const
             {
                 return pFrom == x.pFrom && pTo == x.pTo;
+            }
+
+            template <typename Iterator>
+            const bool compare(Iterator& first, Iterator last)const
+            {
+                if (first == last) return false;
+                if (isChar())
+                {
+                    if (compare_char(*first))
+                    {
+                        ++first;
+                        return true;
+                    }
+                    return false;
+                }
+                else if (isString())
+                {
+                    size_t n = 0;
+                    if (compare_string(first, last, n))
+                    {
+                        first += n;
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            }
+
+            inline const bool compare_char(const Char_Type& c)const
+            {
+#ifdef _DEBUG
+                if (!isChar()) throw error<string>("error calling function compare_char!", __FILE__, __LINE__);
+#endif
+                if (isNot()) return c != data.char_value;
+                else return c == data.char_value;
+            }
+
+            template <typename Iterator>
+            const bool compare_string(Iterator first, Iterator last, size_t& n)const
+            {
+#ifdef _DEBUG
+                if (!isString()) throw error<string>("error calling function compare_string!", __FILE__, __LINE__);
+#endif
+                if (static_cast<typename __container_traits<String_Type>::size_type>(last - first) < data.string_value.size()) return false;
+
+                if (isNot())
+                {
+                    Iterator _first = first;
+                    for (typename String_Type::const_iterator i = data.string_value.begin(), m = data.string_value.end(); i != m; ++i, ++_first)
+                    {
+                        if (*i != *_first)
+                        {
+                            n = _first - first;
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                else
+                {
+                    for (typename String_Type::const_iterator i = data.string_value.begin(), m = data.string_value.end(); i != m; ++i, ++first)
+                    {
+                        if (*i != *first) return false;
+                    }
+                    n = data.string_value.size();
+                    return true;
+                }
+            }
+        };
+
+        class _hashDFAState
+        {
+        public:
+            const HASH_KEY_TYPE operator()(const DFA_State* x)const
+            {
+                return (HASH_KEY_TYPE)x;
             }
         };
 
@@ -286,9 +364,9 @@ public:
         typedef allocator<EpsilonNFA_State>  EpsilonNFA_State_Alloc;
         typedef allocator<DFA_State>         DFA_State_Alloc;
     public:
-        Rule(Context& context) : pEpsilonStart(NULL), pEpsilonEnd(NULL), pDFAStart(NULL), context(context) {}
+        Rule(Context& context) : pEpsilonStart(NULL), pEpsilonEnd(NULL), pDFAStart(NULL), bBuild(false), context(context) {}
 
-        Rule(const Char_Type& x, Context& context) : pDFAStart(NULL), context(context)
+        Rule(const Char_Type& x, Context& context) : pDFAStart(NULL), bBuild(false), context(context)
         {
             pEpsilonStart = EpsilonNFA_State_Alloc::allocate();
             construct(pEpsilonStart);
@@ -302,7 +380,7 @@ public:
             context.epsilonNFA_States.insert(pEpsilonEnd);
         }
 
-        Rule(const String_Type& x, Context& context) : pDFAStart(NULL), context(context)
+        Rule(const String_Type& x, Context& context) : pDFAStart(NULL), bBuild(false), context(context)
         {
             pEpsilonStart = EpsilonNFA_State_Alloc::allocate();
             construct(pEpsilonStart);
@@ -316,7 +394,7 @@ public:
             context.epsilonNFA_States.insert(pEpsilonEnd);
         }
 
-        Rule(const self& x) : context(x.context)
+        Rule(const self& x) : bBuild(false), context(x.context)
         {
             pEpsilonStart    = x.pEpsilonStart;
             pEpsilonEnd      = x.pEpsilonEnd;
@@ -450,7 +528,7 @@ public:
         {
             self a(context);
             cloneEpsilonNFA(*this, a);
-            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 for (typename vector<EpsilonNFA_Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
@@ -475,107 +553,21 @@ public:
             return *this;
         }
 
-        void buildDFA()
+        inline bool parse(const String_Type& input, String_Type& output)
         {
-            set<EpsilonNFA_State*> start;
-            start.insert(pEpsilonStart);
-
-            typedef pair<DFA_State*, EpsilonClosureInfo> c_type;
-
-            map<size_t, list<c_type> > c;
-            queue<c_type> c2;
-
-            pDFAStart = DFA_State_Alloc::allocate();
-            EpsilonClosureInfo info;
-            epsilonClosure(start, info);
-            construct(pDFAStart, info.states);
-
-            c_type ct(pDFAStart, info);
-            c[info.states.size()].push_back(ct);
-            c2.push(ct);
-
-            if (isEndDFAStatus(pDFAStart)) pDFAEnds.insert(pDFAStart);
-            context.dfa_States.insert(pDFAStart);
-
-            while (!c2.empty())
+            if (!bBuild)
             {
-                DFA_State* t = c2.front().first;
-                set<pair<Char_Type, bool> > chars = c2.front().second.chars;
-                set<pair<String_Type, bool> > strings = c2.front().second.strings;
-                t->bFlag = true;
-
-                for (typename set<pair<Char_Type, bool> >::const_iterator i = chars.begin(), m = chars.end(); i != m; ++i)
-                {
-                    EpsilonClosureInfo info;
-                    epsilonClosure(move(*t, i->first, i->second), info);
-
-                    DFA_State* p = getDFAState(info.states, c);
-                    if (p) // 如果这个状态已存在
-                    {
-                        dfa_Edges.insert(DFA_Edge(i->first, i->second, t, p));
-                    }
-                    else
-                    {
-                        DFA_State* pState = DFA_State_Alloc::allocate();
-                        construct(pState, info.states);
-                        context.dfa_States.insert(pState);
-
-                        if (isEndDFAStatus(pState)) pDFAEnds.insert(pState);
-
-                        c_type ct(pState, info);
-                        c[info.states.size()].push_back(ct);
-                        c2.push(ct);
-
-                        dfa_Edges.insert(DFA_Edge(i->first, i->second, t, pState));
-                    }
-                }
-
-                for (typename set<pair<String_Type, bool> >::const_iterator i = strings.begin(), m = strings.end(); i != m; ++i)
-                {
-                    EpsilonClosureInfo info;
-                    epsilonClosure(move(*t, i->first, i->second), info);
-
-                    DFA_State* p = getDFAState(info.states, c);
-                    if (p) // 如果这个状态已存在
-                    {
-                        dfa_Edges.insert(DFA_Edge(i->first, i->second, t, p));
-                    }
-                    else
-                    {
-                        DFA_State* pState = DFA_State_Alloc::allocate();
-                        construct(pState, info.states);
-                        context.dfa_States.insert(pState);
-
-                        if (isEndDFAStatus(pState)) pDFAEnds.insert(pState);
-
-                        c_type ct(pState, info);
-                        c[info.states.size()].push_back(ct);
-                        c2.push(ct);
-
-                        dfa_Edges.insert(DFA_Edge(i->first, i->second, t, pState));
-                    }
-                }
-                c2.pop();
+                buildDFA();
+                bBuild = true;
             }
-        }
-
-        void clear()
-        {
-            pEpsilonStart = pEpsilonEnd = NULL;
-            epsilonNFA_Edges.clear();
-
-            pDFAStart = NULL;
-            pDFAEnds.clear();
-            dfa_Edges.clear();
-
-            context.clear();
+            return parse(input, output, input.begin());
         }
 
 #ifdef _DEBUG
         void printEpsilonNFA()
         {
             printf("-------- ε- NFA Start --------\n");
-            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
             {
                 for (typename vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
@@ -651,7 +643,7 @@ public:
     protected:
         static void copyEpsilonNFA_Edges(const self& from, self& to)
         {
-            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash>::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 for (typename vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
@@ -663,7 +655,7 @@ public:
         static void cloneEpsilonNFA(const self& x, self& to)
         {
             map<EpsilonNFA_State*, EpsilonNFA_State*> statesMap;
-            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash>::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
+            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 for (typename vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
@@ -693,6 +685,106 @@ public:
 
             to.pEpsilonStart = statesMap[x.pEpsilonStart];
             to.pEpsilonEnd   = statesMap[x.pEpsilonEnd];
+        }
+
+        void buildDFA()
+        {
+            set<EpsilonNFA_State*> start;
+            start.insert(pEpsilonStart);
+
+            typedef pair<DFA_State*, EpsilonClosureInfo> c_type;
+
+            map<size_t, list<c_type> > c;
+            queue<c_type> c2;
+
+            pDFAStart = DFA_State_Alloc::allocate();
+            EpsilonClosureInfo info;
+            epsilonClosure(start, info);
+            construct(pDFAStart, info.states);
+
+            c_type ct(pDFAStart, info);
+            c[info.states.size()].push_back(ct);
+            c2.push(ct);
+
+            if (isEndDFAStatus(pDFAStart))
+            {
+                pDFAStart->bEnd = true;
+                pDFAEnds.insert(pDFAStart);
+            }
+            context.dfa_States.insert(pDFAStart);
+
+            while (!c2.empty())
+            {
+                DFA_State* t = c2.front().first;
+                set<pair<Char_Type, bool> > chars = c2.front().second.chars;
+                set<pair<String_Type, bool> > strings = c2.front().second.strings;
+                t->bFlag = true;
+
+                for (typename set<pair<Char_Type, bool> >::const_iterator i = chars.begin(), m = chars.end(); i != m; ++i)
+                {
+                    EpsilonClosureInfo info;
+                    epsilonClosure(move(*t, i->first, i->second), info);
+
+                    DFA_State* p = getDFAState(info.states, c);
+                    if (p) // 如果这个状态已存在
+                    {
+                        //dfa_Edges.insert(DFA_Edge(i->first, i->second, t, p));
+                        dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, p));
+                    }
+                    else
+                    {
+                        DFA_State* pState = DFA_State_Alloc::allocate();
+                        construct(pState, info.states);
+                        context.dfa_States.insert(pState);
+
+                        if (isEndDFAStatus(pState))
+                        {
+                            pState->bEnd = true;
+                            pDFAEnds.insert(pState);
+                        }
+
+                        c_type ct(pState, info);
+                        c[info.states.size()].push_back(ct);
+                        c2.push(ct);
+
+                        //dfa_Edges.insert(DFA_Edge(i->first, i->second, t, pState));
+                        dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, pState));
+                    }
+                }
+
+                for (typename set<pair<String_Type, bool> >::const_iterator i = strings.begin(), m = strings.end(); i != m; ++i)
+                {
+                    EpsilonClosureInfo info;
+                    epsilonClosure(move(*t, i->first, i->second), info);
+
+                    DFA_State* p = getDFAState(info.states, c);
+                    if (p) // 如果这个状态已存在
+                    {
+                        //dfa_Edges.insert(DFA_Edge(i->first, i->second, t, p));
+                        dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, p));
+                    }
+                    else
+                    {
+                        DFA_State* pState = DFA_State_Alloc::allocate();
+                        construct(pState, info.states);
+                        context.dfa_States.insert(pState);
+
+                        if (isEndDFAStatus(pState))
+                        {
+                            pState->bEnd = true;
+                            pDFAEnds.insert(pState);
+                        }
+
+                        c_type ct(pState, info);
+                        c[info.states.size()].push_back(ct);
+                        c2.push(ct);
+
+                        //dfa_Edges.insert(DFA_Edge(i->first, i->second, t, pState));
+                        dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, pState));
+                    }
+                }
+                c2.pop();
+            }
         }
 
         void epsilonClosure(const set<EpsilonNFA_State*>& k, EpsilonClosureInfo& info)
@@ -762,13 +854,46 @@ public:
             }
             return false;
         }
+
+        bool parse(const String_Type& input, String_Type& output, const random_access_iterator&)
+        {
+            typename String_Type::const_iterator first = input.begin(), last = input.end();
+
+            typedef pair<DFA_State*, typename String_Type::const_iterator> c_type;
+            stack<c_type> s;
+            s.push(c_type(pDFAStart, first));
+            while (true)
+            {
+                bool bContinue = false;
+                for (typename vector<DFA_Edge>::const_iterator i = dfa_Edges[s.top().first].begin(), m = dfa_Edges[s.top().first].end(); i != m; ++i)
+                {
+                    if (i->compare(first, last))
+                    {
+                        s.push(c_type(i->pTo, first));
+                        bContinue = true;
+                        break;
+                    }
+                }
+                if (!bContinue) break;
+            }
+            while (!s.empty() && !s.top().first->bEnd)
+            {
+                s.pop();
+            }
+            if (s.empty()) return false;
+
+            output = input.substr(0, s.top().second - input.begin());
+            return true;
+        }
     protected:
         EpsilonNFA_State *pEpsilonStart, *pEpsilonEnd;
-        hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hash> epsilonNFA_Edges;
+        hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState> epsilonNFA_Edges;
 
         DFA_State*      pDFAStart;
         set<DFA_State*> pDFAEnds;
-        set<DFA_Edge>   dfa_Edges;
+        hashmap<DFA_State*, vector<DFA_Edge>, _hashDFAState> dfa_Edges;
+
+        bool            bBuild;
 
         Context& context;
     };
