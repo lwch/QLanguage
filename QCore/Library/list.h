@@ -15,6 +15,7 @@
 
 #include "iterator.h"
 #include "construct.h"
+#include "allocator.h"
 
 namespace QLanguage
 {

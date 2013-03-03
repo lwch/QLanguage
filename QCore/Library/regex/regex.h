@@ -24,7 +24,6 @@
 NAMESPACE_QLANGUAGE_LIBRARY_START
 namespace regex
 {
-    template <typename Char_Type, typename String_Type>
     class Rule
     {
     protected:
@@ -50,19 +49,27 @@ namespace regex
 
         struct EpsilonNFA_Edge
         {
-            struct
+            union
             {
-                Char_Type   char_value;
-                String_Type string_value;
+                struct
+                {
+                    char value1;
+                    char value2;
+                }Char;
+                struct
+                {
+                    const char* value;
+                }String;
             }data;
 
             enum Edge_Type
             {
                 TUnknown = 0,
                 TNot     = 1,
-                TChar    = 2,
-                TString  = 4,
-                TEpsilon = 8
+                TFromTo  = 2,
+                TChar    = 4,
+                TString  = 8,
+                TEpsilon = 12
             };
             
             uchar edge_type;
@@ -72,14 +79,20 @@ namespace regex
 
             EpsilonNFA_Edge(EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TEpsilon), pFrom(pFrom), pTo(pTo) {}
 
-            EpsilonNFA_Edge(const Char_Type& x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TChar), pFrom(pFrom), pTo(pTo)
+            EpsilonNFA_Edge(char x, char y, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TFromTo), pFrom(pFrom), pTo(pTo)
             {
-                data.char_value = x;
+                data.Char.value1 = x;
+                data.Char.value2 = y;
             }
 
-            EpsilonNFA_Edge(const String_Type& x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TString), pFrom(pFrom), pTo(pTo)
+            EpsilonNFA_Edge(char x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TChar), pFrom(pFrom), pTo(pTo)
             {
-                data.string_value = x;
+                data.Char.value1 = x;
+            }
+
+            EpsilonNFA_Edge(const char* x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TString), pFrom(pFrom), pTo(pTo)
+            {
+                data.String.value = x;
             }
 
             inline void negate()
@@ -97,6 +110,11 @@ namespace regex
                 return (edge_type & TEpsilon) == TEpsilon;
             }
 
+            inline const bool isFromTo()const
+            {
+                return (edge_type & TFromTo) == TFromTo;
+            }
+
             inline const bool isChar()const
             {
                 return (edge_type & TChar) == TChar;
@@ -110,6 +128,7 @@ namespace regex
             const Edge_Type edgeType()const
             {
                 if (isEpsilon()) return TEpsilon;
+                else if (isFromTo()) return TFromTo;
                 else if (isChar()) return TChar;
                 else if (isString()) return TString;
                 else return TUnknown;
@@ -169,18 +188,27 @@ namespace regex
 
         struct DFA_Edge
         {
-            struct
+            union
             {
-                Char_Type   char_value;
-                String_Type string_value;
+                struct
+                {
+                    char value1;
+                    char value2;
+                }Char;
+                struct
+                {
+                    const char* value;
+                    size_t      size;
+                }String;
             }data;
 
             enum Edge_Type
             {
                 TUnknown = 0,
                 TNot     = 1,
-                TChar    = 2,
-                TString  = 4
+                TFromTo  = 2,
+                TChar    = 4,
+                TString  = 8
             };
 
             uchar edge_type;
@@ -188,21 +216,34 @@ namespace regex
             DFA_State* pFrom;
             DFA_State* pTo;
 
-            DFA_Edge(const Char_Type& x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : pFrom(pFrom), pTo(pTo)
+            DFA_Edge(const pair<char, char>& x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : pFrom(pFrom), pTo(pTo)
             {
-                data.char_value = x;
+                data.Char.value1 = x.first;
+                data.Char.value2 = x.second;
+                edge_type = bNot ? (TFromTo | TNot) : TFromTo;
+            }
+
+            DFA_Edge(char x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : pFrom(pFrom), pTo(pTo)
+            {
+                data.Char.value1 = x;
                 edge_type = bNot ? (TChar | TNot) : TChar;
             }
 
-            DFA_Edge(const String_Type& x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : pFrom(pFrom), pTo(pTo)
+            DFA_Edge(const char* x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : pFrom(pFrom), pTo(pTo)
             {
-                data.string_value = x;
+                data.String.value = x;
+                data.String.size = strlen(x);
                 edge_type = bNot ? (TString | TNot) : TString;
             }
 
             inline const bool isNot()const
             {
                 return (edge_type & TNot) == TNot;
+            }
+
+            inline const bool isFromTo()const
+            {
+                return (edge_type & TFromTo) == TFromTo;
             }
 
             inline const bool isChar()const
@@ -217,7 +258,8 @@ namespace regex
 
             const Edge_Type edgeType()const
             {
-                if (isChar()) return TChar;
+                if (isFromTo()) return TFromTo;
+                else if (isChar()) return TChar;
                 else if (isString()) return TString;
                 else return TUnknown;
             }
@@ -232,11 +274,19 @@ namespace regex
                 return pFrom == x.pFrom && pTo == x.pTo;
             }
 
-            template <typename Iterator>
-            const bool compare(Iterator& first, Iterator last)const
+            const bool compare(const char*& first, const char* last)const
             {
                 if (first == last) return false;
-                if (isChar())
+                if (isFromTo())
+                {
+                    if (compare_fromto(*first))
+                    {
+                        ++first;
+                        return true;
+                    }
+                    return false;
+                }
+                else if (isChar())
                 {
                     if (compare_char(*first))
                     {
@@ -258,45 +308,31 @@ namespace regex
                 return false;
             }
 
-            inline const bool compare_char(const Char_Type& c)const
+            inline const bool compare_fromto(char c)const
+            {
+#ifdef _DEBUG
+                if (!isFromTo()) throw error<string>("error calling function compare_fromto!", __FILE__, __LINE__);
+#endif
+                if (isNot()) return c < data.Char.value1 || c > data.Char.value2;
+                else return c >= data.Char.value1 && c <= data.Char.value2;
+            }
+
+            inline const bool compare_char(char c)const
             {
 #ifdef _DEBUG
                 if (!isChar()) throw error<string>("error calling function compare_char!", __FILE__, __LINE__);
 #endif
-                if (isNot()) return c != data.char_value;
-                else return c == data.char_value;
+                if (isNot()) return c != data.Char.value1;
+                else return c == data.Char.value1;
             }
 
-            template <typename Iterator>
-            const bool compare_string(Iterator first, Iterator last, size_t& n)const
+            const bool compare_string(const char* first, const char* last, size_t& n)const
             {
 #ifdef _DEBUG
                 if (!isString()) throw error<string>("error calling function compare_string!", __FILE__, __LINE__);
 #endif
-                if (static_cast<typename __container_traits<String_Type>::size_type>(last - first) < data.string_value.size()) return false;
-
-                if (isNot())
-                {
-                    Iterator _first = first;
-                    for (typename String_Type::const_iterator i = data.string_value.begin(), m = data.string_value.end(); i != m; ++i, ++_first)
-                    {
-                        if (*i != *_first)
-                        {
-                            n = _first - first;
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-                else
-                {
-                    for (typename String_Type::const_iterator i = data.string_value.begin(), m = data.string_value.end(); i != m; ++i, ++first)
-                    {
-                        if (*i != *first) return false;
-                    }
-                    n = data.string_value.size();
-                    return true;
-                }
+                if (!isNot()) return strncmp(first, data.String.value, max((size_t)(last - first), data.String.size)) == 0;
+                return false;
             }
         };
 
@@ -311,24 +347,28 @@ namespace regex
 
         struct EpsilonClosureInfo
         {
-            set<EpsilonNFA_State*>        states;
-            set<pair<Char_Type, bool> >   chars;
-            set<pair<String_Type, bool> > strings;
+            set<EpsilonNFA_State*>             states;
+            set<pair<char, bool> >             chars;
+            set<pair<const char*, bool> >      strings;
+            set<pair<pair<char, char>, bool> > fromtos;
 
             EpsilonClosureInfo() {}
 
             EpsilonClosureInfo(const set<EpsilonNFA_State*>& states,
-                               const set<pair<Char_Type, bool> >& chars,
-                               const set<pair<String_Type, bool> >& strings)
+                               const set<pair<char, bool> >& chars,
+                               const set<pair<const char*, bool> >& strings,
+                               const set<pair<pair<char, char>, bool> >& fromtos)
                                : states(states)
                                , chars(chars)
-                               , strings(strings) {}
+                               , strings(strings)
+                               , fromtos(fromtos) {}
 
             EpsilonClosureInfo(const EpsilonClosureInfo& x)
             {
                 states  = x.states;
                 chars   = x.chars;
                 strings = x.strings;
+                fromtos = x.fromtos;
             }
         };
 public:
@@ -339,14 +379,14 @@ public:
 
             void clear()
             {
-                for (typename set<EpsilonNFA_State*>::iterator i = epsilonNFA_States.begin(), m = epsilonNFA_States.end(); i != m; ++i)
+                for (set<EpsilonNFA_State*>::iterator i = epsilonNFA_States.begin(), m = epsilonNFA_States.end(); i != m; ++i)
                 {
                     destruct(*i, has_destruct(*(*i)));
                     EpsilonNFA_State_Alloc::deallocate(*i);
                 }
                 epsilonNFA_States.clear();
 
-                for (typename set<DFA_State*>::iterator i = dfa_States.begin(), m = dfa_States.end(); i != m; ++i)
+                for (set<DFA_State*>::iterator i = dfa_States.begin(), m = dfa_States.end(); i != m; ++i)
                 {
                     destruct(*i, has_destruct(*(*i)));
                     DFA_State_Alloc::deallocate(*i);
@@ -359,14 +399,24 @@ public:
                 clear();
             }
         };
+
+        struct MatchResult
+        {
+            const char*  value;
+            size_t       pos;
+
+            MatchResult(const char* value, size_t pos) : value(value), pos(pos) {}
+            ~MatchResult() {}
+        };
     protected:
-        typedef Rule<Char_Type, String_Type> self;
         typedef allocator<EpsilonNFA_State>  EpsilonNFA_State_Alloc;
         typedef allocator<DFA_State>         DFA_State_Alloc;
     public:
-        Rule(Context& context) : pEpsilonStart(NULL), pEpsilonEnd(NULL), pDFAStart(NULL), bBuild(false), context(context) {}
+        Rule() : pEpsilonStart(NULL), pEpsilonEnd(NULL), pDFAStart(NULL), pContext(NULL) {}
 
-        Rule(const Char_Type& x, Context& context) : pDFAStart(NULL), bBuild(false), context(context)
+        Rule(Context* pContext) : pEpsilonStart(NULL), pEpsilonEnd(NULL), pDFAStart(NULL), pContext(pContext) {}
+
+        Rule(char x, Context* pContext) : pDFAStart(NULL), pContext(pContext)
         {
             pEpsilonStart = EpsilonNFA_State_Alloc::allocate();
             construct(pEpsilonStart);
@@ -376,11 +426,11 @@ public:
 
             epsilonNFA_Edges[pEpsilonStart].push_back(EpsilonNFA_Edge(x, pEpsilonStart, pEpsilonEnd));
 
-            context.epsilonNFA_States.insert(pEpsilonStart);
-            context.epsilonNFA_States.insert(pEpsilonEnd);
+            pContext->epsilonNFA_States.insert(pEpsilonStart);
+            pContext->epsilonNFA_States.insert(pEpsilonEnd);
         }
 
-        Rule(const String_Type& x, Context& context) : pDFAStart(NULL), bBuild(false), context(context)
+        Rule(const char* x, Context* pContext) : pDFAStart(NULL), pContext(pContext)
         {
             pEpsilonStart = EpsilonNFA_State_Alloc::allocate();
             construct(pEpsilonStart);
@@ -390,11 +440,11 @@ public:
 
             epsilonNFA_Edges[pEpsilonStart].push_back(EpsilonNFA_Edge(x, pEpsilonStart, pEpsilonEnd));
 
-            context.epsilonNFA_States.insert(pEpsilonStart);
-            context.epsilonNFA_States.insert(pEpsilonEnd);
+            pContext->epsilonNFA_States.insert(pEpsilonStart);
+            pContext->epsilonNFA_States.insert(pEpsilonEnd);
         }
 
-        Rule(const self& x) : bBuild(false), context(x.context)
+        Rule(const Rule& x) : pContext(x.pContext)
         {
             pEpsilonStart    = x.pEpsilonStart;
             pEpsilonEnd      = x.pEpsilonEnd;
@@ -407,9 +457,9 @@ public:
 
         ~Rule() {}
 
-        self operator+(const self& x)
+        Rule operator+(const Rule& x)
         {
-            self a(context), b(x.context);
+            Rule a(pContext), b(x.pContext);
             cloneEpsilonNFA(*this, a);
             cloneEpsilonNFA(x, b);
             copyEpsilonNFA_Edges(b, a);
@@ -419,57 +469,34 @@ public:
             return a;
         }
 
-        self operator-(const self& x)
+        Rule operator-(const Rule& x)
         {
-            self a(context);
-            cloneEpsilonNFA(*this, a);
-
             if (epsilonNFA_Edges.size() == 1 && x.epsilonNFA_Edges.size() == 1 &&
                 epsilonNFA_Edges.begin()->second.size() == 1 && x.epsilonNFA_Edges.begin()->second.size() == 1 &&
                 epsilonNFA_Edges.begin()->second.begin()->edge_type == EpsilonNFA_Edge::TChar && x.epsilonNFA_Edges.begin()->second.begin()->edge_type == EpsilonNFA_Edge::TChar)
             {
-                EpsilonNFA_State* _pStart = EpsilonNFA_State_Alloc::allocate();
-                construct(_pStart);
+                Rule a(pContext);
+                a.pEpsilonStart = EpsilonNFA_State_Alloc::allocate();
+                construct(a.pEpsilonStart);
 
-                EpsilonNFA_State* _pEnd   = EpsilonNFA_State_Alloc::allocate();
-                construct(_pEnd);
+                a.pEpsilonEnd = EpsilonNFA_State_Alloc::allocate();
+                construct(a.pEpsilonEnd);
 
-                context.epsilonNFA_States.insert(_pStart);
-                context.epsilonNFA_States.insert(_pEnd);
-
-                a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, a.pEpsilonStart));
-                a.epsilonNFA_Edges[a.pEpsilonEnd].push_back(EpsilonNFA_Edge(a.pEpsilonEnd, _pEnd));
-
-                const Char_Type chStart = epsilonNFA_Edges.begin()->second.begin()->data.char_value;
-                const Char_Type chEnd   = x.epsilonNFA_Edges.begin()->second.begin()->data.char_value;
-                for (Char_Type ch = chStart + 1; ch < chEnd; ++ch)
-                {
-                    self y(ch, context);
-                    copyEpsilonNFA_Edges(y, a);
-                    a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, y.pEpsilonStart));
-                    a.epsilonNFA_Edges[y.pEpsilonEnd].push_back(EpsilonNFA_Edge(y.pEpsilonEnd, _pEnd));
-                }
-
-                self b(x.context);
-                cloneEpsilonNFA(x, b);
-                copyEpsilonNFA_Edges(b, a);
-
-                a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, b.pEpsilonStart));
-                a.epsilonNFA_Edges[b.pEpsilonEnd].push_back(EpsilonNFA_Edge(b.pEpsilonEnd, _pEnd));
-
-                a.pEpsilonStart = _pStart;
-                a.pEpsilonEnd   = _pEnd;
+                pContext->epsilonNFA_States.insert(a.pEpsilonStart);
+                pContext->epsilonNFA_States.insert(a.pEpsilonEnd);
+                a.epsilonNFA_Edges[a.pEpsilonStart].push_back(EpsilonNFA_Edge(epsilonNFA_Edges.begin()->second.begin()->data.Char.value1, x.epsilonNFA_Edges.begin()->second.begin()->data.Char.value1, a.pEpsilonStart, a.pEpsilonEnd));
+                return a;
             }
             else
             {
                 throw error<string>("doesn't support", __FILE__, __LINE__);
             }
-            return a;
+            return Rule();
         }
 
-        self operator|(const self& x)
+        Rule operator|(const Rule& x)
         {
-            self a(context), b(x.context);
+            Rule a(pContext), b(x.pContext);
             cloneEpsilonNFA(*this, a);
             cloneEpsilonNFA(x, b);
             copyEpsilonNFA_Edges(b, a);
@@ -480,8 +507,8 @@ public:
             EpsilonNFA_State* _pEnd = EpsilonNFA_State_Alloc::allocate();
             construct(_pEnd);
 
-            context.epsilonNFA_States.insert(_pStart);
-            context.epsilonNFA_States.insert(_pEnd);
+            pContext->epsilonNFA_States.insert(_pStart);
+            pContext->epsilonNFA_States.insert(_pEnd);
 
             a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, a.pEpsilonStart));
             a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, b.pEpsilonStart));
@@ -494,17 +521,17 @@ public:
             return a;
         }
 
-        inline self opt()
+        inline Rule opt()
         {
-            self a(context);
+            Rule a(pContext);
             cloneEpsilonNFA(*this, a);
             a.epsilonNFA_Edges[a.pEpsilonStart].push_back(EpsilonNFA_Edge(a.pEpsilonStart, a.pEpsilonEnd));
             return a;
         }
 
-        self operator*()
+        Rule operator*()
         {
-            self a(context);
+            Rule a(pContext);
             cloneEpsilonNFA(*this, a);
 
             a.epsilonNFA_Edges[a.pEpsilonStart].push_back(EpsilonNFA_Edge(a.pEpsilonEnd, a.pEpsilonStart));
@@ -514,9 +541,9 @@ public:
             return a;
         }
 
-        self operator+()
+        Rule operator+()
         {
-            self a(context);
+            Rule a(pContext);
             cloneEpsilonNFA(*this, a);
             
             a.epsilonNFA_Edges[a.pEpsilonEnd].push_back(EpsilonNFA_Edge(a.pEpsilonEnd, a.pEpsilonStart));
@@ -524,24 +551,26 @@ public:
             return a;
         }
 
-        self operator!()
+        Rule operator!()
         {
-            self a(context);
+            Rule a(pContext);
             cloneEpsilonNFA(*this, a);
-            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
+            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
             {
-                for (typename vector<EpsilonNFA_Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+                for (vector<EpsilonNFA_Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
-                    if (j->isChar() || j->isString()) j->negate();
+                    if (j->isFromTo() || j->isChar()) j->negate();
                 }
             }
             return a;
         }
 
-        inline self& operator=(const self& x)
+        inline Rule& operator=(const Rule& x)
         {
             if (&x != this)
             {
+                pContext = x.pContext;
+
                 pEpsilonStart    = x.pEpsilonStart;
                 pEpsilonEnd      = x.pEpsilonEnd;
                 epsilonNFA_Edges = x.epsilonNFA_Edges;
@@ -551,140 +580,6 @@ public:
                 dfa_Edges = x.dfa_Edges;
             }
             return *this;
-        }
-
-        inline bool parse(const String_Type& input, String_Type& output)
-        {
-            if (!bBuild)
-            {
-                buildDFA();
-                bBuild = true;
-            }
-            return parse(input, output, input.begin());
-        }
-
-#ifdef _DEBUG
-        void printEpsilonNFA()
-        {
-            printf("-------- ε- NFA Start --------\n");
-            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
-            {
-                for (typename vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
-                {
-                    printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
-                    switch (j->edgeType())
-                    {
-                    case EpsilonNFA_Edge::TEpsilon:
-                        printf("(ε)");
-                        break;
-                    case EpsilonNFA_Edge::TChar:
-                        printf("(%c)", j->data.char_value);
-                        break;
-                    case EpsilonNFA_Edge::TString:
-                        printf("(%s)", j->data.string_value.c_str());
-                        break;
-                    default:
-                        break;
-                    }
-                    if (j->isNot()) printf("(not)");
-                    printf("\n");
-                }
-            }
-            printf("start: %03d -> end: %03d\n", pEpsilonStart->idx, pEpsilonEnd->idx);
-            printf("--------- ε- NFA End ---------\n");
-        }
-
-        void printDFA()
-        {
-            printf("---------- DFA Start ----------\n");
-            set<DFA_State*> tmp;
-            for (typename set<DFA_Edge>::const_iterator i = dfa_Edges.begin(), m = dfa_Edges.end(); i != m; ++i)
-            {
-                printf("%03d -> %03d", i->pFrom->idx, i->pTo->idx);
-                switch (i->edgeType())
-                {
-                case DFA_Edge::TChar:
-                    printf("(%c)", i->data.char_value);
-                    break;
-                case DFA_Edge::TString:
-                    printf("(%s)", i->data.string_value.c_str());
-                    break;
-                default:
-                    break;
-                }
-                if (i->isNot()) printf("(not)");
-                printf("\n");
-                tmp.insert(i->pFrom);
-                tmp.insert(i->pTo);
-            }
-
-            printf("start: %03d -> ends: ", pDFAStart->idx);
-            for (typename set<DFA_State*>::const_iterator i = pDFAEnds.begin(), m = pDFAEnds.end(); i != m; ++i)
-            {
-                printf("%03d ", (*i)->idx);
-            }
-            printf("\n");
-#if DEBUG_LEVEL == 3
-            printf("-------------------------------\n");
-
-            for (typename set<DFA_State*>::const_iterator i = tmp.begin(), m = tmp.end(); i != m; ++i)
-            {
-                printf("State: %03d\n", (*i)->idx);
-                for (typename set<EpsilonNFA_State*>::const_iterator j = (*i)->content.begin(), n = (*i)->content.end(); j != n; ++j)
-                {
-                    printf("%03d ", (*j)->idx);
-                }
-                printf("\n");
-            }
-#endif
-            printf("----------- DFA End -----------\n");
-        }
-#endif
-    protected:
-        static void copyEpsilonNFA_Edges(const self& from, self& to)
-        {
-            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
-            {
-                for (typename vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
-                {
-                    to.epsilonNFA_Edges[i->first].push_back(*j);
-                }
-            }
-        }
-
-        static void cloneEpsilonNFA(const self& x, self& to)
-        {
-            map<EpsilonNFA_State*, EpsilonNFA_State*> statesMap;
-            for (typename hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
-            {
-                for (typename vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
-                {
-                    EpsilonNFA_State *pFrom = statesMap[j->pFrom], *pTo = statesMap[j->pTo];
-                    if (pFrom == NULL)
-                    {
-                        pFrom = statesMap[j->pFrom] = EpsilonNFA_State_Alloc::allocate();
-                        construct(pFrom);
-
-                        to.context.epsilonNFA_States.insert(pFrom);
-                    }
-
-                    if (pTo == NULL)
-                    {
-                        pTo = statesMap[j->pTo] = EpsilonNFA_State_Alloc::allocate();
-                        construct(pTo);
-
-                        to.context.epsilonNFA_States.insert(pTo);
-                    }
-
-                    EpsilonNFA_Edge edge(*j);
-                    edge.pFrom = pFrom;
-                    edge.pTo   = pTo;
-                    to.epsilonNFA_Edges[pFrom].push_back(edge);
-                }
-            }
-
-            to.pEpsilonStart = statesMap[x.pEpsilonStart];
-            to.pEpsilonEnd   = statesMap[x.pEpsilonEnd];
         }
 
         void buildDFA()
@@ -711,161 +606,31 @@ public:
                 pDFAStart->bEnd = true;
                 pDFAEnds.insert(pDFAStart);
             }
-            context.dfa_States.insert(pDFAStart);
+            pContext->dfa_States.insert(pDFAStart);
 
             while (!c2.empty())
             {
                 DFA_State* t = c2.front().first;
-                set<pair<Char_Type, bool> > chars = c2.front().second.chars;
-                set<pair<String_Type, bool> > strings = c2.front().second.strings;
                 t->bFlag = true;
 
-                for (typename set<pair<Char_Type, bool> >::const_iterator i = chars.begin(), m = chars.end(); i != m; ++i)
-                {
-                    EpsilonClosureInfo info;
-                    epsilonClosure(move(*t, i->first, i->second), info);
+                enumerateChars(t, c, c2, c2.front().second.chars);
+                enumerateChars(t, c, c2, c2.front().second.strings);
+                enumerateChars(t, c, c2, c2.front().second.fromtos);
 
-                    DFA_State* p = getDFAState(info.states, c);
-                    if (p) // 如果这个状态已存在
-                    {
-                        //dfa_Edges.insert(DFA_Edge(i->first, i->second, t, p));
-                        dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, p));
-                    }
-                    else
-                    {
-                        DFA_State* pState = DFA_State_Alloc::allocate();
-                        construct(pState, info.states);
-                        context.dfa_States.insert(pState);
-
-                        if (isEndDFAStatus(pState))
-                        {
-                            pState->bEnd = true;
-                            pDFAEnds.insert(pState);
-                        }
-
-                        c_type ct(pState, info);
-                        c[info.states.size()].push_back(ct);
-                        c2.push(ct);
-
-                        //dfa_Edges.insert(DFA_Edge(i->first, i->second, t, pState));
-                        dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, pState));
-                    }
-                }
-
-                for (typename set<pair<String_Type, bool> >::const_iterator i = strings.begin(), m = strings.end(); i != m; ++i)
-                {
-                    EpsilonClosureInfo info;
-                    epsilonClosure(move(*t, i->first, i->second), info);
-
-                    DFA_State* p = getDFAState(info.states, c);
-                    if (p) // 如果这个状态已存在
-                    {
-                        //dfa_Edges.insert(DFA_Edge(i->first, i->second, t, p));
-                        dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, p));
-                    }
-                    else
-                    {
-                        DFA_State* pState = DFA_State_Alloc::allocate();
-                        construct(pState, info.states);
-                        context.dfa_States.insert(pState);
-
-                        if (isEndDFAStatus(pState))
-                        {
-                            pState->bEnd = true;
-                            pDFAEnds.insert(pState);
-                        }
-
-                        c_type ct(pState, info);
-                        c[info.states.size()].push_back(ct);
-                        c2.push(ct);
-
-                        //dfa_Edges.insert(DFA_Edge(i->first, i->second, t, pState));
-                        dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, pState));
-                    }
-                }
                 c2.pop();
             }
         }
 
-        void epsilonClosure(const set<EpsilonNFA_State*>& k, EpsilonClosureInfo& info)
+        bool parse(const char* first, const char* last, char*& output, size_t& size)
         {
-            for (typename set<EpsilonNFA_State*>::const_iterator i = k.begin(), m = k.end(); i != m; ++i)
-            {
-                info.states.insert(*i);
-                set<EpsilonNFA_State*> tmp;
-                tmp.insert(*i);
-                while (!tmp.empty())
-                {
-                    EpsilonNFA_State* pState = *tmp.begin();
-                    for (typename vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[pState].begin(), n = epsilonNFA_Edges[pState].end(); j != n; ++j)
-                    {
-                        if (j->isEpsilon())
-                        {
-                            if (info.states.insert(j->pTo).second) tmp.insert(j->pTo);
-                        }
-                        else if (j->isChar()) info.chars.insert(pair<Char_Type, bool>(j->data.char_value, j->isNot()));
-                        else if (j->isString()) info.strings.insert(pair<String_Type, bool>(j->data.string_value, j->isNot()));
-                    }
-                    tmp.erase(pState);
-                }
-            }
-        }
-
-        set<EpsilonNFA_State*> move(const DFA_State& t, const Char_Type& c, bool bNot)
-        {
-            set<EpsilonNFA_State*> result;
-            for (typename set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
-            {
-                for (typename vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
-                {
-                    if (j->isChar() && j->data.char_value == c && j->isNot() == bNot) result.insert(j->pTo);
-                }
-            }
-            return result;
-        }
-
-        set<EpsilonNFA_State*> move(const DFA_State& t, const String_Type& s, bool bNot)
-        {
-            set<EpsilonNFA_State*> result;
-            for (typename set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
-            {
-                for (typename vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
-                {
-                    if (j->isString() && j->data.string_value == s && j->isNot() == bNot) result.insert(j->pTo);
-                }
-            }
-            return result;
-        }
-
-        DFA_State* getDFAState(const set<EpsilonNFA_State*>& t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c)
-        {
-            for (typename list<pair<DFA_State*, EpsilonClosureInfo> >::const_iterator i = c[t.size()].begin(), m = c[t.size()].end(); i != m; ++i)
-            {
-                if (i->first->content == t) return i->first;
-            }
-            return NULL;
-        }
-
-        const bool isEndDFAStatus(const DFA_State* pState)const
-        {
-            for (typename set<EpsilonNFA_State*>::const_iterator i = pState->content.begin(), m = pState->content.end(); i != m; ++i)
-            {
-                if (*i == pEpsilonEnd) return true;
-            }
-            return false;
-        }
-
-        bool parse(const String_Type& input, String_Type& output, const random_access_iterator&)
-        {
-            typename String_Type::const_iterator first = input.begin(), last = input.end();
-
-            typedef pair<DFA_State*, typename String_Type::const_iterator> c_type;
+            const char* f = first;
+            typedef pair<DFA_State*, const char*> c_type;
             stack<c_type> s;
             s.push(c_type(pDFAStart, first));
             while (true)
             {
                 bool bContinue = false;
-                for (typename vector<DFA_Edge>::const_iterator i = dfa_Edges[s.top().first].begin(), m = dfa_Edges[s.top().first].end(); i != m; ++i)
+                for (vector<DFA_Edge>::const_iterator i = dfa_Edges[s.top().first].begin(), m = dfa_Edges[s.top().first].end(); i != m; ++i)
                 {
                     if (i->compare(first, last))
                     {
@@ -882,8 +647,313 @@ public:
             }
             if (s.empty()) return false;
 
-            output = input.substr(0, s.top().second - input.begin());
+            size = s.top().second - f;
             return true;
+        }
+
+        MatchResult match(const char* first, const char* last, size_t pos = 0)
+        {
+#ifdef _DEBUG
+            if (pos < 0 || pos >= (size_t)(last - first)) throw error<string>("invalid position of input", __FILE__, __LINE__);
+#endif
+            const char* b = first;
+
+            char*  output;
+            size_t size;
+
+            for (const char* i = first + pos; i != last; ++i)
+            {
+                if (parse(i, last, output, size))
+                {
+                    return MatchResult(output, i - b);
+                }
+            }
+            return MatchResult(output, -1);
+        }
+
+#ifdef _DEBUG
+        void printEpsilonNFA()
+        {
+            printf("-------- ε- NFA Start --------\n");
+            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
+            {
+                for (vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+                {
+                    printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
+                    switch (j->edgeType())
+                    {
+                    case EpsilonNFA_Edge::TEpsilon:
+                        printf("(ε)");
+                        break;
+                    case EpsilonNFA_Edge::TFromTo:
+                        printf("(%c - %c)", j->data.Char.value1, j->data.Char.value2);
+                        break;
+                    case EpsilonNFA_Edge::TChar:
+                        printf("(%c)", j->data.Char.value1);
+                        break;
+                    case EpsilonNFA_Edge::TString:
+                        printf("(%s)", j->data.String.value);
+                        break;
+                    default:
+                        break;
+                    }
+                    if (j->isNot()) printf("(not)");
+                    printf("\n");
+                }
+            }
+            printf("start: %03d -> end: %03d\n", pEpsilonStart->idx, pEpsilonEnd->idx);
+            printf("--------- ε- NFA End ---------\n");
+        }
+
+        void printDFA()
+        {
+            printf("---------- DFA Start ----------\n");
+            set<DFA_State*> tmp;
+            for (hashmap<DFA_State*, vector<DFA_Edge>, _hashDFAState>::const_iterator i = dfa_Edges.begin(), m = dfa_Edges.end(); i != m; ++i)
+            {
+                for (vector<DFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+                {
+                    printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
+                    switch (j->edgeType())
+                    {
+                    case DFA_Edge::TFromTo:
+                        printf("(%c - %c)", j->data.Char.value1, j->data.Char.value2);
+                        break;
+                    case DFA_Edge::TChar:
+                        printf("(%c)", j->data.Char.value1);
+                        break;
+                    case DFA_Edge::TString:
+                        printf("(%s)", j->data.String.value);
+                        break;
+                    default:
+                        break;
+                    }
+                    if (j->isNot()) printf("(not)");
+                    printf("\n");
+                    tmp.insert(j->pFrom);
+                    tmp.insert(j->pTo);
+                }
+            }
+
+            printf("start: %03d -> ends: ", pDFAStart->idx);
+            for (set<DFA_State*>::const_iterator i = pDFAEnds.begin(), m = pDFAEnds.end(); i != m; ++i)
+            {
+                printf("%03d ", (*i)->idx);
+            }
+            printf("\n");
+#if DEBUG_LEVEL == 3
+            printf("-------------------------------\n");
+
+            for (set<DFA_State*>::const_iterator i = tmp.begin(), m = tmp.end(); i != m; ++i)
+            {
+                printf("State: %03d\n", (*i)->idx);
+                for (set<EpsilonNFA_State*>::const_iterator j = (*i)->content.begin(), n = (*i)->content.end(); j != n; ++j)
+                {
+                    printf("%03d ", (*j)->idx);
+                }
+                printf("\n");
+            }
+#endif
+            printf("----------- DFA End -----------\n");
+        }
+#endif
+    protected:
+        static void copyEpsilonNFA_Edges(const Rule& from, Rule& to)
+        {
+            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
+            {
+                for (vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+                {
+                    to.epsilonNFA_Edges[i->first].push_back(*j);
+                }
+            }
+        }
+
+        static void cloneEpsilonNFA(const Rule& x, Rule& to)
+        {
+            map<EpsilonNFA_State*, EpsilonNFA_State*> statesMap;
+            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
+            {
+                for (vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+                {
+                    EpsilonNFA_State *pFrom = statesMap[j->pFrom], *pTo = statesMap[j->pTo];
+                    if (pFrom == NULL)
+                    {
+                        pFrom = statesMap[j->pFrom] = EpsilonNFA_State_Alloc::allocate();
+                        construct(pFrom);
+
+                        to.pContext->epsilonNFA_States.insert(pFrom);
+                    }
+
+                    if (pTo == NULL)
+                    {
+                        pTo = statesMap[j->pTo] = EpsilonNFA_State_Alloc::allocate();
+                        construct(pTo);
+
+                        to.pContext->epsilonNFA_States.insert(pTo);
+                    }
+
+                    EpsilonNFA_Edge edge(*j);
+                    edge.pFrom = pFrom;
+                    edge.pTo   = pTo;
+                    to.epsilonNFA_Edges[pFrom].push_back(edge);
+                }
+            }
+
+            to.pEpsilonStart = statesMap[x.pEpsilonStart];
+            to.pEpsilonEnd   = statesMap[x.pEpsilonEnd];
+        }
+
+        void epsilonClosure(const set<EpsilonNFA_State*>& k, EpsilonClosureInfo& info)
+        {
+            for (set<EpsilonNFA_State*>::const_iterator i = k.begin(), m = k.end(); i != m; ++i)
+            {
+                info.states.insert(*i);
+                set<EpsilonNFA_State*> tmp;
+                tmp.insert(*i);
+                while (!tmp.empty())
+                {
+                    EpsilonNFA_State* pState = *tmp.begin();
+                    for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[pState].begin(), n = epsilonNFA_Edges[pState].end(); j != n; ++j)
+                    {
+                        if (j->isEpsilon())
+                        {
+                            if (info.states.insert(j->pTo).second) tmp.insert(j->pTo);
+                        }
+                        else if (j->isFromTo()) info.fromtos.insert(pair<pair<char, char>, bool>(pair<char, char>(j->data.Char.value1, j->data.Char.value2), j->isNot()));
+                        else if (j->isChar()) info.chars.insert(pair<char, bool>(j->data.Char.value1, j->isNot()));
+                        else if (j->isString()) info.strings.insert(pair<const char*, bool>(j->data.String.value, j->isNot()));
+                    }
+                    tmp.erase(pState);
+                }
+            }
+        }
+
+        set<EpsilonNFA_State*> move(const DFA_State& t, const char& c, bool bNot)
+        {
+            set<EpsilonNFA_State*> result;
+            for (set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
+            {
+                for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
+                {
+                    if (j->isChar() && j->data.Char.value1 == c && j->isNot() == bNot) result.insert(j->pTo);
+                }
+            }
+            return result;
+        }
+
+        set<EpsilonNFA_State*> move(const DFA_State& t, const char*& s, bool bNot)
+        {
+            set<EpsilonNFA_State*> result;
+            for (set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
+            {
+                for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
+                {
+                    if (j->isString() && j->data.String.value == s && j->isNot() == bNot) result.insert(j->pTo);
+                }
+            }
+            return result;
+        }
+
+        set<EpsilonNFA_State*> move(const DFA_State& t, const pair<char, char>& p, bool bNot)
+        {
+            set<EpsilonNFA_State*> result;
+            for (set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
+            {
+                for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
+                {
+                    if (j->isFromTo() && j->data.Char.value1 == p.first && j->data.Char.value2 == p.second && j->isNot() == bNot) result.insert(j->pTo);
+                }
+            }
+            return result;
+        }
+
+        DFA_State* getDFAState(const set<EpsilonNFA_State*>& t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c)
+        {
+            for (list<pair<DFA_State*, EpsilonClosureInfo> >::const_iterator i = c[t.size()].begin(), m = c[t.size()].end(); i != m; ++i)
+            {
+                if (i->first->content == t) return i->first;
+            }
+            return NULL;
+        }
+
+        template <typename T1, typename T2>
+        void enumerateChars(DFA_State* t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c, queue<pair<DFA_State*, EpsilonClosureInfo> >& c2, const set<pair<T1, T2> >& container)
+        {
+            for (typename set<pair<T1, T2> >::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
+            {
+                EpsilonClosureInfo info;
+                epsilonClosure(move(*t, i->first, i->second), info);
+
+                DFA_State* p = getDFAState(info.states, c);
+                if (p) // 如果这个状态已存在
+                {
+                    dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, p));
+                }
+                else
+                {
+                    DFA_State* pState = DFA_State_Alloc::allocate();
+                    construct(pState, info.states);
+                    pContext->dfa_States.insert(pState);
+
+                    if (isEndDFAStatus(pState))
+                    {
+                        pState->bEnd = true;
+                        pDFAEnds.insert(pState);
+                    }
+
+                    typedef pair<DFA_State*, EpsilonClosureInfo> c_type;
+                    c_type ct(pState, info);
+                    c[info.states.size()].push_back(ct);
+                    c2.push(ct);
+
+                    dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, pState));
+                }
+            }
+        }
+
+        template <typename T1, typename T2, typename T3>
+        void enumerateChars(DFA_State* t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c, queue<pair<DFA_State*, EpsilonClosureInfo> >& c2, const set<pair<pair<T1, T2>, T3> >& container)
+        {
+            for (typename set<pair<pair<T1, T2>, T3> >::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
+            {
+                EpsilonClosureInfo info;
+                epsilonClosure(move(*t, i->first, i->second), info);
+
+                DFA_State* p = getDFAState(info.states, c);
+                if (p) // 如果这个状态已存在
+                {
+                    dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, p));
+                }
+                else
+                {
+                    DFA_State* pState = DFA_State_Alloc::allocate();
+                    construct(pState, info.states);
+                    pContext->dfa_States.insert(pState);
+
+                    if (isEndDFAStatus(pState))
+                    {
+                        pState->bEnd = true;
+                        pDFAEnds.insert(pState);
+                    }
+
+                    typedef pair<DFA_State*, EpsilonClosureInfo> c_type;
+                    c_type ct(pState, info);
+                    c[info.states.size()].push_back(ct);
+                    c2.push(ct);
+
+                    dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, pState));
+                }
+            }
+        }
+
+        const bool isEndDFAStatus(const DFA_State* pState)const
+        {
+            for (set<EpsilonNFA_State*>::const_iterator i = pState->content.begin(), m = pState->content.end(); i != m; ++i)
+            {
+                if (*i == pEpsilonEnd) return true;
+            }
+            return false;
         }
     protected:
         EpsilonNFA_State *pEpsilonStart, *pEpsilonEnd;
@@ -893,9 +963,7 @@ public:
         set<DFA_State*> pDFAEnds;
         hashmap<DFA_State*, vector<DFA_Edge>, _hashDFAState> dfa_Edges;
 
-        bool            bBuild;
-
-        Context& context;
+        Context* pContext;
     };
 }
 NAMESPACE_QLANGUAGE_LIBRARY_END

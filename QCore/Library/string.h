@@ -248,11 +248,11 @@ public:
     typedef __reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
     typedef __basic_string_iterator<value_type, size_type, distance_type> iterator;
     typedef __reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
+
+    static const size_type npos = -1;
 protected:
 #define MAX_STRING_RESERVE_SIZE 512
     typedef char_traits<T> Traits;
-
-    static const size_type npos = -1;
 
     typedef basic_string<T> self;
     typedef allocator<T>    Alloc;
@@ -643,13 +643,13 @@ public:
         va_start(l, fmt);
         basic_string<T> result;
         int len = 0;
-#ifdef WIN32
+#if defined(unix)
+        throw error<const wchar_t*>(L"doesn't support", __FILE__, __LINE__);
+#elif defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
         len = _vscwprintf(fmt, l);
         result.reserve(len + 1);
         vswprintf(result.begin(), fmt, l);
         result.finish = result.begin() + len;
-#elif defined(unix)
-        throw error<const wchar_t*>(L"doesn't support", __FILE__, __LINE__);
 #endif
         *result.finish = char_traits<wchar_t>::eof();
         va_end(l);
