@@ -34,7 +34,7 @@ using namespace QLanguage;
 using namespace QLanguage::Library;
 using namespace QLanguage::UnitTest;
 
-#ifdef GUNC
+#ifdef GNUC
 namespace QLanguage
 {
     namespace UnitTest
