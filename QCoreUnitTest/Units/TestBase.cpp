@@ -12,7 +12,7 @@
 
 #include "TestBase.h"
 
-#ifndef __MINGW32__
+#ifdef MSVC
 // Fuck MinGW with error!!!!
 namespace QLanguage
 {

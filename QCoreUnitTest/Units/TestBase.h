@@ -114,7 +114,7 @@ namespace QLanguage
         { \
             CaseMapImpl##moduleName() \
             { \
-                gCaseMap.pushCase(pair<string, typename CaseMap::testPtr>(#moduleName, TestImpl##moduleName), __FILE__, __LINE__); \
+                gCaseMap.pushCase(pair<string, CaseMap::testPtr>(#moduleName, TestImpl##moduleName), __FILE__, __LINE__); \
             } \
         } caseMapImpl##moduleName; \
         bool TestImpl##moduleName() \
