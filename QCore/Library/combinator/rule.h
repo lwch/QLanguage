@@ -121,7 +121,7 @@ namespace combinator
         {
             typedef allocator<CombinatorRef<I, O, IOO, E> > Alloc;
             pRef = Alloc::allocate();
-            construct<CombinatorRef<I, O, IOO, E>, Combinator<I, O, IOO, E>*&>(pRef, parent::pCombinator);
+            construct(pRef, parent::pCombinator);
         }
 
         CombinatorRule(const parent& node) : parent(node), pRef(NULL) {}

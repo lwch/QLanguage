@@ -14,6 +14,7 @@
 #define _QLANGUAGE_LIBRARY_FUNCTION_H_
 
 #include "string.h"
+#include "typedef.h"
 
 namespace QLanguage
 {
@@ -22,10 +23,10 @@ namespace QLanguage
         template <typename Arg, typename Result>
         struct unary_function
         {
-            typedef Arg           argument_type;
-            typedef Result        result_type;
-            typedef const Arg&    argument_const_reference;
-            typedef const Result& result_const_reference;
+            typedef Arg    argument_type;
+            typedef Result result_type;
+            typedef const typename remove_const<typename remove_reference<Arg>::no_reference>::no_const&    argument_const_reference;
+            typedef const typename remove_const<typename remove_reference<Result>::no_reference>::no_const& result_const_reference;
         };
 
         template <typename Arg1, typename Arg2, typename Result>

@@ -33,6 +33,18 @@ namespace QLanguage
         {
             typedef T no_const;
         };
+
+        template <typename T>
+        struct remove_reference
+        {
+            typedef T no_reference;
+        };
+
+        template <typename T>
+        struct remove_reference<T&>
+        {
+            typedef T no_reference;
+        };
     }
 }
 

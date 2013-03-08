@@ -40,10 +40,10 @@ typedef CombinatorRule<string, TestCombinatorResult, TestCombinatorResultSelecto
 
 TEST_CASE(TestCombinator)
 {
-    CombinatorRule_Type a, b, c, d, e;
-    CombinatorRule_Type f = a + b;
-    CombinatorRule_Type g = c | f;
-    a = d + e;
-    TestCombinatorResult result;
-    g.parse("test", result);
+//     CombinatorRule_Type a, b, c, d, e;
+//     CombinatorRule_Type f = a + b;
+//     CombinatorRule_Type g = c | f;
+//     a = d + e;
+//     TestCombinatorResult result;
+//     g.parse("test", result);
 }
