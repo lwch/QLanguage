@@ -397,6 +397,27 @@ namespace QLanguage
                 erase(--end());
             }
 
+            void unique()
+            {
+                const_iterator first = begin();
+                const_iterator last  = end();
+                if (first == last) return;
+                while (first != last)
+                {
+                    for (const_iterator i = ++first; i != last;)
+                    {
+                        if (*i == *first)
+                        {
+                            const_iterator j = i;
+                            ++i;
+                            erase(j);
+                        }
+                        else ++i;
+                    }
+                    ++first;
+                }
+            }
+
             self& operator=(const self& x)
             {
                 if(this == &x) return *this;

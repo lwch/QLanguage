@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:	2013/03/03
 	created:	3:3:2013   16:42
 	filename: 	\QLanguage\Lexer\Lexer.h
@@ -9,6 +9,9 @@
 	
 	purpose:	
 *********************************************************************/
+#ifndef _QLANGUAGE_LEXER_H_
+#define _QLANGUAGE_LEXER_H_
+
 #include "../../QCore/Library/list.h"
 #include "../../QCore/Library/string.h"
 #include "../../QCore/Library/regex/regex.h"
@@ -21,12 +24,31 @@ namespace QLanguage
     class Lexer
     {
     public:
+        struct Token
+        {
+            enum Type
+            {
+                Digit,
+                Hex,
+                Real,
+                Letter,
+                Operator,
+                Space,
+                Enter,
+            }type;
+
+            string data;
+
+            Token() {}
+            Token(Type type, const string& data) : type(type), data(data) {}
+        };
+    public:
         Lexer();
         ~Lexer();
 
         bool parse(const string& input);
     public:
-        list<string> result;
+        list<Token> result;
     protected:
         Rule::Context context;
         // Number Begin
@@ -49,6 +71,10 @@ namespace QLanguage
         Rule letter;
         // Letter End
 
+        // Operator Begin
+        Rule optr;
+        // Operator End
+
         // Space Begin
         Rule _space;
         Rule _tab;
@@ -70,3 +96,5 @@ namespace QLanguage
         // Enter End
     };
 }
+
+#endif

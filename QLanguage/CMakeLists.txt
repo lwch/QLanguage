@@ -23,8 +23,14 @@ FILE(GLOB Lexer_Sources "Lexer/*.cpp")
 SET (Lexer ${Lexer_Headers} ${Lexer_Sources})
 SOURCE_GROUP(Lexer FILES ${Lexer})
 
+FILE(GLOB Parser_Headers "Parser/*.h")
+FILE(GLOB Parser_Sources "Parser/*.cpp")
+SET (Parser ${Parser_Headers} ${Parser_Sources})
+SOURCE_GROUP(Parser FILES ${Parser})
+
 LIST (APPEND FILES
 	${Lexer}
+	${Parser}
 	QLanguage.cpp
 )
 

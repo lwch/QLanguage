@@ -27,6 +27,105 @@ namespace regex
     class Rule
     {
     protected:
+        struct Variant
+        {
+            enum Type
+            {
+                TUnknown = 0,
+                TNot     = 1,
+                TFromTo  = 2,
+                TChar    = 4,
+                TString  = 8,
+                TEpsilon = 12
+            };
+
+            uchar type;
+
+            union
+            {
+                struct 
+                {
+                    char value1;
+                    char value2;
+                }Char;
+
+                struct 
+                {
+                    const char*  value;
+                    size_t size;
+                }String;
+            }data;
+
+            Variant() : type(TEpsilon) {}
+
+            Variant(char value, bool bNot)
+            {
+                memset(&data, 0, sizeof(data));
+                data.Char.value1 = value;
+                type = bNot ? (TChar | TNot) : TChar;
+            }
+
+            Variant(const pair<char, char>& x, bool bNot)
+            {
+                memset(&data, 0, sizeof(data));
+                data.Char.value1 = x.first;
+                data.Char.value2 = x.second;
+                type = bNot ? (TFromTo | TNot) : TFromTo;
+            }
+
+            Variant(const char* value, bool bNot)
+            {
+                memset(&data, 0, sizeof(data));
+                data.String.value = value;
+                data.String.size  = strlen(value);
+                type = bNot ? (TString | TNot) : TString;
+            }
+
+            inline void negate()
+            {
+                type ^= TNot;
+            }
+
+            inline const bool isNot()const
+            {
+                return (type & TNot) == TNot;
+            }
+
+            inline const bool isEpsilon()const
+            {
+                return (type & TEpsilon) == TEpsilon;
+            }
+
+            inline const bool isFromTo()const
+            {
+                return (type & TFromTo) == TFromTo;
+            }
+
+            inline const bool isChar()const
+            {
+                return (type & TChar) == TChar;
+            }
+
+            inline const bool isString()const
+            {
+                return (type & TString) == TString;
+            }
+
+            const Type trueType()const
+            {
+                if (isEpsilon()) return TEpsilon;
+                else if (isFromTo()) return TFromTo;
+                else if (isChar()) return TChar;
+                else if (isString()) return TString;
+                else return TUnknown;
+            }
+
+            const bool operator==(const Variant& x)const
+            {
+                return type == x.type && data.String.value == x.data.String.value && data.String.size == data.String.size;
+            }
+        };
+
         struct EpsilonNFA_State
         {
 #ifdef _DEBUG
@@ -49,94 +148,49 @@ namespace regex
 
         struct EpsilonNFA_Edge
         {
-            union
-            {
-                struct
-                {
-                    char value1;
-                    char value2;
-                }Char;
-                struct
-                {
-                    const char* value;
-                }String;
-            }data;
-
-            enum Edge_Type
-            {
-                TUnknown = 0,
-                TNot     = 1,
-                TFromTo  = 2,
-                TChar    = 4,
-                TString  = 8,
-                TEpsilon = 12
-            };
-            
-            uchar edge_type;
+            Variant value;
 
             EpsilonNFA_State* pFrom;
             EpsilonNFA_State* pTo;
 
-            EpsilonNFA_Edge(EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TEpsilon), pFrom(pFrom), pTo(pTo) {}
-
-            EpsilonNFA_Edge(char x, char y, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TFromTo), pFrom(pFrom), pTo(pTo)
-            {
-                data.Char.value1 = x;
-                data.Char.value2 = y;
-            }
-
-            EpsilonNFA_Edge(char x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TChar), pFrom(pFrom), pTo(pTo)
-            {
-                data.Char.value1 = x;
-            }
-
-            EpsilonNFA_Edge(const char* x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : edge_type(TString), pFrom(pFrom), pTo(pTo)
-            {
-                data.String.value = x;
-            }
+            EpsilonNFA_Edge(EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : pFrom(pFrom), pTo(pTo) {}
+            EpsilonNFA_Edge(const pair<char, char>& x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : value(x, false), pFrom(pFrom), pTo(pTo) {}
+            EpsilonNFA_Edge(char x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : value(x, false), pFrom(pFrom), pTo(pTo) {}
+            EpsilonNFA_Edge(const char* x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : value(x, false), pFrom(pFrom), pTo(pTo) {}
 
             inline void negate()
             {
-                edge_type ^= TNot;
+                value.negate();
             }
 
             inline const bool isNot()const
             {
-                return (edge_type & TNot) == TNot;
+                return value.isNot();
             }
 
             inline const bool isEpsilon()const
             {
-                return (edge_type & TEpsilon) == TEpsilon;
+                return value.isEpsilon();
             }
 
             inline const bool isFromTo()const
             {
-                return (edge_type & TFromTo) == TFromTo;
+                return value.isFromTo();
             }
 
             inline const bool isChar()const
             {
-                return (edge_type & TChar) == TChar;
+                return value.isChar();
             }
 
             inline const bool isString()const
             {
-                return (edge_type & TString) == TString;
+                return value.isString();
             }
 
-            const Edge_Type edgeType()const
+            const Variant::Type edgeType()const
             {
-                if (isEpsilon()) return TEpsilon;
-                else if (isFromTo()) return TFromTo;
-                else if (isChar()) return TChar;
-                else if (isString()) return TString;
-                else return TUnknown;
-            }
-
-            const bool operator<(const EpsilonNFA_Edge& x)const
-            {
-                return (ulong)pFrom + pTo < (ulong)x.pFrom + x.pTo;
+                return value.trueType();
             }
 
             const bool operator==(const EpsilonNFA_Edge& x)const
@@ -156,14 +210,14 @@ namespace regex
 
         struct DFA_State
         {
-            set<EpsilonNFA_State*> content;
+            vector<EpsilonNFA_State*> content;
             bool                   bFlag;
             bool                   bEnd;
 #ifdef _DEBUG
             uint                   idx;
 #endif
 
-            DFA_State(const set<EpsilonNFA_State*>& x) : content(x), bFlag(false), bEnd(false)
+            DFA_State(const vector<EpsilonNFA_State*>& x) : content(x), bFlag(false), bEnd(false)
             {
 #ifdef _DEBUG
                 idx = inc();
@@ -188,85 +242,39 @@ namespace regex
 
         struct DFA_Edge
         {
-            union
-            {
-                struct
-                {
-                    char value1;
-                    char value2;
-                }Char;
-                struct
-                {
-                    const char* value;
-                    size_t      size;
-                }String;
-            }data;
-
-            enum Edge_Type
-            {
-                TUnknown = 0,
-                TNot     = 1,
-                TFromTo  = 2,
-                TChar    = 4,
-                TString  = 8
-            };
-
-            uchar edge_type;
+            Variant value;
 
             DFA_State* pFrom;
             DFA_State* pTo;
 
-            DFA_Edge(const pair<char, char>& x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : pFrom(pFrom), pTo(pTo)
-            {
-                data.Char.value1 = x.first;
-                data.Char.value2 = x.second;
-                edge_type = bNot ? (TFromTo | TNot) : TFromTo;
-            }
-
-            DFA_Edge(char x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : pFrom(pFrom), pTo(pTo)
-            {
-                data.Char.value1 = x;
-                edge_type = bNot ? (TChar | TNot) : TChar;
-            }
-
-            DFA_Edge(const char* x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : pFrom(pFrom), pTo(pTo)
-            {
-                data.String.value = x;
-                data.String.size = strlen(x);
-                edge_type = bNot ? (TString | TNot) : TString;
-            }
+//             DFA_Edge(const pair<char, char>& x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : value(x, bNot), pFrom(pFrom), pTo(pTo) {}
+//             DFA_Edge(char x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : value(x, bNot), pFrom(pFrom), pTo(pTo) {}
+//             DFA_Edge(const char* x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : value(x, bNot), pFrom(pFrom), pTo(pTo) {}
+            DFA_Edge(const Variant& x, DFA_State* pFrom, DFA_State* pTo) : value(x), pFrom(pFrom), pTo(pTo) {}
 
             inline const bool isNot()const
             {
-                return (edge_type & TNot) == TNot;
+                return value.isNot();
             }
 
             inline const bool isFromTo()const
             {
-                return (edge_type & TFromTo) == TFromTo;
+                return value.isFromTo();
             }
 
             inline const bool isChar()const
             {
-                return (edge_type & TChar) == TChar;
+                return value.isChar();
             }
 
             inline const bool isString()const
             {
-                return (edge_type & TString) == TString;
+                return value.isString();
             }
 
-            const Edge_Type edgeType()const
+            const Variant::Type edgeType()const
             {
-                if (isFromTo()) return TFromTo;
-                else if (isChar()) return TChar;
-                else if (isString()) return TString;
-                else return TUnknown;
-            }
-
-            inline const bool operator<(const DFA_Edge& x)const
-            {
-                return (ulong)pFrom + pTo < (ulong)x.pFrom + x.pTo;
+                return value.trueType();
             }
 
             inline const bool operator==(const DFA_Edge& x)const
@@ -313,8 +321,8 @@ namespace regex
 #ifdef _DEBUG
                 if (!isFromTo()) throw error<string>("error calling function compare_fromto!", __FILE__, __LINE__);
 #endif
-                if (isNot()) return c < data.Char.value1 || c > data.Char.value2;
-                else return c >= data.Char.value1 && c <= data.Char.value2;
+                if (isNot()) return c < value.data.Char.value1 || c > value.data.Char.value2;
+                else return c >= value.data.Char.value1 && c <= value.data.Char.value2;
             }
 
             inline const bool compare_char(char c)const
@@ -322,8 +330,8 @@ namespace regex
 #ifdef _DEBUG
                 if (!isChar()) throw error<string>("error calling function compare_char!", __FILE__, __LINE__);
 #endif
-                if (isNot()) return c != data.Char.value1;
-                else return c == data.Char.value1;
+                if (isNot()) return c != value.data.Char.value1;
+                else return c == value.data.Char.value1;
             }
 
             const bool compare_string(const char* first, const char* last, size_t& n)const
@@ -331,7 +339,12 @@ namespace regex
 #ifdef _DEBUG
                 if (!isString()) throw error<string>("error calling function compare_string!", __FILE__, __LINE__);
 #endif
-                if (!isNot()) return strncmp(first, data.String.value, max((size_t)(last - first), data.String.size)) == 0;
+                if (!isNot())
+                {
+                    if ((size_t)(last - first) < value.data.String.size) return false;
+                    n = value.data.String.size;
+                    return strncmp(first, value.data.String.value, n) == 0;
+                }
                 return false;
             }
         };
@@ -347,28 +360,20 @@ namespace regex
 
         struct EpsilonClosureInfo
         {
-            set<EpsilonNFA_State*>             states;
-            set<pair<char, bool> >             chars;
-            set<pair<const char*, bool> >      strings;
-            set<pair<pair<char, char>, bool> > fromtos;
+            vector<EpsilonNFA_State*> states;
+            vector<Variant>           variants;
 
             EpsilonClosureInfo() {}
 
-            EpsilonClosureInfo(const set<EpsilonNFA_State*>& states,
-                               const set<pair<char, bool> >& chars,
-                               const set<pair<const char*, bool> >& strings,
-                               const set<pair<pair<char, char>, bool> >& fromtos)
+            EpsilonClosureInfo(const vector<EpsilonNFA_State*>& states,
+                               const vector<Variant>& variants)
                                : states(states)
-                               , chars(chars)
-                               , strings(strings)
-                               , fromtos(fromtos) {}
+                               , variants(variants) {}
 
             EpsilonClosureInfo(const EpsilonClosureInfo& x)
             {
-                states  = x.states;
-                chars   = x.chars;
-                strings = x.strings;
-                fromtos = x.fromtos;
+                states   = x.states;
+                variants = x.variants;
             }
         };
 public:
@@ -473,7 +478,7 @@ public:
         {
             if (epsilonNFA_Edges.size() == 1 && x.epsilonNFA_Edges.size() == 1 &&
                 epsilonNFA_Edges.begin()->second.size() == 1 && x.epsilonNFA_Edges.begin()->second.size() == 1 &&
-                epsilonNFA_Edges.begin()->second.begin()->edge_type == EpsilonNFA_Edge::TChar && x.epsilonNFA_Edges.begin()->second.begin()->edge_type == EpsilonNFA_Edge::TChar)
+                epsilonNFA_Edges.begin()->second.begin()->value.type == Variant::TChar && x.epsilonNFA_Edges.begin()->second.begin()->value.type == Variant::TChar)
             {
                 Rule a(pContext);
                 a.pEpsilonStart = EpsilonNFA_State_Alloc::allocate();
@@ -484,7 +489,7 @@ public:
 
                 pContext->epsilonNFA_States.insert(a.pEpsilonStart);
                 pContext->epsilonNFA_States.insert(a.pEpsilonEnd);
-                a.epsilonNFA_Edges[a.pEpsilonStart].push_back(EpsilonNFA_Edge(epsilonNFA_Edges.begin()->second.begin()->data.Char.value1, x.epsilonNFA_Edges.begin()->second.begin()->data.Char.value1, a.pEpsilonStart, a.pEpsilonEnd));
+                a.epsilonNFA_Edges[a.pEpsilonStart].push_back(EpsilonNFA_Edge(pair<char, char>(epsilonNFA_Edges.begin()->second.begin()->value.data.Char.value1, x.epsilonNFA_Edges.begin()->second.begin()->value.data.Char.value1), a.pEpsilonStart, a.pEpsilonEnd));
                 return a;
             }
             else
@@ -510,10 +515,10 @@ public:
             pContext->epsilonNFA_States.insert(_pStart);
             pContext->epsilonNFA_States.insert(_pEnd);
 
-            a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, a.pEpsilonStart));
-            a.epsilonNFA_Edges[_pStart].push_back(EpsilonNFA_Edge(_pStart, b.pEpsilonStart));
-            a.epsilonNFA_Edges[a.pEpsilonEnd].push_back(EpsilonNFA_Edge(a.pEpsilonEnd, _pEnd));
-            a.epsilonNFA_Edges[b.pEpsilonEnd].push_back(EpsilonNFA_Edge(b.pEpsilonEnd, _pEnd));
+            a.epsilonNFA_Edges[_pStart].push_back_unique(EpsilonNFA_Edge(_pStart, a.pEpsilonStart));
+            a.epsilonNFA_Edges[_pStart].push_back_unique(EpsilonNFA_Edge(_pStart, b.pEpsilonStart));
+            a.epsilonNFA_Edges[a.pEpsilonEnd].push_back_unique(EpsilonNFA_Edge(a.pEpsilonEnd, _pEnd));
+            a.epsilonNFA_Edges[b.pEpsilonEnd].push_back_unique(EpsilonNFA_Edge(b.pEpsilonEnd, _pEnd));
 
             a.pEpsilonStart = _pStart;
             a.pEpsilonEnd   = _pEnd;
@@ -584,8 +589,8 @@ public:
 
         void buildDFA()
         {
-            set<EpsilonNFA_State*> start;
-            start.insert(pEpsilonStart);
+            vector<EpsilonNFA_State*> start;
+            start.push_back(pEpsilonStart);
 
             typedef pair<DFA_State*, EpsilonClosureInfo> c_type;
 
@@ -613,9 +618,7 @@ public:
                 DFA_State* t = c2.front().first;
                 t->bFlag = true;
 
-                enumerateChars(t, c, c2, c2.front().second.chars);
-                enumerateChars(t, c, c2, c2.front().second.strings);
-                enumerateChars(t, c, c2, c2.front().second.fromtos);
+                enumerateChars(t, c, c2, c2.front().second.variants);
 
                 c2.pop();
             }
@@ -623,7 +626,7 @@ public:
 
         bool parse(const char* first, const char* last, char*& output, size_t& size)
         {
-            const char* f = first;
+            output = const_cast<char*>(first);
             typedef pair<DFA_State*, const char*> c_type;
             stack<c_type> s;
             s.push(c_type(pDFAStart, first));
@@ -641,13 +644,20 @@ public:
                 }
                 if (!bContinue) break;
             }
-            while (!s.empty() && !s.top().first->bEnd)
+            stack<c_type>::size_type sz = s.size();
+            while (sz > 1 && !s.top().first->bEnd)
             {
                 s.pop();
+                --sz;
             }
-            if (s.empty()) return false;
+            if (sz <= 1)
+            {
+                output = NULL;
+                size   = 0;
+                return false;
+            }
 
-            size = s.top().second - f;
+            size = s.top().second - output;
             return true;
         }
 
@@ -682,17 +692,17 @@ public:
                     printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
                     switch (j->edgeType())
                     {
-                    case EpsilonNFA_Edge::TEpsilon:
+                    case Variant::TEpsilon:
                         printf("(ε)");
                         break;
-                    case EpsilonNFA_Edge::TFromTo:
-                        printf("(%c - %c)", j->data.Char.value1, j->data.Char.value2);
+                    case Variant::TFromTo:
+                        printf("(%c - %c)", j->value.data.Char.value1, j->value.data.Char.value2);
                         break;
-                    case EpsilonNFA_Edge::TChar:
-                        printf("(%c)", j->data.Char.value1);
+                    case Variant::TChar:
+                        printf("(%c)", j->value.data.Char.value1);
                         break;
-                    case EpsilonNFA_Edge::TString:
-                        printf("(%s)", j->data.String.value);
+                    case Variant::TString:
+                        printf("(%s)", j->value.data.String.value);
                         break;
                     default:
                         break;
@@ -716,14 +726,14 @@ public:
                     printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
                     switch (j->edgeType())
                     {
-                    case DFA_Edge::TFromTo:
-                        printf("(%c - %c)", j->data.Char.value1, j->data.Char.value2);
+                    case Variant::TFromTo:
+                        printf("(%c - %c)", j->value.data.Char.value1, j->value.data.Char.value2);
                         break;
-                    case DFA_Edge::TChar:
-                        printf("(%c)", j->data.Char.value1);
+                    case Variant::TChar:
+                        printf("(%c)", j->value.data.Char.value1);
                         break;
-                    case DFA_Edge::TString:
-                        printf("(%s)", j->data.String.value);
+                    case Variant::TString:
+                        printf("(%s)", j->value.data.String.value);
                         break;
                     default:
                         break;
@@ -747,7 +757,7 @@ public:
             for (set<DFA_State*>::const_iterator i = tmp.begin(), m = tmp.end(); i != m; ++i)
             {
                 printf("State: %03d\n", (*i)->idx);
-                for (set<EpsilonNFA_State*>::const_iterator j = (*i)->content.begin(), n = (*i)->content.end(); j != n; ++j)
+                for (vector<EpsilonNFA_State*>::const_iterator j = (*i)->content.begin(), n = (*i)->content.end(); j != n; ++j)
                 {
                     printf("%03d ", (*j)->idx);
                 }
@@ -804,71 +814,96 @@ public:
             to.pEpsilonEnd   = statesMap[x.pEpsilonEnd];
         }
 
-        void epsilonClosure(const set<EpsilonNFA_State*>& k, EpsilonClosureInfo& info)
+        void epsilonClosure(const vector<EpsilonNFA_State*>& k, EpsilonClosureInfo& info)
         {
-            for (set<EpsilonNFA_State*>::const_iterator i = k.begin(), m = k.end(); i != m; ++i)
+            vector<EpsilonNFA_State*> v;
+            for (vector<EpsilonNFA_State*>::const_iterator i = k.begin(), m = k.end(); i != m; ++i)
             {
-                info.states.insert(*i);
-                set<EpsilonNFA_State*> tmp;
-                tmp.insert(*i);
-                while (!tmp.empty())
+                //info.states.push_back(*i);
+//                 set<EpsilonNFA_State*> tmp;
+//                 tmp.insert(*i);
+//                 while (!tmp.empty())
+//                 {
+//                     EpsilonNFA_State* pState = *tmp.begin();
+//                     for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[pState].begin(), n = epsilonNFA_Edges[pState].end(); j != n; ++j)
+//                     {
+//                         if (j->isEpsilon())
+//                         {
+//                             if (info.states.push_back_unique(j->pTo)) tmp.insert(j->pTo);
+//                         }
+//                         else info.variants.push_back_unique(j->value);
+//                     }
+//                     tmp.erase(pState);
+//                 }
+                epsilonClosure(*i, info, v);
+            }
+        }
+
+        void epsilonClosure(EpsilonNFA_State* pState, EpsilonClosureInfo& info, vector<EpsilonNFA_State*>& v)
+        {
+            if (info.states.push_back_unique(pState))
+            {
+                for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[pState].begin(), n = epsilonNFA_Edges[pState].end(); j != n; ++j)
                 {
-                    EpsilonNFA_State* pState = *tmp.begin();
-                    for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[pState].begin(), n = epsilonNFA_Edges[pState].end(); j != n; ++j)
-                    {
-                        if (j->isEpsilon())
-                        {
-                            if (info.states.insert(j->pTo).second) tmp.insert(j->pTo);
-                        }
-                        else if (j->isFromTo()) info.fromtos.insert(pair<pair<char, char>, bool>(pair<char, char>(j->data.Char.value1, j->data.Char.value2), j->isNot()));
-                        else if (j->isChar()) info.chars.insert(pair<char, bool>(j->data.Char.value1, j->isNot()));
-                        else if (j->isString()) info.strings.insert(pair<const char*, bool>(j->data.String.value, j->isNot()));
-                    }
-                    tmp.erase(pState);
+                    if (j->isEpsilon() && v.push_back_unique(j->pTo)) epsilonClosure(j->pTo, info, v);
+                    else info.variants.push_back_unique(j->value);
                 }
             }
         }
 
-        set<EpsilonNFA_State*> move(const DFA_State& t, const char& c, bool bNot)
+//         vector<EpsilonNFA_State*> move(const DFA_State& t, const char c, bool bNot)
+//         {
+//             vector<EpsilonNFA_State*> result;
+//             for (vector<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
+//             {
+//                 for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
+//                 {
+//                     if (j->isChar() && j->value.data.Char.value1 == c && j->isNot() == bNot) result.push_back_unique(j->pTo);
+//                 }
+//             }
+//             return result;
+//         }
+// 
+//         vector<EpsilonNFA_State*> move(const DFA_State& t, const char* s, bool bNot)
+//         {
+//             vector<EpsilonNFA_State*> result;
+//             for (vector<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
+//             {
+//                 for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
+//                 {
+//                     if (j->isString() && j->value.data.String.value == s && j->isNot() == bNot) result.push_back_unique(j->pTo);
+//                 }
+//             }
+//             return result;
+//         }
+// 
+//         vector<EpsilonNFA_State*> move(const DFA_State& t, const pair<char, char>& p, bool bNot)
+//         {
+//             vector<EpsilonNFA_State*> result;
+//             for (vector<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
+//             {
+//                 for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
+//                 {
+//                     if (j->isFromTo() && j->value.data.Char.value1 == p.first && j->value.data.Char.value2 == p.second && j->isNot() == bNot) result.push_back_unique(j->pTo);
+//                 }
+//             }
+//             return result;
+//         }
+
+        vector<EpsilonNFA_State*> move(const DFA_State& t, const Variant& v)
         {
-            set<EpsilonNFA_State*> result;
-            for (set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
+            vector<EpsilonNFA_State*> result;
+            for (vector<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
             {
                 for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
                 {
-                    if (j->isChar() && j->data.Char.value1 == c && j->isNot() == bNot) result.insert(j->pTo);
+                    if (j->value == v) result.push_back_unique(j->pTo);
                 }
             }
             return result;
         }
 
-        set<EpsilonNFA_State*> move(const DFA_State& t, const char*& s, bool bNot)
-        {
-            set<EpsilonNFA_State*> result;
-            for (set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
-            {
-                for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
-                {
-                    if (j->isString() && j->data.String.value == s && j->isNot() == bNot) result.insert(j->pTo);
-                }
-            }
-            return result;
-        }
-
-        set<EpsilonNFA_State*> move(const DFA_State& t, const pair<char, char>& p, bool bNot)
-        {
-            set<EpsilonNFA_State*> result;
-            for (set<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
-            {
-                for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
-                {
-                    if (j->isFromTo() && j->data.Char.value1 == p.first && j->data.Char.value2 == p.second && j->isNot() == bNot) result.insert(j->pTo);
-                }
-            }
-            return result;
-        }
-
-        DFA_State* getDFAState(const set<EpsilonNFA_State*>& t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c)
+        DFA_State* getDFAState(const vector<EpsilonNFA_State*>& t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c)
         {
             for (list<pair<DFA_State*, EpsilonClosureInfo> >::const_iterator i = c[t.size()].begin(), m = c[t.size()].end(); i != m; ++i)
             {
@@ -877,18 +912,17 @@ public:
             return NULL;
         }
 
-        template <typename T1, typename T2>
-        void enumerateChars(DFA_State* t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c, queue<pair<DFA_State*, EpsilonClosureInfo> >& c2, const set<pair<T1, T2> >& container)
+        void enumerateChars(DFA_State* t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c, queue<pair<DFA_State*, EpsilonClosureInfo> >& c2, const vector<Variant>& container)
         {
-            for (typename set<pair<T1, T2> >::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
+            for (vector<Variant>::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
             {
                 EpsilonClosureInfo info;
-                epsilonClosure(move(*t, i->first, i->second), info);
+                epsilonClosure(move(*t, *i), info);
 
                 DFA_State* p = getDFAState(info.states, c);
                 if (p) // 如果这个状态已存在
                 {
-                    dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, p));
+                    dfa_Edges[t].push_back(DFA_Edge(*i, t, p));
                 }
                 else
                 {
@@ -907,49 +941,14 @@ public:
                     c[info.states.size()].push_back(ct);
                     c2.push(ct);
 
-                    dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, pState));
-                }
-            }
-        }
-
-        template <typename T1, typename T2, typename T3>
-        void enumerateChars(DFA_State* t, map<size_t, list<pair<DFA_State*, EpsilonClosureInfo> > >& c, queue<pair<DFA_State*, EpsilonClosureInfo> >& c2, const set<pair<pair<T1, T2>, T3> >& container)
-        {
-            for (typename set<pair<pair<T1, T2>, T3> >::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
-            {
-                EpsilonClosureInfo info;
-                epsilonClosure(move(*t, i->first, i->second), info);
-
-                DFA_State* p = getDFAState(info.states, c);
-                if (p) // 如果这个状态已存在
-                {
-                    dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, p));
-                }
-                else
-                {
-                    DFA_State* pState = DFA_State_Alloc::allocate();
-                    construct(pState, info.states);
-                    pContext->dfa_States.insert(pState);
-
-                    if (isEndDFAStatus(pState))
-                    {
-                        pState->bEnd = true;
-                        pDFAEnds.insert(pState);
-                    }
-
-                    typedef pair<DFA_State*, EpsilonClosureInfo> c_type;
-                    c_type ct(pState, info);
-                    c[info.states.size()].push_back(ct);
-                    c2.push(ct);
-
-                    dfa_Edges[t].push_back(DFA_Edge(i->first, i->second, t, pState));
+                    dfa_Edges[t].push_back(DFA_Edge(*i, t, pState));
                 }
             }
         }
 
         const bool isEndDFAStatus(const DFA_State* pState)const
         {
-            for (set<EpsilonNFA_State*>::const_iterator i = pState->content.begin(), m = pState->content.end(); i != m; ++i)
+            for (vector<EpsilonNFA_State*>::const_iterator i = pState->content.begin(), m = pState->content.end(); i != m; ++i)
             {
                 if (*i == pEpsilonEnd) return true;
             }

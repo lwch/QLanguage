@@ -406,6 +406,24 @@ public:
         }
     }
 
+    bool push_back_unique(const T& x)
+    {
+        for (const_iterator i = begin(), m = end(); i != m; ++i)
+        {
+            if (*i == x) return false;
+        }
+        if (end_of_element != finish)
+        {
+            construct(&*finish, x);
+            ++finish;
+        }
+        else
+        {
+            insert_aux(end(), x);
+        }
+        return true;
+    }
+
     inline void pop_back()
     {
         --finish;
@@ -444,6 +462,38 @@ public:
         iterator i = copy(last, end(), first);
         destruct(i, finish);
         finish = finish - (last - first);
+    }
+
+    void unique()
+    {
+        const_iterator first = begin();
+        const_iterator last  = end();
+        if (first == last) return;
+        while (first != last)
+        {
+            for (const_iterator i = ++first; i != last;)
+            {
+                if (*i == *first)
+                {
+                    const_iterator j = i;
+                    ++i;
+                    erase(j);
+                }
+                else ++i;
+            }
+            ++first;
+        }
+    }
+
+    const bool operator==(const self& x)const
+    {
+        if (size() != x.size()) return false;
+
+        for (const_iterator first1 = begin(), first2 = x.begin(), last = end(); first1 != last; ++first1, ++first2)
+        {
+            if (*first1 != *first2) return false;
+        }
+        return true;
     }
 
     self& operator=(const self& x)

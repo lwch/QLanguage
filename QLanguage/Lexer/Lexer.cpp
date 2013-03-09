@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:	2013/03/03
 	created:	3:3:2013   16:42
 	filename: 	\QLanguage\Lexer\Lexer.cpp
@@ -44,6 +44,19 @@ namespace QLanguage
         letter.buildDFA();
         // Letter End
 
+        // Operator Begin
+        optr = Rule(':', &context) | Rule(';', &context) | Rule(',', &context) |
+               Rule('(', &context) | Rule(')', &context) |
+               Rule('{', &context) | Rule('}', &context) |
+               Rule('[', &context) | Rule(']', &context) |
+               Rule(">=", &context) | Rule("<=", &context) | Rule("==", &context) | Rule("!=", &context) | Rule("+=", &context) | Rule("-=", &context) |
+               Rule("++", &context) | Rule("--", &context) |
+               Rule('>', &context) | Rule('<', &context) | Rule('=', &context) |
+               Rule('+', &context) | Rule('-', &context) | Rule('*', &context) | Rule('/', &context) |
+               Rule('&', &context) | Rule('|', &context) | Rule('^', &context) | Rule('%', &context);
+        optr.buildDFA();
+        // Operator End
+
         // Space Start
         _space = Rule(' ', &context);
         _tab   = Rule('\t', &context);
@@ -67,6 +80,40 @@ namespace QLanguage
 
     bool Lexer::parse(const string& input)
     {
+        result.clear();
+        string::const_iterator first = input.begin(), last = input.end();
+        char* ptr = NULL;
+        size_t size;
+        while (first != last)
+        {
+            if (digit.parse(first, last, ptr, size))
+            {
+                result.push_back(Token(Token::Digit, string(ptr, size)));
+                first += size;
+            }
+            else if (hex.parse(first, last, ptr, size))
+            {
+                result.push_back(Token(Token::Hex, string(ptr, size)));
+                first += size;
+            }
+            else if (real.parse(first, last, ptr, size))
+            {
+                result.push_back(Token(Token::Real, string(ptr, size)));
+                first += size;
+            }
+            else if (letter.parse(first, last, ptr, size))
+            {
+                result.push_back(Token(Token::Letter, string(ptr, size)));
+                first += size;
+            }
+            else if (optr.parse(first, last, ptr, size))
+            {
+                result.push_back(Token(Token::Operator, string(ptr, size)));
+                first += size;
+            }
+            else if (space.parse(first, last, ptr, size)) first += size;
+            else if (enter.parse(first, last, ptr, size)) first += size;
+        }
         return true;
     }
 }
