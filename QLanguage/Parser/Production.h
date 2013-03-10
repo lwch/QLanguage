@@ -15,12 +15,14 @@
 #include <assert.h>
 
 #include "../../QCore/Library/list.h"
+#include "../../QCore/Library/regex/regex.h"
 
 using namespace QLanguage::Library;
+using namespace QLanguage::Library::regex;
 
 namespace QLanguage
 {
-    struct Production
+    class Production
     {
     public:
         struct Item
@@ -31,31 +33,15 @@ namespace QLanguage
                 NoTerminalSymbol,
             }type;
 
-            union
-            {
-                struct
-                {
-                    char value;
-                }Char;
+            Rule rule;
 
-                struct
-                {
-                    char* value;
-                }String;
-            }data;
-
-            Item(char c) : type(TerminalSymbol)
-            {
-                data.Char.value = c;
-            }
-
-            Item(char* s, Type t) : type(t)
-            {
-                data.String.value = s;
-            }
+            Item() : type(NoTerminalSymbol) {}
+            Item(const Rule& rule) : type(TerminalSymbol), rule(rule) {}
         };
     public:
+        Production(const Item& left) : left(left) {}
         Production(const Item& left, const list<Item>& right) : left(left), right(right) {}
+        Production(const Production& p) : left(p.left), right(p.right) {}
     public:
         Item left;
         list<Item> right;

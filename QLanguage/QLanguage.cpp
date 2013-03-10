@@ -17,5 +17,8 @@ int main()
                    "}\n";
     lexer.parse(input);
     printf("Total time: %ld\n", clock() - t);
+
+    LR0 lr0;
+
     return 0;
 }

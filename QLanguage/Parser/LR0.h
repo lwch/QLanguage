@@ -14,7 +14,7 @@
 
 #include "../../QCore/Library/vector.h"
 
-#include "Production.h"
+#include "LRProduction.h"
 
 using namespace QLanguage::Library;
 
@@ -25,9 +25,9 @@ namespace QLanguage
     public:
         LR0();
         LR0(const vector<Production>& productions);
-        ~LR0();
     protected:
         vector<Production> inputProductions;
+        vector<LR0Production*> productions;
     };
 }
 

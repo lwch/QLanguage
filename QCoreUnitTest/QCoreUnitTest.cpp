@@ -30,6 +30,8 @@
 #include "Units/TestTraits.h"
 #include "Units/TestVector.h"
 
+#include "../QCore/Library/graph/bitmap.h"
+
 using namespace QLanguage;
 using namespace QLanguage::Library;
 using namespace QLanguage::UnitTest;
@@ -85,6 +87,23 @@ int main()
         Console::SetColor(true, false, false, true);
         Console::WriteLine(e.description);
     }
+
+//     using namespace QLanguage::Library::graph;
+//     _RGBQUAD q[256];
+//     srand(clock());
+//     for (int i = 0; i < 256; ++i)
+//     {
+//         q[i].blue  = rand() % 256;
+//         q[i].green = rand() % 256;
+//         q[i].red   = rand() % 256;
+//     }
+//     Bitmap bitmap(1000, 1000, Bitmap::Index8, q);
+//     uchar* p = bitmap.line(0);
+//     for (size_t i = 0; i < 1000 * 1000; ++i)
+//     {
+//         p[i] = rand() % 256;
+//     }
+//     bitmap.save("test.bmp");
     return 0;
 }
 

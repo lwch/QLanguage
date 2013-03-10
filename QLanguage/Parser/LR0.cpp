@@ -20,8 +20,4 @@ namespace QLanguage
     LR0::LR0(const vector<Production>& productions) : inputProductions(productions)
     {
     }
-
-    LR0::~LR0()
-    {
-    }
 }
