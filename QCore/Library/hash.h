@@ -14,6 +14,7 @@
 #define _QLANGUAGE_LIBRARY_HASH_H_
 
 #include "typedef.h"
+#include "string.h"
 
 namespace QLanguage
 {

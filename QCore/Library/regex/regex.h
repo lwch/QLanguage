@@ -199,15 +199,6 @@ namespace regex
             }
         };
 
-        class _hashEpsilonNFAState
-        {
-        public:
-            const HASH_KEY_TYPE operator()(const EpsilonNFA_State* x)const
-            {
-                return (HASH_KEY_TYPE)x;
-            }
-        };
-
         struct DFA_State
         {
             vector<EpsilonNFA_State*> content;
@@ -247,9 +238,6 @@ namespace regex
             DFA_State* pFrom;
             DFA_State* pTo;
 
-//             DFA_Edge(const pair<char, char>& x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : value(x, bNot), pFrom(pFrom), pTo(pTo) {}
-//             DFA_Edge(char x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : value(x, bNot), pFrom(pFrom), pTo(pTo) {}
-//             DFA_Edge(const char* x, bool bNot, DFA_State* pFrom, DFA_State* pTo) : value(x, bNot), pFrom(pFrom), pTo(pTo) {}
             DFA_Edge(const Variant& x, DFA_State* pFrom, DFA_State* pTo) : value(x), pFrom(pFrom), pTo(pTo) {}
 
             inline const bool isNot()const
@@ -346,15 +334,6 @@ namespace regex
                     return strncmp(first, value.data.String.value, n) == 0;
                 }
                 return false;
-            }
-        };
-
-        class _hashDFAState
-        {
-        public:
-            const HASH_KEY_TYPE operator()(const DFA_State* x)const
-            {
-                return (HASH_KEY_TYPE)x;
             }
         };
 
@@ -560,7 +539,7 @@ public:
         {
             Rule a(pContext);
             cloneEpsilonNFA(*this, a);
-            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
+            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge> >::iterator i = a.epsilonNFA_Edges.begin(), m = a.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 for (vector<EpsilonNFA_Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
@@ -685,7 +664,7 @@ public:
         void printEpsilonNFA()
         {
             printf("-------- ε- NFA Start --------\n");
-            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
+            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge> >::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)
             {
                 for (vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
@@ -719,7 +698,7 @@ public:
         {
             printf("---------- DFA Start ----------\n");
             set<DFA_State*> tmp;
-            for (hashmap<DFA_State*, vector<DFA_Edge>, _hashDFAState>::const_iterator i = dfa_Edges.begin(), m = dfa_Edges.end(); i != m; ++i)
+            for (hashmap<DFA_State*, vector<DFA_Edge> >::const_iterator i = dfa_Edges.begin(), m = dfa_Edges.end(); i != m; ++i)
             {
                 for (vector<DFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
@@ -770,7 +749,7 @@ public:
     protected:
         static void copyEpsilonNFA_Edges(const Rule& from, Rule& to)
         {
-            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
+            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge> >::const_iterator i = from.epsilonNFA_Edges.begin(), m = from.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 for (vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
@@ -782,7 +761,7 @@ public:
         static void cloneEpsilonNFA(const Rule& x, Rule& to)
         {
             map<EpsilonNFA_State*, EpsilonNFA_State*> statesMap;
-            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState>::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
+            for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge> >::const_iterator i = x.epsilonNFA_Edges.begin(), m = x.epsilonNFA_Edges.end(); i != m; ++i)
             {
                 for (vector<EpsilonNFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
                 {
@@ -819,22 +798,6 @@ public:
             vector<EpsilonNFA_State*> v;
             for (vector<EpsilonNFA_State*>::const_iterator i = k.begin(), m = k.end(); i != m; ++i)
             {
-                //info.states.push_back(*i);
-//                 set<EpsilonNFA_State*> tmp;
-//                 tmp.insert(*i);
-//                 while (!tmp.empty())
-//                 {
-//                     EpsilonNFA_State* pState = *tmp.begin();
-//                     for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[pState].begin(), n = epsilonNFA_Edges[pState].end(); j != n; ++j)
-//                     {
-//                         if (j->isEpsilon())
-//                         {
-//                             if (info.states.push_back_unique(j->pTo)) tmp.insert(j->pTo);
-//                         }
-//                         else info.variants.push_back_unique(j->value);
-//                     }
-//                     tmp.erase(pState);
-//                 }
                 epsilonClosure(*i, info, v);
             }
         }
@@ -850,45 +813,6 @@ public:
                 }
             }
         }
-
-//         vector<EpsilonNFA_State*> move(const DFA_State& t, const char c, bool bNot)
-//         {
-//             vector<EpsilonNFA_State*> result;
-//             for (vector<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
-//             {
-//                 for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
-//                 {
-//                     if (j->isChar() && j->value.data.Char.value1 == c && j->isNot() == bNot) result.push_back_unique(j->pTo);
-//                 }
-//             }
-//             return result;
-//         }
-// 
-//         vector<EpsilonNFA_State*> move(const DFA_State& t, const char* s, bool bNot)
-//         {
-//             vector<EpsilonNFA_State*> result;
-//             for (vector<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
-//             {
-//                 for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
-//                 {
-//                     if (j->isString() && j->value.data.String.value == s && j->isNot() == bNot) result.push_back_unique(j->pTo);
-//                 }
-//             }
-//             return result;
-//         }
-// 
-//         vector<EpsilonNFA_State*> move(const DFA_State& t, const pair<char, char>& p, bool bNot)
-//         {
-//             vector<EpsilonNFA_State*> result;
-//             for (vector<EpsilonNFA_State*>::const_iterator i = t.content.begin(), m = t.content.end(); i != m; ++i)
-//             {
-//                 for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[*i].begin(), n = epsilonNFA_Edges[*i].end(); j != n; ++j)
-//                 {
-//                     if (j->isFromTo() && j->value.data.Char.value1 == p.first && j->value.data.Char.value2 == p.second && j->isNot() == bNot) result.push_back_unique(j->pTo);
-//                 }
-//             }
-//             return result;
-//         }
 
         vector<EpsilonNFA_State*> move(const DFA_State& t, const Variant& v)
         {
@@ -956,11 +880,11 @@ public:
         }
     protected:
         EpsilonNFA_State *pEpsilonStart, *pEpsilonEnd;
-        hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge>, _hashEpsilonNFAState> epsilonNFA_Edges;
+        hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge> > epsilonNFA_Edges;
 
         DFA_State*      pDFAStart;
         set<DFA_State*> pDFAEnds;
-        hashmap<DFA_State*, vector<DFA_Edge>, _hashDFAState> dfa_Edges;
+        hashmap<DFA_State*, vector<DFA_Edge> > dfa_Edges;
 
         Context* pContext;
     };

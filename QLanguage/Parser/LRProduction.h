@@ -19,9 +19,34 @@ namespace QLanguage
     class LR0Production : public Production
     {
     public:
+        LR0Production() : Production(), idx(0) {}
         LR0Production(const Production::Item& left) : Production(left), idx(0) {}
-        LR0Production(const Production::Item& left, const list<Production::Item>& right) : Production(left, right), idx(0) {}
+        LR0Production(const Production::Item& left, const vector<Production::Item>& right) : Production(left, right), idx(0) {}
+        LR0Production(const Production& p) : Production(p), idx(0) {}
         LR0Production(const LR0Production& p) : Production(p), idx(p.idx) {}
+
+        inline const bool operator==(const LR0Production& p)const
+        {
+            if (left != p.left) return false;
+            if (right.size() != p.right.size()) return false;
+
+            for (vector<Production::Item>::const_iterator i = right.begin(), m = right.end(), j = p.right.begin(); i != m; ++i, ++j)
+            {
+                if (*i != *j) return false;
+            }
+            return true;
+        }
+
+        inline LR0Production& operator=(const LR0Production& p)
+        {
+            if (&p != this)
+            {
+                left  = p.left;
+                right = p.right;
+                idx   = p.idx;
+            }
+            return *this;
+        }
     public:
         size_t idx;
     };
@@ -30,7 +55,7 @@ namespace QLanguage
     {
     public:
         LALR1Production(const Production::Item& left) : LR0Production(left) {}
-        LALR1Production(const Production::Item& left, const list<Production::Item>& right) : LR0Production(left, right) {}
+        LALR1Production(const Production::Item& left, const vector<Production::Item>& right) : LR0Production(left, right) {}
         LALR1Production(const LALR1Production& p) : LR0Production(p) {}
     public:
         vector<string> wildCards;

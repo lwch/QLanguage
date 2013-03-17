@@ -97,20 +97,20 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
         void Bitmap::copyQuadTable(_RGBQUAD* quadTable)
         {
-            switch (type)
+            if (type == Index1)
             {
-            case Index1:
                 pQuadTable = QuadAlloc::allocate(2);
                 memcpy(pQuadTable, quadTable, sizeof(_RGBQUAD) * 2);
-                break;
-            case Index4:
+            }
+            else if (type == Index4)
+            {
                 pQuadTable = QuadAlloc::allocate(16);
                 memcpy(pQuadTable, quadTable, sizeof(_RGBQUAD) * 16);
-                break;
-            case Index8:
+            }
+            else if (type == Index8)
+            {
                 pQuadTable = QuadAlloc::allocate(256);
                 memcpy(pQuadTable, quadTable, sizeof(_RGBQUAD) * 256);
-                break;
             }
         }
 
@@ -118,18 +118,9 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             if (pQuadTable)
             {
-                switch (type)
-                {
-                case Index1:
-                    QuadAlloc::deallocate(pQuadTable, sizeof(_RGBQUAD) * 2);
-                    break;
-                case Index4:
-                    QuadAlloc::deallocate(pQuadTable, sizeof(_RGBQUAD) * 16);
-                    break;
-                case Index8:
-                    QuadAlloc::deallocate(pQuadTable, sizeof(_RGBQUAD) * 256);
-                    break;
-                }
+                if      (type == Index1) QuadAlloc::deallocate(pQuadTable, sizeof(_RGBQUAD) * 2);
+                else if (type == Index4) QuadAlloc::deallocate(pQuadTable, sizeof(_RGBQUAD) * 16);
+                else if (type == Index8) QuadAlloc::deallocate(pQuadTable, sizeof(_RGBQUAD) * 256);
             }
         }
 

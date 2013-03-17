@@ -18,7 +18,14 @@ int main()
     lexer.parse(input);
     printf("Total time: %ld\n", clock() - t);
 
-    LR0 lr0;
+    Rule::Context context;
+
+    Production::Item start;
+    Production p(start, Production::Item(Rule('a', &context)));
+    vector<Production> productions;
+    productions.push_back(p);
+    LR0 lr0(productions, start);
+    lr0.make();
 
     return 0;
 }

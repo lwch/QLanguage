@@ -534,6 +534,14 @@ public:
     {
         erase(begin(), end());
     }
+
+    inline void add(const self& x)
+    {
+        reserve(size() + x.size());
+        pointer p = finish;
+        for (const_iterator i = x.begin(), m = x.end(); i != m; ++i, ++p) construct(p);
+        finish = copy(x.begin(), x.end(), end());
+    }
 protected:
     void insert_aux(const iterator position, const T& x)
     {
