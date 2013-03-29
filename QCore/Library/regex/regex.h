@@ -660,6 +660,30 @@ public:
             return MatchResult(output, -1);
         }
 
+        const bool operator==(const Rule& r)const
+        {
+            queue<EpsilonNFA_State*> q1, q2;
+            q1.push(pEpsilonStart);
+            q2.push(r.pEpsilonStart);
+            while (!q1.empty() && !q2.empty())
+            {
+                if (epsilonNFA_Edges[q1.front()].size() != r.epsilonNFA_Edges[q2.front()].size()) return false;
+            }
+            return true;
+        }
+
+        const bool operator!=(const Rule& r)const
+        {
+            queue<EpsilonNFA_State*> q1, q2;
+            q1.push(pEpsilonStart);
+            q2.push(r.pEpsilonStart);
+            while (!q1.empty() && !q2.empty())
+            {
+                if (epsilonNFA_Edges[q1.front()].size() != r.epsilonNFA_Edges[q2.front()].size()) return false;
+            }
+            return true;
+        }
+
 #ifdef _DEBUG
         void printEpsilonNFA()
         {
@@ -690,7 +714,7 @@ public:
                     printf("\n");
                 }
             }
-            printf("start: %03d -> end: %03d\n", pEpsilonStart->idx, pEpsilonEnd->idx);
+            if (pEpsilonStart && pEpsilonEnd) printf("start: %03d -> end: %03d\n", pEpsilonStart->idx, pEpsilonEnd->idx);
             printf("--------- ε- NFA End ---------\n");
         }
 

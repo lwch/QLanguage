@@ -23,8 +23,9 @@ namespace QLanguage
 {
     class LR0
     {
-        struct Item
+        class Item
         {
+        public:
             vector<LR0Production> data;
             uint idx;
 
@@ -35,20 +36,35 @@ namespace QLanguage
                 static uint i = 0;
                 return i++;
             }
+
+            inline const bool operator==(const Item& x)const
+            {
+                return data == x.data;
+            }
         };
 
         struct Edge 
         {
             Item* pStart;
             Item* pEnd;
-            Rule  rule;
+            Production::Item item;
 
-            Edge(Item* pStart, Item* pEnd, const Rule& rule) : pStart(pStart), pEnd(pEnd), rule(rule) {}
+            Edge(Item* pStart, Item* pEnd, const Production::Item& item) : pStart(pStart), pEnd(pEnd), item(item) {}
         };
 
-        struct Context
+        class Context
         {
+        public:
             set<Item*> states;
+
+            bool isItemExists(Item* pItem)
+            {
+                for (set<Item*>::const_iterator i = states.begin(), m = states.end(); i != m; ++i)
+                {
+                    if (*(*i) == *pItem) return true;
+                }
+                return false;
+            }
 
             void clear()
             {
@@ -71,13 +87,21 @@ namespace QLanguage
         LR0(const vector<Production>& productions, const Production::Item& start);
 
         bool make();
+
+        void print();
     protected:
         Item* closure(const vector<LR0Production>& x);
+        void closure(const LR0Production& x, vector<LR0Production>& y);
+        Item* go(Item* i, const Production::Item& x);
+        void vs(Item* i, vector<Production::Item>& v);
     protected:
         Production::Item start;
         map<Production::Item, vector<Production> > productionMap;
         vector<Production> inputProductions;
+
         hashmap<Item*, vector<Edge> > edges;
+        Item* pStart;
+
         Context context;
     };
 }

@@ -542,6 +542,17 @@ public:
         for (const_iterator i = x.begin(), m = x.end(); i != m; ++i, ++p) construct(p);
         finish = copy(x.begin(), x.end(), end());
     }
+
+    inline void add_unique(const self& x)
+    {
+      reserve(size() + x.size());
+      pointer p = finish;
+      for (const_iterator i = x.begin(), m = x.end(); i != m; ++i, ++p)
+      {
+        construct(p);
+        push_back_unique(i->node);
+      }
+    }
 protected:
     void insert_aux(const iterator position, const T& x)
     {

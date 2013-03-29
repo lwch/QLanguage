@@ -133,6 +133,11 @@ public:
         return (*instance.insert_unique(value_type(key, data_type())).first).second;
     }
 
+    inline const data_type& operator[](const key_type& key)const
+    {
+        return instance.value(key).second;
+    }
+
     inline self& operator=(const self& x)
     {
         if (&x != this) instance = x.instance;

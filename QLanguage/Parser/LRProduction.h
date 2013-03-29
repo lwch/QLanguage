@@ -29,12 +29,26 @@ namespace QLanguage
         {
             if (left != p.left) return false;
             if (right.size() != p.right.size()) return false;
+            if (idx != p.idx) return false;
 
             for (vector<Production::Item>::const_iterator i = right.begin(), m = right.end(), j = p.right.begin(); i != m; ++i, ++j)
             {
                 if (*i != *j) return false;
             }
             return true;
+        }
+
+        inline const bool operator!=(const LR0Production& p)const
+        {
+            if (left != p.left) return true;
+            if (right.size() != p.right.size()) return true;
+            if (idx != p.idx) return true;
+
+            for (vector<Production::Item>::const_iterator i = right.begin(), m = right.end(), j = p.right.begin(); i != m; ++i, ++j)
+            {
+                if (*i != *j) return true;
+            }
+            return false;
         }
 
         inline LR0Production& operator=(const LR0Production& p)
@@ -46,6 +60,20 @@ namespace QLanguage
                 idx   = p.idx;
             }
             return *this;
+        }
+
+        inline LR0Production stepUp()
+        {
+          LR0Production x(*this);
+          ++x.idx;
+          return x;
+        }
+
+        inline LR0Production stepDown()
+        {
+          LR0Production x(*this);
+          --x.idx;
+          return x;
         }
     public:
         size_t idx;

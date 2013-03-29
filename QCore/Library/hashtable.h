@@ -400,6 +400,21 @@ public:
         }
     }
 
+    const value_type& value(const key_type& k)const
+    {
+        HASH_KEY_TYPE idx = index(k);
+        link_type current = buckets[idx];
+        while (current)
+        {
+            if (compare(k, key(current->data)))
+            {
+                return current->data;
+            }
+            current = current->next;
+        }
+        throw error<string>("value not exists", __FILE__, __LINE__);
+    }
+
     void erase(iterator position)
     {
         link_type p = position.node;
@@ -588,7 +603,7 @@ public:
         return *this;
     }
 protected:
-    inline HASH_KEY_TYPE index(const key_type& k)
+    inline const HASH_KEY_TYPE index(const key_type& k)const
     {
         return hash(k) % buckets.size();
     }
