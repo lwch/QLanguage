@@ -44,14 +44,18 @@ namespace QLanguage
         {
             pair_type item = s.front();
             s.pop();
-            for (vector<Production::Item>::const_iterator i = v.begin(), m = v.end(); i != m; ++i)
+            for (vector<Production::Item>::const_iterator i = item.second.begin(), m = item.second.end(); i != m; ++i)
             {
-                Item* pNewItem = go(item.first, *i);
-                if (pNewItem == NULL) continue;
+                pair<Item*, bool> pNewItem = go(item.first, *i);
+                edges[item.first].push_back(Edge(item.first, pNewItem.first, *i));
+                if (!pNewItem.second) continue;
+                for (vector<LR0Production>::iterator j = pNewItem.first->data.begin(), n = pNewItem.first->data.end(); j != n; ++j)
+                {
+                    if (j->idx - 1 > 0 && j->right[j->idx - 1] == start) pEnds.insert(pNewItem.first);
+                }
                 v.clear();
-                vs(pNewItem, v);
-                edges[item.first].push_back(Edge(item.first, pNewItem, *i));
-                s.push(pair_type(pNewItem, v));
+                vs(pNewItem.first, v);
+                s.push(pair_type(pNewItem.first, v));
             }
         }
 
@@ -91,6 +95,7 @@ namespace QLanguage
     void LR0::closure(const LR0Production& x, vector<LR0Production>& y)
     {
         y.push_back_unique(x);
+        if (x.idx == x.right.size()) return;
         if (x.right[x.idx].type == LR0Production::Item::NoTerminalSymbol) // 若是非终结符
         {
             // 将这个非终结符所对应的所有产生式加入其中
@@ -101,7 +106,7 @@ namespace QLanguage
         }
     }
 
-    LR0::Item* LR0::go(Item* i, const Production::Item& x)
+    pair<LR0::Item*, bool> LR0::go(Item* i, const Production::Item& x)
     {
         Item* pItem = Item_Alloc::allocate();
         construct(pItem);
@@ -110,28 +115,28 @@ namespace QLanguage
         {
             if (j->right[j->idx] == x)
             {
-                if (j->idx + 1 < j->right.size()) closure(j->stepUp(), pItem->data);
+                if (j->idx < j->right.size()) closure(j->stepUp(), pItem->data);
             }
         }
 
-        if (context.isItemExists(pItem))
+        Item* pOldItem = NULL;
+
+        if (context.isItemExists(pItem, pOldItem))
         {
             destruct(pItem, has_destruct(*pItem));
             Item_Alloc::deallocate(pItem);
-            return NULL;
+            return pair<Item*, bool>(pOldItem, false);
         }
         else context.states.insert(pItem);
 
-        int k = pItem->data.size();
-
-        return pItem;
+        return pair<Item*, bool>(pItem, true);
     }
 
     void LR0::vs(Item* i, vector<Production::Item>& v)
     {
         for (vector<LR0Production>::const_iterator j = i->data.begin(), n = i->data.end(); j != n; ++j)
         {
-            v.push_back_unique(j->right[j->idx]);
+            if (j->idx < j->right.size()) v.push_back_unique(j->right[j->idx]);
         }
     }
 
@@ -143,8 +148,10 @@ namespace QLanguage
             for (vector<Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
                 printf("%03d -> %03d\n\n", j->pStart->idx, j->pEnd->idx);
+#ifdef _DEBUG
                 if (j->item.type == Production::Item::TerminalSymbol) j->item.rule.printEpsilonNFA();
                 else printf("VN: %03d\n", j->item.index);
+#endif
                 printf("\n");
             }
         }

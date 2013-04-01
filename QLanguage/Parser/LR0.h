@@ -50,6 +50,11 @@ namespace QLanguage
             Production::Item item;
 
             Edge(Item* pStart, Item* pEnd, const Production::Item& item) : pStart(pStart), pEnd(pEnd), item(item) {}
+
+            inline const bool operator==(const Edge& x)const
+            {
+                return pStart == x.pStart && pEnd == x.pEnd && item == x.item;
+            }
         };
 
         class Context
@@ -57,11 +62,15 @@ namespace QLanguage
         public:
             set<Item*> states;
 
-            bool isItemExists(Item* pItem)
+            bool isItemExists(Item* pItem, Item*& pOldItem)
             {
                 for (set<Item*>::const_iterator i = states.begin(), m = states.end(); i != m; ++i)
                 {
-                    if (*(*i) == *pItem) return true;
+                    if (*(*i) == *pItem)
+                    {
+                        pOldItem = *i;
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -92,7 +101,7 @@ namespace QLanguage
     protected:
         Item* closure(const vector<LR0Production>& x);
         void closure(const LR0Production& x, vector<LR0Production>& y);
-        Item* go(Item* i, const Production::Item& x);
+        pair<Item*, bool> go(Item* i, const Production::Item& x);
         void vs(Item* i, vector<Production::Item>& v);
     protected:
         Production::Item start;
@@ -100,7 +109,8 @@ namespace QLanguage
         vector<Production> inputProductions;
 
         hashmap<Item*, vector<Edge> > edges;
-        Item* pStart;
+        Item*      pStart;
+        set<Item*> pEnds;
 
         Context context;
     };

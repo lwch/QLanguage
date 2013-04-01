@@ -396,11 +396,11 @@ public:
         typedef allocator<EpsilonNFA_State>  EpsilonNFA_State_Alloc;
         typedef allocator<DFA_State>         DFA_State_Alloc;
     public:
-        Rule() : pEpsilonStart(NULL), pEpsilonEnd(NULL), pDFAStart(NULL), pContext(NULL) {}
+        Rule() : pEpsilonStart(NULL), pEpsilonEnd(NULL), pDFAStart(NULL), pContext(NULL), idx(-1) {}
 
-        Rule(Context* pContext) : pEpsilonStart(NULL), pEpsilonEnd(NULL), pDFAStart(NULL), pContext(pContext) {}
+        Rule(Context* pContext) : pEpsilonStart(NULL), pEpsilonEnd(NULL), pDFAStart(NULL), pContext(pContext), idx(-1) {}
 
-        Rule(char x, Context* pContext) : pDFAStart(NULL), pContext(pContext)
+        Rule(char x, Context* pContext) : pDFAStart(NULL), pContext(pContext), idx(inc())
         {
             pEpsilonStart = EpsilonNFA_State_Alloc::allocate();
             construct(pEpsilonStart);
@@ -414,7 +414,7 @@ public:
             pContext->epsilonNFA_States.insert(pEpsilonEnd);
         }
 
-        Rule(const char* x, Context* pContext) : pDFAStart(NULL), pContext(pContext)
+        Rule(const char* x, Context* pContext) : pDFAStart(NULL), pContext(pContext), idx(inc())
         {
             pEpsilonStart = EpsilonNFA_State_Alloc::allocate();
             construct(pEpsilonStart);
@@ -437,6 +437,8 @@ public:
             pDFAStart = x.pDFAStart;
             pDFAEnds  = x.pDFAEnds;
             dfa_Edges = x.dfa_Edges;
+
+            idx = x.idx;
         }
 
         ~Rule() {}
@@ -562,6 +564,8 @@ public:
                 pDFAStart = x.pDFAStart;
                 pDFAEnds  = x.pDFAEnds;
                 dfa_Edges = x.dfa_Edges;
+
+                idx = x.idx;
             }
             return *this;
         }
@@ -662,26 +666,12 @@ public:
 
         const bool operator==(const Rule& r)const
         {
-            queue<EpsilonNFA_State*> q1, q2;
-            q1.push(pEpsilonStart);
-            q2.push(r.pEpsilonStart);
-            while (!q1.empty() && !q2.empty())
-            {
-                if (epsilonNFA_Edges[q1.front()].size() != r.epsilonNFA_Edges[q2.front()].size()) return false;
-            }
-            return true;
+            return idx == r.idx;
         }
 
         const bool operator!=(const Rule& r)const
         {
-            queue<EpsilonNFA_State*> q1, q2;
-            q1.push(pEpsilonStart);
-            q2.push(r.pEpsilonStart);
-            while (!q1.empty() && !q2.empty())
-            {
-                if (epsilonNFA_Edges[q1.front()].size() != r.epsilonNFA_Edges[q2.front()].size()) return false;
-            }
-            return true;
+            return idx != r.idx;
         }
 
 #ifdef _DEBUG
@@ -902,6 +892,12 @@ public:
             }
             return false;
         }
+
+        static uint inc()
+        {
+            static uint i = 0;
+            return i++;
+        }
     protected:
         EpsilonNFA_State *pEpsilonStart, *pEpsilonEnd;
         hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge> > epsilonNFA_Edges;
@@ -911,6 +907,7 @@ public:
         hashmap<DFA_State*, vector<DFA_Edge> > dfa_Edges;
 
         Context* pContext;
+        uint     idx;
     };
 }
 NAMESPACE_QLANGUAGE_LIBRARY_END
