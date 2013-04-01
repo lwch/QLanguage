@@ -46,10 +46,12 @@ template <typename T, typename HashTable_Type>
 class __hashtable_iterator_base : public bidirectional_iterator
 {
     template <typename K, typename V, typename KOV,
-              size_t MBL,
-              bool R,
-              typename H,
-              typename C>
+        size_t MBL,
+        bool R,
+        typename H,
+        typename L,
+        typename G,
+        typename C>
     friend class hashtable;
 protected:
     typedef __hashtable_iterator_base<T, HashTable_Type> self;
@@ -162,17 +164,22 @@ public:
 
     inline self operator++(int)
     {
-        return (*this)++;
+        self tmp = *this;
+        ++*this;
+        return tmp;
     }
 
     inline self& operator--()
     {
-        return --(*this);
+        base::dec();
+        return *this;
     }
 
     inline self operator--(int)
     {
-        return (*this)--;
+        self tmp = *this;
+        --*this;
+        return tmp;
     }
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,17 +204,22 @@ public:
 
     inline self operator++(int)
     {
-        return (*this)++;
+        self tmp = *this;
+        ++*this;
+        return tmp;
     }
 
     inline self& operator--()
     {
-        return --(*this);
+        base::dec();
+        return *this;
     }
 
     inline self operator--(int)
     {
-        return (*this)--;
+        self tmp = *this;
+        --*this;
+        return tmp;
     }
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,10 +227,12 @@ template <typename Key, typename Value, typename KeyOfValue,
     size_t Max_Bucket_Length = 11,
     bool Resize = true,
     typename Hash = hash<Key>,
+    typename Less = less<Key>,
+    typename Greater = greater<Key>,
     typename Compare = equal_to<Key> >
 class hashtable
 {
-    typedef hashtable<Key, Value, KeyOfValue, Max_Bucket_Length, Resize, Hash, Compare> self;
+    typedef hashtable<Key, Value, KeyOfValue, Max_Bucket_Length, Resize, Hash, Less, Greater, Compare> self;
     typedef Key                             key_type;
     typedef __hashtable_bucket_node<Value>  node_type;
     typedef node_type*                      link_type;
@@ -247,6 +261,8 @@ protected:
     size_type           length;
     KeyOfValue          key;
     Hash                hash;
+    Less                less;
+    Greater             greater;
     Compare             compare;
     buckets_type        buckets;
     buckets_length_type buckets_length;
@@ -326,12 +342,6 @@ public:
         const typename __container_traits<buckets_type>::size_type new_size = old_size == 0 ? 2 : old_size * 2;
         buckets_type tmp(new_size);
         buckets_length_type tmpL(new_size);
-
-//         for (typename __container_traits<buckets_type>::size_type i = 0; i < new_size; ++i)
-//         {
-//             tmp[i] = NULL;
-//             tmpL[i] = 0;
-//         }
 
         for (typename __container_traits<buckets_type>::size_type i = 0, m = buckets.size(); i < m; ++i)
         {
@@ -421,17 +431,48 @@ public:
         if (p)
         {
             HASH_KEY_TYPE idx = index(key(p->data));
-            if (p->prev)
-            {
-                p->prev->next = p->next;
-                p->next->prev = p->prev;
-            }
+            if (p->prev) p->prev->next = p->next;
             else buckets[idx] = p->next;
+
+            if (p->next) p->next->prev = p->prev;
             destruct(&p->data, has_destruct(p->data));
             destruct(p, has_destruct(*p));
             Alloc::deallocate(p);
             --buckets_length[idx];
+            --length;
         }
+    }
+
+    void erase(const key_type& k)
+    {
+        HASH_KEY_TYPE idx = index(k);
+        link_type current = buckets[idx];
+        while (current)
+        {
+            if (compare(k, key(current->data)))
+            {
+                if (current->prev) current->prev->next = current->next;
+                else buckets[idx] = current->next;
+
+                if (current->next) current->next->prev = current->prev;
+                destruct(&current->data, has_destruct(current->data));
+                destruct(current, has_destruct(*current));
+                Alloc::deallocate(current);
+                --buckets_length[idx];
+                --length;
+                break;
+            }
+        }
+    }
+
+    void erase(iterator first, iterator last)
+    {
+        if (first == begin() && last == end())
+        {
+            clear();
+            return;
+        }
+        while (first != last) erase(first++);
     }
 
     iterator find(const key_type& k)
@@ -584,6 +625,38 @@ public:
         return const_iterator(0, (self&)*this);
     }
 
+    inline const_iterator maximum()const
+    {
+        link_type j = NULL;
+        for (buckets_type::const_iterator i = buckets.begin(), m = buckets.end(); i != m; ++i)
+        {
+            link_type current = *i;
+            while (current)
+            {
+                if (j == NULL) j = current;
+                else if (greater(current->data, j->data)) j = current;
+                current = current->next;
+            }
+        }
+        return const_iterator(j, const_cast<self&>(*this));
+    }
+
+    inline const_iterator minimum()const
+    {
+        link_type j = NULL;
+        for (buckets_type::const_iterator i = buckets.begin(), m = buckets.end(); i != m; ++i)
+        {
+            link_type current = *i;
+            while (current)
+            {
+                if (j == NULL) j = current;
+                else if (less(current->data, j->data)) j = current;
+                current = current->next;
+            }
+        }
+        return const_iterator(j, const_cast<self&>(*this));
+    }
+
 //     inline reverse_iterator rend()
 //     {
 //         return reverse_iterator(end());
@@ -706,6 +779,8 @@ protected:
         length         = x.length;
         key            = x.key;
         hash           = x.hash;
+        less           = x.less;
+        greater        = x.greater;
         compare        = x.compare;
         buckets_length = x.buckets_length;
     }

@@ -34,10 +34,10 @@ TEST_CASE(TestRBTree)
     TEST_ASSERT(tree.maximum() == tree.end(), "invalid maximum value with tree end!");
 
     TEST_ASSERT(tree.size() != 3, "invalid tree size!");
-    for(int i = 0; i < 10; ++i)
+    for (int i = 0; i < 10; ++i)
     {
         tree.insert_equal(i);
-        switch(i)
+        switch (i)
         {
         case 1:
             TEST_ASSERT(tree.count(i) != 3, "invalid tree node count with %d!", i);
