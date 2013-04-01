@@ -58,12 +58,12 @@ namespace QLanguage
 
             inline const bool operator==(const Item& x)const
             {
-                return type == x.type && rule == x.rule;
+                return type == x.type && (type == TerminalSymbol ? rule == x.rule : true);
             }
 
             inline const bool operator!=(const Item& x)const
             {
-                return type != x.type || rule != x.rule;
+                return type != x.type || (type == TerminalSymbol ? rule != x.rule : false);
             }
 
             static uint inc()

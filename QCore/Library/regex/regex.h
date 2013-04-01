@@ -120,7 +120,7 @@ namespace regex
                 else return TUnknown;
             }
 
-            const bool operator==(const Variant& x)const
+            inline const bool operator==(const Variant& x)const
             {
                 return type == x.type && data.String.value == x.data.String.value && data.String.size == data.String.size;
             }
@@ -267,7 +267,7 @@ namespace regex
 
             inline const bool operator==(const DFA_Edge& x)const
             {
-                return pFrom == x.pFrom && pTo == x.pTo;
+                return pFrom == x.pFrom && pTo == x.pTo && value == x.value;
             }
 
             const bool compare(const char*& first, const char* last)const

@@ -28,7 +28,7 @@ namespace QLanguage
             typedef rbtree<key_type, value_type, identity<value_type>, LessCompare, EqualCompare> instance_type;
             typedef set<T, LessCompare, EqualCompare> self;
 
-            instance_type instance;
+            instance_type container;
         public:
             typedef typename instance_type::size_type              size_type;
             typedef typename instance_type::distance_type          distance_type;
@@ -39,113 +39,113 @@ namespace QLanguage
 
             set() {}
 
-            set(const self& x) : instance(x.instance) {}
+            set(const self& x) : container(x.instance) {}
 
             ~set() {}
 
             inline pair<iterator, bool> insert(const value_type& x)
             {
-                return instance.insert_unique(x);
+                return container.insert_unique(x);
             }
 
             inline void erase(iterator position)
             {
-                instance.erase(position);
+                container.erase(position);
             }
 
             inline void erase(const key_type& x)
             {
-                instance.erase(x);
+                container.erase(x);
             }
 
             inline void erase(iterator first, iterator last)
             {
-                instance.erase(first, last);
+                container.erase(first, last);
             }
 
             inline iterator find(const key_type& x)
             {
-                return instance.find(x);
+                return container.find(x);
             }
 
             inline void clear()
             {
-                instance.clear();
+                container.clear();
             }
 
             inline size_type size()const
             {
-                return instance.size();
+                return container.size();
             }
 
             inline bool empty()const
             {
-                return instance.empty();
+                return container.empty();
             }
 
             inline const_iterator maximum()const
             {
-                return instance.maximum();
+                return container.maximum();
             }
 
             inline const_iterator minimum()const
             {
-                return instance.minimum();
+                return container.minimum();
             }
 
             inline iterator begin()
             {
-                return instance.begin();
+                return container.begin();
             }
 
             inline const_iterator begin()const
             {
-                return instance.begin();
+                return container.begin();
             }
 
             inline reverse_iterator rbegin()
             {
-                return instance.rbegin();
+                return container.rbegin();
             }
 
             inline const_reverse_iterator rbegin()const
             {
-                return instance.rbegin();
+                return container.rbegin();
             }
 
             inline iterator end()
             {
-                return instance.end();
+                return container.end();
             }
 
             inline const_iterator end()const
             {
-                return instance.end();
+                return container.end();
             }
 
             inline reverse_iterator rend()
             {
-                return instance.rend();
+                return container.rend();
             }
 
             inline const_reverse_iterator rend()const
             {
-                return instance.rend();
+                return container.rend();
             }
 
             inline pair<iterator, iterator> equal_range(const key_type& x)
             {
-                return instance.equal_range(x);
+                return container.equal_range(x);
             }
 
             inline pair<const_iterator, const_iterator> equal_range(const key_type& x)const
             {
-                return instance.equal_range(x);
+                return container.equal_range(x);
             }
 
             inline self& operator=(const self& x)
             {
-                if (&x != this) instance = x.instance;
+                if (&x != this) container = x.container;
                 return *this;
             }
 
@@ -153,7 +153,7 @@ namespace QLanguage
             {
                 if (&x == this) return true;
 
-                return instance == x.instance;
+                return container == x.instance;
             }
         };
     }

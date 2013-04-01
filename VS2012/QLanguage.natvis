@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  
+  <Type Name="QLanguage::Library::vector&lt;*&gt;">
+    <DisplayString>{{ size={finish.node - start.node} }}</DisplayString>
+	<Expand>
+      <Item Name="[size]">finish.node - start.node</Item>
+      <Item Name="[capacity]">end_of_element.node - start.node</Item>
+      <ArrayItems>
+        <Size>finish.node - start.node</Size>
+        <ValuePointer>start.node</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::list&lt;*&gt;">
+    <DisplayString>{{ size={length} }}</DisplayString>
+    <Expand>
+      <LinkedListItems>
+        <Size>length</Size>
+        <HeadPointer>node-&gt;next</HeadPointer>
+        <NextPointer>next</NextPointer>
+        <ValueNode>data</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::queue&lt;*&gt;">
+    <AlternativeType Name="QLanguage::Library::stack&lt;*&gt;" />
+    <DisplayString>{container}</DisplayString>
+    <Expand>
+      <Item Name="container">container</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::rbtree&lt;*,*&gt;">
+    <DisplayString>{{ size={node_count} }}</DisplayString>
+    <Expand>
+      <TreeItems>
+        <Size>node_count</Size>
+        <HeadPointer>header-&gt;parent</HeadPointer>
+        <LeftPointer>left</LeftPointer>
+        <RightPointer>right</RightPointer>
+        <ValueNode>data</ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::map&lt;*,*&gt;">
+	<DisplayString>{{ size={container.node_count} }}</DisplayString>
+	<Expand>
+      <TreeItems>
+        <Size>container.node_count</Size>
+        <HeadPointer>container.header-&gt;parent</HeadPointer>
+        <LeftPointer>left</LeftPointer>
+        <RightPointer>right</RightPointer>
+        <ValueNode>data</ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::set&lt;*&gt;">
+    <DisplayString>{container}</DisplayString>
+    <Expand>
+      <Item Name="container">container</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::hashtable&lt;*,*&gt;">
+    <DisplayString>{{ size={length} }}</DisplayString>
+	<Expand>
+      <Item Name="[size]">length</Item>
+      <ArrayItems>
+        <Size>buckets.finish.node - buckets.start.node</Size>
+        <ValuePointer>buckets.start.node</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::hashmap&lt;*,*&gt;">
+    <DisplayString>{{ size={container.length} }}</DisplayString>
+	<Expand>
+      <Item Name="[size]">container.length</Item>
+      <ArrayItems>
+        <Size>container.buckets.finish.node - container.buckets.start.node</Size>
+        <ValuePointer>container.buckets.start.node</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::hashset&lt;*&gt;">
+    <DisplayString>{container}</DisplayString>
+    <Expand>
+      <Item Name="container">container</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::basic_string&lt;*&gt;">
+    <DisplayString>{start.node}</DisplayString>
+	<StringView>start.node</StringView>
+	<Expand>
+      <Item Name="[size]">finish.node - start.node</Item>
+      <Item Name="[capacity]">end_of_element.node - start.node</Item>
+      <ArrayItems>
+        <Size>finish.node - start.node</Size>
+        <ValuePointer>start.node</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>

@@ -33,7 +33,7 @@ protected:
     typedef hashtable<key_type, value_type, select1st<value_type>, Max_Bucket_Length, Resize, Hash, Compare> instance_type;
     typedef hashmap<Key, T, Hash, Max_Bucket_Length, Resize, Compare> self;
 
-    instance_type instance;
+    instance_type container;
 public:
     typedef typename instance_type::size_type              size_type;
     typedef typename instance_type::distance_type          distance_type;
@@ -44,103 +44,103 @@ public:
 
     hashmap() {}
 
-    hashmap(const self& x) : instance(x.instance) {}
+    hashmap(const self& x) : container(x.instance) {}
 
     ~hashmap() {}
 
     inline pair<iterator, bool> insert(const value_type& x)
     {
-        return instance.insert_unique(x);
+        return container.insert_unique(x);
     }
 
     inline void erase(iterator position)
     {
-        instance.erase(position);
+        container.erase(position);
     }
 
     inline void erase(const key_type& x)
     {
-        instance.erase(x);
+        container.erase(x);
     }
 
     inline void erase(iterator first, iterator last)
     {
-        instance.erase(first, last);
+        container.erase(first, last);
     }
 
     inline iterator find(const key_type& x)
     {
-        return instance.find(x);
+        return container.find(x);
     }
 
     inline void clear()
     {
-        instance.clear();
+        container.clear();
     }
 
     inline size_type size()const
     {
-        return instance.size();
+        return container.size();
     }
 
     inline bool empty()const
     {
-        return instance.empty();
+        return container.empty();
     }
 
     inline iterator begin()
     {
-        return instance.begin();
+        return container.begin();
     }
 
     inline const_iterator begin()const
     {
-        return instance.begin();
+        return container.begin();
     }
 
     inline reverse_iterator rbegin()
     {
-        return instance.rbegin();
+        return container.rbegin();
     }
 
     inline const_reverse_iterator rbegin()const
     {
-        return instance.rbegin();
+        return container.rbegin();
     }
 
     inline iterator end()
     {
-        return instance.end();
+        return container.end();
     }
 
     inline const_iterator end()const
     {
-        return instance.end();
+        return container.end();
     }
 
     inline reverse_iterator rend()
     {
-        return instance.rend();
+        return container.rend();
     }
 
     inline const_reverse_iterator rend()const
     {
-        return instance.rend();
+        return container.rend();
     }
 
     inline data_type& operator[](const key_type& key)
     {
-        return (*instance.insert_unique(value_type(key, data_type())).first).second;
+        return (*container.insert_unique(value_type(key, data_type())).first).second;
     }
 
     inline const data_type& operator[](const key_type& key)const
     {
-        return instance.value(key).second;
+        return container.value(key).second;
     }
 
     inline self& operator=(const self& x)
     {
-        if (&x != this) instance = x.instance;
+        if (&x != this) container = x.container;
         return *this;
     }
 };
