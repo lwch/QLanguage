@@ -1,9 +1,9 @@
 ﻿/********************************************************************
-	created:	2012/11/29
-	created:	29:11:2012   23:40
-	filename: 	\QCoreUnitTest\Units\TestSet.cpp
+	created:	2013/04/01
+	created:	1:4:2013   14:39
+	filename: 	\QCoreUnitTest\Units\TestHashSet.cpp
 	file path:	\QCoreUnitTest\Units
-	file base:	TestSet
+	file base:	TestHashSet
 	file ext:	cpp
 	author:		lwch
 	

@@ -1,9 +1,9 @@
 ﻿/********************************************************************
-	created:	2012/11/29
-	created:	29:11:2012   23:39
-	filename: 	\QCoreUnitTest\Units\TestMap.cpp
+	created:	2013/04/01
+	created:	1:4:2013   14:40
+	filename: 	\QCoreUnitTest\Units\TestHashMap.cpp
 	file path:	\QCoreUnitTest\Units
-	file base:	TestMap
+	file base:	TestHashMap
 	file ext:	cpp
 	author:		lwch
 	
