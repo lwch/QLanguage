@@ -628,7 +628,7 @@ public:
     inline const_iterator maximum()const
     {
         link_type j = NULL;
-        for (buckets_type::const_iterator i = buckets.begin(), m = buckets.end(); i != m; ++i)
+        for (typename buckets_type::const_iterator i = buckets.begin(), m = buckets.end(); i != m; ++i)
         {
             link_type current = *i;
             while (current)
@@ -644,7 +644,7 @@ public:
     inline const_iterator minimum()const
     {
         link_type j = NULL;
-        for (buckets_type::const_iterator i = buckets.begin(), m = buckets.end(); i != m; ++i)
+        for (typename buckets_type::const_iterator i = buckets.begin(), m = buckets.end(); i != m; ++i)
         {
             link_type current = *i;
             while (current)
