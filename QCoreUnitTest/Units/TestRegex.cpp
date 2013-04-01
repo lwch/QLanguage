@@ -120,5 +120,5 @@ TEST_CASE(TestRegex)
     }
     t = clock() - t;
     allocator<char>::deallocate(szTest, iContentSize);
-    printf("parse data length: %lu bytes\nuse of time: %fs\n", iContentSize, t / 1000.0f);
+    printf("parse data length: %lu bytes\nuse of time: %fs\n", (unsigned long)iContentSize, t / 1000.0f);
 }
