@@ -82,11 +82,41 @@ namespace QLanguage
     class LALR1Production : public LR0Production
     {
     public:
+        class Item
+        {
+        public:
+            enum { Rule, End }type;
+            regex::Rule rule;
+
+            Item() : type(End) {}
+            Item(const regex::Rule& rule) : type(Rule), rule(rule) {}
+
+            inline const bool operator==(const Item& x)const
+            {
+                return type == x.type && (type == End ? true : rule == x.rule);
+            }
+
+            Item& operator=(const Item& x)
+            {
+                if (&x == this) return *this;
+
+                type = x.type;
+                if (type == Rule) rule = x.rule;
+                return *this;
+            }
+        };
+
         LALR1Production(const Production::Item& left) : LR0Production(left) {}
         LALR1Production(const Production::Item& left, const vector<Production::Item>& right) : LR0Production(left, right) {}
-        LALR1Production(const LALR1Production& p) : LR0Production(p) {}
+        LALR1Production(const LALR1Production& p) : LR0Production(p), wildCards(p.wildCards) {}
+        LALR1Production(const LR0Production& p) : LR0Production(p) {}
+
+        inline const bool operator==(const LR0Production& p)const
+        {
+            return operator==(dynamic_cast<const LR0Production&>(p));
+        }
     public:
-        vector<string> wildCards;
+        vector<Item> wildCards;
     };
 }
 

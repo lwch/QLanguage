@@ -28,7 +28,7 @@ namespace QLanguage
             typedef pair<Key, T> value_type;
             typedef rbtree<key_type, value_type, select1st<value_type>, LessCompare, EqualCompare> instance_type;
             typedef map<Key, T, LessCompare, EqualCompare> self;
-
+        public:
             instance_type container;
         public:
             typedef typename instance_type::size_type              size_type;
@@ -133,6 +133,17 @@ namespace QLanguage
             {
                 if (&x != this) container = x.instance;
                 return *this;
+            }
+
+            inline const bool operator==(const self& x)const
+            {
+                return container == x.container;
+            }
+
+            template <typename T2>
+            inline const bool operator==(const map<Key, T2, LessCompare, EqualCompare>& x)const
+            {
+                return container == x.container;
             }
         };
     }

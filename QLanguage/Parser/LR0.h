@@ -23,19 +23,25 @@ namespace QLanguage
 {
     class LR0
     {
+        friend class LALR1;
+
         class Item
         {
         public:
-            vector<LR0Production> data;
+            map<Production::Item, vector<LR0Production> > data;
+#ifdef _DEBUG
             uint idx;
 
-            Item() { idx = inc(); }
+            Item() : idx(inc()) {}
 
             static uint inc()
             {
                 static uint i = 0;
                 return i++;
             }
+#else
+            Item () {}
+#endif
 
             inline const bool operator==(const Item& x)const
             {
@@ -45,15 +51,15 @@ namespace QLanguage
 
         struct Edge 
         {
-            Item* pStart;
-            Item* pEnd;
+            Item* pFrom;
+            Item* pTo;
             Production::Item item;
 
-            Edge(Item* pStart, Item* pEnd, const Production::Item& item) : pStart(pStart), pEnd(pEnd), item(item) {}
+            Edge(Item* pFrom, Item* pTo, const Production::Item& item) : pFrom(pFrom), pTo(pTo), item(item) {}
 
             inline const bool operator==(const Edge& x)const
             {
-                return pStart == x.pStart && pEnd == x.pEnd && item == x.item;
+                return pFrom == x.pFrom && pTo == x.pTo && item == x.item;
             }
         };
 
@@ -100,7 +106,7 @@ namespace QLanguage
         void print();
     protected:
         Item* closure(const vector<LR0Production>& x);
-        void closure(const LR0Production& x, vector<LR0Production>& y);
+        void closure(const LR0Production& x, map<LR0Production::Item, vector<LR0Production> >& y);
         pair<Item*, bool> go(Item* i, const Production::Item& x);
         void vs(Item* i, vector<Production::Item>& v);
     protected:

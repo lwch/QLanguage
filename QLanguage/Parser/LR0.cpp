@@ -49,9 +49,12 @@ namespace QLanguage
                 pair<Item*, bool> pNewItem = go(item.first, *i);
                 edges[item.first].push_back(Edge(item.first, pNewItem.first, *i));
                 if (!pNewItem.second) continue;
-                for (vector<LR0Production>::iterator j = pNewItem.first->data.begin(), n = pNewItem.first->data.end(); j != n; ++j)
+                for (map<LR0Production::Item, vector<LR0Production> >::iterator j = pNewItem.first->data.begin(), n = pNewItem.first->data.end(); j != n; ++j)
                 {
-                    if (j->idx - 1 > 0 && j->right[j->idx - 1] == start) pEnds.insert(pNewItem.first);
+                    for (vector<LR0Production>::iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
+                    {
+                        if (k->idx - 1 > 0 && k->right[k->idx - 1] == start) pEnds.insert(pNewItem.first);
+                    }
                 }
                 v.clear();
                 vs(pNewItem.first, v);
@@ -67,7 +70,11 @@ namespace QLanguage
         Item* pItem = Item_Alloc::allocate();
         context.states.insert(pItem);
         construct(pItem);
-        pItem->data.add(x);
+        //pItem->data.add(x);
+        for (vector<LR0Production>::const_iterator i = x.begin(), m = x.end(); i != m; ++i)
+        {
+            pItem->data[i->left].push_back_unique(*i);
+        }
 
         bool bContinue = true;
         for (vector<LR0Production>::const_iterator i = x.begin(), m = x.end(); i != m; ++i)
@@ -77,7 +84,7 @@ namespace QLanguage
                 // 将这个非终结符所对应的所有产生式加入其中
                 for (vector<Production>::const_iterator j = productionMap[i->right[i->idx]].begin(), n = productionMap[i->right[i->idx]].end(); j != n; ++j)
                 {
-                    if (!pItem->data.push_back_unique(*j))
+                    if (!pItem->data[j->left].push_back_unique(*j))
                     {
                         bContinue = false;
                         break;
@@ -92,16 +99,16 @@ namespace QLanguage
         return pItem;
     }
 
-    void LR0::closure(const LR0Production& x, vector<LR0Production>& y)
+    void LR0::closure(const LR0Production& x, map<LR0Production::Item, vector<LR0Production> >& y)
     {
-        y.push_back_unique(x);
+        y[x.left].push_back_unique(x);
         if (x.idx == x.right.size()) return;
         if (x.right[x.idx].type == LR0Production::Item::NoTerminalSymbol) // 若是非终结符
         {
             // 将这个非终结符所对应的所有产生式加入其中
             for (vector<Production>::const_iterator j = productionMap[x.right[x.idx]].begin(), n = productionMap[x.right[x.idx]].end(); j != n; ++j)
             {
-                if (!y.push_back_unique(*j)) break;
+                if (!y[j->left].push_back_unique(*j)) break;
             }
         }
     }
@@ -111,11 +118,14 @@ namespace QLanguage
         Item* pItem = Item_Alloc::allocate();
         construct(pItem);
 
-        for (vector<LR0Production>::iterator j = i->data.begin(), n = i->data.end(); j != n; ++j)
+        for (map<LR0Production::Item, vector<LR0Production> >::iterator j = i->data.begin(), n = i->data.end(); j != n; ++j)
         {
-            if (j->right[j->idx] == x)
+            for (vector<LR0Production>::iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
             {
-                if (j->idx < j->right.size()) closure(j->stepUp(), pItem->data);
+                if (k->right[k->idx] == x)
+                {
+                    if (k->idx < k->right.size()) closure(k->stepUp(), pItem->data);
+                }
             }
         }
 
@@ -134,9 +144,12 @@ namespace QLanguage
 
     void LR0::vs(Item* i, vector<Production::Item>& v)
     {
-        for (vector<LR0Production>::const_iterator j = i->data.begin(), n = i->data.end(); j != n; ++j)
+        for (map<LR0Production::Item, vector<LR0Production> >::const_iterator j = i->data.begin(), n = i->data.end(); j != n; ++j)
         {
-            if (j->idx < j->right.size()) v.push_back_unique(j->right[j->idx]);
+            for (vector<LR0Production>::const_iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
+            {
+                if (k->idx < k->right.size()) v.push_back_unique(k->right[k->idx]);
+            }
         }
     }
 
@@ -147,7 +160,7 @@ namespace QLanguage
         {
             for (vector<Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
-                printf("%03d -> %03d\n\n", j->pStart->idx, j->pEnd->idx);
+                printf("%03d -> %03d\n\n", j->pFrom->idx, j->pTo->idx);
 #ifdef _DEBUG
                 if (j->item.type == Production::Item::TerminalSymbol) j->item.rule.printEpsilonNFA();
                 else printf("VN: %03d\n", j->item.index);

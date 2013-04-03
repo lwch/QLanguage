@@ -475,6 +475,23 @@ public:
         return equalNode(header->parent, x.header->parent);
     }
 
+    template <typename T>
+    inline const bool operator==(const rbtree<Key, T, select1st<T>, Less_Compare, Equal_Compare>& x)const
+    {
+        if (node_count != x.size()) return false;
+        return equalNode(header->parent, x.root(), x._key());
+    }
+
+    inline const link_type root()const
+    {
+        return header->parent;
+    }
+
+    inline const KeyOfValue& _key()const
+    {
+        return key;
+    }
+
     void copyFrom(const self& x)
     {
         if (x.header->parent)
@@ -840,9 +857,28 @@ protected:
             if (x != NULL) return false;
             return true;
         }
-        if (!equal_compare(x->data, y->data)) return false;
+        if (!equal_compare(key(x->data), key(y->data))) return false;
         if (!equalNode(x->left, y->left))     return false;
         if (!equalNode(x->right, y ->right))  return false;
+        return true;
+    }
+
+    template <typename T, typename Key>
+    const bool equalNode(link_type x, __rbtree_node<T>* y, const Key& ykey)const
+    {
+        if (x == NULL)
+        {
+            if (y != NULL) return false;
+            else return true;
+        }
+        else if (y == NULL)
+        {
+            if (x != NULL) return false;
+            return true;
+        }
+        if (!equal_compare(key(x->data), ykey(y->data))) return false;
+        if (!equalNode(x->left, y->left, ykey)) return false;
+        if (!equalNode(x->right, y->right, ykey)) return false;
         return true;
     }
 

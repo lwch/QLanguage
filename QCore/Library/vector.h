@@ -311,10 +311,10 @@ public:
         {
             iterator tmp = Alloc::allocate(count);
             copy(begin(), end(), tmp);
-            Alloc::deallocate(start, old_size);
+            Alloc::deallocate(start, old_size); // crash
             start = tmp;
             finish = tmp + old_size;
-            end_of_element = start + count;
+            end_of_element = tmp + count;
         }
     }
 
@@ -550,7 +550,7 @@ public:
       for (const_iterator i = x.begin(), m = x.end(); i != m; ++i, ++p)
       {
         construct(p);
-        push_back_unique(i->node);
+        push_back_unique(*i);
       }
     }
 protected:

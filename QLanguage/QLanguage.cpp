@@ -1,5 +1,6 @@
 #include "Lexer/Lexer.h"
 #include "Parser/LR0.h"
+#include "Parser/LALR1.h"
 
 #include <time.h>
 #include <stdio.h>
@@ -24,31 +25,34 @@ int main()
     a = Rule('a', &context);
     b = Rule('b', &context);
 
-    // S¡úaS
-    // S¡úbS
-    // S¡úa
-    Production::Item start;
+    // Z¡úBB
+    // B¡úaB
+    // B¡úb
+    Production::Item Z, B;
     vector<Production::Item> v;
-    v.push_back(Production::Item(a));
-    v.push_back(start);
-    Production p1(start, v);
+    v.push_back(B);
+    v.push_back(B);
+    Production p1(Z, v);
 
     v.clear();
-    v.push_back(Production::Item(b));
-    v.push_back(start);
-    Production p2(start, v);
+    v.push_back(Production::Item(a));
+    v.push_back(B);
+    Production p2(B, v);
 
-    Production p3(start, a);
+    Production p3(B, Production::Item(b));
 
     vector<Production> productions;
     productions.push_back(p1);
     productions.push_back(p2);
     productions.push_back(p3);
 
-    LR0 lr0(productions, start);
+    LR0 lr0(productions, Z);
     lr0.make();
 
     lr0.print();
+
+    LALR1 lalr1(lr0);
+    lalr1.make();
 
     return 0;
 }
