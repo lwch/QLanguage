@@ -857,7 +857,7 @@ protected:
             if (x != NULL) return false;
             return true;
         }
-        if (!equal_compare(key(x->data), key(y->data))) return false;
+        if (x->data != y->data) return false;
         if (!equalNode(x->left, y->left))     return false;
         if (!equalNode(x->right, y ->right))  return false;
         return true;

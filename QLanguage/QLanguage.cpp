@@ -21,14 +21,16 @@ int main()
 
     Rule::Context context;
 
-    Production::Item a, b;
-    a = Rule('a', &context);
-    b = Rule('b', &context);
+    Production::Item a(Rule('a', &context)), b(Rule('b', &context));
 
     // Z¡úBB
     // B¡úaB
     // B¡úb
+#ifdef _DEBUG
+    Production::Item Z("Z"), B("B");
+#else
     Production::Item Z, B;
+#endif
     vector<Production::Item> v;
     v.push_back(B);
     v.push_back(B);

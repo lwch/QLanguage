@@ -94,7 +94,8 @@ void CallStack::getFuncInfo(UINT_PTR dwFunc, FuncInfo& info)
 
         if (SymGetSymFromAddr64(hProcess, dwFunc, &dwDisplacement, symbol))
         {
-            strcpy_s(info.szFuncName, sizeof(info.szFuncName), symbol->Name);
+            strncpy(info.szFuncName, symbol->Name, min(sizeof(info.szFuncName) - 1, strlen(symbol->Name)));
+            info.szFuncName[min(sizeof(info.szFuncName), strlen(symbol->Name))] = 0;
         }
 
         IMAGEHLP_LINE64 imageHelpLine;
@@ -102,7 +103,8 @@ void CallStack::getFuncInfo(UINT_PTR dwFunc, FuncInfo& info)
 
         if (SymGetLineFromAddr64(hProcess, dwFunc, (PDWORD)&dwDisplacement, &imageHelpLine))
         {
-            strcpy_s(info.szFilePath, sizeof(info.szFilePath), imageHelpLine.FileName);
+            strncpy(info.szFilePath, imageHelpLine.FileName, min(sizeof(info.szFilePath) - 1, strlen(imageHelpLine.FileName)));
+            info.szFilePath[min(sizeof(info.szFilePath), strlen(imageHelpLine.FileName))] = 0;
             info.dwLineNumber = imageHelpLine.LineNumber;
         }
     }
@@ -116,7 +118,8 @@ void CallStack::getFuncInfo(UINT_PTR dwFunc, FuncInfo& info)
 
         if (SymGetSymFromAddr(hProcess, (DWORD)dwFunc, &dwDisplacement, symbol))
         {
-            strcpy_s(info.szFuncName, sizeof(info.szFuncName), symbol->Name);
+            strncpy(info.szFuncName, symbol->Name, min(sizeof(info.szFuncName) - 1, strlen(symbol->Name)));
+            info.szFuncName[min(sizeof(info.szFuncName), strlen(symbol->Name))] = 0;
         }
 
         IMAGEHLP_LINE imageHelpLine;
@@ -124,7 +127,8 @@ void CallStack::getFuncInfo(UINT_PTR dwFunc, FuncInfo& info)
 
         if (SymGetLineFromAddr(hProcess, (DWORD)dwFunc, &dwDisplacement, &imageHelpLine))
         {
-            strcpy_s(info.szFilePath, sizeof(info.szFilePath), imageHelpLine.FileName);
+            strncpy(info.szFilePath, imageHelpLine.FileName, min(sizeof(info.szFilePath) - 1, strlen(imageHelpLine.FileName)));
+            info.szFilePath[min(sizeof(info.szFilePath), strlen(imageHelpLine.FileName))] = 0;
             info.dwLineNumber = imageHelpLine.LineNumber;
         }
     }

@@ -9,14 +9,12 @@
 	
 	purpose:	
 *********************************************************************/
+#include "../../QCore/Library/hashset.h"
+
 #include "LR0.h"
 
 namespace QLanguage
 {
-    LR0::LR0() : pStart(NULL)
-    {
-    }
-
     LR0::LR0(const vector<Production>& productions, const Production::Item& start) : start(start), inputProductions(productions), pStart(NULL)
     {
         for (vector<Production>::const_iterator i = productions.begin(), m = productions.end(); i != m; ++i)
@@ -30,7 +28,7 @@ namespace QLanguage
         vector<LR0Production> kernel;
         vector<Production::Item> right;
         right.push_back(start);
-        kernel.push_back(LR0Production(Production::Item(), right));
+        kernel.push_back(LR0Production(Production::Item("begin"), right));
 
         typedef pair<Item*, vector<Production::Item> > pair_type;
         vector<Production::Item> v;
@@ -70,31 +68,29 @@ namespace QLanguage
         Item* pItem = Item_Alloc::allocate();
         context.states.insert(pItem);
         construct(pItem);
-        //pItem->data.add(x);
+        
+        queue<LR0Production::Item> q;
         for (vector<LR0Production>::const_iterator i = x.begin(), m = x.end(); i != m; ++i)
         {
             pItem->data[i->left].push_back_unique(*i);
+            q.push_unique(i->right[i->idx]);
         }
 
         bool bContinue = true;
-        for (vector<LR0Production>::const_iterator i = x.begin(), m = x.end(); i != m; ++i)
+        while (bContinue && !q.empty())
         {
-            if (i->right[i->idx].type == LR0Production::Item::NoTerminalSymbol) // 若是非终结符
+            LR0Production::Item& i = q.front();
+            for (vector<Production>::const_iterator j = productionMap[i].begin(), n = productionMap[i].end(); j != n; ++j)
             {
-                // 将这个非终结符所对应的所有产生式加入其中
-                for (vector<Production>::const_iterator j = productionMap[i->right[i->idx]].begin(), n = productionMap[i->right[i->idx]].end(); j != n; ++j)
+                if (!pItem->data[j->left].push_back_unique(*j))
                 {
-                    if (!pItem->data[j->left].push_back_unique(*j))
-                    {
-                        bContinue = false;
-                        break;
-                    }
+                    bContinue = false;
+                    break;
                 }
+                if (j->right[0].type == Production::Item::NoTerminalSymbol) q.push_unique(j->right[0]);
             }
-            if (!bContinue) break;
+            q.pop();
         }
-
-        int j = pItem->data.size();
 
         return pItem;
     }
@@ -155,6 +151,7 @@ namespace QLanguage
 
     void LR0::print()
     {
+        hashset<Item*> s;
         printf("-------- LR(0) Start --------\n");
         for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
         {
@@ -162,13 +159,38 @@ namespace QLanguage
             {
                 printf("%03d -> %03d\n\n", j->pFrom->idx, j->pTo->idx);
 #ifdef _DEBUG
-                if (j->item.type == Production::Item::TerminalSymbol) j->item.rule.printEpsilonNFA();
-                else printf("VN: %03d\n", j->item.index);
+                //if (j->item.type == Production::Item::TerminalSymbol) j->item.rule.printEpsilonNFA();
+                //else printf("VN: %03d\n", j->item.index);
 #endif
                 printf("\n");
+                s.insert(j->pFrom);
+                s.insert(j->pTo);
             }
         }
-        printf("start: %03d\n", pStart->idx);
+        printf("start: %03d\n\n", pStart->idx);
+#ifdef _DEBUG
+        int j = 0;
+        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i, ++j)
+        {
+            printf("Item: %d\n", (*i)->idx);
+            for (map<Production::Item, vector<LR0Production> >::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
+            {
+                for (vector<LR0Production>::const_iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
+                {
+                    printf("%s -> ", l->left.name.c_str());
+                    int c = 0;
+                    for (vector<Production::Item>::const_iterator a = l->right.begin(), b = l->right.end(); a != b; ++a, ++c)
+                    {
+                        if (c == l->idx) printf(". ");
+                        if (a->type == Production::Item::NoTerminalSymbol) printf("%s ", a->name.c_str());
+                        else printf("VN ");
+                    }
+                    printf("\n");
+                }
+            }
+            printf("\n");
+        }
+#endif
         printf("--------- LR(0) End ---------\n");
     }
 }

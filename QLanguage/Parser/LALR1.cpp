@@ -77,6 +77,11 @@ namespace QLanguage
 
     LALR1::Item* LALR1::go(Item* pItem, const Production::Item& x)
     {
+        for (vector<Edge>::iterator i = edges[pItem].begin(), m = edges[pItem].end(); i != m; ++i)
+        {
+            if (i->item == x) return i->pEnd;
+        }
+        throw error<string>("can't find item", __FILE__, __LINE__);
         return NULL;
     }
 
@@ -111,10 +116,10 @@ namespace QLanguage
         {
             if (i->idx == 0) // 只发射到0型项目
             {
-                i->wildCards.add_unique(v);
+                //i->wildCards.add_unique(v);
                 if (i->right[0].type == Production::Item::TerminalSymbol) // 只有第一个是终结符的才需要传播吗？
                 {
-                    vts.push_back_unique(i->right[0]);
+                    //vts.push_back_unique(i->right[0]);
                 }
             }
         }
@@ -126,7 +131,7 @@ namespace QLanguage
         {
             for (vector<LALR1Production>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
-                j->wildCards.add_unique(v);
+                //j->wildCards.add_unique(v);
             }
         }
     }

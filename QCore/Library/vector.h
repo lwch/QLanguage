@@ -311,7 +311,8 @@ public:
         {
             iterator tmp = Alloc::allocate(count);
             copy(begin(), end(), tmp);
-            Alloc::deallocate(start, old_size); // crash
+            destruct(start, finish);
+            Alloc::deallocate(start, old_size);
             start = tmp;
             finish = tmp + old_size;
             end_of_element = tmp + count;
@@ -494,6 +495,17 @@ public:
             if (*first1 != *first2) return false;
         }
         return true;
+    }
+
+    const bool operator!=(const self& x)const
+    {
+        if (size() != x.size()) return true;
+
+        for (const_iterator first1 = begin(), first2 = x.begin(), last = end(); first1 != last; ++first1, ++first2)
+        {
+            if (*first1 != *first2) return true;
+        }
+        return false;
     }
 
     self& operator=(const self& x)

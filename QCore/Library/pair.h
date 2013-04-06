@@ -47,6 +47,11 @@ namespace QLanguage
             {
                 return first == x.first && second == x.second;
             }
+
+            inline const bool operator!=(const pair<T1, T2>& x)const
+            {
+                return first != x.first || second != x.second;
+            }
         };
     }
 }

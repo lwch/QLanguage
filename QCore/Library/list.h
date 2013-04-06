@@ -372,6 +372,16 @@ namespace QLanguage
                 insert(end(), x);
             }
 
+            bool push_back_unique(const T& x)
+            {
+                for (const_iterator i = begin(), m = end(); i != m; ++i)
+                {
+                    if (*i == x) return false;
+                }
+                insert(end(), x);
+                return true;
+            }
+
             void erase(const iterator& position)
             {
                 position.node->prev->next = position.node->next;

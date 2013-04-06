@@ -36,9 +36,16 @@ namespace QLanguage
             Rule rule;
             uint index;
 
-            Item() : type(NoTerminalSymbol) { index = inc(); }
-            Item(const Rule& rule) : type(TerminalSymbol), rule(rule) { index = inc(); }
+#ifdef _DEBUG
+            string name;
+
+            Item(const string& name) : type(NoTerminalSymbol), name(name), index(inc()) {}
+            Item(const Item& i) : type(i.type), rule(i.rule), index(i.index), name(i.name) {}
+#else
+            Item() : type(NoTerminalSymbol), index(inc()) {}
             Item(const Item& i) : type(i.type), rule(i.rule), index(i.index) {}
+#endif
+            Item(const Rule& rule) : type(TerminalSymbol), rule(rule), index(inc()) {}
 
             inline Item& operator=(const Item& i)
             {
@@ -58,12 +65,12 @@ namespace QLanguage
 
             inline const bool operator==(const Item& x)const
             {
-                return type == x.type && (type == TerminalSymbol ? rule == x.rule : true);
+                return index == x.index && type == x.type && (type == TerminalSymbol ? rule == x.rule : true);
             }
 
             inline const bool operator!=(const Item& x)const
             {
-                return type != x.type || (type == TerminalSymbol ? rule != x.rule : false);
+                return index != x.index && type != x.type || (type == TerminalSymbol ? rule != x.rule : false);
             }
 
             static uint inc()
@@ -73,14 +80,26 @@ namespace QLanguage
             }
         };
     public:
-        Production() {}
-        Production(const Item& left) : left(left) {}
-        Production(const Item& left, const Item& item) : left(left) { right.push_back(item); }
-        Production(const Item& left, const vector<Item>& right) : left(left), right(right) {}
-        Production(const Production& p) : left(p.left), right(p.right) {}
+        Production(const Item& left) : left(left), index(inc()) {}
+        Production(const Item& left, const Item& item) : left(left), index(inc()) { right.push_back(item); }
+        Production(const Item& left, const vector<Item>& right) : left(left), right(right), index(inc()) {}
+        Production(const Production& p) : left(p.left), right(p.right), index(inc()) {}
+
+        inline const bool operator<(const Production& p)const
+        {
+            return index < p.index;
+        }
+    protected:
+        static uint inc()
+        {
+            static uint i = 0;
+            return i++;
+        }
     public:
         Item left;
         vector<Item> right;
+    protected:
+        uint index;
     };
 }
 

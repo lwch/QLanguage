@@ -98,7 +98,6 @@ namespace QLanguage
 
         typedef allocator<Item> Item_Alloc;
     public:
-        LR0();
         LR0(const vector<Production>& productions, const Production::Item& start);
 
         bool make();

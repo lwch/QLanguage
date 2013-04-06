@@ -19,7 +19,6 @@ namespace QLanguage
     class LR0Production : public Production
     {
     public:
-        LR0Production() : Production(), idx(0) {}
         LR0Production(const Production::Item& left) : Production(left), idx(0) {}
         LR0Production(const Production::Item& left, const vector<Production::Item>& right) : Production(left, right), idx(0) {}
         LR0Production(const Production& p) : Production(p), idx(0) {}

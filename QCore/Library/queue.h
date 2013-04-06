@@ -72,6 +72,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             container.push_back(x);
         }
 
+        inline void push_unique(const T& x)
+        {
+            container.push_back_unique(x);
+        }
+
         inline void pop()
         {
             container.pop_front();
