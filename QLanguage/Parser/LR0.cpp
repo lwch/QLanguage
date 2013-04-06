@@ -157,10 +157,14 @@ namespace QLanguage
         {
             for (vector<Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
-                printf("%03d -> %03d\n\n", j->pFrom->idx, j->pTo->idx);
+                printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
 #ifdef _DEBUG
-                //if (j->item.type == Production::Item::TerminalSymbol) j->item.rule.printEpsilonNFA();
-                //else printf("VN: %03d\n", j->item.index);
+                if (j->item.type == Production::Item::TerminalSymbol)
+                {
+                    printf("\n\n");
+                    j->item.rule.printEpsilonNFA();
+                }
+                else printf("(%s)\n", j->item.name.c_str());
 #endif
                 printf("\n");
                 s.insert(j->pFrom);

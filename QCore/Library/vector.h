@@ -561,7 +561,6 @@ public:
       pointer p = finish;
       for (const_iterator i = x.begin(), m = x.end(); i != m; ++i, ++p)
       {
-        construct(p);
         push_back_unique(*i);
       }
     }
