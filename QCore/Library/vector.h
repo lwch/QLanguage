@@ -557,9 +557,7 @@ public:
 
     inline void add_unique(const self& x)
     {
-      reserve(size() + x.size());
-      pointer p = finish;
-      for (const_iterator i = x.begin(), m = x.end(); i != m; ++i, ++p)
+      for (const_iterator i = x.begin(), m = x.end(); i != m; ++i)
       {
         push_back_unique(*i);
       }

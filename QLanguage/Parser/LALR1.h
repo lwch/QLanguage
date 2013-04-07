@@ -26,13 +26,7 @@ namespace QLanguage
 #ifdef _DEBUG
             uint idx;
 
-            Item(const LR0::Item& x) : idx(inc()) { createFromLR0Item(x); }
-
-            static uint inc()
-            {
-                static uint i = 0;
-                return i++;
-            }
+            Item(const LR0::Item& x) : idx(x.idx) { createFromLR0Item(x); }
 #else
             Item(const LR0::Item& x) { createFromLR0Item(x); }
 #endif
@@ -62,15 +56,15 @@ namespace QLanguage
 
         struct Edge 
         {
-            Item* pStart;
-            Item* pEnd;
+            Item* pFrom;
+            Item* pTo;
             Production::Item item;
 
-            Edge(Item* pStart, Item* pEnd, const Production::Item& item) : pStart(pStart), pEnd(pEnd), item(item) {}
+            Edge(Item* pFrom, Item* pTo, const Production::Item& item) : pFrom(pFrom), pTo(pTo), item(item) {}
 
             inline const bool operator==(const Edge& x)const
             {
-                return pStart == x.pStart && pEnd == x.pEnd && item == x.item;
+                return pFrom == x.pFrom && pTo == x.pTo && item == x.item;
             }
         };
 
@@ -99,18 +93,21 @@ namespace QLanguage
         LALR1(LR0& lr0);
 
         bool make();
+
+        void print();
     protected:
-        void closure(Item* pItem);
+        void closure(Item* pItem, bool& bContinue);
         Item* go(Item* pItem, const Production::Item& x);
         void afirst(const LALR1Production& p, vector<LALR1Production::Item>& v);
-        void appendWildCards(Item* pItem, const Production::Item& left, const vector<LALR1Production::Item>& v, vector<Production::Item>& vts);
-        void spreadWildCards(Item* pItem, const vector<LALR1Production::Item>& v);
+        void appendWildCards(Item* pItem, const Production::Item& left, const vector<LALR1Production::Item>& v, vector<Production::Item>& vts, bool& bContinue);
+        void spreadWildCards(Item* pItem, const vector<LALR1Production::Item>& v, bool& bContinue);
     protected:
         LR0& lr0;
 
         Item*      pStart;
         set<Item*> pEnd;
         hashmap<Item*, vector<Edge> > edges;
+        vector<Item*> items;
 
         Context context;
     };

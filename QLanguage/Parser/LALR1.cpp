@@ -7,9 +7,10 @@
 	file ext:	cpp
 	author:		lwch
 	
-	purpose:	
+	purpose:	http://dec3.jlu.edu.cn/webcourse/T000171/chap4/4-5-7.html
 *********************************************************************/
-// http://dec3.jlu.edu.cn/webcourse/T000171/chap4/4-5-7.html
+#include "../../QCore/Library/hashset.h"
+
 #include "LALR1.h"
 
 namespace QLanguage
@@ -26,6 +27,7 @@ namespace QLanguage
                     hm[j->pFrom] = Item_Alloc::allocate();
                     construct(hm[j->pFrom], *j->pFrom);
                     context.states.insert(hm[j->pFrom]);
+                    items.push_back(hm[j->pFrom]);
                 }
 
                 if (hm[j->pTo] == NULL)
@@ -33,6 +35,7 @@ namespace QLanguage
                     hm[j->pTo] = Item_Alloc::allocate();
                     construct(hm[j->pTo], *j->pTo);
                     context.states.insert(hm[j->pTo]);
+                    items.push_back(hm[j->pTo]);
                 }
                 edges[hm[j->pFrom]].push_back(Edge(hm[j->pFrom], hm[j->pTo], j->item));
             }
@@ -46,12 +49,28 @@ namespace QLanguage
 
     bool LALR1::make()
     {
-        pStart->data[lr0.start][0].wildCards.push_back(LALR1Production::Item());
-        closure(pStart);
+        for (map<Production::Item, vector<LALR1Production> >::iterator i = pStart->data.begin(), m = pStart->data.end(); i != m; ++i)
+        {
+            if (i->first.name == "begin")
+            {
+                i->second[0].wildCards.push_back(LALR1Production::Item());
+            }
+        }
+        //pStart->data[lr0.start][0].wildCards.push_back(LALR1Production::Item());
+        bool bContinue = true;
+        closure(pStart, bContinue);
+        while (bContinue)
+        {
+            bContinue = false;
+            for (vector<Item*>::iterator i = items.begin(), m = items.end(); i != m; ++i)
+            {
+                closure(*i, bContinue);
+            }
+        }
         return true;
     }
 
-    void LALR1::closure(Item* pItem)
+    void LALR1::closure(Item* pItem, bool& bContinue)
     {
         for (map<Production::Item, vector<LALR1Production> >::const_iterator i = pItem->data.begin(), m = pItem->data.end(); i != m; ++i)
         {
@@ -64,10 +83,18 @@ namespace QLanguage
                     if (v.size())
                     {
                         vector<Production::Item> vts;
-                        appendWildCards(pItem, j->right[j->idx], v, vts); // 添加自生展望符
+                        appendWildCards(pItem, j->right[j->idx], v, vts, bContinue); // 添加自生展望符
                         for (vector<Production::Item>::const_iterator k = vts.begin(), o = vts.end(); k != o; ++k)
                         {
-                            spreadWildCards(go(pItem, *k), v); // 传播展望符
+                            spreadWildCards(go(pItem, *k), v, bContinue); // 传播展望符
+                        }
+                    }
+                    else
+                    {
+                        v = j->wildCards;
+                        for (vector<Edge>::const_iterator k = edges[pItem].begin(), o = edges[pItem].end(); k != o; ++k)
+                        {
+                            spreadWildCards(go(pItem, k->item), v, bContinue);
                         }
                     }
                 }
@@ -79,7 +106,7 @@ namespace QLanguage
     {
         for (vector<Edge>::iterator i = edges[pItem].begin(), m = edges[pItem].end(); i != m; ++i)
         {
-            if (i->item == x) return i->pEnd;
+            if (i->item == x) return i->pTo;
         }
         throw error<string>("can't find item", __FILE__, __LINE__);
         return NULL;
@@ -110,13 +137,15 @@ namespace QLanguage
         }
     }
 
-    void LALR1::appendWildCards(Item* pItem, const Production::Item& left, const vector<LALR1Production::Item>& v, vector<Production::Item>& vts)
+    void LALR1::appendWildCards(Item* pItem, const Production::Item& left, const vector<LALR1Production::Item>& v, vector<Production::Item>& vts, bool& bContinue)
     {
         for (vector<LALR1Production>::iterator i = pItem->data[left].begin(), m = pItem->data[left].end(); i != m; ++i)
         {
             if (i->idx == 0) // 只发射到0型项目
             {
+                size_t size = i->wildCards.size();
                 i->wildCards.add_unique(v);
+                if (size != i->wildCards.size()) bContinue = true;
                 if (i->right[0].type == Production::Item::TerminalSymbol) // 只有第一个是终结符的才需要传播吗？
                 {
                     vts.push_back_unique(i->right[0]);
@@ -125,14 +154,74 @@ namespace QLanguage
         }
     }
 
-    void LALR1::spreadWildCards(Item* pItem, const vector<LALR1Production::Item>& v)
+    void LALR1::spreadWildCards(Item* pItem, const vector<LALR1Production::Item>& v, bool& bContinue)
     {
         for (map<Production::Item, vector<LALR1Production> >::iterator i = pItem->data.begin(), m = pItem->data.end(); i != m; ++i)
         {
             for (vector<LALR1Production>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
+                size_t size = j->wildCards.size();
                 j->wildCards.add_unique(v);
+                if (size != j->wildCards.size()) bContinue = true;
             }
         }
+    }
+
+    void LALR1::print()
+    {
+        hashset<Item*> s;
+        printf("-------- LALR(1) Start --------\n");
+        for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
+        {
+            for (vector<Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+            {
+                printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
+#ifdef _DEBUG
+                if (j->item.type == Production::Item::TerminalSymbol)
+                {
+                    printf("\n\n");
+                    j->item.rule.printEpsilonNFA();
+                }
+                else printf("(%s)\n", j->item.name.c_str());
+#endif
+                printf("\n");
+                s.insert(j->pFrom);
+                s.insert(j->pTo);
+            }
+        }
+        printf("start: %03d\n\n", pStart->idx);
+#ifdef _DEBUG
+        int j = 0;
+        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i, ++j)
+        {
+            printf("Item: %d\n", (*i)->idx);
+            for (map<Production::Item, vector<LALR1Production> >::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
+            {
+                for (vector<LALR1Production>::const_iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
+                {
+                    printf("%s -> ", l->left.name.c_str());
+                    int c = 0;
+                    for (vector<Production::Item>::const_iterator a = l->right.begin(), b = l->right.end(); a != b; ++a, ++c)
+                    {
+                        if (c == l->idx) printf(". ");
+                        if (a->type == Production::Item::NoTerminalSymbol) printf("%s ", a->name.c_str());
+                        else printf("VN ");
+                    }
+                    printf("\nwildCards:\n");
+                    for (vector<LALR1Production::Item>::const_iterator a = l->wildCards.begin(), b = l->wildCards.end(); a != b; ++a)
+                    {
+                        if (a->type == LALR1Production::Item::Rule)
+                        {
+                            a->rule.printEpsilonNFA();
+                        }
+                        else printf("#\n");
+                    }
+                    printf("\n");
+                }
+            }
+            printf("\n");
+        }
+#endif
+        printf("--------- LALR(1) End ---------\n");
     }
 }

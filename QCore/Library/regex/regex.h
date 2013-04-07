@@ -675,7 +675,7 @@ public:
         }
 
 #ifdef _DEBUG
-        void printEpsilonNFA()
+        void printEpsilonNFA()const
         {
             printf("-------- ε- NFA Start --------\n");
             for (hashmap<EpsilonNFA_State*, vector<EpsilonNFA_Edge> >::const_iterator i = epsilonNFA_Edges.begin(), m = epsilonNFA_Edges.end(); i != m; ++i)

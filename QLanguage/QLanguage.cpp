@@ -56,5 +56,7 @@ int main()
     LALR1 lalr1(lr0);
     lalr1.make();
 
+    lalr1.print();
+
     return 0;
 }
