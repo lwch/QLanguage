@@ -909,6 +909,8 @@ protected:
         tmp->left = node;
         node->parent = tmp;
     }
+#undef red
+#undef black
 };
 
 NAMESPACE_QLANGUAGE_LIBRARY_END

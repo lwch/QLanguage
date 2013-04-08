@@ -17,6 +17,7 @@
 #include "../allocator.h"
 #include "../definition.h"
 #include "../typedef.h"
+#include "../string.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
     using namespace QLanguage::Library;
