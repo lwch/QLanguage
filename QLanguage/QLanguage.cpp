@@ -26,11 +26,7 @@ int main()
     // Z¡úBB
     // B¡úaB
     // B¡úb
-#ifdef _DEBUG
     Production::Item Z("Z"), B("B");
-#else
-    Production::Item Z, B;
-#endif
     vector<Production::Item> v;
     v.push_back(B);
     v.push_back(B);

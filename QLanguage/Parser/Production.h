@@ -35,16 +35,10 @@ namespace QLanguage
 
             Rule rule;
             uint index;
-
-#ifdef _DEBUG
             string name;
 
             Item(const string& name) : type(NoTerminalSymbol), name(name), index(inc()) {}
             Item(const Item& i) : type(i.type), rule(i.rule), index(i.index), name(i.name) {}
-#else
-            Item() : type(NoTerminalSymbol), index(inc()) {}
-            Item(const Item& i) : type(i.type), rule(i.rule), index(i.index) {}
-#endif
             Item(const Rule& rule) : type(TerminalSymbol), rule(rule), index(inc()) {}
 
             inline Item& operator=(const Item& i)

@@ -171,26 +171,24 @@ namespace QLanguage
     {
         hashset<Item*> s;
         printf("-------- LALR(1) Start --------\n");
+#ifdef _DEBUG
         for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
         {
             for (vector<Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
                 printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
-#ifdef _DEBUG
                 if (j->item.type == Production::Item::TerminalSymbol)
                 {
                     printf("\n\n");
                     j->item.rule.printEpsilonNFA();
                 }
                 else printf("(%s)\n", j->item.name.c_str());
-#endif
                 printf("\n");
                 s.insert(j->pFrom);
                 s.insert(j->pTo);
             }
         }
         printf("start: %03d\n\n", pStart->idx);
-#ifdef _DEBUG
         int j = 0;
         for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i, ++j)
         {
