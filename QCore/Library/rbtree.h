@@ -863,8 +863,8 @@ protected:
         return true;
     }
 
-    template <typename T, typename Key>
-    const bool equalNode(link_type x, __rbtree_node<T>* y, const Key& ykey)const
+    template <typename _T, typename _Key>
+    const bool equalNode(link_type x, __rbtree_node<_T>* y, const _Key& ykey)const
     {
         if (x == NULL)
         {

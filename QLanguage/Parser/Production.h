@@ -37,7 +37,7 @@ namespace QLanguage
             uint index;
             string name;
 
-            Item(const string& name) : type(NoTerminalSymbol), name(name), index(inc()) {}
+            Item(const string& name) : type(NoTerminalSymbol), index(inc()), name(name) {}
             Item(const Item& i) : type(i.type), rule(i.rule), index(i.index), name(i.name) {}
             Item(const Rule& rule) : type(TerminalSymbol), rule(rule), index(inc()) {}
 
@@ -64,7 +64,7 @@ namespace QLanguage
 
             inline const bool operator!=(const Item& x)const
             {
-                return index != x.index && type != x.type || (type == TerminalSymbol ? rule != x.rule : false);
+                return (index != x.index && type != x.type) || (type == TerminalSymbol ? rule != x.rule : false);
             }
 
             static uint inc()

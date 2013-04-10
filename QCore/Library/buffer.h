@@ -22,20 +22,26 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     public:
         typedef char               value_type;
         typedef vector<value_type> container_type;
+#ifdef MSVC
         typedef container_type::size_type  size_type;
-        typedef container_type::value_type value_type;
-        typedef char_traits<value_type>    char_traits;
+#else
+        typedef typename container_type::size_type size_type;
+#endif
+        typedef char_traits<value_type> _char_traits;
 
         buffer();
         virtual ~buffer();
 
         value_type* read(size_type size);
-        bool append(value_type* p);
+        bool append(const value_type* p);
+        bool append(const value_type* p, size_type size);
         bool append(const string& s);
         
+        inline void clear()                                   { container.clear(); }
         inline const size_type size()const                    { return container.size();  }
         inline const bool empty()const                        { return container.empty(); }
         inline const size_type ROUND_UP(size_type bytes)const { return (bytes + align - 1) & ~(align - 1); }
+        inline const value_type* pointer()const               { return container.begin(); }
     protected:
         container_type container;
         static const size_type align = 1024;

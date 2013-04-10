@@ -13,6 +13,14 @@
 
 TEST_CASE(TestStream)
 {
+#ifdef WIN32
     fstream fs("C:\\test.txt", fstream::in | fstream::out);
-    fs << 'a';
+#else
+    fstream fs("/opt/test.txt", fstream::in | fstream::out);
+#endif
+    TEST_ASSERT(fs.size() != 0, "file size error!");
+    fs << 'a' << " for test.";
+    TEST_ASSERT(fs.size() + fs.cache_size() != 11, "file size and cache size error!");
+    fs.flush();
+    TEST_ASSERT(fs.size() != 11, "file size error!");
 }

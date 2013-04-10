@@ -17,10 +17,12 @@ namespace QLanguage
 {
     namespace Library
     {
-        typedef unsigned short   ushort;
-        typedef unsigned int     uint;
-        typedef unsigned char    uchar;
-        typedef unsigned long    ulong;
+        typedef unsigned short     ushort;
+        typedef unsigned int       uint;
+        typedef unsigned char      uchar;
+        typedef unsigned long      ulong;
+        typedef long long          llong;
+        typedef unsigned long long ullong;
 
         template <typename T>
         struct remove_const

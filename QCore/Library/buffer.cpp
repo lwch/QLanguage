@@ -28,11 +28,30 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         return container.begin();
     }
 
-    bool buffer::append(value_type* p)
+    bool buffer::append(const value_type* p)
     {
-        size_t size = ROUND_UP(char_traits::length(p));
-        container.reserve(container.size() + size);
-        for (value_type* q = p + size; p < q; ++p)
+        size_t length = _char_traits::length(p);
+        if (container.capacity() - container.size() < length)
+        {
+            size_t size = ROUND_UP(length);
+            container.reserve(container.size() + size);
+        }
+        for (const value_type* q = p + length; p < q; ++p)
+        {
+            container.push_back(*p);
+        }
+        return true;
+    }
+
+    bool buffer::append(const value_type* p, size_type size)
+    {
+        size_t length = size;
+        if (container.capacity() - container.size() < length)
+        {
+            size = ROUND_UP(length);
+            container.reserve(container.size() + size);
+        }
+        for (const value_type* q = p + length; p < q; ++p)
         {
             container.push_back(*p);
         }
@@ -41,8 +60,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
     bool buffer::append(const string& s)
     {
-        size_t size = ROUND_UP(s.size());
-        container.reserve(container.size() + size);
+        if (container.capacity() - container.size() < s.size())
+        {
+            size_t size = ROUND_UP(s.size());
+            container.reserve(container.size() + size);
+        }
         for (string::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
         {
             container.push_back(*i);

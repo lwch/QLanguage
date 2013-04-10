@@ -26,7 +26,7 @@ extern inline bool isX64()
 
 inline bool isWindows()
 {
-#ifdef _WIN32
+#ifdef WIN32
     return true;
 #else
     return false;

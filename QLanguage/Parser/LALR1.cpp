@@ -198,7 +198,7 @@ namespace QLanguage
                 for (vector<LALR1Production>::const_iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
                 {
                     printf("%s -> ", l->left.name.c_str());
-                    int c = 0;
+                    uint c = 0;
                     for (vector<Production::Item>::const_iterator a = l->right.begin(), b = l->right.end(); a != b; ++a, ++c)
                     {
                         if (c == l->idx) printf(". ");

@@ -193,8 +193,8 @@ namespace QLanguage
             while (first != last)
             {
                 *dest = *first;
-                dest++;
-                first++;
+                ++dest;
+                ++first;
             }
             return dest;
         }

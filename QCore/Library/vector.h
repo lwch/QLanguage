@@ -302,17 +302,18 @@ public:
 
     void reserve(size_type count)
     {
-        const size_type old_size = size();
+        const size_type old_capacity = capacity();
         if(count <= capacity())
         {
             // Do nothing
         }
         else
         {
+            const size_type old_size = size();
             iterator tmp = Alloc::allocate(count);
             copy(begin(), end(), tmp);
             destruct(start, finish);
-            Alloc::deallocate(start, old_size);
+            Alloc::deallocate(start, old_capacity);
             start = tmp;
             finish = tmp + old_size;
             end_of_element = tmp + count;
