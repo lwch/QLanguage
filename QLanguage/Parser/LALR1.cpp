@@ -56,7 +56,6 @@ namespace QLanguage
                 i->second[0].wildCards.push_back(LALR1Production::Item());
             }
         }
-        //pStart->data[lr0.start][0].wildCards.push_back(LALR1Production::Item());
         bool bContinue = true;
         closure(pStart, bContinue);
         while (bContinue)

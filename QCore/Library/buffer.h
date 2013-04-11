@@ -29,6 +29,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 #endif
         typedef char_traits<value_type> _char_traits;
 
+        enum { align = 1024 };
+
         buffer();
         virtual ~buffer();
 
@@ -36,6 +38,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         bool append(const value_type* p);
         bool append(const value_type* p, size_type size);
         bool append(const string& s);
+        inline value_type* reserve(size_type size);
         
         inline void clear()                                   { container.clear(); }
         inline const size_type size()const                    { return container.size();  }
@@ -44,7 +47,6 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         inline const value_type* pointer()const               { return container.begin(); }
     protected:
         container_type container;
-        static const size_type align = 1024;
     };
 NAMESPACE_QLANGUAGE_LIBRARY_END
 

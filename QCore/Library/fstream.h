@@ -18,12 +18,15 @@
 #include <sys/stat.h>
 
 #include "definition.h"
-#include "ios.h"
+#include "istream.h"
+#include "ostream.h"
 #include "buffer.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 
 #define CHECK_FILE_OPEN if (!is_open()) throw error<string>("not opened file", __FILE__, __LINE__)
+#define CHECK_IN_MODE   if ((open_mode() & in) == 0)  throw error<string>("not in mode", __FILE__, __LINE__)
+#define CHECK_OUT_MODE  if ((open_mode() & out) == 0) throw error<string>("not out mode", __FILE__, __LINE__)
 
     template <typename T>
     class fstream_basic;
@@ -38,11 +41,9 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
         fstream_buffer(fstream_basic<T>* parent) : parent(parent) {}
 
-        enum { commit_size = 1024 };
-
         inline const bool check_flush()const
         {
-            return container.size() >= commit_size;
+            return container.size() >= align;
         }
 
         inline bool flush()
@@ -54,9 +55,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     };
 
     template <typename T>
-    class fstream_basic : public basic_ios<T>
+    class fstream_basic : public basic_istream<T>,
+                          public basic_ostream<T>
     {
         typedef fstream_basic<T> self;
+        typedef basic_istream<T> parent_i;
+        typedef basic_ostream<T> parent_o;
     public:
         typedef T      value_type;
         typedef size_t size_type;
@@ -77,9 +81,9 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             text   = 16
         };
 
-        fstream_basic() : buffer(this), bOpen(false), iFile(0) {}
+        fstream_basic() : parent_i(), parent_o(), buffer_write(this), buffer_read(this), bOpen(false), iFile(0) {}
 
-        fstream_basic(const char* path, uchar mode) : buffer(this), bOpen(false), iFile(0)
+        fstream_basic(const char* path, uchar mode) : parent_i(), parent_o(), buffer_write(this), buffer_read(this), bOpen(false), iFile(0)
         {
             open(path, mode);
         }
@@ -114,8 +118,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
                 break;
             }
 
+#ifdef WIN32
+            flag |= (mode & binary) ? _O_BINARY : _O_TEXT;
+            mode |= (mode & binary) ? mode : text;
+#endif
+
             iFile = _open(path, flag, S_IREAD | S_IWRITE);
             bOpen = true;
+            ucOpenMode = mode;
 
             return *this;
         }
@@ -133,8 +143,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return bResult;
         }
 
-        inline const bool is_open()const         { return bOpen; }
-        inline const size_type cache_size()const { return buffer.size(); }
+        inline const uchar open_mode()const            { return ucOpenMode;             }
+        inline const bool is_binary()const             { return ucOpenMode & binary;    }
+        inline const bool is_text()const               { return ucOpenMode & text;      }
+        inline const bool is_open()const               { return bOpen;                  }
+        inline const size_type write_cache_size()const { return buffer_write.size();    }
+        inline const size_type read_cache_size()const  { return buffer_read.size();     }
+        inline const value_type* write_pointer()const  { return buffer_write.pointer(); }
+        inline const value_type* read_pointer()const   { return buffer_read.pointer();  }
 
         inline const size_type size()const
         {
@@ -152,7 +168,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return _tell(iFile);
         }
 
-        self& seek(size_type offset, seektype type)
+        self& seek(int offset, seektype type)
         {
             CHECK_FILE_OPEN;
 
@@ -161,11 +177,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             switch (type)
             {
             case begin:
-                if (offset > size()) throw error<string>("offset out of range", __FILE__, __LINE__);
+                if ((size_t)offset > size()) throw error<string>("offset out of range", __FILE__, __LINE__);
                 where = SEEK_SET;
                 break;
             case end:
-                if (offset > size()) throw error<string>("offset out of range", __FILE__, __LINE__);
+                if ((size_t)offset > size()) throw error<string>("offset out of range", __FILE__, __LINE__);
                 where = SEEK_END;
                 break;
             case current:
@@ -182,54 +198,73 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         bool write(const char* buffer, size_type size)
         {
             CHECK_FILE_OPEN;
+            CHECK_OUT_MODE;
 
-            bool bResult = this->buffer.append(buffer, size);
+            bool bResult = this->buffer_write.append(buffer, size);
 
-            if (bResult && this->buffer.check_flush()) return this->buffer.flush();
+            if (bResult && this->buffer_write.check_flush()) return this->buffer_write.flush();
             
             return bResult;
         }
 
-        size_type read(char* buffer, size_type size)
+        size_type read()
         {
             CHECK_FILE_OPEN;
+            CHECK_IN_MODE;
 
-            if (tell() + size >= this->size()) throw error<string>("read out of range", __FILE__, __LINE__);
+            size_type _size = min(size() - tell(), fstream_buffer<T>::align);
+            value_type* buffer = this->buffer_read.reserve(_size);
 
-            return _read(iFile, buffer, size);
+            while (true)
+            {
+                size_type readen = _read(iFile, buffer, _size);
+                if (readen == _size) return _size;
+                else if (readen > 0)
+                {
+                    buffer += readen;
+                    _size -= readen;
+                }
+                else
+                {
+                    this->buffer_read.clear();
+                }
+            }
         }
 
         bool flush()
         {
             CHECK_FILE_OPEN;
+            CHECK_OUT_MODE;
 
-            size_type size = buffer.size();
+            size_type size = buffer_write.size();
             if (size == 0) return true;
-            const typename fstream_buffer<T>::value_type* buffer = this->buffer.pointer();
+            const typename fstream_buffer<T>::value_type* buffer = this->buffer_write.pointer();
             while (true)
             {
                 size_type written = _write(iFile, buffer, size);
                 if (written == size)
                 {
-                    this->buffer.clear();
+                    this->buffer_write.clear();
                     return true;
                 }
-                else if (written > 0 && written < size)
+                else if (written > 0)
                 {
                     buffer += written;
                     size -= written;
                 }
                 else
                 {
-                    this->buffer.clear();
+                    this->buffer_write.clear();
                     throw error<string>("can't write file", __FILE__, __LINE__);
                 }
             }
         }
     protected:
-        fstream_buffer<T> buffer;
-        bool bOpen;
-        int  iFile;
+        fstream_buffer<T> buffer_write;
+        fstream_buffer<T> buffer_read;
+        bool  bOpen;
+        int   iFile;
+        uchar ucOpenMode;
     };
 
     template <typename T>
@@ -243,87 +278,209 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
         virtual ~basic_fstream() {}
 
-        virtual self& operator<<(bool)
+        virtual self& operator>>(bool&)
         {
+            CHECK_IN_MODE;
+            return *this;
+        }
+
+        virtual self& operator>>(short& s)
+        {
+            CHECK_IN_MODE;
+            this->read();
+            return *this;
+        }
+
+        virtual self& operator>>(ushort&)
+        {
+            CHECK_IN_MODE;
+            return *this;
+        }
+
+        virtual self& operator>>(int&)
+        {
+            CHECK_IN_MODE;
+            return *this;
+        }
+
+        virtual self& operator>>(uint&)
+        {
+            CHECK_IN_MODE;
+            return *this;
+        }
+
+        virtual self& operator>>(long&)
+        {
+            CHECK_IN_MODE;
+            return *this;
+        }
+
+        virtual self& operator>>(ulong&)
+        {
+            CHECK_IN_MODE;
+            return *this;
+        }
+
+        virtual self& operator>>(llong&)
+        {
+            CHECK_IN_MODE;
+            return *this;
+        }
+
+        virtual self& operator>>(ullong&)
+        {
+            CHECK_IN_MODE;
+            return *this;
+        }
+
+        virtual self& operator>>(T&)
+        {
+            CHECK_IN_MODE;
+            return *this;
+        }
+
+        template <typename T1>
+        self& operator>>(T1& c)
+        {
+            CHECK_IN_MODE;
+
+            c.create(this->read_pointer(), min(this->read_pointer(), c.file_size()));
+            return *this;
+        }
+
+        virtual self& operator<<(bool b)
+        {
+            CHECK_OUT_MODE;
+
+            string str = basic_ios<T>::convert(static_cast<ulong>(b));
+            this->write(str.c_str(), str.size());
             return *this;
         }
 
         virtual self& operator<<(short s)
         {
-            string str = this->convert(static_cast<long>(s));
+            CHECK_OUT_MODE;
+
+            string str = basic_ios<T>::convert(static_cast<long>(s));
             this->write(str.c_str(), str.size());
             return *this;
         }
 
         virtual self& operator<<(ushort us)
         {
-            string str = this->convert(static_cast<ulong>(us));
+            CHECK_OUT_MODE;
+
+            string str = basic_ios<T>::convert(static_cast<ulong>(us));
             this->write(str.c_str(), str.size());
             return *this;
         }
         
         virtual self& operator<<(int i)
         {
-            string str = this->convert(static_cast<long>(i));
+            CHECK_OUT_MODE;
+
+            string str = basic_ios<T>::convert(static_cast<long>(i));
             this->write(str.c_str(), str.size());
             return *this;
         }
 
         virtual self& operator<<(uint ui)
         {
-            string str = this->convert(static_cast<ulong>(ui));
+            CHECK_OUT_MODE;
+
+            string str = basic_ios<T>::convert(static_cast<ulong>(ui));
             this->write(str.c_str(), str.size());
             return *this;
         }
         
         virtual self& operator<<(long l)
         {
-            string str = this->convert(l);
+            CHECK_OUT_MODE;
+
+            string str = basic_ios<T>::convert(l);
             this->write(str.c_str(), str.size());
             return *this;
         }
 
         virtual self& operator<<(ulong ul)
         {
-            string str = this->convert(ul);
+            CHECK_OUT_MODE;
+
+            string str = basic_ios<T>::convert(ul);
             this->write(str.c_str(), str.size());
             return *this;
         }
 
         virtual self& operator<<(llong ll)
         {
-            string str = this->convert(ll);
+            CHECK_OUT_MODE;
+
+            string str = basic_ios<T>::convert(ll);
             this->write(str.c_str(), str.size());
             return *this;
         }
         
         virtual self& operator<<(ullong ull)
         {
-            string str = this->convert(ull);
+            CHECK_OUT_MODE;
+
+            string str = basic_ios<T>::convert(ull);
             this->write(str.c_str(), str.size());
             return *this;
         }
 
         virtual self& operator<<(T c)
         {
+            CHECK_OUT_MODE;
+
             this->write(reinterpret_cast<char*>(&c), sizeof(T));
             return *this;
         }
 
         virtual self& operator<<(const T* p)
         {
+            CHECK_OUT_MODE;
+
             this->write(p, fstream_buffer<T>::char_traits::length(p));
             return *this;
         }
 
         virtual self& operator<<(const string& s)
         {
+            CHECK_OUT_MODE;
+
             this->write(s.c_str(), s.size());
+            return *this;
+        }
+
+        self& operator<<(self& (*f)(self&))
+        {
+            return f(*this);
+        }
+
+        template <typename T1>
+        self& operator<<(const T1& c)
+        {
+            CHECK_OUT_MODE;
+
+            this->write(c.data(), c.size());
             return *this;
         }
     };
 
     typedef basic_fstream<char> fstream;
+
+    template <typename T>
+    inline basic_fstream<T>& endl(basic_fstream<T>& fs)
+    {
+        fs.write("\n", 1);
+        fs.flush();
+        return fs;
+    }
+
+#undef CHECK_FILE_OPEN
+#undef CHECK_IN_MODE
+#undef CHECK_OUT_MODE
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

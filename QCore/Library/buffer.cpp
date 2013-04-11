@@ -71,4 +71,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         }
         return true;
     }
+
+    buffer::value_type* buffer::reserve(size_type size)
+    {
+        container.reserve(size);
+        container.setsize(size);
+        return container.begin();
+    }
 NAMESPACE_QLANGUAGE_LIBRARY_END

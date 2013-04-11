@@ -395,6 +395,12 @@ public:
         return size_type(end_of_element - begin());
     }
 
+    void setsize(size_t size)
+    {
+        if (size < capacity()) finish = start + size;
+        else throw error<string>("size is too big", __FILE__, __LINE__);
+    }
+
     void push_back(const T& x)
     {
         if (end_of_element != finish)
