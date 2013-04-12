@@ -397,7 +397,7 @@ public:
 
     void setsize(size_t size)
     {
-        if (size < capacity()) finish = start + size;
+        if (size <= capacity()) finish = start + size;
         else throw error<string>("size is too big", __FILE__, __LINE__);
     }
 

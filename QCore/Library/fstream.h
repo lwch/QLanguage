@@ -151,6 +151,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         inline const size_type read_cache_size()const  { return buffer_read.size();     }
         inline const value_type* write_pointer()const  { return buffer_write.pointer(); }
         inline const value_type* read_pointer()const   { return buffer_read.pointer();  }
+        inline void step_write_cache(size_type size)   { buffer_write.step(size);       }
+        inline void step_read_cache(size_type size)    { buffer_read.step(size);        }
 
         inline const size_type size()const
         {
@@ -212,7 +214,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             CHECK_FILE_OPEN;
             CHECK_IN_MODE;
 
-            size_type _size = min(size() - tell(), fstream_buffer<T>::align);
+            size_type _size = min(size() - tell(), static_cast<size_type>(fstream_buffer<T>::align));
             value_type* buffer = this->buffer_read.reserve(_size);
 
             while (true)
@@ -287,55 +289,134 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(short& s)
         {
             CHECK_IN_MODE;
-            this->read();
+            const value_type* p = this->read_pointer();
+            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            size_t step_size;
+            basic_ios<T>::getInteger(p, this->read_cache_size(), s, step_size);
+            this->step_read_cache(step_size);
             return *this;
         }
 
-        virtual self& operator>>(ushort&)
+        virtual self& operator>>(ushort& us)
         {
             CHECK_IN_MODE;
+            const value_type* p = this->read_pointer();
+            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            size_t step_size;
+            basic_ios<T>::getInteger(p, this->read_cache_size(), us, step_size);
+            this->step_read_cache(step_size);
             return *this;
         }
 
-        virtual self& operator>>(int&)
+        virtual self& operator>>(int& i)
         {
             CHECK_IN_MODE;
+            const value_type* p = this->read_pointer();
+            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            size_t step_size;
+            basic_ios<T>::getInteger(p, this->read_cache_size(), i, step_size);
+            this->step_read_cache(step_size);
             return *this;
         }
 
-        virtual self& operator>>(uint&)
+        virtual self& operator>>(uint& ui)
         {
             CHECK_IN_MODE;
+            const value_type* p = this->read_pointer();
+            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            size_t step_size;
+            basic_ios<T>::getInteger(p, this->read_cache_size(), ui, step_size);
+            this->step_read_cache(step_size);
             return *this;
         }
 
-        virtual self& operator>>(long&)
+        virtual self& operator>>(long& l)
         {
             CHECK_IN_MODE;
+            const value_type* p = this->read_pointer();
+            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            size_t step_size;
+            basic_ios<T>::getInteger(p, this->read_cache_size(), l, step_size);
+            this->step_read_cache(step_size);
             return *this;
         }
 
-        virtual self& operator>>(ulong&)
+        virtual self& operator>>(ulong& ul)
         {
             CHECK_IN_MODE;
+            const value_type* p = this->read_pointer();
+            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            size_t step_size;
+            basic_ios<T>::getInteger(p, this->read_cache_size(), ul, step_size);
+            this->step_read_cache(step_size);
             return *this;
         }
 
-        virtual self& operator>>(llong&)
+        virtual self& operator>>(llong& ll)
         {
             CHECK_IN_MODE;
+            const value_type* p = this->read_pointer();
+            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            size_t step_size;
+            basic_ios<T>::getInteger(p, this->read_cache_size(), ll, step_size);
+            this->step_read_cache(step_size);
             return *this;
         }
 
-        virtual self& operator>>(ullong&)
+        virtual self& operator>>(ullong& ul)
         {
             CHECK_IN_MODE;
+            const value_type* p = this->read_pointer();
+            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            size_t step_size;
+            basic_ios<T>::getInteger(p, this->read_cache_size(), ul, step_size);
+            this->step_read_cache(step_size);
             return *this;
         }
 
-        virtual self& operator>>(T&)
+        virtual self& operator>>(T& c)
         {
             CHECK_IN_MODE;
+            const value_type* p = this->read_pointer();
+            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            c = *p;
+            this->step_read_cache(1);
             return *this;
         }
 

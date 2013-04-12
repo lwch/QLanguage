@@ -198,6 +198,14 @@ namespace QLanguage
             }
             return dest;
         }
+
+        template <typename Iterator>
+        inline Iterator copy(Iterator first, Iterator last, Iterator dest)
+        {
+            if (first == dest) return last;
+            while (first != last) *dest++ = *first++;
+            return dest;
+        }
     }
 }
 

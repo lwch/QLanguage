@@ -72,10 +72,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         return true;
     }
 
-    buffer::value_type* buffer::reserve(size_type size)
+    void buffer::step(size_type size)
     {
-        container.reserve(size);
-        container.setsize(size);
-        return container.begin();
+        if (size >= container.size()) throw error<string>("step size too big", __FILE__, __LINE__);
+
+        copy(container.begin() + size, container.end(), container.begin());
+        destruct(container.end() - size, container.end());
+        container.setsize(container.size() - size);
     }
 NAMESPACE_QLANGUAGE_LIBRARY_END

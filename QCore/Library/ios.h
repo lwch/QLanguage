@@ -38,9 +38,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         basic_ios() : radix(decimal) {}
     protected:
         template <typename Number>
-        bool getInteger(const value_type* p, size_type size, Number& n)
+        bool getInteger(const value_type* p, size_type size, Number& n, size_type& step_size)
         {
             uchar _base;
+            const value_type* first = p;
             switch (radix)
             {
             case binary:
@@ -71,7 +72,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             }
             if (size == 0) return false;
 
-            Number _max = numeric_limits<Number>::max() / _base;
+            Number _max = std::numeric_limits<Number>::max() / _base;
 
             n = 0;
             while (size)
@@ -88,11 +89,42 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
                 if (n >= _max) break;
 
-                --p;
+                ++p;
                 --size;
             }
-            if (bNegative) n = -n;
+            getNegative(bNegative, n);
+            step_size = p - first;
             return true;
+        }
+
+        template <typename Number>
+        inline void getNegative(bool bNegative, Number& n)
+        {
+            if (bNegative) n = -n;
+        }
+
+        template <>
+        inline void getNegative(bool bNegative, ushort& n)
+        {
+            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+        }
+
+        template <>
+        inline void getNegative(bool bNegative, uint& n)
+        {
+            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+        }
+
+        template <>
+        inline void getNegative(bool bNegative, ulong& n)
+        {
+            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+        }
+
+        template <>
+        inline void getNegative(bool bNegative, ullong& n)
+        {
+            throw error<string>("negative doesn't support", __FILE__, __LINE__);
         }
 
         inline string convert(long l)     { return string::format("%ld", l); }
