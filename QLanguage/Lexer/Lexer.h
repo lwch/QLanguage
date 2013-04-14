@@ -32,6 +32,7 @@ namespace QLanguage
                 Hex,
                 Real,
                 Letter,
+                String,
                 Operator,
                 Space,
                 Enter,
@@ -70,6 +71,11 @@ namespace QLanguage
         Rule _Z;
         Rule letter;
         // Letter End
+
+        // String Begin
+        Rule quotationMarks;
+        Rule str;
+        // String End
 
         // Operator Begin
         Rule optr;

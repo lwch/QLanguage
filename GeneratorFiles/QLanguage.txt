@@ -1,0 +1,205 @@
+%token "function" "as" "end";
+%token "integer" "string" "bool";
+%token "if" "then" "else";
+%token "do" "while";
+%token "for" "to" "by" "next";
+%token "switch" "case" "default";
+%token "call" "return";
+%token "dll" "com" "lib" "class" "alias";
+%token "true" "false";
+%token ";" "," "+" "-" "*" "/" "=" "[" "]" ":";
+%token ">" "<" ">=" "<=" "==";
+%token "not" "and" "or";
+
+%start program;
+
+var_type	->	"integer"
+		|	"string"
+		|	"bool"
+		;
+
+value_type	->	array
+		|	"{String}"
+		|	"{Symbol}"
+		|	"{digit}"
+		|	"{real}"
+		|	"true"
+		|	"false"
+		;
+
+assign_type	->	array
+		|	"{Symbol}"
+		;
+
+array		->	"{Symbol}" "[" value_list "]"
+		;
+
+paramter_list	->	paramter_list "," var_type value_type
+		|	var_type value_type
+		;
+
+value_list	->	value_list "," exp
+		|	exp
+		;
+
+program		->	item_list
+		;
+
+item_list	->	item_list item
+		|	item
+		;
+
+item		->	function_desc
+		|	define_desc
+		|	array_desc
+		|	dll_desc
+		|	com_desc
+		;
+
+stmt_list	->	stmt_list stmt
+		|	stmt
+		;
+
+stmt		->	define_desc
+		|	array_desc
+		|	if_desc
+		|	do_desc
+		|	while_desc
+		|	for_desc
+		|	assign_desc
+		|	call_desc1
+		|	call_desc2
+		|	switch_desc
+		|	return_desc
+		|	";"
+		;
+
+function_desc	->	"function" "{Symbol}" "{LQ}" "{RQ}" "as" var_type stmt_list "end" "function"
+		|	"function" "{Symbol}" "{LQ}" "{RQ}" stmt_list "end" "function"
+		|	"function" "{Symbol}" "{LQ}" "{RQ}" "as" var_type "end" "function"
+		|	"function" "{Symbol}" "{LQ}" "{RQ}" "end" "function"
+		|	"function" "{Symbol}" "{LQ}" paramter_list "{RQ}" "as" var_type stmt_list "end" "function"
+		|	"function" "{Symbol}" "{LQ}" paramter_list "{RQ}" stmt_list "end" "function"
+		|	"function" "{Symbol}" "{LQ}" paramter_list "{RQ}" "as" var_type "end" "function"
+		|	"function" "{Symbol}" "{LQ}" paramter_list "{RQ}" "end" "function"
+		;
+
+define_desc	->	define_desc "," "{Symbol}" "[" value_list "]"
+		|	define_desc "," "{Symbol}" "[" "]"
+		|	define_desc "," "{Symbol}" "=" value_type
+		|	define_desc "," "{Symbol}"
+		|	var_type "{Symbol}" "=" value_type
+		|	var_type "{Symbol}"
+		;
+
+array_desc	->	array_desc "," "{Symbol}" "[" value_list "]"
+		|	array_desc "," "{Symbol}" "[" "]"
+		|	array_desc "," "{Symbol}" "=" value_type
+		|	array_desc "," "{Symbol}"
+		|	var_type "{Symbol}" "[" value_list "]"
+		|	var_type "{Symbol}" "[" "]"
+		;
+
+if_desc		->	"if" exp "then" "else" "end" "if"
+		|	"if" exp "then" "else" stmt_list "end" "if"
+		|	"if" exp "then" stmt_list "else" "end" "if"
+		|	"if" exp "then" stmt_list "else" stmt_list "end" "if"
+		|	"if" exp "then" "end" "if"
+		|	"if" exp "then" stmt_list "end" "if"
+		;
+
+do_desc		->	"do" stmt_list "while" exp "end"
+		|	"do" "while" exp "end"
+		;
+
+while_desc	->	"while" exp "do" stmt_list "end" "while"
+		|	"while" exp "do" "end" "while"
+		;
+
+for_desc	->	"for" for_desc1 "next"
+		;
+
+for_desc1	->	stmt "to" for_desc2
+		|	"to" for_desc2
+		;
+
+for_desc2	->	exp "by" for_desc3
+		|	"by" for_desc3
+		;
+
+for_desc3	->	stmt "do" stmt_list
+		|	stmt "do"
+		|	"do" stmt_list
+		|	"do"
+		;
+
+assign_desc	->	assign_type "=" exp
+		;
+
+call_desc1	->	"{Symbol}" "{LQ}" "{RQ}"
+		|	"{Symbol}" "{LQ}" value_list "{RQ}"
+		;
+
+call_desc2	->	"call" "{Symbol}" "{LQ}" "{RQ}"
+		|	"call" "{Symbol}" "{LQ}" value_list "{RQ}"
+		;
+
+switch_desc	->	"switch" exp "do" case_list "end" "switch"
+		|	"switch" exp "do" "end" "switch"
+		;
+
+case_list	->	case_list "case" exp ":" stmt_list
+		|	case_list "case" exp ":"
+		|	case_list "default" ":" stmt_list
+		|	case_list "default" ":"
+		|	"case" exp ":" stmt_list
+		|	"case" exp ":"
+		|	"default" ":" stmt_list
+		|	"default" ":"
+		;
+
+return_desc	->	"return" exp
+		|	"return"
+		;
+
+dll_desc	->	"dll" "lib" "{Symbol}" "function" "{Symbol}" "{LQ}" "{RQ}"
+		|	"dll" "lib" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" "{RQ}"
+		|	"dll" "lib" "{Symbol}" "function" "{Symbol}" "{LQ}" paramter_list "{RQ}"
+		|	"dll" "lib" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" paramter_list "{RQ}"
+		;
+
+com_desc	->	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "{LQ}" "{RQ}" "as" var_type
+		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "{LQ}" "{RQ}"
+		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" "{RQ}" "as" var_type
+		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" "{RQ}"
+		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "{LQ}" paramter_list "{RQ}" "as" var_type
+		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "{LQ}" paramter_list "{RQ}"
+		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" paramter_list "{RQ}" "as" var_type
+		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" paramter_list "{RQ}"
+		;
+
+exp		->	exp ">" exp1
+		|	exp "<" exp1
+		|	exp ">=" exp1
+		|	exp "<=" exp1
+		|	exp "==" exp1
+		|	exp "and" exp1
+		|	exp "or" exp1
+		|	"not" exp1
+		|	exp1
+		;
+
+exp1		->	exp1 "+" exp2
+		|	exp1 "-" exp2
+		|	exp2
+		;
+
+exp2		->	exp2 "*" exp3
+		|	exp2 "/" exp3
+		|	exp3
+		;
+
+exp3		->	"{LQ}" exp "{RQ}"
+		|	value_type
+		|	call_desc1
+		;

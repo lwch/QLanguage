@@ -113,7 +113,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             if (is_open())
             {
-                flush();
+                if (ucOpenMode & out) flush();
                 close();
             }
         }
@@ -126,7 +126,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             switch (mode & (~binary & ~text))
             {
             case out | append:
-                flag = O_WRONLY | O_CREAT | O_APPEND;
+                flag = O_WRONLY | O_APPEND | O_CREAT;
+                break;
+            case out:
+                flag = O_WRONLY | O_TRUNC | O_CREAT;
                 break;
             case in:
                 flag = O_RDONLY;
@@ -147,6 +150,13 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             iFile = ::OPEN(path, flag, S_IREAD | S_IWRITE);
             bOpen = true;
             ucOpenMode = mode;
+
+            if (mode & append)
+            {
+                ulTell = size();
+                seek(0, end);
+            }
+            else ulTell = 0;
 
             return *this;
         }
@@ -188,11 +198,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_FILE_OPEN;
 
-#ifdef MSVC
-            return TELL(iFile);
-#else // Not Support Yet
-            return 0;
-#endif
+            return ulTell;
         }
 
         self& seek(int offset, seektype type)
@@ -205,15 +211,18 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             {
             case begin:
                 if ((size_t)offset > size()) throw error<string>("offset out of range", __FILE__, __LINE__);
-                where = SEEK_SET;
+                where  = SEEK_SET;
+                ulTell = offset;
                 break;
             case end:
                 if ((size_t)offset > size()) throw error<string>("offset out of range", __FILE__, __LINE__);
-                where = SEEK_END;
+                where  = SEEK_END;
+                ulTell = size() - offset;
                 break;
             case current:
                 if (tell() + offset >= size() || tell() + offset < 0) throw error<string>("offset out of range", __FILE__, __LINE__);
-                where = SEEK_CUR;
+                where   = SEEK_CUR;
+                ulTell += offset;
                 break;
             }
 
@@ -229,7 +238,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
             bool bResult = this->buffer_write.append(buffer, size);
 
-            if (bResult && this->buffer_write.check_flush()) return this->buffer_write.flush();
+            if (bResult && this->buffer_write.check_flush())
+            {
+                bResult = this->buffer_write.flush();
+            }
 
             return bResult;
         }
@@ -242,18 +254,47 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             size_type _size = min(size() - tell(), static_cast<size_type>(fstream_buffer<T>::align));
             value_type* buffer = this->buffer_read.reserve(_size);
 
+            size_type readen = 0;
             while (true)
             {
-                size_type readen = ::READ(iFile, buffer, _size);
+                size_type _read = ::READ(iFile, buffer, _size);
+                readen += _read;
+                ulTell += readen;
                 if (readen == _size) return _size;
-                else if (readen > 0)
+                else if (_read > 0)
                 {
-                    buffer += readen;
-                    _size -= readen;
+                    buffer += _read;
+                    _size  -= _read;
                 }
                 else
                 {
                     this->buffer_read.clear();
+                    throw error<string>("can't read file", __FILE__, __LINE__);
+                }
+            }
+        }
+
+        bool readAll(value_type* ptr, size_type sz)
+        {
+            CHECK_FILE_OPEN;
+            CHECK_IN_MODE;
+
+            size_type _size  = min(sz, size());
+            size_type readen = 0;
+            while (true)
+            {
+                size_type _read = ::READ(iFile, ptr, _size);
+                readen += _read;
+                ulTell += _read;
+                if (readen == _size) return true;
+                else if (_read > 0)
+                {
+                    ptr   += _read;
+                    _size -= _read;
+                }
+                else
+                {
+                    throw error<string>("can't read file", __FILE__, __LINE__);
                 }
             }
         }
@@ -269,6 +310,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             while (true)
             {
                 size_type written = ::WRITE(iFile, buffer, size);
+                ulTell += written;
                 if (written == size)
                 {
                     this->buffer_write.clear();
@@ -292,6 +334,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         bool  bOpen;
         int   iFile;
         uchar ucOpenMode;
+        ulong ulTell;
     };
 
     template <typename T>

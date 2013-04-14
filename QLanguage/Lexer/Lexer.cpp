@@ -44,6 +44,12 @@ namespace QLanguage
         letter.buildDFA();
         // Letter End
 
+        // String Begin
+        quotationMarks = Rule('\"', &context);
+        str = quotationMarks + *!quotationMarks + quotationMarks;
+        str.buildDFA();
+        // String End
+
         // Operator Begin
         optr = Rule(':', &context) | Rule(';', &context) | Rule(',', &context) |
                Rule('(', &context) | Rule(')', &context) |
@@ -104,6 +110,11 @@ namespace QLanguage
             else if (letter.parse(first, last, ptr, size))
             {
                 result.push_back(Token(Token::Letter, string(ptr, size)));
+                first += size;
+            }
+            else if (str.parse(first, last, ptr, size))
+            {
+                result.push_back(Token(Token::String, string(ptr, size)));
                 first += size;
             }
             else if (optr.parse(first, last, ptr, size))
