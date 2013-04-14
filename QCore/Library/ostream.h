@@ -43,6 +43,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             throw error<string>("doesn't support", __FILE__, __LINE__);
             return *this;
         }
+    protected:
+        inline string convert(long l)     { return string::format("%ld", l); }
+        inline string convert(ulong ul)   { return string::format("%u", ul); }
+        inline string convert(llong ll)   { return string::format("%ld", ll); }
+        inline string convert(ullong ull) { return string::format("%u", ull); }
     };
 NAMESPACE_QLANGUAGE_LIBRARY_END
 

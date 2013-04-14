@@ -22,6 +22,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         typedef basic_istream<T> self;
         typedef basic_ios<T>     parent;
     public:
+        typedef T      value_type;
+        typedef size_t size_type;
         basic_istream() : parent() {}
 
         virtual self& operator>>(bool&)=0;
@@ -40,6 +42,106 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             throw error<string>("doesn't support", __FILE__, __LINE__);
             return *this;
+        }
+    protected:
+        template <typename Number>
+        bool getInteger(const value_type* p, size_type size, Number& n, size_type& step_size)
+        {
+            uchar _base;
+            const value_type* first = p;
+            switch (this->radix)
+            {
+            case parent::binary:
+                _base = 2;
+                break;
+            case parent::octonary:
+                _base = 8;
+                break;
+            case parent::decimal:
+                _base = 10;
+                break;
+            case parent::hexadecimal:
+                _base = 16;
+                if (size > 1 && *p == '0' && (*(p + 1) == 'x' || *(p + 1) == 'X'))
+                {
+                    p += 2;
+                    size -= 2;
+                }
+                break;
+            }
+            bool bNegative = false;
+            if (*p == '-' || *p == '+')
+            {
+                bNegative = (*p == '-');
+                if (this->radix == parent::binary) throw error<string>("binary doesn't support sign", __FILE__, __LINE__);
+                ++p;
+                --size;
+            }
+            if (size == 0) return false;
+#ifdef max
+#undef max
+#endif
+            Number _max = std::numeric_limits<Number>::max() / _base;
+
+            n = 0;
+            while (size)
+            {
+                uchar ch;
+                if (*p >= '0' && *p <= '9') ch = *p - '0';
+                else if (*p >= 'a' && *p <= 'f') ch = 10 + *p - 'a';
+                else if (*p >= 'A' && *p <= 'F') ch = 10 + *p - 'A';
+                else break;
+
+                if (ch >= _base) break;
+
+                n = n * _base + ch;
+
+                if (n >= _max) break;
+
+                ++p;
+                --size;
+            }
+            getNegative(bNegative, n);
+            step_size = p - first;
+            return true;
+        }
+
+        template <typename Number>
+        inline void getNegative(bool bNegative, Number& n)
+        {
+            if (bNegative) n = -n;
+        }
+
+#ifdef MSVC
+        template <>
+#endif
+        inline void getNegative(bool bNegative, ushort& n)
+        {
+            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+        }
+
+#ifdef MSVC
+        template <>
+#endif
+        inline void getNegative(bool bNegative, uint& n)
+        {
+            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+        }
+
+#ifdef MSVC
+        template <>
+#endif
+        inline void getNegative(bool bNegative, ulong& n)
+        {
+            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+        }
+
+#ifdef MSVC
+        template <>
+#endif
+        inline void getNegative(bool bNegative, ullong& n)
+        {
+            throw error<string>("negative doesn't support", __FILE__, __LINE__);
         }
     };
 NAMESPACE_QLANGUAGE_LIBRARY_END

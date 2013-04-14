@@ -6,14 +6,16 @@
 	file base:	fstream
 	file ext:	h
 	author:		lwch
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef _QLANGUAGE_LIBRARY_FSTREAM_H_
 #define _QLANGUAGE_LIBRARY_FSTREAM_H_
 
+#ifdef MSVC
 #include <io.h>
+#endif
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -22,11 +24,30 @@
 #include "ostream.h"
 #include "buffer.h"
 
+#ifdef MSVC
+#define OPEN  _open
+#define CLOSE _close
+#define LSEEK _lseek
+#define TELL  _tell
+#define FSTAT _fstat
+#define WRITE _write
+#define READ  _read
+#define STAT  _stat
+#else
+#define OPEN  open
+#define CLOSE close
+#define LSEEK lseek
+#define FSTAT fstat
+#define WRITE write
+#define READ  read
+#define STAT  stat
+#endif
+
 NAMESPACE_QLANGUAGE_LIBRARY_START
 
 #define CHECK_FILE_OPEN if (!is_open()) throw error<string>("not opened file", __FILE__, __LINE__)
-#define CHECK_IN_MODE   if ((open_mode() & in) == 0)  throw error<string>("not in mode", __FILE__, __LINE__)
-#define CHECK_OUT_MODE  if ((open_mode() & out) == 0) throw error<string>("not out mode", __FILE__, __LINE__)
+#define CHECK_IN_MODE   if ((this->open_mode() & fstream_basic<T>::in) == 0)  throw error<string>("not in mode", __FILE__, __LINE__)
+#define CHECK_OUT_MODE  if ((this->open_mode() & fstream_basic<T>::out) == 0) throw error<string>("not out mode", __FILE__, __LINE__)
 
     template <typename T>
     class fstream_basic;
@@ -105,13 +126,13 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             switch (mode & (~binary & ~text))
             {
             case out | append:
-                flag = _O_WRONLY | _O_CREAT | _O_APPEND;
+                flag = O_WRONLY | O_CREAT | O_APPEND;
                 break;
             case in:
-                flag = _O_RDONLY;
+                flag = O_RDONLY;
                 break;
             case in | out:
-                flag = _O_RDWR | _O_TRUNC | _O_CREAT;
+                flag = O_RDWR | O_TRUNC | O_CREAT;
                 break;
             default:
                 throw error<string>("error open mode", __FILE__, __LINE__);
@@ -119,11 +140,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             }
 
 #ifdef WIN32
-            flag |= (mode & binary) ? _O_BINARY : _O_TEXT;
+            flag |= (mode & binary) ? O_BINARY : O_TEXT;
             mode |= (mode & binary) ? mode : text;
 #endif
 
-            iFile = _open(path, flag, S_IREAD | S_IWRITE);
+            iFile = ::OPEN(path, flag, S_IREAD | S_IWRITE);
             bOpen = true;
             ucOpenMode = mode;
 
@@ -137,7 +158,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             bool bResult = false;
             if (iFile)
             {
-                bResult = (_close(iFile) == 0);
+                bResult = (::CLOSE(iFile) == 0);
                 if (bResult) bOpen = false;
             }
             return bResult;
@@ -158,8 +179,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_FILE_OPEN;
 
-            struct _stat s;
-            if (_fstat(iFile, &s) == 0) return s.st_size;
+            struct STAT s;
+            if (FSTAT(iFile, &s) == 0) return s.st_size;
             else return 0;
         }
 
@@ -167,7 +188,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_FILE_OPEN;
 
-            return _tell(iFile);
+#ifdef MSVC
+            return TELL(iFile);
+#else // Not Support Yet
+            return 0;
+#endif
         }
 
         self& seek(int offset, seektype type)
@@ -192,7 +217,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
                 break;
             }
 
-            _lseek(iFile, offset, where);
+            LSEEK(iFile, offset, where);
 
             return *this;
         }
@@ -205,7 +230,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             bool bResult = this->buffer_write.append(buffer, size);
 
             if (bResult && this->buffer_write.check_flush()) return this->buffer_write.flush();
-            
+
             return bResult;
         }
 
@@ -219,7 +244,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
             while (true)
             {
-                size_type readen = _read(iFile, buffer, _size);
+                size_type readen = ::READ(iFile, buffer, _size);
                 if (readen == _size) return _size;
                 else if (readen > 0)
                 {
@@ -243,7 +268,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             const typename fstream_buffer<T>::value_type* buffer = this->buffer_write.pointer();
             while (true)
             {
-                size_type written = _write(iFile, buffer, size);
+                size_type written = ::WRITE(iFile, buffer, size);
                 if (written == size)
                 {
                     this->buffer_write.clear();
@@ -289,14 +314,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(short& s)
         {
             CHECK_IN_MODE;
-            const value_type* p = this->read_pointer();
+            const typename parent::value_type* p = this->read_pointer();
             if (this->read_cache_size() < fstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
             }
             size_t step_size;
-            basic_ios<T>::getInteger(p, this->read_cache_size(), s, step_size);
+            this->getInteger(p, this->read_cache_size(), s, step_size);
             this->step_read_cache(step_size);
             return *this;
         }
@@ -304,14 +329,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(ushort& us)
         {
             CHECK_IN_MODE;
-            const value_type* p = this->read_pointer();
+            const typename parent::value_type* p = this->read_pointer();
             if (this->read_cache_size() < fstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
             }
             size_t step_size;
-            basic_ios<T>::getInteger(p, this->read_cache_size(), us, step_size);
+            this->getInteger(p, this->read_cache_size(), us, step_size);
             this->step_read_cache(step_size);
             return *this;
         }
@@ -319,14 +344,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(int& i)
         {
             CHECK_IN_MODE;
-            const value_type* p = this->read_pointer();
+            const typename parent::value_type* p = this->read_pointer();
             if (this->read_cache_size() < fstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
             }
             size_t step_size;
-            basic_ios<T>::getInteger(p, this->read_cache_size(), i, step_size);
+            this->getInteger(p, this->read_cache_size(), i, step_size);
             this->step_read_cache(step_size);
             return *this;
         }
@@ -334,14 +359,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(uint& ui)
         {
             CHECK_IN_MODE;
-            const value_type* p = this->read_pointer();
+            const typename parent::value_type* p = this->read_pointer();
             if (this->read_cache_size() < fstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
             }
             size_t step_size;
-            basic_ios<T>::getInteger(p, this->read_cache_size(), ui, step_size);
+            this->getInteger(p, this->read_cache_size(), ui, step_size);
             this->step_read_cache(step_size);
             return *this;
         }
@@ -349,14 +374,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(long& l)
         {
             CHECK_IN_MODE;
-            const value_type* p = this->read_pointer();
+            const typename parent::value_type* p = this->read_pointer();
             if (this->read_cache_size() < fstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
             }
             size_t step_size;
-            basic_ios<T>::getInteger(p, this->read_cache_size(), l, step_size);
+            this->getInteger(p, this->read_cache_size(), l, step_size);
             this->step_read_cache(step_size);
             return *this;
         }
@@ -364,14 +389,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(ulong& ul)
         {
             CHECK_IN_MODE;
-            const value_type* p = this->read_pointer();
+            const typename parent::value_type* p = this->read_pointer();
             if (this->read_cache_size() < fstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
             }
             size_t step_size;
-            basic_ios<T>::getInteger(p, this->read_cache_size(), ul, step_size);
+            this->getInteger(p, this->read_cache_size(), ul, step_size);
             this->step_read_cache(step_size);
             return *this;
         }
@@ -379,14 +404,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(llong& ll)
         {
             CHECK_IN_MODE;
-            const value_type* p = this->read_pointer();
+            const typename parent::value_type* p = this->read_pointer();
             if (this->read_cache_size() < fstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
             }
             size_t step_size;
-            basic_ios<T>::getInteger(p, this->read_cache_size(), ll, step_size);
+            this->getInteger(p, this->read_cache_size(), ll, step_size);
             this->step_read_cache(step_size);
             return *this;
         }
@@ -394,14 +419,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(ullong& ul)
         {
             CHECK_IN_MODE;
-            const value_type* p = this->read_pointer();
+            const typename parent::value_type* p = this->read_pointer();
             if (this->read_cache_size() < fstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
             }
             size_t step_size;
-            basic_ios<T>::getInteger(p, this->read_cache_size(), ul, step_size);
+            this->getInteger(p, this->read_cache_size(), ul, step_size);
             this->step_read_cache(step_size);
             return *this;
         }
@@ -409,7 +434,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(T& c)
         {
             CHECK_IN_MODE;
-            const value_type* p = this->read_pointer();
+            const typename parent::value_type* p = this->read_pointer();
             if (this->read_cache_size() < fstream_buffer<T>::half_align)
             {
                 this->read();
@@ -433,7 +458,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = basic_ios<T>::convert(static_cast<ulong>(b));
+            string str = this->convert(static_cast<ulong>(b));
             this->write(str.c_str(), str.size());
             return *this;
         }
@@ -442,7 +467,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = basic_ios<T>::convert(static_cast<long>(s));
+            string str = this->convert(static_cast<long>(s));
             this->write(str.c_str(), str.size());
             return *this;
         }
@@ -451,16 +476,16 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = basic_ios<T>::convert(static_cast<ulong>(us));
+            string str = this->convert(static_cast<ulong>(us));
             this->write(str.c_str(), str.size());
             return *this;
         }
-        
+
         virtual self& operator<<(int i)
         {
             CHECK_OUT_MODE;
 
-            string str = basic_ios<T>::convert(static_cast<long>(i));
+            string str = this->convert(static_cast<long>(i));
             this->write(str.c_str(), str.size());
             return *this;
         }
@@ -469,16 +494,16 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = basic_ios<T>::convert(static_cast<ulong>(ui));
+            string str = this->convert(static_cast<ulong>(ui));
             this->write(str.c_str(), str.size());
             return *this;
         }
-        
+
         virtual self& operator<<(long l)
         {
             CHECK_OUT_MODE;
 
-            string str = basic_ios<T>::convert(l);
+            string str = this->convert(l);
             this->write(str.c_str(), str.size());
             return *this;
         }
@@ -487,7 +512,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = basic_ios<T>::convert(ul);
+            string str = this->convert(ul);
             this->write(str.c_str(), str.size());
             return *this;
         }
@@ -496,16 +521,16 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = basic_ios<T>::convert(ll);
+            string str = this->convert(ll);
             this->write(str.c_str(), str.size());
             return *this;
         }
-        
+
         virtual self& operator<<(ullong ull)
         {
             CHECK_OUT_MODE;
 
-            string str = basic_ios<T>::convert(ull);
+            string str = this->convert(ull);
             this->write(str.c_str(), str.size());
             return *this;
         }
@@ -558,6 +583,18 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         fs.flush();
         return fs;
     }
+
+#undef OPEN 
+#undef CLOSE
+#undef LSEEK
+#undef FSTAT
+#undef WRITE
+#undef READ
+#undef STAT
+
+#ifdef MSVC
+#undef TELL
+#endif
 
 #undef CHECK_FILE_OPEN
 #undef CHECK_IN_MODE

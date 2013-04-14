@@ -36,16 +36,6 @@ using namespace QLanguage;
 using namespace QLanguage::Library;
 using namespace QLanguage::UnitTest;
 
-#ifdef GNUC
-namespace QLanguage
-{
-    namespace UnitTest
-    {
-        CaseMap gCaseMap;
-    }
-}
-#endif
-
 size_t iSpeedCaseCount = 0;
 
 inline bool nameFilter(const string& name)

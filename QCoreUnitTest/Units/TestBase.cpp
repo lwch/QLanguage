@@ -6,19 +6,8 @@
 	file base:	TestBase
 	file ext:	cpp
 	author:		lwch
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #include "TestBase.h"
-
-#ifdef MSVC
-// Fuck MinGW with error!!!!
-namespace QLanguage
-{
-    namespace UnitTest
-    {
-        CaseMap gCaseMap;
-    }
-}
-#endif

@@ -72,6 +72,12 @@ namespace QLanguage
             {
                 nameFilter = ptr;
             }
+
+            static CaseMap* getInstance()
+            {
+                static CaseMap caseMap;
+                return &caseMap;
+            }
         protected:
             size_t iCaseCount;
             struct
@@ -81,8 +87,6 @@ namespace QLanguage
             } caseArray[MAX_CASE_COUNT];
             nameFilterPtr nameFilter;
         };
-
-        extern CaseMap gCaseMap;
 
         #define TEST_SPEED_INSERT_COUNT 10000
 
@@ -114,7 +118,7 @@ namespace QLanguage
         { \
             CaseMapImpl##moduleName() \
             { \
-                gCaseMap.pushCase(pair<string, CaseMap::testPtr>(#moduleName, TestImpl##moduleName), __FILE__, __LINE__); \
+                CaseMap::getInstance()->pushCase(pair<string, CaseMap::testPtr>(#moduleName, TestImpl##moduleName), __FILE__, __LINE__); \
             } \
         } caseMapImpl##moduleName; \
         bool TestImpl##moduleName() \
@@ -139,11 +143,11 @@ namespace QLanguage
         } \
         void Case_##moduleName()
 
-        #define RUN_ALL_CASE gCaseMap.runAllCase()
+        #define RUN_ALL_CASE CaseMap::getInstance()->runAllCase()
 
-        #define ALL_CASE_COUNT gCaseMap.caseCount()
+        #define ALL_CASE_COUNT CaseMap::getInstance()->caseCount()
 
-        #define SET_NAME_FILTER(func) gCaseMap.setNameFilter(func);
+        #define SET_NAME_FILTER(func) CaseMap::getInstance()->setNameFilter(func);
     }
 }
 
