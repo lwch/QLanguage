@@ -61,6 +61,32 @@ namespace QLanguage
             {
                 return pFrom == x.pFrom && pTo == x.pTo && item == x.item;
             }
+
+            void print()const
+            {
+                printf("%03d -> %03d", pFrom->idx, pTo->idx);
+                if (item.type == Production::Item::TerminalSymbol)
+                {
+                    printf("(");
+                    item.rule.printShowName();
+                    printf(")");
+                }
+                else printf("(%s)", item.name.c_str());
+                printf("\n");
+            }
+
+            void print(fstream& fs)const
+            {
+                fs << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
+                if (item.type == Production::Item::TerminalSymbol)
+                {
+                    fs << "(";
+                    item.rule.printShowName(fs);
+                    fs << ")";
+                }
+                else fs << string::format("(%s)", item.name.c_str());
+                fs << endl;
+            }
         };
 
         class Context
@@ -103,6 +129,7 @@ namespace QLanguage
         bool make();
 
         void print();
+        void print(const string& path);
     protected:
         Item* closure(const vector<LR0Production>& x);
         void closure(const LR0Production& x, map<LR0Production::Item, vector<LR0Production> >& y);

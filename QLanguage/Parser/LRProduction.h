@@ -61,6 +61,40 @@ namespace QLanguage
             return *this;
         }
 
+        void print()const
+        {
+            printf("%s ->", left.name.c_str());
+            uint j = 0;
+            for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i,++j)
+            {
+                if (j == idx) printf(" .");
+                if (i->type == Item::TerminalSymbol)
+                {
+                    printf(" ");
+                    i->rule.printShowName();
+                }
+                else printf(" %s", i->name.c_str());
+            }
+            printf("\n");
+        }
+
+        void print(fstream& fs)const
+        {
+            fs << string::format("%s ->", left.name.c_str());
+            uint j = 0;
+            for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i,++j)
+            {
+                if (j == idx) fs << " .";
+                if (i->type == Item::TerminalSymbol)
+                {
+                    fs << " ";
+                    i->rule.printShowName(fs);
+                }
+                else fs << string::format(" %s", i->name.c_str());
+            }
+            fs << endl;
+        }
+
         inline LR0Production stepUp()
         {
           LR0Production x(*this);
@@ -80,6 +114,7 @@ namespace QLanguage
 
     class LALR1Production : public LR0Production
     {
+        typedef LR0Production parent;
     public:
         class Item
         {
@@ -113,6 +148,38 @@ namespace QLanguage
         inline const bool operator==(const LR0Production& p)const
         {
             return operator==(dynamic_cast<const LR0Production&>(p));
+        }
+
+        void print()const
+        {
+            parent::print();
+            printf("wildCards:\n");
+            for (vector<Item>::const_iterator i = wildCards.begin(), m = wildCards.end(); i != m; ++i)
+            {
+                if (i->type == Item::Rule)
+                {
+                    i->rule.printShowName();
+                    printf(" ");
+                }
+                else printf("# ");
+            }
+            printf("\n");
+        }
+
+        void print(fstream& fs)const
+        {
+            parent::print(fs);
+            fs << "wildCards:" << endl;
+            for (vector<Item>::const_iterator i = wildCards.begin(), m = wildCards.end(); i != m; ++i)
+            {
+                if (i->type == Item::Rule)
+                {
+                    i->rule.printShowName(fs);
+                    fs << " ";
+                }
+                else fs << "# ";
+            }
+            fs << endl;
         }
     public:
         vector<Item> wildCards;

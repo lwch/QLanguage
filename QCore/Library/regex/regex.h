@@ -20,6 +20,7 @@
 #include "../hashmap.h"
 #include "../queue.h"
 #include "../stack.h"
+#include "../fstream.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 namespace regex
@@ -439,9 +440,14 @@ public:
             dfa_Edges = x.dfa_Edges;
 
             idx = x.idx;
+#ifdef _DEBUG
+            showName = x.showName;
+#endif
         }
 
         ~Rule() {}
+
+        inline void setShowName(const string& showName) { this->showName = showName; }
 
         Rule operator+(const Rule& x)
         {
@@ -566,6 +572,9 @@ public:
                 dfa_Edges = x.dfa_Edges;
 
                 idx = x.idx;
+#ifdef _DEBUG
+                showName = x.showName;
+#endif
             }
             return *this;
         }
@@ -759,6 +768,68 @@ public:
 #endif
             printf("----------- DFA End -----------\n");
         }
+
+        void printDFA(fstream& fs)
+        {
+            fs << "---------- DFA Start ----------" << endl;
+            set<DFA_State*> tmp;
+            for (hashmap<DFA_State*, vector<DFA_Edge> >::const_iterator i = dfa_Edges.begin(), m = dfa_Edges.end(); i != m; ++i)
+            {
+                for (vector<DFA_Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+                {
+                    fs << string::format("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
+                    switch (j->edgeType())
+                    {
+                    case Variant::TFromTo:
+                        fs << string::format("(%c - %c)", j->value.data.Char.value1, j->value.data.Char.value2);
+                        break;
+                    case Variant::TChar:
+                        fs << string::format("(%c)", j->value.data.Char.value1);
+                        break;
+                    case Variant::TString:
+                        fs << string::format("(%s)", j->value.data.String.value);
+                        break;
+                    default:
+                        break;
+                    }
+                    if (j->isNot()) fs << "(not)";
+                    fs << endl;
+                    tmp.insert(j->pFrom);
+                    tmp.insert(j->pTo);
+                }
+            }
+
+            fs << string::format("start: %03d -> ends: ", pDFAStart->idx);
+            for (set<DFA_State*>::const_iterator i = pDFAEnds.begin(), m = pDFAEnds.end(); i != m; ++i)
+            {
+                fs << string::format("%03d ", (*i)->idx);
+            }
+            fs << endl;
+#if DEBUG_LEVEL == 3
+            fs << "-------------------------------" << endl;
+
+            for (set<DFA_State*>::const_iterator i = tmp.begin(), m = tmp.end(); i != m; ++i)
+            {
+                fs << string::format("State: %03d\n", (*i)->idx);
+                for (vector<EpsilonNFA_State*>::const_iterator j = (*i)->content.begin(), n = (*i)->content.end(); j != n; ++j)
+                {
+                    fs << string::format("%03d ", (*j)->idx);
+                }
+                fs << endl;
+            }
+#endif
+            fs << "----------- DFA End -----------" << endl;
+        }
+
+        void printShowName()const
+        {
+            printf(showName.c_str());
+        }
+
+        void printShowName(fstream& fs)const
+        {
+            fs << showName;
+        }
 #endif
     protected:
         static void copyEpsilonNFA_Edges(const Rule& from, Rule& to)
@@ -908,6 +979,9 @@ public:
 
         Context* pContext;
         uint     idx;
+#ifdef _DEBUG
+        string   showName;
+#endif
     };
 }
 NAMESPACE_QLANGUAGE_LIBRARY_END

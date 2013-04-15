@@ -1,0 +1,35 @@
+%token "%token" "%start" "|" "->" ";"
+
+%start start
+
+strings             -> strings "{String}"
+                    |  "{String}"
+                    ;
+
+oneProductionRight  -> oneProductionRight "{Letter}"
+                    |  oneProductionRight "{String}"
+                    |  "{Letter}"
+                    |  "{String}"
+                    ;
+
+someProductionRight -> someProductionRight "|" oneProductionRight
+                    |  oneProductionRight
+                    ;
+
+token               -> "%token" strings
+                    ;
+
+someTokens          -> someTokens token
+                    |  token
+                    ;
+
+production          -> "{Letter}" "->" someProductionRight ";"
+                    ;
+
+someProductions     -> someProductions production
+                    |  production
+                    ;
+
+start               -> someTokens "%start" "{Letter}" someProductions
+                    |  "%start" "{Letter}" someProductions
+                    ;

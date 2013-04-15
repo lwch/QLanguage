@@ -10,6 +10,7 @@
 	purpose:	http://dec3.jlu.edu.cn/webcourse/T000171/chap4/4-5-7.html
 *********************************************************************/
 #include "../../QCore/Library/hashset.h"
+#include "../../QCore/Library/fstream.h"
 
 #include "LALR1.h"
 
@@ -54,6 +55,7 @@ namespace QLanguage
             if (i->first.name == "begin")
             {
                 i->second[0].wildCards.push_back(LALR1Production::Item());
+                break;
             }
         }
         bool bContinue = true;
@@ -138,18 +140,30 @@ namespace QLanguage
 
     void LALR1::appendWildCards(Item* pItem, const Production::Item& left, const vector<LALR1Production::Item>& v, vector<Production::Item>& vts, bool& bContinue)
     {
+        queue<LALR1Production*> q;
+        set<Production::Item> s;
+        s.insert(left);
         for (vector<LALR1Production>::iterator i = pItem->data[left].begin(), m = pItem->data[left].end(); i != m; ++i)
         {
-            if (i->idx == 0) // 只发射到0型项目
+            if (i->idx == 0) q.push(i); // 只发射到0型项目
+        }
+        while (!q.empty())
+        {
+            size_t size = q.front()->wildCards.size();
+            q.front()->wildCards.add_unique(v);
+            if (size != q.front()->wildCards.size()) bContinue = true;
+            if (q.front()->right[0].type == Production::Item::TerminalSymbol) // 只有第一个是终结符的才需要传播吗？
             {
-                size_t size = i->wildCards.size();
-                i->wildCards.add_unique(v);
-                if (size != i->wildCards.size()) bContinue = true;
-                if (i->right[0].type == Production::Item::TerminalSymbol) // 只有第一个是终结符的才需要传播吗？
+                vts.push_back_unique(q.front()->right[0]);
+            }
+            else if (s.insert(q.front()->right[0]).second)
+            {
+                for (vector<LALR1Production>::iterator i = pItem->data[q.front()->right[0]].begin(), m = pItem->data[q.front()->right[0]].end(); i != m; ++i)
                 {
-                    vts.push_back_unique(i->right[0]);
+                    if (i->idx == 0) q.push(i); // 只发射到0型项目
                 }
             }
+            q.pop();
         }
     }
 
@@ -175,50 +189,57 @@ namespace QLanguage
         {
             for (vector<Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
-                printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
-                if (j->item.type == Production::Item::TerminalSymbol)
-                {
-                    printf("\n\n");
-                    j->item.rule.printEpsilonNFA();
-                }
-                else printf("(%s)\n", j->item.name.c_str());
-                printf("\n");
+                j->print();
                 s.insert(j->pFrom);
                 s.insert(j->pTo);
             }
         }
         printf("start: %03d\n\n", pStart->idx);
-        int j = 0;
-        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i, ++j)
+        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
         {
             printf("Item: %d\n", (*i)->idx);
             for (map<Production::Item, vector<LALR1Production> >::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
             {
                 for (vector<LALR1Production>::const_iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
                 {
-                    printf("%s -> ", l->left.name.c_str());
-                    uint c = 0;
-                    for (vector<Production::Item>::const_iterator a = l->right.begin(), b = l->right.end(); a != b; ++a, ++c)
-                    {
-                        if (c == l->idx) printf(". ");
-                        if (a->type == Production::Item::NoTerminalSymbol) printf("%s ", a->name.c_str());
-                        else printf("VN ");
-                    }
-                    printf("\nwildCards:\n");
-                    for (vector<LALR1Production::Item>::const_iterator a = l->wildCards.begin(), b = l->wildCards.end(); a != b; ++a)
-                    {
-                        if (a->type == LALR1Production::Item::Rule)
-                        {
-                            a->rule.printEpsilonNFA();
-                        }
-                        else printf("#\n");
-                    }
-                    printf("\n");
+                    l->print();
                 }
             }
             printf("\n");
         }
 #endif
         printf("--------- LALR(1) End ---------\n");
+    }
+
+    void LALR1::print(const string& path)
+    {
+        hashset<Item*> s;
+        fstream fs(path, fstream::out | fstream::text);
+        fs << "-------- LALR(1) Start --------" << endl;
+#ifdef _DEBUG
+        for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
+        {
+            for (vector<Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+            {
+                j->print(fs);
+                s.insert(j->pFrom);
+                s.insert(j->pTo);
+            }
+        }
+        fs << string::format("start: %03d\n\n", pStart->idx);
+        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
+        {
+            fs << string::format("Item: %d\n", (*i)->idx);
+            for (map<Production::Item, vector<LALR1Production> >::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
+            {
+                for (vector<LALR1Production>::iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
+                {
+                    l->print(fs);
+                }
+            }
+            fs << endl;
+        }
+#endif
+        fs << "--------- LALR(1) End ---------" << endl;
     }
 }

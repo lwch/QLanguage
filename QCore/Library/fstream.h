@@ -345,6 +345,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     public:
         basic_fstream() : parent() {}
         basic_fstream(const char* path, uchar mode) : parent(path, mode) {}
+        basic_fstream(const string& path, uchar mode) : parent(path.c_str(), mode) {}
 
         virtual ~basic_fstream() {}
 

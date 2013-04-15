@@ -16,6 +16,7 @@
 
 #include "../../QCore/Library/vector.h"
 #include "../../QCore/Library/regex/regex.h"
+#include "../../QCore/Library/fstream.h"
 
 using namespace QLanguage::Library;
 using namespace QLanguage::Library::regex;
@@ -82,6 +83,36 @@ namespace QLanguage
         inline const bool operator<(const Production& p)const
         {
             return index < p.index;
+        }
+
+        void print()const
+        {
+            printf("%s ->", left.name.c_str());
+            for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
+            {
+                if (i->type == Item::TerminalSymbol)
+                {
+                    printf(" ");
+                    i->rule.printShowName();
+                }
+                else printf(" %s", i->name.c_str());
+            }
+            printf("\n");
+        }
+
+        void print(fstream& fs)const
+        {
+            fs << string::format("%s ->", left.name.c_str());
+            for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
+            {
+                if (i->type == Item::TerminalSymbol)
+                {
+                    fs << " ";
+                    i->rule.printShowName(fs);
+                }
+                else fs << string::format(" %s", i->name.c_str());
+            }
+            fs << endl;
         }
     protected:
         static uint inc()

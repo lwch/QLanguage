@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../../QCore/Library/hashset.h"
+#include "../../QCore/Library/fstream.h"
 
 #include "LR0.h"
 
@@ -156,43 +157,59 @@ namespace QLanguage
 #ifdef _DEBUG
         for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
         {
-            for (vector<Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+            for (vector<Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
-                printf("%03d -> %03d", j->pFrom->idx, j->pTo->idx);
-                if (j->item.type == Production::Item::TerminalSymbol)
-                {
-                    printf("\n\n");
-                    j->item.rule.printEpsilonNFA();
-                }
-                else printf("(%s)\n", j->item.name.c_str());
-                printf("\n");
+                j->print();
                 s.insert(j->pFrom);
                 s.insert(j->pTo);
             }
         }
         printf("start: %03d\n\n", pStart->idx);
-        int j = 0;
-        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i, ++j)
+        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
         {
             printf("Item: %d\n", (*i)->idx);
             for (map<Production::Item, vector<LR0Production> >::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
             {
                 for (vector<LR0Production>::const_iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
                 {
-                    printf("%s -> ", l->left.name.c_str());
-                    uint c = 0;
-                    for (vector<Production::Item>::const_iterator a = l->right.begin(), b = l->right.end(); a != b; ++a, ++c)
-                    {
-                        if (c == l->idx) printf(". ");
-                        if (a->type == Production::Item::NoTerminalSymbol) printf("%s ", a->name.c_str());
-                        else printf("VN ");
-                    }
-                    printf("\n");
+                    l->print();
                 }
             }
             printf("\n");
         }
 #endif
         printf("--------- LR(0) End ---------\n");
+    }
+
+    void LR0::print(const string& path)
+    {
+        hashset<Item*> s;
+        fstream fs(path, fstream::out | fstream::text);
+        fs << "-------- LR(0) Start --------" << endl;
+#ifdef _DEBUG
+        for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
+        {
+            for (vector<Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+            {
+                j->print(fs);
+                s.insert(j->pFrom);
+                s.insert(j->pTo);
+            }
+        }
+        fs << string::format("start: %03d", pStart->idx) << endl << endl;
+        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
+        {
+            fs << string::format("Item: %d", (*i)->idx) << endl;
+            for (map<Production::Item, vector<LR0Production> >::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
+            {
+                for (vector<LR0Production>::const_iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
+                {
+                    l->print(fs);
+                }
+            }
+            fs << endl;
+        }
+#endif
+        fs << "--------- LR(0) End ---------" << endl;
     }
 }
