@@ -40,7 +40,7 @@ namespace QLanguage
 
             map() {}
 
-            map(const self& x) : container(x.instance) {}
+            map(const self& x) : container(x.container) {}
 
             ~map() {}
 

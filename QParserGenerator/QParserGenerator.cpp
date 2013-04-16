@@ -223,7 +223,7 @@ int main(int argv, char** args)
             Console::SetColor(true, true, true, true);
             Console::WriteLine("Use of time: %d", c);
 
-            LALR1 lalr1(lr0);
+            LALR1 lalr1(productions, itemStart);
             c = clock();
             lalr1.make();
             c = clock() - c;

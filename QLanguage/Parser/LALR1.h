@@ -22,35 +22,24 @@ namespace QLanguage
         class Item
         {
         public:
-            map<Production::Item, vector<LALR1Production> > data;
+            vector<LALR1Production> data;
 #ifdef _DEBUG
             uint idx;
 
-            Item(const LR0::Item& x) : idx(x.idx) { createFromLR0Item(x); }
+            Item() : idx(inc()) {}
 #else
-            Item(const LR0::Item& x) { createFromLR0Item(x); }
+            Item() {}
 #endif
 
             inline const bool operator==(const Item& x)const
             {
                 return data == x.data;
             }
-
-            inline const bool operator==(const LR0::Item& x)const
-            {
-                return data == x.data;
-            }
         protected:
-            void createFromLR0Item(const LR0::Item& x)
+            static uint inc()
             {
-                data.clear();
-                for (map<LR0Production::Item, vector<LR0Production> >::const_iterator i = x.data.begin(), m = x.data.end(); i != m; ++i)
-                {
-                    for (vector<LR0Production>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
-                    {
-                        data[i->first].push_back(*j);
-                    }
-                }
+                static uint i = 0;
+                return i++;
             }
         };
 
@@ -116,20 +105,24 @@ namespace QLanguage
 
         typedef allocator<Item> Item_Alloc;
     public:
-        LALR1(LR0& lr0);
+        LALR1(const vector<Production>& productions, const Production::Item& start);
 
         bool make();
 
         void print();
         void print(const string& path);
     protected:
-        void closure(Item* pItem, bool& bContinue);
-        Item* go(Item* pItem, const Production::Item& x);
-        void afirst(const LALR1Production& p, vector<LALR1Production::Item>& v);
-        void appendWildCards(Item* pItem, const Production::Item& left, const vector<LALR1Production::Item>& v, vector<Production::Item>& vts, bool& bContinue);
-        void spreadWildCards(Item* pItem, const vector<LALR1Production::Item>& v, bool& bContinue);
+        void closure(vector<LALR1Production>& kernel);
+        void afirst(const LALR1Production& p, size_t pos, vector<LALR1Production::Item>& v);
+        void first(const LALR1Production& p, size_t pos, vector<LALR1Production::Item>& v);
+//         void closure(Item* pItem, bool& bContinue);
+//         Item* go(Item* pItem, const Production::Item& x);
+//         void afirst(const LALR1Production& p, vector<LALR1Production::Item>& v);
+//         void appendWildCards(Item* pItem, const Production::Item& left, const vector<LALR1Production::Item>& v, vector<Production::Item>& vts, bool& bContinue);
+//         void spreadWildCards(Item* pItem, const vector<LALR1Production::Item>& v, bool& bContinue);
     protected:
-        LR0& lr0;
+        map<Production::Item, map<size_t, vector<LALR1Production> > > productionMap;
+        Production::Item begin;
 
         Item*      pStart;
         set<Item*> pEnd;

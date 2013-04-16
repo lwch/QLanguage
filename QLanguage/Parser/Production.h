@@ -38,6 +38,7 @@ namespace QLanguage
             uint index;
             string name;
 
+            Item() {}
             Item(const string& name) : type(NoTerminalSymbol), index(inc()), name(name) {}
             Item(const Item& i) : type(i.type), rule(i.rule), index(i.index), name(i.name) {}
             Item(const Rule& rule) : type(TerminalSymbol), rule(rule), index(inc()) {}
@@ -49,6 +50,7 @@ namespace QLanguage
                     type  = i.type;
                     rule  = i.rule;
                     index = i.index;
+                    name  = i.name;
                 }
                 return *this;
             }
@@ -75,6 +77,7 @@ namespace QLanguage
             }
         };
     public:
+        Production() {}
         Production(const Item& left) : left(left), index(inc()) {}
         Production(const Item& left, const Item& item) : left(left), index(inc()) { right.push_back(item); }
         Production(const Item& left, const vector<Item>& right) : left(left), right(right), index(inc()) {}

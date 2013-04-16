@@ -19,6 +19,7 @@ namespace QLanguage
     class LR0Production : public Production
     {
     public:
+        LR0Production() : Production() {}
         LR0Production(const Production::Item& left) : Production(left), idx(0) {}
         LR0Production(const Production::Item& left, const vector<Production::Item>& right) : Production(left, right), idx(0) {}
         LR0Production(const Production& p) : Production(p), idx(0) {}
@@ -130,6 +131,11 @@ namespace QLanguage
                 return type == x.type && (type == End ? true : rule == x.rule);
             }
 
+            inline const bool operator!=(const Item& x)const
+            {
+                return type != x.type || (type == End ? true : rule != x.rule);
+            }
+
             Item& operator=(const Item& x)
             {
                 if (&x == this) return *this;
@@ -140,14 +146,15 @@ namespace QLanguage
             }
         };
 
+        LALR1Production() : LR0Production() {}
         LALR1Production(const Production::Item& left) : LR0Production(left) {}
         LALR1Production(const Production::Item& left, const vector<Production::Item>& right) : LR0Production(left, right) {}
         LALR1Production(const LALR1Production& p) : LR0Production(p), wildCards(p.wildCards) {}
         LALR1Production(const LR0Production& p) : LR0Production(p) {}
 
-        inline const bool operator==(const LR0Production& p)const
+        inline const bool operator==(const LALR1Production& p)const
         {
-            return operator==(dynamic_cast<const LR0Production&>(p));
+            return wildCards == p.wildCards && static_cast<LR0Production>(*this) == static_cast<LR0Production>(p);
         }
 
         void print()const
