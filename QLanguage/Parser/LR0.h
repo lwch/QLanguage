@@ -14,6 +14,7 @@
 
 #include "../../QCore/Library/vector.h"
 #include "../../QCore/Library/hashmap.h"
+#include "../../QCore/Library/hashset.h"
 
 #include "LRProduction.h"
 
@@ -139,6 +140,7 @@ namespace QLanguage
         Production::Item start;
         map<Production::Item, vector<Production> > productionMap;
         vector<Production> inputProductions;
+        vector<Item*>      items;
 
         hashmap<Item*, vector<Edge> > edges;
         Item*      pStart;

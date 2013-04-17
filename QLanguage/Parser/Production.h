@@ -70,6 +70,16 @@ namespace QLanguage
                 return (index != x.index && type != x.type) || (type == TerminalSymbol ? rule != x.rule : false);
             }
 
+            inline const bool isNoTerminalSymbol()const
+            {
+                return type == NoTerminalSymbol;
+            }
+
+            inline const bool isTermainalSymbol()const
+            {
+                return type == TerminalSymbol;
+            }
+
             static uint inc()
             {
                 static uint i = 0;

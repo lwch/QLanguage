@@ -27,8 +27,10 @@ namespace QLanguage
             uint idx;
 
             Item() : idx(inc()) {}
+            Item(const LR0::Item* pLR0Item) : idx(inc()) { createFromLR0(pLR0Item); }
 #else
             Item() {}
+            Item(const LR0::Item* pLR0Item) { createFromLR0(pLR0Item); }
 #endif
 
             inline const bool operator==(const Item& x)const
@@ -40,6 +42,17 @@ namespace QLanguage
             {
                 static uint i = 0;
                 return i++;
+            }
+
+            void createFromLR0(const LR0::Item* pLR0Item)
+            {
+                for (map<Production::Item, vector<LR0Production> >::const_iterator j = pLR0Item->data.begin(), n = pLR0Item->data.end(); j != n; ++j)
+                {
+                    for (vector<LR0Production>::const_iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
+                    {
+                        if (k->bKernel) data.push_back(*k);
+                    }
+                }
             }
         };
 
@@ -105,29 +118,23 @@ namespace QLanguage
 
         typedef allocator<Item> Item_Alloc;
     public:
-        LALR1(const vector<Production>& productions, const Production::Item& start);
+        LALR1(LR0& lr0);
 
         bool make();
 
         void print();
         void print(const string& path);
     protected:
-        void closure(vector<LALR1Production>& kernel);
-        void afirst(const LALR1Production& p, size_t pos, vector<LALR1Production::Item>& v);
-        void first(const LALR1Production& p, size_t pos, vector<LALR1Production::Item>& v);
-//         void closure(Item* pItem, bool& bContinue);
-//         Item* go(Item* pItem, const Production::Item& x);
-//         void afirst(const LALR1Production& p, vector<LALR1Production::Item>& v);
-//         void appendWildCards(Item* pItem, const Production::Item& left, const vector<LALR1Production::Item>& v, vector<Production::Item>& vts, bool& bContinue);
-//         void spreadWildCards(Item* pItem, const vector<LALR1Production::Item>& v, bool& bContinue);
+        Item* closure(Item* pKernel);
+        void first(vector<Production::Item>::const_iterator first, vector<Production::Item>::const_iterator last, const vector<LALR1Production::Item>& wildCards, vector<LALR1Production::Item>& v);
     protected:
-        map<Production::Item, map<size_t, vector<LALR1Production> > > productionMap;
-        Production::Item begin;
+        LR0& lr0;
 
         Item*      pStart;
         set<Item*> pEnd;
         hashmap<Item*, vector<Edge> > edges;
         vector<Item*> items;
+        vector<Item*> kernels;
 
         Context context;
     };

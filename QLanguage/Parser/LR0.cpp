@@ -29,11 +29,14 @@ namespace QLanguage
         vector<LR0Production> kernel;
         vector<Production::Item> right;
         right.push_back(start);
-        kernel.push_back(LR0Production(Production::Item("begin"), right));
+        LR0Production p(Production::Item("begin"), right);
+        p.bKernel = true;
+        kernel.push_back(p);
 
         typedef pair<Item*, vector<Production::Item> > pair_type;
         vector<Production::Item> v;
         pStart = closure(kernel);
+        items.push_back(pStart);
         vs(pStart, v);
         queue<pair_type> s;
         s.push(pair_type(pStart, v));
@@ -48,6 +51,7 @@ namespace QLanguage
                 pair<Item*, bool> pNewItem = go(item.first, *i);
                 edges[item.first].push_back(Edge(item.first, pNewItem.first, *i));
                 if (!pNewItem.second) continue;
+                items.push_back(pNewItem.first);
                 for (map<LR0Production::Item, vector<LR0Production> >::iterator j = pNewItem.first->data.begin(), n = pNewItem.first->data.end(); j != n; ++j)
                 {
                     for (vector<LR0Production>::iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
@@ -121,7 +125,12 @@ namespace QLanguage
             {
                 if (k->right[k->idx] == x)
                 {
-                    if (k->idx < k->right.size()) closure(k->stepUp(), pItem->data);
+                    if (k->idx < k->right.size())
+                    {
+                        LR0Production p = k->stepUp();
+                        p.bKernel = true;
+                        closure(p, pItem->data);
+                    }
                 }
             }
         }

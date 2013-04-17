@@ -19,11 +19,11 @@ namespace QLanguage
     class LR0Production : public Production
     {
     public:
-        LR0Production() : Production() {}
-        LR0Production(const Production::Item& left) : Production(left), idx(0) {}
-        LR0Production(const Production::Item& left, const vector<Production::Item>& right) : Production(left, right), idx(0) {}
-        LR0Production(const Production& p) : Production(p), idx(0) {}
-        LR0Production(const LR0Production& p) : Production(p), idx(p.idx) {}
+        LR0Production() : Production(), bKernel(false) {}
+        LR0Production(const Production::Item& left) : Production(left), idx(0), bKernel(false) {}
+        LR0Production(const Production::Item& left, const vector<Production::Item>& right) : Production(left, right), idx(0), bKernel(false) {}
+        LR0Production(const Production& p) : Production(p), idx(0), bKernel(false) {}
+        LR0Production(const LR0Production& p) : Production(p), idx(p.idx), bKernel(p.bKernel) {}
 
         inline const bool operator==(const LR0Production& p)const
         {
@@ -55,9 +55,10 @@ namespace QLanguage
         {
             if (&p != this)
             {
-                left  = p.left;
-                right = p.right;
-                idx   = p.idx;
+                left    = p.left;
+                right   = p.right;
+                idx     = p.idx;
+                bKernel = p.bKernel;
             }
             return *this;
         }
@@ -76,6 +77,7 @@ namespace QLanguage
                 }
                 else printf(" %s", i->name.c_str());
             }
+            if (bKernel) printf("(Kernel)");
             printf("\n");
         }
 
@@ -93,6 +95,7 @@ namespace QLanguage
                 }
                 else fs << string::format(" %s", i->name.c_str());
             }
+            if (bKernel) fs << "(Kernel)";
             fs << endl;
         }
 
@@ -111,6 +114,7 @@ namespace QLanguage
         }
     public:
         size_t idx;
+        bool   bKernel;
     };
 
     class LALR1Production : public LR0Production
