@@ -52,7 +52,7 @@ int main()
     LALR1 lalr1(lr0);
     lalr1.make();
 
-    lalr1.print();
+    lalr1.print("LALR1.txt");
 
     return 0;
 }

@@ -22,67 +22,136 @@ namespace QLanguage
 
     bool LALR1::make()
     {
-        kernels.clear();
-        kernels.reserve(lr0.items.size());
-        for (vector<LR0::Item*>::const_iterator i = lr0.items.begin(), m = lr0.items.end(); i != m; ++i)
+        items.clear();
+        items.reserve(lr0.items.size());
+        hashmap<LR0::Item*, Item*> hm;
+        for (hashmap<LR0::Item*, vector<LR0::Edge> >::const_iterator i = lr0.edges.begin(), m = lr0.edges.end(); i != m; ++i)
         {
-            Item* pItem = allocator<Item>::allocate();
-            construct(pItem, *i);
-            context.states.insert(pItem);
+            for (vector<LR0::Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+            {
+                if (hm[j->pFrom] == NULL)
+                {
+                    hm[j->pFrom] = Item_Alloc::allocate();
+                    construct(hm[j->pFrom], *j->pFrom);
+                    context.states.insert(hm[j->pFrom]);
+                    items.push_back(hm[j->pFrom]);
+                }
 
-            kernels.push_back(pItem);
+                if (hm[j->pTo] == NULL)
+                {
+                    hm[j->pTo] = Item_Alloc::allocate();
+                    construct(hm[j->pTo], *j->pTo);
+                    context.states.insert(hm[j->pTo]);
+                    items.push_back(hm[j->pTo]);
+                }
+
+                edges[hm[j->pFrom]].push_back(Edge(hm[j->pFrom], hm[j->pTo], j->item));
+            }
         }
-        for (vector<Item*>::const_iterator i = kernels.begin(), m = kernels.end(); i != m; ++i)
+        pStart = hm[lr0.pStart];
+        for (vector<LALR1Production>::iterator i = pStart->data.begin(), m = pStart->data.end(); i != m; ++i)
         {
-            Item* pItem = closure(*i);
+            if (i->left.name == "begin") i->wildCards.push_back(LALR1Production::Item());
+        }
+        for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
+        {
+            vector<Production::Item> vts;
+            closure(*i, vts);
+            for (vector<LALR1Production>::const_iterator j = (*i)->data.begin(), n = (*i)->data.end(); j != n; ++j)
+            {
+                for (vector<Edge>::iterator k = edges[*i].begin(), o = edges[*i].end(); k != o; ++k)
+                {
+                    for (vector<Production::Item>::const_iterator a = vts.begin(), b = vts.end(); a != b; ++a)
+                    {
+                        if (k->item == *a) go(*j, k->pTo, *a);
+                    }
+                }
+            }
+        }
+        bool bContinue = true;
+        while (bContinue)
+        {
+            bContinue = false;
+            for (vector<Item*>::iterator i = items.begin(), m = items.end(); i != m; ++i)
+            {
+                for (vector<Edge>::iterator j = edges[*i].begin(), n = edges[*i].end(); j != n; ++j)
+                {
+                    for (vector<LALR1Production>::iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
+                    {
+                        for (vector<LALR1Production>::iterator a = j->pTo->data.begin(), b = j->pTo->data.end(); a != b; ++a)
+                        {
+                            size_t size = a->wildCards.size();
+                            a->wildCards.add_unique(k->wildCards);
+                            if (a->wildCards.size() > size) bContinue = true;
+                        }
+                    }
+                }
+            }
         }
         return true;
     }
 
-    LALR1::Item* LALR1::closure(Item* pKernel)
+    void LALR1::closure(Item* pKernel, vector<Production::Item>& vts)
     {
-        Item* pItem = allocator<Item>::allocate();
-        construct(pItem);
-        context.states.insert(pItem);
-        pItem->data.add(pKernel->data);
-
         size_t iCount = 0;
-        while (iCount < pItem->data.size())
+        while (iCount < pKernel->data.size())
         {
-            LALR1Production& temp = pItem->data[iCount];
+            LALR1Production& temp = pKernel->data[iCount];
             vector<LALR1Production::Item> v;
-            first(temp.right.begin() + temp.idx, temp.right.end(), temp.wildCards, v);
+            first(temp.right.begin() + temp.idx + 1, temp.right.end(), temp.wildCards, v);
             if (temp.idx < temp.right.size() && temp.right[temp.idx].isNoTerminalSymbol())
             {
                 for (vector<Production>::const_iterator i = lr0.productionMap[temp.right[temp.idx]].begin(), m = lr0.productionMap[temp.right[temp.idx]].end(); i != m; ++i)
                 {
                     LALR1Production p(i->left, i->right);
                     p.wildCards.add_unique(v);
-                    pItem->data.push_back_unique(p);
+                    pKernel->data.push_back_unique(p);
+                    vts.push_back_unique(p.right[p.idx]);
                 }
             }
             ++iCount;
         }
-        return pItem;
+    }
+
+    void LALR1::go(const LALR1Production& p, Item* pTo, const Production::Item& item)
+    {
+        for (vector<LALR1Production>::iterator i = pTo->data.begin(), m = pTo->data.end(); i != m; ++i)
+        {
+            if (i->idx > 0 && i->right[i->idx - 1] == item) i->wildCards.add_unique(p.wildCards);
+        }
     }
 
     void LALR1::first(vector<Production::Item>::const_iterator first, vector<Production::Item>::const_iterator last, const vector<LALR1Production::Item>& wildCards, vector<LALR1Production::Item>& v)
     {
-        if (first->isTermainalSymbol()) v.push_back_unique(first->rule);
+        if (first >= last) v.add(wildCards);
+        else if (first->isTermainalSymbol()) v.push_back_unique(first->rule);
         else
         {
+            queue<Production::Item> q;
+            set<Production::Item> s;
             for (; first != last; ++first)
             {
-                if (first->isNoTerminalSymbol()) break;
+                if (first->isTermainalSymbol()) break;
                 else
                 {
-                    for (vector<Production>::const_iterator i = lr0.productionMap[*first].begin(), m = lr0.productionMap[*first].end(); i != m; ++i)
-                    {
-                        this->first(i->right.begin(), i->right.end(), wildCards, v);
-                    }
+                    q.push(*first);
                 }
             }
-            if (first == last) v.add_unique(wildCards);
+            bool bAddWildCards = false;
+            if (first == last) bAddWildCards = true;
+            while (!q.empty())
+            {
+                for (vector<Production>::const_iterator i = lr0.productionMap[q.front()].begin(), m = lr0.productionMap[q.front()].end(); i != m; ++i)
+                {
+                    if (i->right[0].isTermainalSymbol()) v.push_back_unique(i->right[0].rule);
+                    else
+                    {
+                        if (s.insert(i->right[0]).second) q.push(i->right[0]);
+                    }
+                }
+                q.pop();
+            }
+            if (bAddWildCards) v.add_unique(wildCards);
         }
     }
 

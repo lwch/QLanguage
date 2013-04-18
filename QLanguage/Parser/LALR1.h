@@ -27,10 +27,10 @@ namespace QLanguage
             uint idx;
 
             Item() : idx(inc()) {}
-            Item(const LR0::Item* pLR0Item) : idx(inc()) { createFromLR0(pLR0Item); }
+            Item(const LR0::Item& lr0Item) : idx(inc()) { createFromLR0(lr0Item); }
 #else
             Item() {}
-            Item(const LR0::Item* pLR0Item) { createFromLR0(pLR0Item); }
+            Item(const LR0::Item& lr0Item) { createFromLR0(lr0Item); }
 #endif
 
             inline const bool operator==(const Item& x)const
@@ -44,9 +44,9 @@ namespace QLanguage
                 return i++;
             }
 
-            void createFromLR0(const LR0::Item* pLR0Item)
+            void createFromLR0(const LR0::Item& lr0Item)
             {
-                for (map<Production::Item, vector<LR0Production> >::const_iterator j = pLR0Item->data.begin(), n = pLR0Item->data.end(); j != n; ++j)
+                for (map<Production::Item, vector<LR0Production> >::const_iterator j = lr0Item.data.begin(), n = lr0Item.data.end(); j != n; ++j)
                 {
                     for (vector<LR0Production>::const_iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
                     {
@@ -125,7 +125,8 @@ namespace QLanguage
         void print();
         void print(const string& path);
     protected:
-        Item* closure(Item* pKernel);
+        void closure(Item* pKernel, vector<Production::Item>& vts);
+        void go(const LALR1Production& p, Item* pTo, const Production::Item& item);
         void first(vector<Production::Item>::const_iterator first, vector<Production::Item>::const_iterator last, const vector<LALR1Production::Item>& wildCards, vector<LALR1Production::Item>& v);
     protected:
         LR0& lr0;
@@ -134,7 +135,6 @@ namespace QLanguage
         set<Item*> pEnd;
         hashmap<Item*, vector<Edge> > edges;
         vector<Item*> items;
-        vector<Item*> kernels;
 
         Context context;
     };

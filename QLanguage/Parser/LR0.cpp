@@ -16,7 +16,7 @@
 
 namespace QLanguage
 {
-    LR0::LR0(const vector<Production>& productions, const Production::Item& start) : start(start), inputProductions(productions), pStart(NULL)
+    LR0::LR0(const vector<Production>& productions, const Production::Item& start) : begin("begin"), start(start), inputProductions(productions), pStart(NULL)
     {
         for (vector<Production>::const_iterator i = productions.begin(), m = productions.end(); i != m; ++i)
         {
@@ -29,7 +29,7 @@ namespace QLanguage
         vector<LR0Production> kernel;
         vector<Production::Item> right;
         right.push_back(start);
-        LR0Production p(Production::Item("begin"), right);
+        LR0Production p(begin, right);
         p.bKernel = true;
         kernel.push_back(p);
 

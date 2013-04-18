@@ -137,6 +137,7 @@ namespace QLanguage
         pair<Item*, bool> go(Item* i, const Production::Item& x);
         void vs(Item* i, vector<Production::Item>& v);
     protected:
+        Production::Item begin;
         Production::Item start;
         map<Production::Item, vector<Production> > productionMap;
         vector<Production> inputProductions;
