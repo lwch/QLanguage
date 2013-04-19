@@ -16,11 +16,6 @@
 
 namespace QLanguage
 {
-//     inline const bool compare_edge(const LALR1::Edge& e, const Production::Item& i)
-//     {
-//         return true;
-//     }
-
     LALR1::LALR1(LR0& lr0) : lr0(lr0)
     {
     }
@@ -210,17 +205,17 @@ namespace QLanguage
         }
     }
 
-    const bool LALR1::compare_edge(const Edge& e, const Production::Item& i)
+    inline const bool LALR1::compare_edge(const Edge& e, const Production::Item& i)
     {
         return e.item == i;
     }
 
-    const bool LALR1::isVN(const Production::Item& i)
+    inline const bool LALR1::isVN(const Production::Item& i)
     {
         return i.isNoTerminalSymbol();
     }
 
-    const bool LALR1::isVT(const Production::Item& i)
+    inline const bool LALR1::isVT(const Production::Item& i)
     {
         return i.isTermainalSymbol();
     }

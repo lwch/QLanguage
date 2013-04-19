@@ -131,9 +131,9 @@ namespace QLanguage
         void buildParserTable();
         void fillTable(Item* pItem, const Production::Item& c);
 
-        static const bool compare_edge(const Edge& e, const Production::Item& i);
-        static const bool isVN(const Production::Item& i);
-        static const bool isVT(const Production::Item& i);
+        inline static const bool compare_edge(const Edge& e, const Production::Item& i);
+        inline static const bool isVN(const Production::Item& i);
+        inline static const bool isVT(const Production::Item& i);
     protected:
         LR0& lr0;
 

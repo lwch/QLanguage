@@ -138,19 +138,28 @@ namespace QLanguage
             catch (const error<char*>& e) \
             { \
                 e.print(); \
+                return false; \
             }\
             catch (const error<const char*>& e) \
             { \
                 e.print(); \
+                return false; \
             } \
             catch (const error<string>& e) \
             { \
                 e.print(); \
+                return false; \
             } \
             catch (const error<const string>& e) \
             { \
-            e.print(); \
-        } \
+                e.print(); \
+                return false; \
+            } \
+            catch (...) \
+            { \
+                PrintError("unknown error"); \
+                return false; \
+            } \
         } \
         void Case_##moduleName()
 
