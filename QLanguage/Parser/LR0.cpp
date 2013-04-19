@@ -193,7 +193,7 @@ namespace QLanguage
     void LR0::print(const string& path)
     {
         hashset<Item*> s;
-        fstream fs(path, fstream::out | fstream::text);
+        fstream fs(path, fstream::out);
         fs << "-------- LR(0) Start --------" << endl;
 #ifdef _DEBUG
         for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)

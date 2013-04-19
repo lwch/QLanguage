@@ -13,6 +13,14 @@
     </Expand>
   </Type>
   
+  <Type Name="QLanguage::Library::__vector_iterator&lt;*&gt;">
+    <AlternativeType Name="QLanguage::Library::__vector_const_iterator&lt;*&gt;" />
+    <DisplayString>{*node}</DisplayString>
+    <Expand>
+      <Item Name="[ptr]">node</Item>
+    </Expand>
+  </Type>
+  
   <Type Name="QLanguage::Library::list&lt;*&gt;">
     <DisplayString>{{ size={length} }}</DisplayString>
     <Expand>
@@ -22,6 +30,14 @@
         <NextPointer>next</NextPointer>
         <ValueNode>data</ValueNode>
       </LinkedListItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::__list_iterator&lt;*&gt;">
+    <AlternativeType Name="QLanguage::Library::__list_const_iterator&lt;*&gt;" />
+    <DisplayString>{node-&gt;data}</DisplayString>
+    <Expand>
+      <Item Name="[ptr]">&amp;node-&gt;data</Item>
     </Expand>
   </Type>
   
@@ -43,6 +59,14 @@
         <RightPointer>right</RightPointer>
         <ValueNode>data</ValueNode>
       </TreeItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::__rbtree_iterator&lt;*&gt;">
+    <AlternativeType Name="QLanguage::Library::__rbtree_const_iterator&lt;*&gt;" />
+    <DisplayString>{node-&gt;data}</DisplayString>
+    <Expand>
+      <Item Name="[ptr]">&amp;node-&gt;data</Item>
     </Expand>
   </Type>
   
@@ -77,6 +101,14 @@
     </Expand>
   </Type>
   
+  <Type Name="QLanguage::Library::__hashtable_iterator&lt;*&gt;">
+    <AlternativeType Name="QLanguage::Library::__hashtable_const_iterator&lt;*&gt;" />
+    <DisplayString>{node-&gt;data}</DisplayString>
+    <Expand>
+      <Item Name="[ptr]">&amp;node-&gt;data</Item>
+    </Expand>
+  </Type>
+  
   <Type Name="QLanguage::Library::hashmap&lt;*,*&gt;">
     <DisplayString>{{ size={container.length} }}</DisplayString>
 	<Expand>
@@ -105,6 +137,15 @@
         <Size>finish.node - start.node</Size>
         <ValuePointer>start.node</ValuePointer>
       </ArrayItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::Library::__basic_string_iterator&lt;*&gt;">
+    <AlternativeType Name="QLanguage::Library::__basic_string_const_iterator&lt;*&gt;" />
+    <DisplayString>{node}</DisplayString>
+    <StringView>node</StringView>
+    <Expand>
+      <Item Name="[ptr]">node</Item>
     </Expand>
   </Type>
 

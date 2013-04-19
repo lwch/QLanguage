@@ -97,9 +97,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             append = 1,
             in     = 2,
-            out    = 4,
-            binary = 8,
-            text   = 16
+            out    = 4
         };
 
         fstream_basic() : parent_i(), parent_o(), buffer_write(this), buffer_read(this), bOpen(false), iFile(0) {}
@@ -123,7 +121,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             if (is_open()) throw error<string>("file is open", __FILE__, __LINE__);
 
             int flag = 0;
-            switch (mode & (~binary & ~text))
+            switch (mode)
             {
             case out | append:
                 flag = O_WRONLY | O_APPEND | O_CREAT;
@@ -143,8 +141,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             }
 
 #ifdef WIN32
-            flag |= (mode & binary) ? O_BINARY : O_TEXT;
-            mode |= (mode & binary) ? mode : text;
+            flag |= O_BINARY;
 #endif
 
             iFile = ::OPEN(path, flag, S_IREAD | S_IWRITE);
@@ -175,8 +172,6 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         }
 
         inline const uchar open_mode()const            { return ucOpenMode;             }
-        inline const bool is_binary()const             { return ucOpenMode & binary;    }
-        inline const bool is_text()const               { return ucOpenMode & text;      }
         inline const bool is_open()const               { return bOpen;                  }
         inline const size_type write_cache_size()const { return buffer_write.size();    }
         inline const size_type read_cache_size()const  { return buffer_read.size();     }
