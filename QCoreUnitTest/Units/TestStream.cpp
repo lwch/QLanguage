@@ -17,9 +17,9 @@ TEST_CASE(TestStream)
     fstream fs("C:\\test.txt", fstream::in | fstream::out);
     TEST_ASSERT(fs.size() != 0, "file size error!");
     fs << 'a' << " for test." << endl;
-    TEST_ASSERT(fs.size() + fs.write_cache_size() != 12, "file size and cache size error!");
+    TEST_ASSERT(fs.size() + fs.write_cache_size() != 13, "file size and cache size error!");
     fs.flush();
-    TEST_ASSERT(fs.size() != 12, "file size error!");
+    TEST_ASSERT(fs.size() != 13, "file size error!");
 
     bool b = false;
     short s = 1;
@@ -31,9 +31,9 @@ TEST_CASE(TestStream)
     llong ll = 7;
     ullong ull = 8;
     fs << b << s << us << i << ui << l << ul << ll << ull;
-    TEST_ASSERT(fs.size() + fs.write_cache_size() != 21, "file size and cache size error!");
+    TEST_ASSERT(fs.size() + fs.write_cache_size() != 22, "file size and cache size error!");
     fs.flush();
-    TEST_ASSERT(fs.size() != 21, "file size error!");
+    TEST_ASSERT(fs.size() != 22, "file size error!");
     fs.seek(-9, fstream::current);
     fs >> s;
 #endif

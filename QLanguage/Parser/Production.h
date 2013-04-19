@@ -100,6 +100,7 @@ namespace QLanguage
 
         void print()const
         {
+#ifdef _DEBUG
             printf("%s ->", left.name.c_str());
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
             {
@@ -111,10 +112,12 @@ namespace QLanguage
                 else printf(" %s", i->name.c_str());
             }
             printf("\n");
+#endif
         }
 
         void print(fstream& fs)const
         {
+#ifdef _DEBUG
             fs << string::format("%s ->", left.name.c_str());
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
             {
@@ -126,6 +129,7 @@ namespace QLanguage
                 else fs << string::format(" %s", i->name.c_str());
             }
             fs << endl;
+#endif
         }
     protected:
         static uint inc()

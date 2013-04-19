@@ -134,6 +134,12 @@ void CallStack::getFuncInfo(UINT_PTR dwFunc, FuncInfo& info)
     }
 }
 
+CallStack& CallStack::getInstance()
+{
+    static CallStack cs;
+    return cs;
+}
+
 #endif
 
 NAMESPACE_QLANGUAGE_LIBRARY_END

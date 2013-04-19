@@ -56,7 +56,7 @@ namespace QLanguage
                 {
                     for (vector<LR0Production>::iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
                     {
-                        if (k->idx - 1 > 0 && k->right[k->idx - 1] == start) pEnds.insert(pNewItem.first);
+                        if (k->idx >= 1 && k->right[k->idx - 1] == start) pEnds.insert(pNewItem.first);
                     }
                 }
                 v.clear();
@@ -123,7 +123,7 @@ namespace QLanguage
         {
             for (vector<LR0Production>::iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
             {
-                if (k->right[k->idx] == x)
+                if (k->idx < k->right.size() - 1 && k->right[k->idx] == x)
                 {
                     if (k->idx < k->right.size())
                     {

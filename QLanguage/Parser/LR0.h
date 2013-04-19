@@ -65,6 +65,7 @@ namespace QLanguage
 
             void print()const
             {
+#ifdef _DEBUG
                 printf("%03d -> %03d", pFrom->idx, pTo->idx);
                 if (item.type == Production::Item::TerminalSymbol)
                 {
@@ -74,10 +75,12 @@ namespace QLanguage
                 }
                 else printf("(%s)", item.name.c_str());
                 printf("\n");
+#endif
             }
 
             void print(fstream& fs)const
             {
+#ifdef _DEBUG
                 fs << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
                 if (item.type == Production::Item::TerminalSymbol)
                 {
@@ -87,6 +90,7 @@ namespace QLanguage
                 }
                 else fs << string::format("(%s)", item.name.c_str());
                 fs << endl;
+#endif
             }
         };
 

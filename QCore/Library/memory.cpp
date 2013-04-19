@@ -42,7 +42,7 @@ MemoryPool::~MemoryPool()
             for (DWORD j = 0; j < pObj->dwCallStackDepth; ++j)
             {
                 CallStack::FuncInfo funcInfo;
-                callStack.getFuncInfo(pObj->callStack[j], funcInfo);
+                CallStack::getInstance().getFuncInfo(pObj->callStack[j], funcInfo);
                 printf("MemoryLeaked: %s\nFile: %s in line %d\n", funcInfo.szFuncName, funcInfo.szFilePath, funcInfo.dwLineNumber);
             }
 #endif
@@ -73,7 +73,7 @@ void MemoryPool::clear()
             for (DWORD i = 0; i < current->dwCallStackDepth; ++i)
             {
                 CallStack::FuncInfo info;
-                callStack.getFuncInfo(current->callStack[i], info);
+                CallStack::getInstance().getFuncInfo(current->callStack[i], info);
                 printf("ERROR: %s\n%s on line %d", info.szFuncName, info.szFilePath, info.dwLineNumber);
             }
 #endif
@@ -122,7 +122,7 @@ void* MemoryPool::allocate(size_type n, void(*h)(size_type))
 
 #if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     memset(chunk_list[i]->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
-    chunk_list[i]->dwCallStackDepth = callStack.stackTrace(chunk_list[i]->callStack, CALLSTACK_MAX_DEPTH);
+    chunk_list[i]->dwCallStackDepth = CallStack::getInstance().stackTrace(chunk_list[i]->callStack, CALLSTACK_MAX_DEPTH);
 #endif
     chunk_list[i]->released = false;
 #endif
@@ -217,7 +217,7 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
     }
 #if DEBUG_LEVEL == 3 && defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     memset(pBlock->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
-    pBlock->dwCallStackDepth = callStack.stackTrace(pBlock->callStack, CALLSTACK_MAX_DEPTH);
+    pBlock->dwCallStackDepth = CallStack::getInstance().stackTrace(pBlock->callStack, CALLSTACK_MAX_DEPTH);
 #endif
     pBlock->data = p;
     pBlock->next = free_list;
@@ -228,7 +228,7 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
     addUseInfo(current);
 #if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     memset(current->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
-    current->dwCallStackDepth = callStack.stackTrace(current->callStack, CALLSTACK_MAX_DEPTH);
+    current->dwCallStackDepth = CallStack::getInstance().stackTrace(current->callStack, CALLSTACK_MAX_DEPTH);
 #endif
     current->released = false;
 #endif

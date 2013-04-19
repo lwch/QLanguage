@@ -22,7 +22,7 @@
 using namespace QLanguage;
 using namespace QLanguage::Library;
 
-int main(int argv, char** args)
+int main(int argv, char* args[])
 {
     if (argv >= 2)
     {
@@ -54,19 +54,25 @@ int main(int argv, char** args)
             Rule quotationMarks = Rule('\"', &context);
             Rule ruleString = quotationMarks + *!quotationMarks + quotationMarks;
             ruleString.buildDFA();
+#ifdef _DEBUG
             ruleString.setShowName("\"{String}\"");
+#endif
             // String End
 
             // Token Start
             Rule ruleToken("%token", &context);
             ruleToken.buildDFA();
+#ifdef _DEBUG
             ruleToken.setShowName("%token");
+#endif
             // Token End
 
             // Start Start
             Rule ruleStart("%start", &context);
             ruleStart.buildDFA();
+#ifdef _DEBUG
             ruleStart.setShowName("%start");
+#endif
             // Start End
 
             // Digit Start
@@ -88,25 +94,33 @@ int main(int argv, char** args)
                 (+(_ | _a_z | _A_Z))) +
                 *(_ | ruleDigit | _a_z | _A_Z);
             ruleLetter.buildDFA();
+#ifdef _DEBUG
             ruleLetter.setShowName("\"{Letter}\"");
+#endif
             // Letter End
 
             // Arrow Start
             Rule ruleArrow("->", &context);
             ruleArrow.buildDFA();
+#ifdef _DEBUG
             ruleArrow.setShowName("->");
+#endif
             // Arrow End
 
             // Or Start
             Rule ruleOr('|', &context);
             ruleOr.buildDFA();
+#ifdef _DEBUG
             ruleOr.setShowName("|");
+#endif
             // Or End
 
             // Semicolon Start
             Rule ruleSemicolon(';', &context);
             ruleSemicolon.buildDFA();
+#ifdef _DEBUG
             ruleSemicolon.setShowName(";");
+#endif
             // Semicolon End
 
             vector<Production::Item> v;
@@ -234,10 +248,22 @@ int main(int argv, char** args)
             Console::SetColor(true, true, true, true);
             Console::WriteLine("Use of time: %d", c);
         }
+        catch (const error<char*>& e)
+        {
+            e.print();
+        }
+        catch (const error<const char*>& e)
+        {
+            e.print();
+        }
         catch (const error<string>& e)
         {
+            e.print();
+        }
+        catch (...)
+        {
             Console::SetColor(true, false, false, true);
-            Console::WriteLine(e.description);
+            Console::WriteLine("unknown error");
         }
         Console::SetColor(true, true, true, false);
     }

@@ -130,16 +130,27 @@ namespace QLanguage
                 PrintInformation(string::format("%s run successed!", #moduleName)); \
                 return true; \
             } \
-            catch(const char* e) \
+            catch (const char* e) \
             { \
                 PrintError(e); \
                 return false; \
             } \
-            catch(const error<string>& e) \
+            catch (const error<char*>& e) \
             { \
-                PrintError(e.description); \
-                return false; \
+                e.print(); \
+            }\
+            catch (const error<const char*>& e) \
+            { \
+                e.print(); \
             } \
+            catch (const error<string>& e) \
+            { \
+                e.print(); \
+            } \
+            catch (const error<const string>& e) \
+            { \
+            e.print(); \
+        } \
         } \
         void Case_##moduleName()
 

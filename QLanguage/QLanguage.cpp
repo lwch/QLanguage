@@ -49,10 +49,10 @@ int main()
 
     lr0.print();
 
-    LALR1 lalr1(lr0);
-    lalr1.make();
-
-    lalr1.print("LALR1.txt");
+//     LALR1 lalr1(lr0);
+//     lalr1.make();
+// 
+//     lalr1.print("LALR1.txt");
 
     return 0;
 }

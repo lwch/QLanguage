@@ -19,19 +19,15 @@ namespace QLanguage
 {
     class LALR1
     {
+    public:
         class Item
         {
         public:
             vector<LALR1Production> data;
-#ifdef _DEBUG
             uint idx;
 
             Item() : idx(inc()) {}
             Item(const LR0::Item& lr0Item) : idx(inc()) { createFromLR0(lr0Item); }
-#else
-            Item() {}
-            Item(const LR0::Item& lr0Item) { createFromLR0(lr0Item); }
-#endif
 
             inline const bool operator==(const Item& x)const
             {
@@ -71,6 +67,7 @@ namespace QLanguage
 
             void print()const
             {
+#ifdef _DEBUG
                 printf("%03d -> %03d", pFrom->idx, pTo->idx);
                 if (item.type == Production::Item::TerminalSymbol)
                 {
@@ -80,10 +77,12 @@ namespace QLanguage
                 }
                 else printf("(%s)", item.name.c_str());
                 printf("\n");
+#endif
             }
 
             void print(fstream& fs)const
             {
+#ifdef _DEBUG
                 fs << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
                 if (item.type == Production::Item::TerminalSymbol)
                 {
@@ -93,9 +92,10 @@ namespace QLanguage
                 }
                 else fs << string::format("(%s)", item.name.c_str());
                 fs << endl;
+#endif
             }
         };
-
+    protected:
         class Context
         {
         public:
@@ -128,6 +128,12 @@ namespace QLanguage
         void closure(Item* pKernel, vector<Production::Item>& vts);
         void go(const LALR1Production& p, Item* pTo, const Production::Item& item);
         void first(vector<Production::Item>::const_iterator first, vector<Production::Item>::const_iterator last, const vector<LALR1Production::Item>& wildCards, vector<LALR1Production::Item>& v);
+        void buildParserTable();
+        void fillTable(Item* pItem, const Production::Item& c);
+
+        static const bool compare_edge(const Edge& e, const Production::Item& i);
+        static const bool isVN(const Production::Item& i);
+        static const bool isVT(const Production::Item& i);
     protected:
         LR0& lr0;
 
@@ -135,6 +141,10 @@ namespace QLanguage
         set<Item*> pEnd;
         hashmap<Item*, vector<Edge> > edges;
         vector<Item*> items;
+
+        vector<pair<uchar, uint> > table;
+        vector<Production::Item>   vns;
+        vector<Production::Item>   vts;
 
         Context context;
     };

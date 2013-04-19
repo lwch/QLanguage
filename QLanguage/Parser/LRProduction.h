@@ -65,6 +65,7 @@ namespace QLanguage
 
         void print()const
         {
+#ifdef _DEBUG
             printf("%s ->", left.name.c_str());
             uint j = 0;
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i,++j)
@@ -79,10 +80,12 @@ namespace QLanguage
             }
             if (bKernel) printf("(Kernel)");
             printf("\n");
+#endif
         }
 
         void print(fstream& fs)const
         {
+#ifdef _DEBUG
             fs << string::format("%s ->", left.name.c_str());
             uint j = 0;
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i,++j)
@@ -97,6 +100,7 @@ namespace QLanguage
             }
             if (bKernel) fs << "(Kernel)";
             fs << endl;
+#endif
         }
 
         inline LR0Production stepUp()
@@ -163,6 +167,7 @@ namespace QLanguage
 
         void print()const
         {
+#ifdef _DEBUG
             parent::print();
             printf("wildCards:\n");
             for (vector<Item>::const_iterator i = wildCards.begin(), m = wildCards.end(); i != m; ++i)
@@ -175,10 +180,12 @@ namespace QLanguage
                 else printf("# ");
             }
             printf("\n");
+#endif
         }
 
         void print(fstream& fs)const
         {
+#ifdef _DEBUG
             parent::print(fs);
             fs << "wildCards:" << endl;
             for (vector<Item>::const_iterator i = wildCards.begin(), m = wildCards.end(); i != m; ++i)
@@ -191,6 +198,7 @@ namespace QLanguage
                 else fs << "# ";
             }
             fs << endl;
+#endif
         }
     public:
         vector<Item> wildCards;

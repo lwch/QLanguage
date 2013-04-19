@@ -447,7 +447,9 @@ public:
 
         ~Rule() {}
 
+#ifdef _DEBUG
         inline void setShowName(const string& showName) { this->showName = showName; }
+#endif
 
         Rule operator+(const Rule& x)
         {

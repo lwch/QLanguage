@@ -618,7 +618,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     template <typename T>
     inline basic_fstream<T>& endl(basic_fstream<T>& fs)
     {
+#ifdef WIN32
+        fs.write("\r\n", 2);
+#else
         fs.write("\n", 1);
+#endif
         fs.flush();
         return fs;
     }

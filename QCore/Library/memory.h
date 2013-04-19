@@ -90,9 +90,6 @@ protected:
     void addUseInfo(obj* ptr);
 
     enum { headerSize = sizeof(obj) - sizeof(obj*) };
-#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-    CallStack callStack;
-#endif
 #else
     enum { headerSize = 0 };
 #endif

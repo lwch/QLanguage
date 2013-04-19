@@ -68,13 +68,6 @@ namespace QLanguage
             return result;
         }
 
-        template <class Iterator, class T>
-        inline Iterator find(Iterator first, Iterator last, const T& value)
-        {
-            while(first != last && *first != value) ++first;
-            return first;
-        }
-
         template <typename Iterator, typename Distance>
         inline void __distance(Iterator first, Iterator last, Distance& n, const bidirectional_iterator&)
         {
@@ -150,57 +143,86 @@ namespace QLanguage
         }
 
         template <typename Iterator, typename Compare>
-        void sort(Iterator first, Iterator last, Compare cmp)
+        void sort(Iterator first, Iterator last, Compare comp)
         {
-            if (first != last)
+            if (first == last) return;
+            Iterator i = --last;
+            Iterator _first = first;
+            bool b;
+            while (i != first)
             {
-                Iterator left = first;
-                Iterator right = last;
-                Iterator pivot = left++;
-
-                while (left != right)
+                b = false;
+                Iterator j = _first;
+                ++j;
+                for (first = _first; first != i; ++first, ++j)
                 {
-                    if (cmp(*left, *pivot)) ++left;
-                    else
+                    if (!comp(*first, *j))
                     {
-                        while ((left != right) && cmp(*pivot, *right)) --right;
-                        iterator_swap(left, right);
+                        iterator_swap(first, j);
+                        b = true;
                     }
                 }
-
-                if (cmp(*pivot, *left)) --left;
-                iterator_swap(first, left);
-
-                sort(first, left, cmp);
-                sort(right, last, cmp);
+                if (!b) break;
+                --i;
             }
         }
 
         template <typename Iterator>
-        inline void sort(Iterator first, Iterator last)
+        void sort(Iterator first, Iterator last)
         {
-            if (first != last)
+            if (first == last) return;
+            Iterator i = --last;
+            Iterator _first = first;
+            bool b;
+            while (i != first)
             {
-                Iterator left = first;
-                Iterator right = last;
-                Iterator pivot = left++;
-
-                while (left != right)
+                b = false;
+                Iterator j = _first;
+                ++j;
+                for (first = _first; first != i; ++first, ++j)
                 {
-                    if (*left < *pivot) ++left;
-                    else
+                    if (!(*first < *j))
                     {
-                        while (left != right && *pivot < *right) --right;
-                        iterator_swap(left, right);
+                        iterator_swap(first, j);
+                        b = true;
                     }
                 }
-
-                if (*pivot < *left) --left;
-                iterator_swap(first, left);
-
-                sort(first, left);
-                sort(right, last);
+                if (!b) break;
+                --i;
             }
+        }
+
+        template <typename Iterator, typename Compare>
+        Iterator find(Iterator first, Iterator last, const typename iterator_traits<Iterator>::value_type& value, Compare comp)
+        {
+            while (first != last)
+            {
+                if (comp(*first, value)) return first;
+                ++first;
+            }
+            return first;
+        }
+
+        template <typename Iterator>
+        Iterator find(Iterator first, Iterator last, const typename iterator_traits<Iterator>::value_type& value)
+        {
+            while (first != last)
+            {
+                if (*first == value) return first;
+                ++first;
+            }
+            return first;
+        }
+
+        template <typename Iterator, typename Value, typename Compare>
+        Iterator find(Iterator first, Iterator last, const Value& value, Compare comp)
+        {
+            while (first != last)
+            {
+                if (comp(*first, value)) return first;
+                ++first;
+            }
+            return first;
         }
 
         template <typename Iterator, typename Value>

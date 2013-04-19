@@ -262,20 +262,12 @@ public:
 
     vector(const size_type& count, const T& x)
     {
-        if(count <= 0) THROW_OUT_OF_RANGE;
-        start = Alloc::allocate(count);
-        uninitialized_fill_n(start, count, x);
-        finish = start + count;
-        end_of_element = start + count;
+        initialize(count, x);
     }
 
     vector(const size_type& count)
     {
-        if(count <= 0) THROW_OUT_OF_RANGE;
-        start = Alloc::allocate(count);
-        uninitialized_fill_n(start, count, T());
-        finish = start + count;
-        end_of_element = start + count;
+        initialize(count);
     }
 
     vector(const self& x)
@@ -298,6 +290,17 @@ public:
     {
         destruct(start, finish);
         if (start != iterator::null()) Alloc::deallocate(start, end_of_element - start);
+    }
+
+    void initialize(size_type count, const value_type& x = value_type())
+    {
+        destruct(start, finish);
+        if (start != iterator::null()) Alloc::deallocate(start, end_of_element - start);
+        if(count <= 0) THROW_OUT_OF_RANGE;
+        start = Alloc::allocate(count);
+        uninitialized_fill_n(start, count, x);
+        finish = start + count;
+        end_of_element = start + count;
     }
 
     void reserve(size_type count)
@@ -432,6 +435,29 @@ public:
         return true;
     }
 
+    template <typename Compare>
+    bool push_back_unique(const T& x, Compare comp)
+    {
+        if (comp(x))
+        {
+            for (const_iterator i = begin(), m = end(); i != m; ++i)
+            {
+                if (*i == x) return false;
+            }
+            if (end_of_element != finish)
+            {
+                construct(&*finish, x);
+                ++finish;
+            }
+            else
+            {
+                insert_aux(end(), x);
+            }
+            return true;
+        }
+        return false;
+    }
+
     inline void pop_back()
     {
         --finish;
@@ -536,11 +562,17 @@ public:
 
     inline const_reference operator[](size_type n)const
     {
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+        if (n >= size()) throw error<string>("operator[] out of range", __FILE__, __LINE__);
+#endif
         return *(begin() + n);
     }
 
     inline reference operator[](size_type n)
     {
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+        if (n >= size()) throw error<string>("operator[] out of range", __FILE__, __LINE__);
+#endif
         return *(begin() + n);
     }
 
@@ -568,6 +600,15 @@ public:
       {
         push_back_unique(*i);
       }
+    }
+
+    template <typename Compare>
+    inline void add_unique(const self& x, Compare comp)
+    {
+        for (const_iterator i = x.begin(), m = x.end(); i != m; ++i)
+        {
+            push_back_unique(*i, comp);
+        }
     }
 protected:
     void insert_aux(const iterator position, const T& x)

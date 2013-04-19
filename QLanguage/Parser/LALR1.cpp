@@ -16,6 +16,11 @@
 
 namespace QLanguage
 {
+//     inline const bool compare_edge(const LALR1::Edge& e, const Production::Item& i)
+//     {
+//         return true;
+//     }
+
     LALR1::LALR1(LR0& lr0) : lr0(lr0)
     {
     }
@@ -57,6 +62,8 @@ namespace QLanguage
         {
             vector<Production::Item> vts;
             closure(*i, vts);
+            vns.add_unique(vts, isVN);
+            vts.add_unique(vts, isVT);
             for (vector<LALR1Production>::const_iterator j = (*i)->data.begin(), n = (*i)->data.end(); j != n; ++j)
             {
                 for (vector<Edge>::iterator k = edges[*i].begin(), o = edges[*i].end(); k != o; ++k)
@@ -88,6 +95,7 @@ namespace QLanguage
                 }
             }
         }
+        buildParserTable();
         return true;
     }
 
@@ -155,6 +163,68 @@ namespace QLanguage
         }
     }
 
+    void LALR1::buildParserTable()
+    {
+        typedef pair<uchar, uint> pair_type;
+        table.initialize(items.size() * (vns.size() + vts.size() + 1));
+        for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
+        {
+            for (vector<LALR1Production>::const_iterator j = (*i)->data.begin(), n = (*i)->data.end(); j != n; ++j)
+            {
+                const LALR1Production& p = *j;
+                const vector<Production::Item>& right = p.right;
+                const uint idx = p.idx;
+                const size_t m = right.size();
+                if (idx < m)
+                {
+                    const Production::Item& c = right[idx];
+                    fillTable(*i, c);
+                }
+                else
+                {
+//                     if (p.left.name == "begin" && p.idx == 1) fillTable(i->idx, pair_type('A', 0));
+//                     else
+//                     {
+//                         for (vector<LALR1Production::Item>::const_iterator k = p.wildCards.begin(), o = p.wildCards.end(); k != o; ++k)
+//                         {
+//                             fillTable(i->idx, *k);
+//                         }
+//                     }
+                }
+            }
+        }
+    }
+
+    void LALR1::fillTable(Item* pItem, const Production::Item& c)
+    {
+        if (c.isTermainalSymbol())
+        {
+            vector<Edge>::const_iterator first = edges[pItem].begin();
+            vector<Edge>::const_iterator last = edges[pItem].end();
+
+            vector<Edge>::const_iterator i = find(first, last, c, compare_edge);
+        }
+        else
+        {
+
+        }
+    }
+
+    const bool LALR1::compare_edge(const Edge& e, const Production::Item& i)
+    {
+        return e.item == i;
+    }
+
+    const bool LALR1::isVN(const Production::Item& i)
+    {
+        return i.isNoTerminalSymbol();
+    }
+
+    const bool LALR1::isVT(const Production::Item& i)
+    {
+        return i.isTermainalSymbol();
+    }
+
     void LALR1::print()
     {
         hashset<Item*> s;
@@ -198,10 +268,10 @@ namespace QLanguage
                 s.insert(j->pTo);
             }
         }
-        fs << string::format("start: %03d\n\n", pStart->idx);
+        fs << string::format("start: %03d", pStart->idx) << endl << endl;
         for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
         {
-            fs << string::format("Item: %d\n", (*i)->idx);
+            fs << string::format("Item: %d", (*i)->idx) << endl;
             for (vector<LALR1Production>::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
             {
                 k->print(fs);
