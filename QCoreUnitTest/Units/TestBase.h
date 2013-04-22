@@ -46,7 +46,6 @@ namespace QLanguage
             const size_t runAllCase()const
             {
                 size_t iSuccessed = 0;
-                // Why is always zero in MinGW?
                 for (size_t i = 0; i < iCaseCount; ++i)
                 {
                     if (nameFilter)

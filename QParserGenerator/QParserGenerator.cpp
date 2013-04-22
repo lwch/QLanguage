@@ -24,6 +24,13 @@ using namespace QLanguage::Library;
 
 int main(int argv, char* args[])
 {
+#ifdef _DEBUG
+    if (argv < 2)
+    {
+        args[1] = "QLanguage.txt";
+        argv = 2;
+    }
+#endif
     if (argv >= 2)
     {
         try
