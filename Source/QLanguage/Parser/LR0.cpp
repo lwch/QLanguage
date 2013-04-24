@@ -84,7 +84,7 @@ namespace QLanguage
         bool bContinue = true;
         while (bContinue && !q.empty())
         {
-            LR0Production::Item& i = q.front();
+            const LR0Production::Item& i = q.front();
             for (vector<Production>::const_iterator j = productionMap[i].begin(), n = productionMap[i].end(); j != n; ++j)
             {
                 if (!pItem->data[j->left].push_back_unique(*j))

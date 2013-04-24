@@ -47,19 +47,9 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return container.size();
         }
 
-        inline reference front()
-        {
-            return container.front();
-        }
-
         inline const_reference front()const
         {
             return container.front();
-        }
-
-        inline reference back()
-        {
-            return container.back();
         }
 
         inline const_reference back()const

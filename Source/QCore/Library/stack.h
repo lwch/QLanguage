@@ -52,9 +52,19 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return container.back();
         }
 
+        inline const_reference bottom()const
+        {
+            return container.front();
+        }
+
         inline void push(const T& x)
         {
             container.push_back(x);
+        }
+
+        inline void push_unique(const T& x)
+        {
+            container.push_back_unique(x);
         }
 
         inline void pop()
