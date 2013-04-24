@@ -1,0 +1,9 @@
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+PROJECT(QLanguage)
+
+SUBDIRS(QCore)
+SUBDIRS(QCoreUnitTest)
+SUBDIRS(QLanguage)
+SUBDIRS(QParserGenerator)
