@@ -263,14 +263,6 @@ int main(int argv, char* args[])
         {
             e.print();
         }
-        catch (const error<string>& e)
-        {
-            e.print();
-        }
-        catch (const error<const string>& e)
-        {
-            e.print();
-        }
         catch (...)
         {
             Console::SetColor(true, false, false, true);
