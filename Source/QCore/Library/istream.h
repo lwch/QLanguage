@@ -40,7 +40,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         template <typename T1>
         self& operator>>(T1&)
         {
-            throw error<string>("doesn't support", __FILE__, __LINE__);
+            throw error<char*>("doesn't support", __FILE__, __LINE__);
             return *this;
         }
     protected:
@@ -73,7 +73,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             if (*p == '-' || *p == '+')
             {
                 bNegative = (*p == '-');
-                if (this->radix == parent::binary) throw error<string>("binary doesn't support sign", __FILE__, __LINE__);
+                if (this->radix == parent::binary) throw error<char*>("binary doesn't support sign", __FILE__, __LINE__);
                 ++p;
                 --size;
             }
@@ -117,7 +117,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 #endif
         inline void getNegative(bool bNegative, ushort& n)
         {
-            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+            throw error<char*>("negative doesn't support", __FILE__, __LINE__);
         }
 
 #ifdef MSVC
@@ -125,7 +125,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 #endif
         inline void getNegative(bool bNegative, uint& n)
         {
-            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+            throw error<char*>("negative doesn't support", __FILE__, __LINE__);
         }
 
 #ifdef MSVC
@@ -133,7 +133,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 #endif
         inline void getNegative(bool bNegative, ulong& n)
         {
-            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+            throw error<char*>("negative doesn't support", __FILE__, __LINE__);
         }
 
 #ifdef MSVC
@@ -141,7 +141,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 #endif
         inline void getNegative(bool bNegative, ullong& n)
         {
-            throw error<string>("negative doesn't support", __FILE__, __LINE__);
+            throw error<char*>("negative doesn't support", __FILE__, __LINE__);
         }
     };
 NAMESPACE_QLANGUAGE_LIBRARY_END

@@ -72,7 +72,7 @@ int main()
         Console::WriteLine("Run %d cases with time %.03f seconds successed!", iResult, (double)t / 1000);
         Console::SetColor(true, true, true, false);
     }
-    catch (const error<string>& e)
+    catch (const error<char*>& e)
     {
         Console::SetColor(true, false, false, true);
         Console::WriteLine(e.description);

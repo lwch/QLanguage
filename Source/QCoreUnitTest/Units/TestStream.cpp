@@ -37,4 +37,6 @@ TEST_CASE(TestStream)
     fs.seek(-9, fstream::current);
     fs >> s;
 #endif
+    basic_stdstream<char> cout;
+    cout << 100;
 }

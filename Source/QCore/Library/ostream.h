@@ -40,7 +40,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         template <typename T1>
         self& operator<<(const T1&)
         {
-            throw error<string>("doesn't support", __FILE__, __LINE__);
+            throw error<char*>("doesn't support", __FILE__, __LINE__);
             return *this;
         }
     protected:

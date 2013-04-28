@@ -24,7 +24,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
     buffer::value_type* buffer::read(size_type size)
     {
-        if (container.size() < size) throw error<string>("read to more", __FILE__, __LINE__);
+        if (container.size() < size) throw error<char*>("read to more", __FILE__, __LINE__);
         return container.begin();
     }
 
@@ -74,7 +74,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
     void buffer::step(size_type size)
     {
-        if (size >= container.size()) throw error<string>("step size too big", __FILE__, __LINE__);
+        if (size >= container.size()) throw error<char*>("step size too big", __FILE__, __LINE__);
 
         copy(container.begin() + size, container.end(), container.begin());
         destruct(container.end() - size, container.end());

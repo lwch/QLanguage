@@ -26,7 +26,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         Bitmap::Bitmap(size_t width, size_t height, DepthType type /* = RGB */, _RGBQUAD* quadTable /* = NULL */)
             : type(type), width(width), height(height), pQuadTable(NULL)
         {
-            if (type == Unknown) throw error<string>("Unknown type", __FILE__, __LINE__);
+            if (type == Unknown) throw error<char*>("Unknown type", __FILE__, __LINE__);
             sizePreLine = ROUND_UP((size_t)(width / 8.0f * type + 0.5f), 4);
             bits = BitsAlloc::allocate(sizePreLine * height);
             memset(bits, 0, sizePreLine * height);
@@ -45,7 +45,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         uchar* Bitmap::line(size_t y)
         {
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
-            if (y >= height) throw error<string>("out of bound", __FILE__, __LINE__);
+            if (y >= height) throw error<char*>("out of bound", __FILE__, __LINE__);
 #endif
             return bits + sizePreLine * y;
         }
@@ -60,7 +60,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             assert(bits);
             FILE* fp = fopen(path.c_str(), "wb");
-            if (fp == NULL) throw error<string>("error open file", __FILE__, __LINE__);
+            if (fp == NULL) throw error<char*>("error open file", __FILE__, __LINE__);
             _BITMAPFILEHEADER fileHeader;
             _BITMAPINFOHEADER infoHeader(width, height, type, sizePreLine * height);
             fileHeader.size = sizeof(_BITMAPFILEHEADER) + sizeof(_BITMAPINFOHEADER) + sizePreLine * height;

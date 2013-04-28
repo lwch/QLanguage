@@ -401,7 +401,7 @@ public:
     void setsize(size_t size)
     {
         if (size <= capacity()) finish = start + size;
-        else throw error<string>("size is too big", __FILE__, __LINE__);
+        else throw error<char*>("size is too big", __FILE__, __LINE__);
     }
 
     void push_back(const T& x)
@@ -563,7 +563,7 @@ public:
     inline const_reference operator[](size_type n)const
     {
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
-        if (n >= size()) throw error<string>("operator[] out of range", __FILE__, __LINE__);
+        if (n >= size()) throw error<char*>("operator[] out of range", __FILE__, __LINE__);
 #endif
         return *(begin() + n);
     }
@@ -571,7 +571,7 @@ public:
     inline reference operator[](size_type n)
     {
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
-        if (n >= size()) throw error<string>("operator[] out of range", __FILE__, __LINE__);
+        if (n >= size()) throw error<char*>("operator[] out of range", __FILE__, __LINE__);
 #endif
         return *(begin() + n);
     }
