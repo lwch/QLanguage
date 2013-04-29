@@ -25,7 +25,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 #ifdef MSVC
         typedef container_type::size_type  size_type;
 #else
-        typedef typename container_type::size_type size_type;
+        typedef container_type::size_type size_type;
 #endif
         typedef char_traits<value_type> _char_traits;
 
