@@ -6,8 +6,8 @@
 	file base:	stdstream
 	file ext:	h
 	author:		lwch
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef _QLANGUAGE_LIBRARY_STD_STREAM_H_
 #define _QLANGUAGE_LIBRARY_STD_STREAM_H_
@@ -50,10 +50,10 @@
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 typedef error<const char*> err;
-#define CHECK_FILE_OPEN  if (!this->is_open() ) throw err("not opened file", __FILE__, __LINE__)
-#define CHECK_IN_MODE    if (!this->is_in()   ) throw err("not in mode"    , __FILE__, __LINE__)
-#define CHECK_OUT_MODE   if (!this->is_out()  ) throw err("not out mode"   , __FILE__, __LINE__)
-#define CHECK_ERROR_MODE if (!this->is_error()) throw err("not error mode" , __FILE__, __LINE__)
+#define CHECK_FILE_OPEN  if (!this->is_open())                     throw err("not opened file", __FILE__, __LINE__)
+#define CHECK_IN_MODE    if (!this->is_in())                       throw err("not in mode"    , __FILE__, __LINE__)
+#define CHECK_OUT_MODE   if (!this->is_out() && !this->is_error()) throw err("not out mode"   , __FILE__, __LINE__)
+#define CHECK_ERROR_MODE if (!this->is_error())                    throw err("not error mode" , __FILE__, __LINE__)
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0
@@ -110,10 +110,15 @@ typedef error<const char*> err;
 
         enum colortype
         {
+            black = 0,
             red   = 1,
             green = 2,
             blue  = 4,
-            light = 8
+            light = 8,
+            yellow = red | green,
+            purple = red | blue,
+            ching  = green | blue,
+            white  = red | green | blue
         };
 
         stdstream_basic() : parent_i(), parent_o(), buffer_read(this), openMode(uninitialized), bOpen(false), iFile(STDOUT_FILENO), ulTell(0) {}
@@ -216,7 +221,7 @@ typedef error<const char*> err;
                 int _read = ::READ(iFile, buffer, stdstream_buffer<T>::align);
                 if (_read == -1) continue;
                 ulTell += _read;
-                if (buffer[_read] == '\n')
+                if (buffer[_read - 1] == '\n')
                 {
                     buffer_read.append(buffer, _read - 1);
                     break;
@@ -233,15 +238,15 @@ typedef error<const char*> err;
             while (true)
             {
                 int written = ::WRITE(iFile, buffer, size);
-                ulTell += written;
-                if (written == size)
+                if (written > 0)
                 {
-                    return true;
-                }
-                else if (written > 0)
-                {
-                    buffer += written;
-                    size -= written;
+                    ulTell += written;
+                    if ((size_type)written == size) return true;
+                    else
+                    {
+                        buffer += written;
+                        size   -= written;
+                    }
                 }
                 else
                 {
@@ -257,7 +262,7 @@ typedef error<const char*> err;
             return true;
         }
 
-        self& setColor(uchar color)
+        void setColor(uchar color)
         {
 #ifdef WIN32
             WORD wdColor = 0;
@@ -274,7 +279,26 @@ typedef error<const char*> err;
             if (color & blue)  cColor |= 4;
             printf("%s\033[%dm", color & light ? "\033[1m" : "", 30 + cColor);
 #endif
-            return *this;
+        }
+
+        inline uchar redWith(uchar color)
+        {
+            return red | color;
+        }
+
+        inline uchar greenWith(uchar color)
+        {
+            return green | color;
+        }
+
+        inline uchar blueWith(uchar color)
+        {
+            return blue | color;
+        }
+
+        inline uchar lightWith(uchar color)
+        {
+            return light | color;
         }
     protected:
         stdstream_buffer<T> buffer_read;
@@ -563,7 +587,10 @@ typedef error<const char*> err;
             return *this;
         }
     };
-#undef OPEN 
+
+    typedef basic_stdstream<char> stdstream;
+
+#undef OPEN
 #undef CLOSE
 #undef LSEEK
 #undef FSTAT

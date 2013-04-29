@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "Console.h"
+#include "iostream.h"
 #include "typedef.h"
 #include "memory.h"
 
@@ -36,14 +36,13 @@ MemoryPool::~MemoryPool()
         use *ptr = use_list, *next = use_list->next;
         if (!ptr->data->released)
         {
-            Console::SetColor(true, false, false, true);
 #if DEBUG_LEVEL == 3 && defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
             obj* pObj = ptr->data;
             for (DWORD j = 0; j < pObj->dwCallStackDepth; ++j)
             {
                 CallStack::FuncInfo funcInfo;
                 CallStack::getInstance().getFuncInfo(pObj->callStack[j], funcInfo);
-                printf("MemoryLeaked: %s\nFile: %s in line %d\n", funcInfo.szFuncName, funcInfo.szFilePath, funcInfo.dwLineNumber);
+                cerr << string::format("MemoryLeaked: %s\nFile: %s in line %d\n", funcInfo.szFuncName, funcInfo.szFilePath, funcInfo.dwLineNumber);
             }
 #endif
             throw error<const char*>("chunk leaked", __FILE__, __LINE__);

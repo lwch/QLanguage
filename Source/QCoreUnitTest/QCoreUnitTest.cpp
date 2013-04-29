@@ -68,14 +68,13 @@ int main()
 #else
         TEST_ASSERT(iResult != (iCount - iSpeedCaseCount), "some error!");
 #endif
-        Console::SetColor(false, true, false, true);
-        Console::WriteLine("Run %d cases with time %.03f seconds successed!", iResult, (double)t / 1000);
-        Console::SetColor(true, true, true, false);
+        cout.setColor(cout.lightWith(stdstream::green));
+        cout << string::format("Run %d cases with time %.03f seconds successed!", iResult, (double)t / 1000);
+        cout.setColor(stdstream::white);
     }
     catch (const error<const char*>& e)
     {
-        Console::SetColor(true, false, false, true);
-        Console::WriteLine(e.description);
+        cerr << e.description;
     }
 
 //     using namespace QLanguage::Library::graph;

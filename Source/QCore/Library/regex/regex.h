@@ -6,8 +6,8 @@
 	file base:	regex
 	file ext:	h
 	author:		lwch
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #ifndef _QLANGUAGE_LIBRARY_REGEX_REGEX_H_
 #define _QLANGUAGE_LIBRARY_REGEX_REGEX_H_
@@ -20,6 +20,7 @@
 #include "../hashmap.h"
 #include "../queue.h"
 #include "../stack.h"
+#include "../iostream.h"
 #include "../fstream.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
@@ -44,13 +45,13 @@ namespace regex
 
             union
             {
-                struct 
+                struct
                 {
                     char value1;
                     char value2;
                 }Char;
 
-                struct 
+                struct
                 {
                     const char*  value;
                     size_t size;
@@ -539,7 +540,7 @@ public:
         {
             Rule a(pContext);
             cloneEpsilonNFA(*this, a);
-            
+
             a.epsilonNFA_Edges[a.pEpsilonEnd].push_back(EpsilonNFA_Edge(a.pEpsilonEnd, a.pEpsilonStart));
 
             return a;
@@ -825,7 +826,7 @@ public:
 
         void printShowName()const
         {
-            printf(showName.c_str());
+            cout << showName;
         }
 
         void printShowName(fstream& fs)const

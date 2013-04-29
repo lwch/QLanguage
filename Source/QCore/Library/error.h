@@ -83,7 +83,11 @@ namespace QLanguage
                 printf("\033[1m\033[31m");
 #endif
                 printf("error: %s in file\n", description);
+#ifdef WIN32
                 printf("%s on line %d\n", fileName, line);
+#else
+                printf("%s on line %lu\n", fileName, line);
+#endif
 #if defined(_DEBUG) && DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
                 for (DWORD j = 0; j < dwCallStackDepth; ++j)
                 {
@@ -97,9 +101,5 @@ namespace QLanguage
         };
     }
 }
-
-#ifdef CALLSTACK_MAX_DEPTH
-#undef CALLSTACK_MAX_DEPTH
-#endif
 
 #endif
