@@ -28,7 +28,6 @@
 #include "Library/buffer.h"
 #include "Library/callstack.h"
 #include "Library/char_traits.h"
-#include "Library/Console.h"
 #include "Library/construct.h"
 #include "Library/definition.h"
 #include "Library/error.h"

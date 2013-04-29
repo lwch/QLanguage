@@ -9,7 +9,6 @@
 	
 	purpose:	
 *********************************************************************/
-#include "../QCore/Library/Console.h"
 #include "../QCore/Library/fstream.h"
 
 #include "../QLanguage/Lexer/Lexer.h"
@@ -24,19 +23,20 @@ using namespace QLanguage::Library;
 
 int main(int argv, char* args[])
 {
+    string path;
 #ifdef _DEBUG
     if (argv < 2)
     {
-        args[1] = "QLanguage.txt";
-        argv = 2;
+        path = "QLanguage.txt";
     }
+    else path = args[1];
 #endif
-    if (argv >= 2)
+    if (path.size())
     {
         try
         {
             // step1 lexer
-            fstream fs(args[1], fstream::in | fstream::binary);
+            fstream fs(path, fstream::in | fstream::binary);
             string str(fs.size());
 
             fs.readAll(const_cast<char*>(str.c_str()), str.capacity());
@@ -49,10 +49,10 @@ int main(int argv, char* args[])
             lexer.parse(str);
             c = clock() - c;
 
-            Console::SetColor(false, true, false, true);
-            Console::WriteLine("Lexer Finish ...");
-            Console::SetColor(true, true, true, true);
-            Console::WriteLine("Use of time: %d", c);
+            cout.setColor(cout.lightWith(stdstream::green));
+            cout << "Lexer Finish ..." << endl;
+            cout.setColor(cout.lightWith(stdstream::white));
+            cout << string::format("Use of time: %d", c);
 
             // step2 LR0
             Rule::Context context;
@@ -239,10 +239,10 @@ int main(int argv, char* args[])
             c = clock() - c;
             lr0.print("LR0.txt");
 
-            Console::SetColor(false, true, false, true);
-            Console::WriteLine("Make LR(0) State Machine Finish ...");
-            Console::SetColor(true, true, true, true);
-            Console::WriteLine("Use of time: %d", c);
+            cout.setColor(cout.lightWith(stdstream::green));
+            cout << "Make LR(0) State Machine Finish ..." << endl;
+            cout.setColor(cout.lightWith(stdstream::white));
+            cout << string::format("Use of time: %d", c);
 
             LALR1 lalr1(lr0);
             c = clock();
@@ -250,10 +250,10 @@ int main(int argv, char* args[])
             c = clock() - c;
             lalr1.print("LALR1.txt");
 
-            Console::SetColor(false, true, false, true);
-            Console::WriteLine("Make LALR(1) State Machine Finish ...");
-            Console::SetColor(true, true, true, true);
-            Console::WriteLine("Use of time: %d", c);
+            cout.setColor(cout.lightWith(stdstream::green));
+            cout << "Make LALR(1) State Machine Finish ..." << endl;
+            cout.setColor(cout.lightWith(stdstream::white));
+            cout << string::format("Use of time: %d", c);
         }
         catch (const error<char*>& e)
         {
@@ -265,10 +265,10 @@ int main(int argv, char* args[])
         }
         catch (...)
         {
-            Console::SetColor(true, false, false, true);
-            Console::WriteLine("unknown error");
+            cout.setColor(cout.lightWith(stdstream::red));
+            cout << "unknown error" << endl;
         }
-        Console::SetColor(true, true, true, false);
+        cout.setColor(stdstream::white);
     }
     return 0;
 }

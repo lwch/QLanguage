@@ -253,13 +253,16 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             while (true)
             {
                 int _read = ::READ(iFile, buffer, _size);
-                readen += _read;
-                ulTell += _read;
-                if (readen == _size) return _size;
-                else if (_read > 0)
+                if (_read > 0)
                 {
-                    buffer += _read;
-                    _size  -= _read;
+                    readen += _read;
+                    ulTell += _read;
+                    if ((size_type)readen == _size) return _size;
+                    else
+                    {
+                        buffer += _read;
+                        _size  -= _read;
+                    }
                 }
                 else
                 {
@@ -279,13 +282,16 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             while (true)
             {
                 int _read = ::READ(iFile, ptr, _size);
-                readen += _read;
-                ulTell += _read;
-                if (readen == _size) return true;
-                else if (_read > 0)
+                if (_read > 0)
                 {
-                    ptr   += _read;
-                    _size -= _read;
+                    readen += _read;
+                    ulTell += _read;
+                    if ((size_type)readen == _size) return true;
+                    else
+                    {
+                        ptr   += _read;
+                        _size -= _read;
+                    }
                 }
                 else
                 {
@@ -305,16 +311,19 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             while (true)
             {
                 int written = ::WRITE(iFile, buffer, size);
-                ulTell += written;
-                if (written == size)
+                if (written > 0)
                 {
-                    this->buffer_write.clear();
-                    return true;
-                }
-                else if (written > 0)
-                {
-                    buffer += written;
-                    size -= written;
+                    ulTell += written;
+                    if ((size_type)written == size)
+                    {
+                        this->buffer_write.clear();
+                        return true;
+                    }
+                    else
+                    {
+                        buffer += written;
+                        size -= written;
+                    }
                 }
                 else
                 {
@@ -617,7 +626,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
     typedef basic_fstream<char> fstream;
 
-#undef OPEN 
+#undef OPEN
 #undef CLOSE
 #undef LSEEK
 #undef FSTAT

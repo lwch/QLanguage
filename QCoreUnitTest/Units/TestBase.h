@@ -14,7 +14,7 @@
 #define _QCORE_UNIT_TEST_TESTBASE_H_
 
 #include "../../QCore/Library/error.h"
-#include "../../QCore/Library/Console.h"
+#include "../../QCore/Library/iostream.h"
 #include "../../QCore/Library/pair.h"
 #include "../../QCore/Library/string.h"
 
@@ -89,25 +89,23 @@ namespace QLanguage
 
         #define TEST_SPEED_INSERT_COUNT 10000
 
-        #define PrintMessage(fmt, ...) \
-        Console::SetColor(false, true, false, true); \
-        Console::WriteLine(fmt, ##__VA_ARGS__); \
-        Console::SetColor(true, true, true, false)
-        #define PrintInformation(fmt, ...) \
-        Console::SetColor(true, true, true, true); \
-        Console::WriteLine(fmt, ##__VA_ARGS__); \
-        Console::SetColor(true, true, true, false)
-        #define PrintError(fmt, ...) \
-        Console::SetColor(true, false, false, true); \
-        Console::WriteLine(fmt, ##__VA_ARGS__); \
-        Console::SetColor(true, true, true, false)
+        #define PrintMessage(str) \
+        cout.setColor(cout.lightWith(stdstream::green)); \
+        cout << str << endl; \
+        cout.setColor(stdstream::white);
+        #define PrintInformation(str) \
+        cout.setColor(cout.lightWith(stdstream::white)); \
+        cout << str << endl; \
+        cout.setColor(stdstream::white);
+        #define PrintError(str) \
+        cerr << str << endl;
 
         inline void printCostTimeSeconds(clock_t n)
         {
 #ifdef WIN32
-            PrintInformation("time cost: %f seconds", (double)n / CLOCKS_PER_SEC);
+            PrintInformation(string::format("time cost: %f seconds", (double)n / CLOCKS_PER_SEC));
 #else
-            PrintInformation("time cost: %f seconds", (double)n / sysconf(_SC_CLK_TCK));
+            PrintInformation(string::format("time cost: %f seconds", (double)n / sysconf(_SC_CLK_TCK)));
 #endif
         }
 
@@ -116,7 +114,7 @@ namespace QLanguage
         #define SHOW_TIME_COST_SECONDS printCostTimeSeconds(clock() - _clock_start_); }//PrintInformation("time cost: %f seconds", (double)(clock() - _clock_start_) / CLOCKS_PER_SEC); }
 
         #define TEST_ASSERT(expression, fmt, ...) \
-        if(expression) throw error<string>(string::format(fmt, ##__VA_ARGS__), __FILE__, __LINE__);
+        if (expression) throw error<const char*>(string::format(fmt, ##__VA_ARGS__).c_str(), __FILE__, __LINE__);
 
         #define TEST_CASE(moduleName) \
         using namespace QLanguage::UnitTest; \
