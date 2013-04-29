@@ -45,9 +45,9 @@
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 
-#define CHECK_FILE_OPEN if (!is_open()) throw error<char*>("not opened file", __FILE__, __LINE__)
-#define CHECK_IN_MODE   if ((this->open_mode() & fstream_basic<T>::in) == 0)  throw error<char*>("not in mode", __FILE__, __LINE__)
-#define CHECK_OUT_MODE  if ((this->open_mode() & fstream_basic<T>::out) == 0) throw error<char*>("not out mode", __FILE__, __LINE__)
+#define CHECK_FILE_OPEN if (!is_open()) throw error<const char*>("not opened file", __FILE__, __LINE__)
+#define CHECK_IN_MODE   if ((this->open_mode() & fstream_basic<T>::in) == 0)  throw error<const char*>("not in mode", __FILE__, __LINE__)
+#define CHECK_OUT_MODE  if ((this->open_mode() & fstream_basic<T>::out) == 0) throw error<const char*>("not out mode", __FILE__, __LINE__)
 
     template <typename T>
     class fstream_basic;
@@ -118,7 +118,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
         self& open(const char* path, uchar mode)
         {
-            if (is_open()) throw error<char*>("file is open", __FILE__, __LINE__);
+            if (is_open()) throw error<const char*>("file is open", __FILE__, __LINE__);
 
             int flag = 0;
             switch (mode)
@@ -136,7 +136,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
                 flag = O_RDWR | O_TRUNC | O_CREAT;
                 break;
             default:
-                throw error<char*>("error open mode", __FILE__, __LINE__);
+                throw error<const char*>("error open mode", __FILE__, __LINE__);
                 break;
             }
 
@@ -205,17 +205,17 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             switch (type)
             {
             case begin:
-                if ((size_t)offset > size()) throw error<char*>("offset out of range", __FILE__, __LINE__);
+                if ((size_t)offset > size()) throw error<const char*>("offset out of range", __FILE__, __LINE__);
                 where  = SEEK_SET;
                 ulTell = offset;
                 break;
             case end:
-                if ((size_t)offset > size()) throw error<char*>("offset out of range", __FILE__, __LINE__);
+                if ((size_t)offset > size()) throw error<const char*>("offset out of range", __FILE__, __LINE__);
                 where  = SEEK_END;
                 ulTell = size() - offset;
                 break;
             case current:
-                if (tell() + offset >= size() || tell() + offset < 0) throw error<char*>("offset out of range", __FILE__, __LINE__);
+                if (tell() + offset >= size() || tell() + offset < 0) throw error<const char*>("offset out of range", __FILE__, __LINE__);
                 where   = SEEK_CUR;
                 ulTell += offset;
                 break;
@@ -249,12 +249,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             size_type _size = min(size() - tell(), static_cast<size_type>(fstream_buffer<T>::align));
             value_type* buffer = this->buffer_read.reserve(_size);
 
-            size_type readen = 0;
+            int readen = 0;
             while (true)
             {
-                size_type _read = ::READ(iFile, buffer, _size);
+                int _read = ::READ(iFile, buffer, _size);
                 readen += _read;
-                ulTell += readen;
+                ulTell += _read;
                 if (readen == _size) return _size;
                 else if (_read > 0)
                 {
@@ -264,7 +264,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
                 else
                 {
                     this->buffer_read.clear();
-                    throw error<char*>("can't read file", __FILE__, __LINE__);
+                    throw error<const char*>("can't read file", __FILE__, __LINE__);
                 }
             }
         }
@@ -275,10 +275,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             CHECK_IN_MODE;
 
             size_type _size  = min(sz, size());
-            size_type readen = 0;
+            int readen = 0;
             while (true)
             {
-                size_type _read = ::READ(iFile, ptr, _size);
+                int _read = ::READ(iFile, ptr, _size);
                 readen += _read;
                 ulTell += _read;
                 if (readen == _size) return true;
@@ -289,7 +289,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
                 }
                 else
                 {
-                    throw error<char*>("can't read file", __FILE__, __LINE__);
+                    throw error<const char*>("can't read file", __FILE__, __LINE__);
                 }
             }
         }
@@ -304,7 +304,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             const typename fstream_buffer<T>::value_type* buffer = this->buffer_write.pointer();
             while (true)
             {
-                size_type written = ::WRITE(iFile, buffer, size);
+                int written = ::WRITE(iFile, buffer, size);
                 ulTell += written;
                 if (written == size)
                 {
@@ -319,7 +319,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
                 else
                 {
                     this->buffer_write.clear();
-                    throw error<char*>("can't write file", __FILE__, __LINE__);
+                    throw error<const char*>("can't write file", __FILE__, __LINE__);
                 }
             }
         }
@@ -337,6 +337,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     {
         typedef basic_fstream<T> self;
         typedef fstream_basic<T> parent;
+        typedef basic_istream<T> parent_i;
+        typedef basic_ostream<T> parent_o;
     public:
         basic_fstream() : parent() {}
         basic_fstream(const char* path, uchar mode) : parent(path, mode) {}
@@ -600,7 +602,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
         self& operator<<(self& (*f)(self&))
         {
-            return f(*this);
+            return dynamic_cast<self&>(f(*this));
         }
 
         template <typename T1>
@@ -614,18 +616,6 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     };
 
     typedef basic_fstream<char> fstream;
-
-    template <typename T>
-    inline basic_fstream<T>& endl(basic_fstream<T>& fs)
-    {
-#ifdef WIN32
-        fs.write("\r\n", 2);
-#else
-        fs.write("\n", 1);
-#endif
-        fs.flush();
-        return fs;
-    }
 
 #undef OPEN 
 #undef CLOSE

@@ -102,12 +102,21 @@ namespace QLanguage
         Console::WriteLine(fmt, ##__VA_ARGS__); \
         Console::SetColor(true, true, true, false)
 
+        inline void printCostTimeSeconds(clock_t n)
+        {
+#ifdef WIN32
+            PrintInformation("time cost: %f seconds", (double)n / CLOCKS_PER_SEC);
+#else
+            PrintInformation("time cost: %f seconds", (double)n / sysconf(_SC_CLK_TCK));
+#endif
+        }
+
         #define TIME_START { clock_t _clock_start_ = clock()
         #define SHOW_TIME_COST PrintInformation("time cost: %ld", clock() - _clock_start_); }
-        #define SHOW_TIME_COST_SECONDS PrintInformation("time cost: %f seconds", (double)(clock() - _clock_start_) / (double)CLOCKS_PER_SEC); }
+        #define SHOW_TIME_COST_SECONDS printCostTimeSeconds(clock() - _clock_start_); }//PrintInformation("time cost: %f seconds", (double)(clock() - _clock_start_) / CLOCKS_PER_SEC); }
 
         #define TEST_ASSERT(expression, fmt, ...) \
-        //if(expression) throw error<char*>(string::format(fmt, ##__VA_ARGS__).c_str(), __FILE__, __LINE__);
+        if(expression) throw error<string>(string::format(fmt, ##__VA_ARGS__), __FILE__, __LINE__);
 
         #define TEST_CASE(moduleName) \
         using namespace QLanguage::UnitTest; \

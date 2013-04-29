@@ -422,7 +422,7 @@ public:
             }
             current = current->next;
         }
-        throw error<char*>("value not exists", __FILE__, __LINE__);
+        throw error<const char*>("value not exists", __FILE__, __LINE__);
     }
 
     void erase(iterator position)

@@ -14,7 +14,7 @@
 
 #include "TestBase.h"
 #include "../../QCore/Library/fstream.h"
-#include "../../QCore/Library/stdstream.h"
+#include "../../QCore/Library/iostream.h"
 
 using namespace QLanguage;
 using namespace QLanguage::Library;

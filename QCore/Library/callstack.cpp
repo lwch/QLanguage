@@ -31,9 +31,9 @@ CallStack::CallStack()
     dwOptions |= SYMOPT_DEBUG;
     if (!loaded)
     {
-        if (SymSetOptions(dwOptions) == 0) throw error<char*>("SymSetOptions failed", __FILE__, __LINE__);
-        if (SymInitialize(GetCurrentProcess(), NULL, TRUE) == FALSE) throw error<char*>("SymInitialize failed", __FILE__, __LINE__);
-        if (!loadAllModules()) throw error<char*>("loadAllModules failed", __FILE__, __LINE__);
+        if (SymSetOptions(dwOptions) == 0) throw error<const char*>("SymSetOptions failed", __FILE__, __LINE__);
+        if (SymInitialize(GetCurrentProcess(), NULL, TRUE) == FALSE) throw error<const char*>("SymInitialize failed", __FILE__, __LINE__);
+        if (!loadAllModules()) throw error<const char*>("loadAllModules failed", __FILE__, __LINE__);
         loaded = true;
     }
 }

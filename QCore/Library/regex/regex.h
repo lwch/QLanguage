@@ -308,7 +308,7 @@ namespace regex
             inline const bool compare_fromto(char c)const
             {
 #ifdef _DEBUG
-                if (!isFromTo()) throw error<char*>("error calling function compare_fromto!", __FILE__, __LINE__);
+                if (!isFromTo()) throw error<const char*>("error calling function compare_fromto!", __FILE__, __LINE__);
 #endif
                 if (isNot()) return c < value.data.Char.value1 || c > value.data.Char.value2;
                 else return c >= value.data.Char.value1 && c <= value.data.Char.value2;
@@ -317,7 +317,7 @@ namespace regex
             inline const bool compare_char(char c)const
             {
 #ifdef _DEBUG
-                if (!isChar()) throw error<char*>("error calling function compare_char!", __FILE__, __LINE__);
+                if (!isChar()) throw error<const char*>("error calling function compare_char!", __FILE__, __LINE__);
 #endif
                 if (isNot()) return c != value.data.Char.value1;
                 else return c == value.data.Char.value1;
@@ -326,7 +326,7 @@ namespace regex
             const bool compare_string(const char* first, const char* last, size_t& n)const
             {
 #ifdef _DEBUG
-                if (!isString()) throw error<char*>("error calling function compare_string!", __FILE__, __LINE__);
+                if (!isString()) throw error<const char*>("error calling function compare_string!", __FILE__, __LINE__);
 #endif
                 if (!isNot())
                 {
@@ -483,7 +483,7 @@ public:
             }
             else
             {
-                throw error<char*>("doesn't support", __FILE__, __LINE__);
+                throw error<const char*>("doesn't support", __FILE__, __LINE__);
             }
             return Rule();
         }
@@ -658,7 +658,7 @@ public:
         MatchResult match(const char* first, const char* last, size_t pos = 0)
         {
 #ifdef _DEBUG
-            if (pos < 0 || pos >= (size_t)(last - first)) throw error<char*>("invalid position of input", __FILE__, __LINE__);
+            if (pos < 0 || pos >= (size_t)(last - first)) throw error<const char*>("invalid position of input", __FILE__, __LINE__);
 #endif
             const char* b = first;
 
