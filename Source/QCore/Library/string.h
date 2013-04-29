@@ -615,7 +615,7 @@ public:
     template <typename T2>
     static const basic_string<T2> format(const T* fmt, ...)
     {
-        throw error<char*>("Doesn't support!", __FILE__, __LINE__);
+        throw error<const char*>("Doesn't support!", __FILE__, __LINE__);
         return basic_string<T2>();
     }
 

@@ -40,7 +40,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         template <typename T1>
         self& operator<<(const T1&)
         {
-            throw error<char*>("doesn't support", __FILE__, __LINE__);
+            throw error<const char*>("doesn't support", __FILE__, __LINE__);
             return *this;
         }
     protected:
@@ -49,6 +49,18 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         inline string convert(llong ll)   { return string::format("%ld", ll); }
         inline string convert(ullong ull) { return string::format("%u", ull); }
     };
+
+    template <typename T>
+    inline T& endl(T& stream)
+    {
+#ifdef WIN32
+        stream.write("\r\n", 2);
+#else
+        stream.write("\n", 1);
+#endif
+        stream.flush();
+        return stream;
+    }
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

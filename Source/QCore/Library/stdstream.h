@@ -25,6 +25,10 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #ifdef MSVC
 #define OPEN  _open
 #define CLOSE _close
@@ -45,10 +49,11 @@
 #endif
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
-#define CHECK_FILE_OPEN  //if (!this->is_open() ) throw error<char*>("not opened file", __FILE__, __LINE__)
-#define CHECK_IN_MODE    //if (!this->is_in()   ) throw error<char*>("not in mode"    , __FILE__, __LINE__)
-#define CHECK_OUT_MODE   //if (!this->is_out()  ) throw error<char*>("not out mode"   , __FILE__, __LINE__)
-#define CHECK_ERROR_MODE //if (!this->is_error()) throw error<char*>("not error mode" , __FILE__, __LINE__)
+typedef error<const char*> err;
+#define CHECK_FILE_OPEN  if (!this->is_open() ) throw err("not opened file", __FILE__, __LINE__)
+#define CHECK_IN_MODE    if (!this->is_in()   ) throw err("not in mode"    , __FILE__, __LINE__)
+#define CHECK_OUT_MODE   if (!this->is_out()  ) throw err("not out mode"   , __FILE__, __LINE__)
+#define CHECK_ERROR_MODE if (!this->is_error()) throw err("not error mode" , __FILE__, __LINE__)
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0
@@ -103,6 +108,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             error = 4,
         };
 
+        enum colortype
+        {
+            red   = 1,
+            green = 2,
+            blue  = 4,
+            light = 8
+        };
+
         stdstream_basic() : parent_i(), parent_o(), buffer_read(this), openMode(uninitialized), bOpen(false), iFile(STDOUT_FILENO), ulTell(0) {}
 
         stdstream_basic(openmode mode) : parent_i(), parent_o(), buffer_read(this), iFile(STDOUT_FILENO), ulTell(0)
@@ -119,16 +132,16 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             switch (mode)
             {
             case in:
-                file = STDIN_FILENO;
+                iFile = STDIN_FILENO;
                 break;
             case out:
-                file = STDOUT_FILENO;
+                iFile = STDOUT_FILENO;
                 break;
             case error:
-                file = STDERR_FILENO;
+                iFile = STDERR_FILENO;
                 break;
             default:
-                throw error<char*>("not support openmode", __FILE__, __LINE__);
+                throw err("not support openmode", __FILE__, __LINE__);
                 break;
             }
             return *this;
@@ -168,17 +181,17 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             switch (type)
             {
             case begin:
-                if ((size_t)offset > size()) throw error<char*>("offset out of range", __FILE__, __LINE__);
+                if ((size_t)offset > size()) throw err("offset out of range", __FILE__, __LINE__);
                 where  = SEEK_SET;
                 ulTell = offset;
                 break;
             case end:
-                if ((size_t)offset > size()) throw error<char*>("offset out of range", __FILE__, __LINE__);
+                if ((size_t)offset > size()) throw err("offset out of range", __FILE__, __LINE__);
                 where  = SEEK_END;
                 ulTell = size() - offset;
                 break;
             case current:
-                if (tell() + offset >= size() || tell() + offset < 0) throw error<char*>("offset out of range", __FILE__, __LINE__);
+                if (tell() + offset >= size() || tell() + offset < 0) throw err("offset out of range", __FILE__, __LINE__);
                 where   = SEEK_CUR;
                 ulTell += offset;
                 break;
@@ -194,52 +207,22 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             CHECK_FILE_OPEN;
             CHECK_IN_MODE;
 
-            size_type _size = min(size() - tell(), static_cast<size_type>(fstream_buffer<T>::align));
-            value_type* buffer = this->buffer_read.reserve(_size);
+            if (buffer_read.size()) return buffer_read.size();
 
-            size_type readen = 0;
+            char buffer[stdstream_buffer<T>::align] = {0};
+
             while (true)
             {
-                size_type _read = ::READ(iFile, buffer, _size);
-                readen += _read;
-                ulTell += readen;
-                if (readen == _size) return _size;
-                else if (_read > 0)
-                {
-                    buffer += _read;
-                    _size  -= _read;
-                }
-                else
-                {
-                    this->buffer_read.clear();
-                    //throw error<char*>("can't read file", __FILE__, __LINE__);
-                }
-            }
-        }
-
-        bool readAll(value_type* ptr, size_type sz)
-        {
-            CHECK_FILE_OPEN;
-            CHECK_IN_MODE;
-
-            size_type _size  = min(sz, size());
-            size_type readen = 0;
-            while (true)
-            {
-                size_type _read = ::READ(iFile, ptr, _size);
-                readen += _read;
+                int _read = ::READ(iFile, buffer, stdstream_buffer<T>::align);
+                if (_read == -1) continue;
                 ulTell += _read;
-                if (readen == _size) return true;
-                else if (_read > 0)
+                if (buffer[_read] == '\n')
                 {
-                    ptr   += _read;
-                    _size -= _read;
-                }
-                else
-                {
-                    throw error<char*>("can't read file", __FILE__, __LINE__);
+                    buffer_read.append(buffer, _read - 1);
+                    break;
                 }
             }
+            return buffer_read.size();
         }
 
         bool write(const char* buffer, size_type size)
@@ -249,7 +232,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
             while (true)
             {
-                size_type written = ::WRITE(iFile, buffer, size);
+                int written = ::WRITE(iFile, buffer, size);
                 ulTell += written;
                 if (written == size)
                 {
@@ -262,10 +245,36 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
                 }
                 else
                 {
-                    //throw error<char*>("can't write file", __FILE__, __LINE__);
+                    throw err("can't write file", __FILE__, __LINE__);
+                    return false;
                 }
             }
             return true;
+        }
+
+        inline bool flush()
+        {
+            return true;
+        }
+
+        self& setColor(uchar color)
+        {
+#ifdef WIN32
+            WORD wdColor = 0;
+            if (color & red)   wdColor |= FOREGROUND_RED;
+            if (color & green) wdColor |= FOREGROUND_GREEN;
+            if (color & blue)  wdColor |= FOREGROUND_BLUE;
+            if (color & light) wdColor |= FOREGROUND_INTENSITY;
+            SetConsoleTextAttribute(GetStdHandle(STD_INPUT_HANDLE), wdColor);
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), wdColor);
+#else
+            char cColor = 0;
+            if (color & red)   cColor |= 1;
+            if (color & green) cColor |= 2;
+            if (color & blue)  cColor |= 4;
+            printf("%s\033[%dm", color & light ? "\033[1m" : "", 30 + cColor);
+#endif
+            return *this;
         }
     protected:
         stdstream_buffer<T> buffer_read;
@@ -282,8 +291,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         typedef stdstream_basic<T> parent;
     public:
         basic_stdstream() : parent() {}
-        basic_stdstream(const char* path, uchar mode) : parent(path, mode) {}
-        basic_stdstream(const string& path, uchar mode) : parent(path.c_str(), mode) {}
+        basic_stdstream(typename parent::openmode mode) : parent(mode) {}
 
         virtual ~basic_stdstream() {}
 
@@ -297,7 +305,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();
-            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
@@ -312,7 +320,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();
-            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
@@ -327,7 +335,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();
-            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
@@ -342,7 +350,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();
-            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
@@ -357,7 +365,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();
-            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
@@ -372,7 +380,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();
-            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
@@ -387,7 +395,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();
-            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
@@ -402,7 +410,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();
-            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
@@ -417,7 +425,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();
-            if (this->read_cache_size() < fstream_buffer<T>::half_align)
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
             {
                 this->read();
                 p = this->read_pointer();
@@ -529,7 +537,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            this->write(p, fstream_buffer<T>::char_traits::length(p));
+            this->write(p, stdstream_buffer<T>::char_traits::length(p));
             return *this;
         }
 
@@ -567,6 +575,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 #undef TELL
 #endif
 
+#undef err
 #undef CHECK_FILE_OPEN
 #undef CHECK_IN_MODE
 #undef CHECK_OUT_MODE

@@ -26,6 +26,11 @@ namespace QLanguage
     namespace Library
     {
         template <typename T>
+        class basic_string;
+
+        typedef basic_string<char> string;
+
+        template <typename T>
         class error
         {
 #if defined(_DEBUG) && DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
@@ -46,13 +51,28 @@ namespace QLanguage
 
             inline void print()const
             {
-                print(description);
+                print_impl(description);
             }
         public:
             T           description;
             const char* fileName;
             size_t      line;
         protected:
+            inline void print_impl(char*)const
+            {
+                print(description);
+            }
+
+            inline void print_impl(const char*)const
+            {
+                print(description);
+            }
+
+            inline void print_impl(const string&)const
+            {
+                print(description.c_str());
+            }
+
             void print(const char* description)const
             {
 #ifdef WIN32
