@@ -101,17 +101,17 @@ namespace QLanguage
         void print()const
         {
 #ifdef _DEBUG
-            printf("%s ->", left.name.c_str());
+            cout << string::format("%s ->", left.name.c_str());
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
             {
                 if (i->type == Item::TerminalSymbol)
                 {
-                    printf(" ");
+                    cout << " ";
                     i->rule.printShowName();
                 }
-                else printf(" %s", i->name.c_str());
+                else cout << string::format(" %s", i->name.c_str());
             }
-            printf("\n");
+            cout << endl;
 #endif
         }
 

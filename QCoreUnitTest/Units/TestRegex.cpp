@@ -66,35 +66,35 @@ TEST_CASE(TestRegex)
     enter.buildDFA();
 
 #ifdef _DEBUG
-    printf("========== digit start ==========\n");
+    cout << "========== digit start ==========" << endl;
     digit.printEpsilonNFA();
     digit.printDFA();
-    printf("=========== digit end ===========\n");
+    cout << "=========== digit end ===========" << endl;
 
-    printf("========== hex start ==========\n");
+    cout << "========== hex start ==========" << endl;
     hex.printEpsilonNFA();
     hex.printDFA();
-    printf("=========== hex end ===========\n");
+    cout << "=========== hex end ===========" << endl;
 
-    printf("========== real start ==========\n");
+    cout << "========== real start ==========" << endl;
     real.printEpsilonNFA();
     real.printDFA();
-    printf("=========== real end ===========\n");
+    cout << "=========== real end ===========" << endl;
 
-    printf("========== letter start ==========\n");
+    cout << "========== letter start ==========" << endl;
     letter.printEpsilonNFA();
     letter.printDFA();
-    printf("=========== letter end ===========\n");
+    cout << "=========== letter end ===========" << endl;
 
-    printf("========== space start ==========\n");
+    cout << "========== space start ==========" << endl;
     space.printEpsilonNFA();
     space.printDFA();
-    printf("=========== space end ===========\n");
+    cout << "=========== space end ===========" << endl;
 
-    printf("========== enter start ==========\n");
+    cout << "========== enter start ==========" << endl;
     enter.printEpsilonNFA();
     enter.printDFA();
-    printf("=========== enter end ===========\n");
+    cout << "=========== enter end ===========" << endl;
 #endif
 
     char* szTest = allocator<char>::allocate(iContentSize + 1);
@@ -120,5 +120,6 @@ TEST_CASE(TestRegex)
     }
     t = clock() - t;
     allocator<char>::deallocate(szTest, iContentSize);
-    printf("parse data length: %lu bytes\nuse of time: %fs\n", (unsigned long)iContentSize, t / 1000.0f);
+    cout << string::format("parse data length: %lu bytes", (unsigned long)iContentSize) << endl;
+    cout << string::format("use of time: %fs", t / 1000.0f) << endl;
 }

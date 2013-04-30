@@ -66,15 +66,15 @@ namespace QLanguage
             void print()const
             {
 #ifdef _DEBUG
-                printf("%03d -> %03d", pFrom->idx, pTo->idx);
+                cout << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
                 if (item.type == Production::Item::TerminalSymbol)
                 {
-                    printf("(");
+                    cout << "(";
                     item.rule.printShowName();
-                    printf(")");
+                    cout << ")";
                 }
-                else printf("(%s)", item.name.c_str());
-                printf("\n");
+                else cout << string::format("(%s)", item.name.c_str());
+                cout << endl;
 #endif
             }
 

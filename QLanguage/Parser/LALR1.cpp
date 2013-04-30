@@ -223,7 +223,7 @@ namespace QLanguage
     void LALR1::print()
     {
         hashset<Item*> s;
-        printf("-------- LALR(1) Start --------\n");
+        cout << "-------- LALR(1) Start --------" << endl;
 #ifdef _DEBUG
         for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
         {
@@ -234,18 +234,18 @@ namespace QLanguage
                 s.insert(j->pTo);
             }
         }
-        printf("start: %03d\n\n", pStart->idx);
+        cout << string::format("start: %03d", pStart->idx) << endl;
         for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
         {
-            printf("Item: %d\n", (*i)->idx);
+            cout << string::format("Item: %d", (*i)->idx) << endl;
             for (vector<LALR1Production>::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
             {
                 k->print();
             }
-            printf("\n");
+            cout << endl;
         }
 #endif
-        printf("--------- LALR(1) End ---------\n");
+        cout << "--------- LALR(1) End ---------" << endl;
     }
 
     void LALR1::print(const string& path)

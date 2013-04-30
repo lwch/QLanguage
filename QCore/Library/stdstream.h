@@ -277,7 +277,8 @@ typedef error<const char*> err;
             if (color & red)   cColor |= 1;
             if (color & green) cColor |= 2;
             if (color & blue)  cColor |= 4;
-            printf("%s\033[%dm", color & light ? "\033[1m" : "", 30 + cColor);
+            //printf("%s\033[%dm", color & light ? "\033[1m" : "", 30 + cColor);
+            *this << string::format("%s\033[%dm", color & light ? "\033[1m" : "", 30 + cColor);
 #endif
         }
 
