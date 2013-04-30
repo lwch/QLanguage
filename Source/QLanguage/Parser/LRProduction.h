@@ -66,20 +66,20 @@ namespace QLanguage
         void print()const
         {
 #ifdef _DEBUG
-            printf("%s ->", left.name.c_str());
+            cout << string::format("%s ->", left.name.c_str());
             uint j = 0;
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i,++j)
             {
-                if (j == idx) printf(" .");
+                if (j == idx) cout << " .";
                 if (i->type == Item::TerminalSymbol)
                 {
-                    printf(" ");
+                    cout << " ";
                     i->rule.printShowName();
                 }
-                else printf(" %s", i->name.c_str());
+                else cout << string::format(" %s", i->name.c_str());
             }
-            if (bKernel) printf("(Kernel)");
-            printf("\n");
+            if (bKernel) cout << "(Kernel)";
+            cout << endl;
 #endif
         }
 
@@ -169,17 +169,17 @@ namespace QLanguage
         {
 #ifdef _DEBUG
             parent::print();
-            printf("wildCards:\n");
+            cout << "wildCards:" << endl;
             for (vector<Item>::const_iterator i = wildCards.begin(), m = wildCards.end(); i != m; ++i)
             {
                 if (i->type == Item::Rule)
                 {
                     i->rule.printShowName();
-                    printf(" ");
+                    cout << " ";
                 }
-                else printf("# ");
+                else cout << "# ";
             }
-            printf("\n");
+            cout << endl;
 #endif
         }
 

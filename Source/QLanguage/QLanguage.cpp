@@ -11,13 +11,13 @@ int main()
 {
     clock_t t = clock();
     Lexer lexer;
-    printf("Make Lexer use of time: %ld\n", clock() - t);
+    cout << string::format("Make Lexer use of time: %ld", clock() - t) << endl;
     string input = "int main()\n"
                    "{\n"
                    "    return 0;"
                    "}\n";
     lexer.parse(input);
-    printf("Total time: %ld\n", clock() - t);
+    cout << string::format("Total time: %ld", clock() - t) << endl;
 
     Rule::Context context;
 

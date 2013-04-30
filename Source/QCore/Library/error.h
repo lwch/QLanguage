@@ -80,21 +80,21 @@ namespace QLanguage
                 SetConsoleTextAttribute(GetStdHandle(STD_INPUT_HANDLE), color);
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 #else
-                printf("\033[1m\033[31m");
+                cerr << "\033[1m\033[31m";
 #endif
-                printf("error: %s in file\n", description);
+                cerr << string::format("error: %s in file", description) << endl;
 #ifdef WIN32
-                printf("%s on line %d\n", fileName, line);
+                cerr << string::format("%s on line %d", fileName, line) << endl;
 #else
-                printf("%s on line %lu\n", fileName, line);
+                cerr << string::format("%s on line %lu", fileName, line) << endl;
 #endif
 #if defined(_DEBUG) && DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
                 for (DWORD j = 0; j < dwCallStackDepth; ++j)
                 {
                     CallStack::FuncInfo funcInfo;
                     CallStack::getInstance().getFuncInfo(callStack[j], funcInfo);
-                    printf("Function: %s\n", funcInfo.szFuncName);
-                    printf("File: %s in line %d\n", funcInfo.szFilePath, funcInfo.dwLineNumber);
+                    cerr << string::format("Function: %s", funcInfo.szFuncName) << endl;
+                    cerr << string::format("File: %s in line %d", funcInfo.szFilePath, funcInfo.dwLineNumber) << endl;
                 }
 #endif
             }
