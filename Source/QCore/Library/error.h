@@ -80,13 +80,13 @@ namespace QLanguage
                 SetConsoleTextAttribute(GetStdHandle(STD_INPUT_HANDLE), color);
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 #else
-                cerr << "\033[1m\033[31m";
+                printf("\033[1m\033[31m");
 #endif
-                cerr << string::format("error: %s in file", description) << endl;
+                printf("error: %s in file\n", description);
 #ifdef WIN32
-                cerr << string::format("%s on line %d", fileName, line) << endl;
+                printf("%s on line %d\n", fileName, line);
 #else
-                cerr << string::format("%s on line %lu", fileName, line) << endl;
+                printf("%s on line %lu\n", fileName, line);
 #endif
 #if defined(_DEBUG) && DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
                 for (DWORD j = 0; j < dwCallStackDepth; ++j)
