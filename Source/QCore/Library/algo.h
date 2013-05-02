@@ -278,7 +278,7 @@ namespace QLanguage
         template <typename Container, typename Compare, typename AddItem>
         void select_into(const Container& container, Container& out, Compare compare, AddItem add)
         {
-            for (__container_traits<Container>::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
+            for (typename __container_traits<Container>::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
             {
                 if (compare(*i)) add(out, *i);
             }

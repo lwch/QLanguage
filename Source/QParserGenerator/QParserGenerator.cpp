@@ -244,7 +244,8 @@ int main(int argv, char* args[])
             c = clock();
             lr0.make();
             c = clock() - c;
-            lr0.print(fstream("LR0.txt", fstream::out));
+            fstream lr0stream("LR0.txt", fstream::out);
+            lr0.print(lr0stream);
 
             cout.setColor(cout.lightWith(stdstream::green));
             cout << "Make LR(0) State Machine Finish ..." << endl;
@@ -255,7 +256,8 @@ int main(int argv, char* args[])
             c = clock();
             lalr1.make();
             c = clock() - c;
-            lalr1.print(fstream("LALR1.txt", fstream::out));
+            fstream lalr1stream("LALR1.txt", fstream::out);
+            lalr1.print(lalr1stream);
 
             cout.setColor(cout.lightWith(stdstream::green));
             cout << "Make LALR(1) State Machine Finish ..." << endl;

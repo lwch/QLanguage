@@ -50,7 +50,7 @@ namespace QLanguage
             }
         };
 
-        struct Edge 
+        struct Edge
         {
             Item* pFrom;
             Item* pTo;
