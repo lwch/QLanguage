@@ -225,6 +225,65 @@ namespace QLanguage
             return first;
         }
 
+        template <typename Size, typename Iterator, typename Value>
+        Size count(Iterator first, Iterator last, const Value& value)
+        {
+            Size n = 0;
+            while (first != last)
+            {
+                if (*first == value) ++n;
+                ++first;
+            }
+            return n;
+        }
+
+        template <typename Size, typename Iterator, typename Value, typename Compare>
+        Size count(Iterator first, Iterator last, const Value& value, Compare comp)
+        {
+            Size n = 0; 
+            while (first != last)
+            {
+                if (comp(*first, value)) ++n;
+                ++first;
+            }
+            return n;
+        }
+
+        template <typename Iterator, typename Value>
+        long index_of(Iterator first, Iterator last, const Value& value)
+        {
+            ulong n = 0;
+            while (first != last)
+            {
+                if (*first == value) return n;
+                ++first;
+                ++n;
+            }
+            return -1;
+        }
+
+        template <typename Iterator, typename Value, typename Compare>
+        long index_of(Iterator first, Iterator last, const Value& value, Compare comp)
+        {
+            ulong n = 0;
+            while (first != last)
+            {
+                if (comp(*first, value)) return n;
+                ++first;
+                ++n;
+            }
+            return -1;
+        }
+
+        template <typename Container, typename Compare, typename AddItem>
+        void select_into(const Container& container, Container& out, Compare compare, AddItem add)
+        {
+            for (__container_traits<Container>::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
+            {
+                if (compare(*i)) add(out, *i);
+            }
+        }
+
         template <typename Iterator, typename Value>
         inline void toArray(Iterator first, Iterator last, Value* pArray)
         {

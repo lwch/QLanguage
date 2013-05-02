@@ -12,8 +12,11 @@
 #ifndef _QLANGUAGE_LALR1_H_
 #define _QLANGUAGE_LALR1_H_
 
+#include "../../QCore/Library/ostream.h"
+
 #include "LR0.h"
 #include "LRProduction.h"
+#include <iosfwd>
 
 namespace QLanguage
 {
@@ -65,34 +68,33 @@ namespace QLanguage
                 return pFrom == x.pFrom && pTo == x.pTo && item == x.item;
             }
 
-            void print()const
+            void print(Library::ostream& stream)const
             {
 #ifdef _DEBUG
-                cout << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
+                stream << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
                 if (item.type == Production::Item::TerminalSymbol)
                 {
-                    cout << "(";
-                    item.rule.printShowName();
-                    cout << ")";
+                    stream << "(";
+                    item.rule.printShowName(stream);
+                    stream << ")";
                 }
-                else cout << string::format("(%s)", item.name.c_str());
-                cout << endl;
+                else stream << string::format("(%s)", item.name.c_str());
+                stream << endl;
 #endif
             }
+        };
 
-            void print(fstream& fs)const
+        template <typename Container, typename Compare>
+        struct ProductionUnique
+        {
+            Container& container;
+            Compare   compare;
+
+            ProductionUnique(Container& container, Compare compare) : container(container), compare(compare) {}
+
+            const bool operator()(const Production::Item& i, const Production::Item& j)const
             {
-#ifdef _DEBUG
-                fs << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
-                if (item.type == Production::Item::TerminalSymbol)
-                {
-                    fs << "(";
-                    item.rule.printShowName(fs);
-                    fs << ")";
-                }
-                else fs << string::format("(%s)", item.name.c_str());
-                fs << endl;
-#endif
+                return compare(i) && i == j;
             }
         };
     protected:
@@ -122,18 +124,21 @@ namespace QLanguage
 
         bool make();
 
-        void print();
-        void print(const string& path);
+        void print(Library::ostream& stream);
     protected:
         void closure(Item* pKernel, vector<Production::Item>& vts);
         void go(const LALR1Production& p, Item* pTo, const Production::Item& item);
         void first(vector<Production::Item>::const_iterator first, vector<Production::Item>::const_iterator last, const vector<LALR1Production::Item>& wildCards, vector<LALR1Production::Item>& v);
         void buildParserTable();
         void fillTable(Item* pItem, const Production::Item& c);
+        void fillTable(uint iLine, uint iChar, const pair<uchar, uint>& p);
 
         inline static const bool compare_edge(const Edge& e, const Production::Item& i);
+        inline static const bool compare_production_item(const Production::Item& i1, const LALR1Production::Item& i2);
+        inline static const bool compare_production(const Production& p1, const LALR1Production& p2);
         inline static const bool isVN(const Production::Item& i);
         inline static const bool isVT(const Production::Item& i);
+        inline static void addV(vector<Production::Item>& container, const Production::Item& i);
     protected:
         LR0& lr0;
 

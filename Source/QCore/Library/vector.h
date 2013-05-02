@@ -14,6 +14,7 @@
 #define _QLANGUAGE_LIBRARY_VECTOR_H_
 
 #include "definition.h"
+#include "pair.h"
 
 #include "iterator.h"
 #include "allocator.h"
@@ -438,24 +439,20 @@ public:
     template <typename Compare>
     bool push_back_unique(const T& x, Compare comp)
     {
-        if (comp(x))
+        for (const_iterator i = begin(), m = end(); i != m; ++i)
         {
-            for (const_iterator i = begin(), m = end(); i != m; ++i)
-            {
-                if (*i == x) return false;
-            }
-            if (end_of_element != finish)
-            {
-                construct(&*finish, x);
-                ++finish;
-            }
-            else
-            {
-                insert_aux(end(), x);
-            }
-            return true;
+            if (comp(*i, x)) return false;
         }
-        return false;
+        if (end_of_element != finish)
+        {
+            construct(&*finish, x);
+            ++finish;
+        }
+        else
+        {
+            insert_aux(end(), x);
+        }
+        return true;
     }
 
     inline void pop_back()

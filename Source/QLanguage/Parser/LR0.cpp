@@ -123,7 +123,7 @@ namespace QLanguage
         {
             for (vector<LR0Production>::iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
             {
-                if (k->idx < k->right.size() - 1 && k->right[k->idx] == x)
+                if (k->idx < k->right.size() && k->right[k->idx] == x)
                 {
                     if (k->idx < k->right.size())
                     {
@@ -159,66 +159,34 @@ namespace QLanguage
         }
     }
 
-    void LR0::print()
+    void LR0::print(Library::ostream& stream)
     {
         hashset<Item*> s;
-        cout << "-------- LR(0) Start --------" << endl;
+        stream << "-------- LR(0) Start --------" << endl;
 #ifdef _DEBUG
         for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
         {
             for (vector<Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
-                j->print();
+                j->print(stream);
                 s.insert(j->pFrom);
                 s.insert(j->pTo);
             }
         }
-        cout << string::format("start: %03d", pStart->idx) << endl << endl;
+        stream << string::format("start: %03d", pStart->idx) << endl << endl;
         for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
         {
-            cout << string::format("Item: %d", (*i)->idx) << endl;
+            stream << string::format("Item: %d", (*i)->idx) << endl;
             for (map<Production::Item, vector<LR0Production> >::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
             {
                 for (vector<LR0Production>::const_iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
                 {
-                    l->print();
+                    l->print(stream);
                 }
             }
-            cout << endl;
+            stream << endl;
         }
 #endif
-        cout << "--------- LR(0) End ---------" << endl;
-    }
-
-    void LR0::print(const string& path)
-    {
-        hashset<Item*> s;
-        fstream fs(path, fstream::out);
-        fs << "-------- LR(0) Start --------" << endl;
-#ifdef _DEBUG
-        for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
-        {
-            for (vector<Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
-            {
-                j->print(fs);
-                s.insert(j->pFrom);
-                s.insert(j->pTo);
-            }
-        }
-        fs << string::format("start: %03d", pStart->idx) << endl << endl;
-        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
-        {
-            fs << string::format("Item: %d", (*i)->idx) << endl;
-            for (map<Production::Item, vector<LR0Production> >::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
-            {
-                for (vector<LR0Production>::const_iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
-                {
-                    l->print(fs);
-                }
-            }
-            fs << endl;
-        }
-#endif
-        fs << "--------- LR(0) End ---------" << endl;
+        stream << "--------- LR(0) End ---------" << endl;
     }
 }

@@ -47,7 +47,7 @@ int main()
     LR0 lr0(productions, Z);
     lr0.make();
 
-    lr0.print();
+    lr0.print(cin);
 
 //     LALR1 lalr1(lr0);
 //     lalr1.make();

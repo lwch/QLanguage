@@ -63,43 +63,23 @@ namespace QLanguage
             return *this;
         }
 
-        void print()const
+        void print(Library::ostream& stream)const
         {
 #ifdef _DEBUG
-            cout << string::format("%s ->", left.name.c_str());
+            stream << string::format("%s ->", left.name.c_str());
             uint j = 0;
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i,++j)
             {
-                if (j == idx) cout << " .";
+                if (j == idx) stream << " .";
                 if (i->type == Item::TerminalSymbol)
                 {
-                    cout << " ";
-                    i->rule.printShowName();
+                    stream << " ";
+                    i->rule.printShowName(stream);
                 }
-                else cout << string::format(" %s", i->name.c_str());
+                else stream << string::format(" %s", i->name.c_str());
             }
-            if (bKernel) cout << "(Kernel)";
-            cout << endl;
-#endif
-        }
-
-        void print(fstream& fs)const
-        {
-#ifdef _DEBUG
-            fs << string::format("%s ->", left.name.c_str());
-            uint j = 0;
-            for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i,++j)
-            {
-                if (j == idx) fs << " .";
-                if (i->type == Item::TerminalSymbol)
-                {
-                    fs << " ";
-                    i->rule.printShowName(fs);
-                }
-                else fs << string::format(" %s", i->name.c_str());
-            }
-            if (bKernel) fs << "(Kernel)";
-            fs << endl;
+            if (bKernel) stream << "(Kernel)";
+            stream << endl;
 #endif
         }
 
@@ -162,42 +142,24 @@ namespace QLanguage
 
         inline const bool operator==(const LALR1Production& p)const
         {
-            return wildCards == p.wildCards && static_cast<LR0Production>(*this) == static_cast<LR0Production>(p);
+            return static_cast<LR0Production>(*this) == static_cast<LR0Production>(p);
         }
 
-        void print()const
+        void print(Library::ostream& stream)const
         {
 #ifdef _DEBUG
-            parent::print();
-            cout << "wildCards:" << endl;
+            parent::print(stream);
+            stream << "wildCards:" << endl;
             for (vector<Item>::const_iterator i = wildCards.begin(), m = wildCards.end(); i != m; ++i)
             {
                 if (i->type == Item::Rule)
                 {
-                    i->rule.printShowName();
-                    cout << " ";
+                    i->rule.printShowName(stream);
+                    stream << " ";
                 }
-                else cout << "# ";
+                else stream << "# ";
             }
-            cout << endl;
-#endif
-        }
-
-        void print(fstream& fs)const
-        {
-#ifdef _DEBUG
-            parent::print(fs);
-            fs << "wildCards:" << endl;
-            for (vector<Item>::const_iterator i = wildCards.begin(), m = wildCards.end(); i != m; ++i)
-            {
-                if (i->type == Item::Rule)
-                {
-                    i->rule.printShowName(fs);
-                    fs << " ";
-                }
-                else fs << "# ";
-            }
-            fs << endl;
+            stream << endl;
 #endif
         }
     public:

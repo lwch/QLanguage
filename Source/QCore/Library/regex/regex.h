@@ -824,14 +824,9 @@ public:
             fs << "----------- DFA End -----------" << endl;
         }
 
-        void printShowName()const
+        void printShowName(ostream& stream)const
         {
-            cout << showName;
-        }
-
-        void printShowName(fstream& fs)const
-        {
-            fs << showName;
+            stream << showName;
         }
 #endif
     protected:
@@ -982,6 +977,7 @@ public:
 
         Context* pContext;
         uint     idx;
+    public:
 #ifdef _DEBUG
         string   showName;
 #endif

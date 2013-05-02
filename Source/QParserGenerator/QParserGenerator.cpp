@@ -52,7 +52,7 @@ int main(int argv, char* args[])
             cout.setColor(cout.lightWith(stdstream::green));
             cout << "Lexer Finish ..." << endl;
             cout.setColor(cout.lightWith(stdstream::white));
-            cout << string::format("Use of time: %d", c);
+            cout << string::format("Use of time: %d", c) << endl;
 
             // step2 LR0
             Rule::Context context;
@@ -64,6 +64,7 @@ int main(int argv, char* args[])
 #ifdef _DEBUG
             ruleString.setShowName("\"{String}\"");
 #endif
+            Production::Item itemString(ruleString);
             // String End
 
             // Token Start
@@ -72,6 +73,7 @@ int main(int argv, char* args[])
 #ifdef _DEBUG
             ruleToken.setShowName("%token");
 #endif
+            Production::Item itemRuleToken(ruleToken);
             // Token End
 
             // Start Start
@@ -80,6 +82,7 @@ int main(int argv, char* args[])
 #ifdef _DEBUG
             ruleStart.setShowName("%start");
 #endif
+            Production::Item itemRuleStart(ruleStart);
             // Start End
 
             // Digit Start
@@ -104,6 +107,7 @@ int main(int argv, char* args[])
 #ifdef _DEBUG
             ruleLetter.setShowName("\"{Letter}\"");
 #endif
+            Production::Item itemLetter(ruleLetter);
             // Letter End
 
             // Arrow Start
@@ -112,6 +116,7 @@ int main(int argv, char* args[])
 #ifdef _DEBUG
             ruleArrow.setShowName("->");
 #endif
+            Production::Item itemRuleArrow(ruleArrow);
             // Arrow End
 
             // Or Start
@@ -120,6 +125,7 @@ int main(int argv, char* args[])
 #ifdef _DEBUG
             ruleOr.setShowName("|");
 #endif
+            Production::Item itemRuleOr(ruleOr);
             // Or End
 
             // Semicolon Start
@@ -128,38 +134,39 @@ int main(int argv, char* args[])
 #ifdef _DEBUG
             ruleSemicolon.setShowName(";");
 #endif
+            Production::Item itemRuleSemicolon(ruleSemicolon);
             // Semicolon End
 
             vector<Production::Item> v;
 
             Production::Item itemStrings("strings");
             v.push_back(itemStrings);
-            v.push_back(ruleString);
+            v.push_back(itemString);
             Production productionStrings_String(itemStrings, v);              // string -> string "{String}"
-            Production productionStrings_RuleString(itemStrings, ruleString); // string -> "{String}"
+            Production productionStrings_RuleString(itemStrings, itemString); // string -> "{String}"
             v.clear();
 
             Production::Item itemOneProductionRight("oneProductionRight");
             v.push_back(itemOneProductionRight);
-            v.push_back(ruleLetter);
+            v.push_back(itemLetter);
             Production productionOneProductionRight_Letter(itemOneProductionRight, v); // oneProductionRight -> oneProductionRight "{Letter}"
             v.pop_back();
-            v.push_back(ruleString);
+            v.push_back(itemString);
             Production productionOneProductionRight_String(itemOneProductionRight, v); // oneProductionRight -> oneProductionRight "{String}"
             v.clear();
-            Production productionOneProductionRight_RuleLetter(itemOneProductionRight, ruleLetter); // oneProductionRight -> "{Letter}"
-            Production productionOneProductionRight_RuleString(itemOneProductionRight, ruleString); // oneProductionRight -> "{String}"
+            Production productionOneProductionRight_RuleLetter(itemOneProductionRight, itemLetter); // oneProductionRight -> "{Letter}"
+            Production productionOneProductionRight_RuleString(itemOneProductionRight, itemString); // oneProductionRight -> "{String}"
 
             Production::Item itemSomeProductionRight("someProductionRight");
             v.push_back(itemSomeProductionRight);
-            v.push_back(ruleOr);
+            v.push_back(itemRuleOr);
             v.push_back(itemOneProductionRight);
             Production productionSomeProductionRight_Or_OneProductionRight(itemSomeProductionRight, v);                   // someProductionRight -> someProductionRight "|" oneProductionRight
             Production productionSomeProductionRight_OneProductionRight(itemSomeProductionRight, itemOneProductionRight); // someProductionRight -> oneProductionRight
             v.clear();
 
             Production::Item itemToken("token");
-            v.push_back(ruleToken);
+            v.push_back(itemRuleToken);
             v.push_back(itemStrings);
             Production productionToken(itemToken, v); // token -> "%token" strings
             v.clear();
@@ -172,10 +179,10 @@ int main(int argv, char* args[])
             Production productionSomeTokens_ItemToken(itemSomeTokens, itemToken); // someTokens -> token
 
             Production::Item itemProduction("production");
-            v.push_back(ruleLetter);
-            v.push_back(ruleArrow);
+            v.push_back(itemLetter);
+            v.push_back(itemRuleArrow);
             v.push_back(itemSomeProductionRight);
-            v.push_back(ruleSemicolon);
+            v.push_back(itemRuleSemicolon);
             Production productionProduction(itemProduction, v); // production -> "{Letter}" "->" someProductionRight ";"
             v.clear();
 
@@ -188,13 +195,13 @@ int main(int argv, char* args[])
 
             Production::Item itemStart("start");
             v.push_back(itemSomeTokens);
-            v.push_back(ruleStart);
-            v.push_back(ruleLetter);
+            v.push_back(itemRuleStart);
+            v.push_back(itemLetter);
             v.push_back(itemSomeProductions);
             Production productionStart_HasToken(itemStart, v);   // start -> someTokens "%start" "{Letter}" someProductions
             v.clear();
-            v.push_back(ruleStart);
-            v.push_back(ruleLetter);
+            v.push_back(itemRuleStart);
+            v.push_back(itemLetter);
             v.push_back(itemSomeProductions);
             Production productionStart_HasntToken(itemStart, v); // start -> "%start" "{Letter}" someProductions
             v.clear();
@@ -237,23 +244,23 @@ int main(int argv, char* args[])
             c = clock();
             lr0.make();
             c = clock() - c;
-            lr0.print("LR0.txt");
+            lr0.print(fstream("LR0.txt", fstream::out));
 
             cout.setColor(cout.lightWith(stdstream::green));
             cout << "Make LR(0) State Machine Finish ..." << endl;
             cout.setColor(cout.lightWith(stdstream::white));
-            cout << string::format("Use of time: %d", c);
+            cout << string::format("Use of time: %d", c) << endl;
 
             LALR1 lalr1(lr0);
             c = clock();
             lalr1.make();
             c = clock() - c;
-            lalr1.print("LALR1.txt");
+            lalr1.print(fstream("LALR1.txt", fstream::out));
 
             cout.setColor(cout.lightWith(stdstream::green));
             cout << "Make LALR(1) State Machine Finish ..." << endl;
             cout.setColor(cout.lightWith(stdstream::white));
-            cout << string::format("Use of time: %d", c);
+            cout << string::format("Use of time: %d", c) << endl;
         }
         catch (const error<char*>& e)
         {
