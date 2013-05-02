@@ -230,7 +230,7 @@ typedef error<const char*> err;
             return buffer_read.size();
         }
 
-        bool write(const char* buffer, size_type size)
+        virtual bool write(const char* buffer, size_type size)
         {
             CHECK_FILE_OPEN;
             CHECK_OUT_MODE;
@@ -257,7 +257,7 @@ typedef error<const char*> err;
             return true;
         }
 
-        inline bool flush()
+        virtual inline bool flush()
         {
             return true;
         }
@@ -314,6 +314,8 @@ typedef error<const char*> err;
     {
         typedef basic_stdstream<T> self;
         typedef stdstream_basic<T> parent;
+        typedef basic_istream<T>   parent_i;
+        typedef basic_ostream<T>   parent_o;
     public:
         basic_stdstream() : parent() {}
         basic_stdstream(typename parent::openmode mode) : parent(mode) {}
@@ -574,7 +576,7 @@ typedef error<const char*> err;
             return *this;
         }
 
-        self& operator<<(self& (*f)(self&))
+        virtual parent_o& operator<<(parent_o& (*f)(parent_o&))
         {
             return f(*this);
         }

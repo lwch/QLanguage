@@ -7,7 +7,7 @@
 	file ext:	cpp
 	author:		lwch
 	
-	purpose:	http://dec3.jlu.edu.cn/webcourse/T000171/chap4/4-5-7.html
+	purpose:	
 *********************************************************************/
 #include "../../QCore/Library/hashset.h"
 #include "../../QCore/Library/fstream.h"
@@ -53,17 +53,21 @@ namespace QLanguage
         {
             if (i->left.name == "begin") i->wildCards.push_back(LALR1Production::Item());
         }
+
         for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
         {
-            vector<Production::Item> vts;
-            closure(*i, vts);
-            vns.add_unique(vts, isVN);
-            vts.add_unique(vts, isVT);
+            vector<Production::Item> vs;
+            closure(*i, vs);
+            vector<Production::Item> vts, vns;
+            select_into(vs, vts, isVT, addV);
+            select_into(vs, vns, isVN, addV);
+            this->vts.add_unique(vts);
+            this->vns.add_unique(vns);
             for (vector<LALR1Production>::const_iterator j = (*i)->data.begin(), n = (*i)->data.end(); j != n; ++j)
             {
                 for (vector<Edge>::iterator k = edges[*i].begin(), o = edges[*i].end(); k != o; ++k)
                 {
-                    for (vector<Production::Item>::const_iterator a = vts.begin(), b = vts.end(); a != b; ++a)
+                    for (vector<Production::Item>::const_iterator a = vs.begin(), b = vs.end(); a != b; ++a)
                     {
                         if (k->item == *a) go(*j, k->pTo, *a);
                     }
@@ -102,15 +106,19 @@ namespace QLanguage
             LALR1Production& temp = pKernel->data[iCount];
             vector<LALR1Production::Item> v;
             first(temp.right.begin() + temp.idx + 1, temp.right.end(), temp.wildCards, v);
-            if (temp.idx < temp.right.size() && temp.right[temp.idx].isNoTerminalSymbol())
+            if (temp.idx < temp.right.size())
             {
-                for (vector<Production>::const_iterator i = lr0.productionMap[temp.right[temp.idx]].begin(), m = lr0.productionMap[temp.right[temp.idx]].end(); i != m; ++i)
+                if (temp.right[temp.idx].isNoTerminalSymbol())
                 {
-                    LALR1Production p(i->left, i->right);
-                    p.wildCards.add_unique(v);
-                    pKernel->data.push_back_unique(p);
-                    vts.push_back_unique(p.right[p.idx]);
+                    for (vector<Production>::const_iterator i = lr0.productionMap[temp.right[temp.idx]].begin(), m = lr0.productionMap[temp.right[temp.idx]].end(); i != m; ++i)
+                    {
+                        LALR1Production p(i->left, i->right);
+                        p.wildCards.add_unique(v);
+                        pKernel->data.push_back_unique(p);
+                        vts.push_back_unique(p.right[p.idx]);
+                    }
                 }
+                else vts.push_back_unique(temp.right[temp.idx]);
             }
             ++iCount;
         }
@@ -167,24 +175,27 @@ namespace QLanguage
             for (vector<LALR1Production>::const_iterator j = (*i)->data.begin(), n = (*i)->data.end(); j != n; ++j)
             {
                 const LALR1Production& p = *j;
-                const vector<Production::Item>& right = p.right;
-                const uint idx = p.idx;
-                const size_t m = right.size();
-                if (idx < m)
+                if (p.idx < p.right.size())
                 {
-                    const Production::Item& c = right[idx];
+                    const Production::Item& c = p.right[p.idx];
                     fillTable(*i, c);
                 }
                 else
                 {
-//                     if (p.left.name == "begin" && p.idx == 1) fillTable(i->idx, pair_type('A', 0));
-//                     else
-//                     {
-//                         for (vector<LALR1Production::Item>::const_iterator k = p.wildCards.begin(), o = p.wildCards.end(); k != o; ++k)
-//                         {
-//                             fillTable(i->idx, *k);
-//                         }
-//                     }
+                    if (p.left == lr0.begin)
+                    {
+                        fillTable((*i)->idx, vts.size(), pair_type('A', 0));
+                    }
+                    else
+                    {
+                        for (vector<LALR1Production::Item>::const_iterator k = p.wildCards.begin(), o = p.wildCards.end(); k != o; ++k)
+                        {
+                            long q = index_of(vts.begin(), vts.end(), *k, compare_production_item);
+                            long r = index_of(lr0.inputProductions.begin(), lr0.inputProductions.end(), *j, compare_production);
+                            if (q == -1 || r == -1) continue;
+                            fillTable((*i)->idx, q, pair_type('R', r));
+                        }
+                    }
                 }
             }
         }
@@ -192,22 +203,63 @@ namespace QLanguage
 
     void LALR1::fillTable(Item* pItem, const Production::Item& c)
     {
-        if (c.isTermainalSymbol())
+        if (c == lr0.begin)
         {
             vector<Edge>::const_iterator first = edges[pItem].begin();
             vector<Edge>::const_iterator last = edges[pItem].end();
 
             vector<Edge>::const_iterator i = find(first, last, c, compare_edge);
+
+            if (i == last) return;
+
+            fillTable(pItem->idx, vts.size(), pair<uchar, uint>(0, i->pTo->idx));
+        }
+        else if (c.isTermainalSymbol())
+        {
+            long idx = index_of(vts.begin(), vts.end(), c);
+            vector<Edge>::const_iterator first = edges[pItem].begin();
+            vector<Edge>::const_iterator last = edges[pItem].end();
+
+            vector<Edge>::const_iterator i = find(first, last, c, compare_edge);
+
+            if (idx == -1 || i == last) return;
+
+            fillTable(pItem->idx, idx, pair<uchar, uint>('S', i->pTo->idx));
         }
         else
         {
+            long idx = index_of(vns.begin(), vns.end(), c);
+            vector<Edge>::const_iterator first = edges[pItem].begin();
+            vector<Edge>::const_iterator last = edges[pItem].end();
 
+            vector<Edge>::const_iterator i = find(first, last, c, compare_edge);
+
+            if (idx == -1 || i == last) return;
+
+            fillTable(pItem->idx, vts.size() + 1 + idx, pair<uchar, uint>(0, i->pTo->idx));
         }
+    }
+
+    void LALR1::fillTable(uint iLine, uint iChar, const pair<uchar, uint>& p)
+    {
+        pair<uchar, uint>& pa = table[iLine * (vts.size() + 1 + vns.size()) + iChar];
+        if (pa.first == 0 && pa.second == 0) pa = p;
+        else if (pa.first == 'R' && p.first == 'S') pa = p;
     }
 
     inline const bool LALR1::compare_edge(const Edge& e, const Production::Item& i)
     {
         return e.item == i;
+    }
+
+    inline const bool LALR1::compare_production_item(const Production::Item& i1, const LALR1Production::Item& i2)
+    {
+        return i1.rule == i2.rule;
+    }
+
+    inline const bool LALR1::compare_production(const Production& p1, const LALR1Production& p2)
+    {
+        return p1.left == p2.left && p1.right == p2.right;
     }
 
     inline const bool LALR1::isVN(const Production::Item& i)
@@ -220,60 +272,86 @@ namespace QLanguage
         return i.isTermainalSymbol();
     }
 
-    void LALR1::print()
+    inline void LALR1::addV(vector<Production::Item>& container, const Production::Item& i)
     {
-        hashset<Item*> s;
-        cout << "-------- LALR(1) Start --------" << endl;
-#ifdef _DEBUG
-        for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
-        {
-            for (vector<Edge>::iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
-            {
-                j->print();
-                s.insert(j->pFrom);
-                s.insert(j->pTo);
-            }
-        }
-        cout << string::format("start: %03d", pStart->idx) << endl;
-        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
-        {
-            cout << string::format("Item: %d", (*i)->idx) << endl;
-            for (vector<LALR1Production>::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
-            {
-                k->print();
-            }
-            cout << endl;
-        }
-#endif
-        cout << "--------- LALR(1) End ---------" << endl;
+        container.push_back_unique(i);
     }
 
-    void LALR1::print(const string& path)
+    void LALR1::print(Library::ostream& stream)
     {
-        hashset<Item*> s;
-        fstream fs(path, fstream::out);
-        fs << "-------- LALR(1) Start --------" << endl;
 #ifdef _DEBUG
+        hashset<Item*> s;
+        stream << "-------- LALR(1) Start --------" << endl;
+        stream << "----- State Machine Start -----" << endl;
         for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
         {
             for (vector<Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
-                j->print(fs);
+                j->print(stream);
                 s.insert(j->pFrom);
                 s.insert(j->pTo);
             }
         }
-        fs << string::format("start: %03d", pStart->idx) << endl << endl;
+        stream << string::format("start: %03d", pStart->idx) << endl << endl;
         for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
         {
-            fs << string::format("Item: %d", (*i)->idx) << endl;
+            stream << string::format("Item: %d", (*i)->idx) << endl;
             for (vector<LALR1Production>::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
             {
-                k->print(fs);
+                k->print(stream);
             }
-            fs << endl;
+            stream << endl;
         }
+        stream << "------ State Machine End ------" << endl;
+        stream << "------ Parse Table Start ------" << endl;
+        stream << string::format("Action Count: %d", vts.size() + 1)
+               << " "
+               << string::format("GoTo Count: %d", vns.size())
+               << endl;
+        for (vector<Production::Item>::const_iterator i = vts.begin(), m = vts.end(); i != m; ++i)
+        {
+            stream << "\t" << i->index;
+        }
+        stream << "\t$";
+        for (vector<Production::Item>::const_iterator i = vns.begin(), m = vns.end(); i != m; ++i)
+        {
+            stream << "\t" << i->index;
+        }
+        stream << endl;
+        uint idx = 0;
+        for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
+        {
+            Item* const pItem = *i;
+            stream << pItem->idx;
+            for (vector<Production::Item>::const_iterator j = vts.begin(), n = vts.end(); j != n; ++j)
+            {
+                const pair<uchar, uint>& pa = table[idx++];
+                if (pa.first) stream << "\t" << string::format("%c%u", pa.first, pa.second);
+                else stream << "\tε";
+            }
+            const pair<uchar, uint>& pa = table[idx++];
+            if (pa.first) stream << "\t" << string::format("%c%u", pa.first, pa.second);
+            else stream << "\tε";
+            for (vector<Production::Item>::const_iterator j = vns.begin(), n = vns.end(); j != n; ++j)
+            {
+                const pair<uchar, uint>& pa = table[idx++];
+                if (pa.second) stream << "\t" << pa.second;
+                else stream << "\tε";
+            }
+            stream << endl;
+        }
+        stream << "VTS:" << endl;
+        for (vector<Production::Item>::const_iterator i = vts.begin(), m = vts.end(); i != m; ++i)
+        {
+            stream << i->index << " : " << i->rule.showName << endl;
+        }
+        stream << "VNS:" << endl;
+        for (vector<Production::Item>::const_iterator i = vns.begin(), m = vns.end(); i != m; ++i)
+        {
+            stream << i->index << " : " << i->name << endl;
+        }
+        stream << "------- Parse Table End -------" << endl;
+        stream << "--------- LALR(1) End ---------" << endl;
 #endif
-        fs << "--------- LALR(1) End ---------" << endl;
     }
 }

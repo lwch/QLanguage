@@ -144,6 +144,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             if (bNegative) throw error<const char*>("negative doesn't support", __FILE__, __LINE__);
         }
     };
+
+    typedef basic_istream<char> istream;
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

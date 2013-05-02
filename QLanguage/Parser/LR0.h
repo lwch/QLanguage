@@ -63,33 +63,18 @@ namespace QLanguage
                 return pFrom == x.pFrom && pTo == x.pTo && item == x.item;
             }
 
-            void print()const
+            void print(Library::ostream& stream)const
             {
 #ifdef _DEBUG
-                cout << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
+                stream << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
                 if (item.type == Production::Item::TerminalSymbol)
                 {
-                    cout << "(";
-                    item.rule.printShowName();
-                    cout << ")";
+                    stream << "(";
+                    item.rule.printShowName(stream);
+                    stream << ")";
                 }
-                else cout << string::format("(%s)", item.name.c_str());
-                cout << endl;
-#endif
-            }
-
-            void print(fstream& fs)const
-            {
-#ifdef _DEBUG
-                fs << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
-                if (item.type == Production::Item::TerminalSymbol)
-                {
-                    fs << "(";
-                    item.rule.printShowName(fs);
-                    fs << ")";
-                }
-                else fs << string::format("(%s)", item.name.c_str());
-                fs << endl;
+                else stream << string::format("(%s)", item.name.c_str());
+                stream << endl;
 #endif
             }
         };
@@ -133,8 +118,7 @@ namespace QLanguage
 
         bool make();
 
-        void print();
-        void print(const string& path);
+        void print(Library::ostream& stream);
     protected:
         Item* closure(const vector<LR0Production>& x);
         void closure(const LR0Production& x, map<LR0Production::Item, vector<LR0Production> >& y);

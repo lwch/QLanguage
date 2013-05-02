@@ -21,9 +21,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     {
         typedef basic_ostream<T> self;
         typedef basic_ios<T>     parent;
+        typedef size_t           size_type;
     public:
         basic_ostream() : parent() {}
 
+        virtual self& operator<<(self& (*f)(self&))=0;
         virtual self& operator<<(bool)=0;
         virtual self& operator<<(short)=0;
         virtual self& operator<<(ushort)=0;
@@ -43,12 +45,17 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             throw error<const char*>("doesn't support", __FILE__, __LINE__);
             return *this;
         }
+
+        virtual bool write(const char* buffer, size_type size)=0;
+        virtual bool flush()=0;
     protected:
         inline string convert(long l)     { return string::format("%ld", l); }
         inline string convert(ulong ul)   { return string::format("%u", ul); }
         inline string convert(llong ll)   { return string::format("%ld", ll); }
         inline string convert(ullong ull) { return string::format("%u", ull); }
     };
+
+    typedef basic_ostream<char> ostream;
 
     template <typename T>
     inline T& endl(T& stream)

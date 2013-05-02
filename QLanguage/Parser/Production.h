@@ -67,7 +67,7 @@ namespace QLanguage
 
             inline const bool operator!=(const Item& x)const
             {
-                return (index != x.index && type != x.type) || (type == TerminalSymbol ? rule != x.rule : false);
+                return (index != x.index || type != x.type) || (type == TerminalSymbol ? rule != x.rule : false);
             }
 
             inline const bool isNoTerminalSymbol()const
@@ -98,37 +98,20 @@ namespace QLanguage
             return index < p.index;
         }
 
-        void print()const
+        void print(Library::ostream& stream)const
         {
 #ifdef _DEBUG
-            cout << string::format("%s ->", left.name.c_str());
+            stream << string::format("%s ->", left.name.c_str());
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
             {
                 if (i->type == Item::TerminalSymbol)
                 {
-                    cout << " ";
-                    i->rule.printShowName();
+                    stream << " ";
+                    i->rule.printShowName(stream);
                 }
-                else cout << string::format(" %s", i->name.c_str());
+                else stream << string::format(" %s", i->name.c_str());
             }
-            cout << endl;
-#endif
-        }
-
-        void print(fstream& fs)const
-        {
-#ifdef _DEBUG
-            fs << string::format("%s ->", left.name.c_str());
-            for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
-            {
-                if (i->type == Item::TerminalSymbol)
-                {
-                    fs << " ";
-                    i->rule.printShowName(fs);
-                }
-                else fs << string::format(" %s", i->name.c_str());
-            }
-            fs << endl;
+            stream << endl;
 #endif
         }
     protected:

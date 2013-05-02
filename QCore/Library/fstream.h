@@ -226,7 +226,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return *this;
         }
 
-        bool write(const char* buffer, size_type size)
+        virtual bool write(const char* buffer, size_type size)
         {
             CHECK_FILE_OPEN;
             CHECK_OUT_MODE;
@@ -300,7 +300,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             }
         }
 
-        bool flush()
+        virtual bool flush()
         {
             CHECK_FILE_OPEN;
             CHECK_OUT_MODE;
@@ -609,7 +609,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return *this;
         }
 
-        self& operator<<(self& (*f)(self&))
+        virtual parent_o& operator<<(parent_o& (*f)(parent_o&))
         {
             return dynamic_cast<self&>(f(*this));
         }
