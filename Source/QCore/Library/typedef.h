@@ -47,6 +47,42 @@ namespace QLanguage
         {
             typedef T no_reference;
         };
+
+        template <typename T>
+        struct remove_unsigned
+        {
+            typedef T no_unsigned;
+        };
+
+        template <>
+        struct remove_unsigned<uchar>
+        {
+            typedef char no_unsigned;
+        };
+
+        template <>
+        struct remove_unsigned<ushort>
+        {
+            typedef short no_unsigned;
+        };
+
+        template <>
+        struct remove_unsigned<uint>
+        {
+            typedef int no_unsigned;
+        };
+
+        template <>
+        struct remove_unsigned<ulong>
+        {
+            typedef long no_unsigned;
+        };
+
+        template <>
+        struct remove_unsigned<ullong>
+        {
+            typedef llong no_unsigned;
+        };
     }
 }
 

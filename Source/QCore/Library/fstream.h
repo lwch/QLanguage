@@ -97,7 +97,9 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             append = 1,
             in     = 2,
-            out    = 4
+            out    = 4,
+            text   = 8,
+            binary = 16
         };
 
         fstream_basic() : parent_i(), parent_o(), buffer_write(this), buffer_read(this), bOpen(false), iFile(0) {}
@@ -120,8 +122,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             if (is_open()) throw error<const char*>("file is open", __FILE__, __LINE__);
 
+            if (mode & text && mode & binary) throw error<const char*>("open mode can not with text and binary", __FILE__, __LINE__);
+
             int flag = 0;
-            switch (mode)
+            switch (mode & (in | out | append))
             {
             case out | append:
                 flag = O_WRONLY | O_APPEND | O_CREAT;
@@ -148,6 +152,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             bOpen = true;
             ucOpenMode = mode;
 
+            if ((ucOpenMode & (text | binary)) == 0) ucOpenMode |= text;
+
             if (mode & append)
             {
                 ulTell = size();
@@ -171,14 +177,16 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return bResult;
         }
 
-        inline const uchar open_mode()const            { return ucOpenMode;             }
-        inline const bool is_open()const               { return bOpen;                  }
-        inline const size_type write_cache_size()const { return buffer_write.size();    }
-        inline const size_type read_cache_size()const  { return buffer_read.size();     }
-        inline const value_type* write_pointer()const  { return buffer_write.pointer(); }
-        inline const value_type* read_pointer()const   { return buffer_read.pointer();  }
-        inline void step_write_cache(size_type size)   { buffer_write.step(size);       }
-        inline void step_read_cache(size_type size)    { buffer_read.step(size);        }
+        inline const uchar open_mode()const            { return ucOpenMode;                 }
+        inline const bool is_text()const               { return (ucOpenMode & text) != 0;   }
+        inline const bool is_binary()const             { return (ucOpenMode & binary) != 0; }
+        inline const bool is_open()const               { return bOpen;                      }
+        inline const size_type write_cache_size()const { return buffer_write.size();        }
+        inline const size_type read_cache_size()const  { return buffer_read.size();         }
+        inline const value_type* write_pointer()const  { return buffer_write.pointer();     }
+        inline const value_type* read_pointer()const   { return buffer_read.pointer();      }
+        inline void step_write_cache(size_type size)   { buffer_write.step(size);           }
+        inline void step_read_cache(size_type size)    { buffer_read.step(size);            }
 
         inline const size_type size()const
         {
@@ -226,12 +234,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return *this;
         }
 
-        virtual bool write(const char* buffer, size_type size)
+        virtual bool write(const void* buffer, size_type size)
         {
             CHECK_FILE_OPEN;
             CHECK_OUT_MODE;
 
-            bool bResult = this->buffer_write.append(buffer, size);
+            bool bResult = this->buffer_write.append(reinterpret_cast<const char*>(buffer), size);
 
             if (bResult && this->buffer_write.check_flush())
             {
@@ -322,7 +330,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
                     else
                     {
                         buffer += written;
-                        size -= written;
+                        size   -= written;
                     }
                 }
                 else
@@ -348,6 +356,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         typedef fstream_basic<T> parent;
         typedef basic_istream<T> parent_i;
         typedef basic_ostream<T> parent_o;
+        typedef typename remove_unsigned<T> no_unsigned;
     public:
         basic_fstream() : parent() {}
         basic_fstream(const char* path, uchar mode) : parent(path, mode) {}
@@ -508,8 +517,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = this->convert(static_cast<ulong>(b));
-            this->write(str.c_str(), str.size());
+            if (this->is_binary()) this->write(&b, sizeof(bool));
+            else
+            {
+                string str = this->convert(static_cast<ulong>(b));
+                this->write(str.c_str(), str.size());
+            }
             return *this;
         }
 
@@ -517,8 +530,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = this->convert(static_cast<long>(s));
-            this->write(str.c_str(), str.size());
+            if (this->is_binary()) this->write(&s, sizeof(short));
+            else
+            {
+                string str = this->convert(static_cast<long>(s));
+                this->write(str.c_str(), str.size());
+            }
             return *this;
         }
 
@@ -526,8 +543,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = this->convert(static_cast<ulong>(us));
-            this->write(str.c_str(), str.size());
+            if (this->is_binary()) this->write(&us, sizeof(ushort));
+            else
+            {
+                string str = this->convert(static_cast<ulong>(us));
+                this->write(str.c_str(), str.size());
+            }
             return *this;
         }
 
@@ -535,8 +556,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = this->convert(static_cast<long>(i));
-            this->write(str.c_str(), str.size());
+            if (this->is_binary()) this->write(&i, sizeof(int));
+            else
+            {
+                string str = this->convert(static_cast<long>(i));
+                this->write(str.c_str(), str.size());
+            }
             return *this;
         }
 
@@ -544,8 +569,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = this->convert(static_cast<ulong>(ui));
-            this->write(str.c_str(), str.size());
+            if (this->is_binary()) this->write(&ui, sizeof(uint));
+            else
+            {
+                string str = this->convert(static_cast<ulong>(ui));
+                this->write(str.c_str(), str.size());
+            }
             return *this;
         }
 
@@ -553,8 +582,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = this->convert(l);
-            this->write(str.c_str(), str.size());
+            if (this->is_binary()) this->write(&l, sizeof(long));
+            else
+            {
+                string str = this->convert(l);
+                this->write(str.c_str(), str.size());
+            }
             return *this;
         }
 
@@ -562,8 +595,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = this->convert(ul);
-            this->write(str.c_str(), str.size());
+            if (this->is_binary()) this->write(&ul, sizeof(ulong));
+            else
+            {
+                string str = this->convert(ul);
+                this->write(str.c_str(), str.size());
+            }
             return *this;
         }
 
@@ -571,8 +608,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = this->convert(ll);
-            this->write(str.c_str(), str.size());
+            if (this->is_binary()) this->write(&ll, sizeof(llong));
+            else
+            {
+                string str = this->convert(ll);
+                this->write(str.c_str(), str.size());
+            }
             return *this;
         }
 
@@ -580,16 +621,28 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_OUT_MODE;
 
-            string str = this->convert(ull);
-            this->write(str.c_str(), str.size());
+            if (this->is_binary()) this->write(&ull, sizeof(ullong));
+            else
+            {
+                string str = this->convert(ull);
+                this->write(str.c_str(), str.size());
+            }
             return *this;
         }
 
-        virtual self& operator<<(T c)
+        virtual self& operator<<(char c)
         {
             CHECK_OUT_MODE;
 
-            this->write(reinterpret_cast<char*>(&c), sizeof(T));
+            this->write(&c, sizeof(char));
+            return *this;
+        }
+
+        virtual self& operator<<(uchar c)
+        {
+            CHECK_OUT_MODE;
+
+            this->write(&c, sizeof(uchar));
             return *this;
         }
 

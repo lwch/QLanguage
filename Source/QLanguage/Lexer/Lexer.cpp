@@ -13,7 +13,7 @@
 
 namespace QLanguage
 {
-    Lexer::Lexer()
+    Lexer::Lexer(bool bSkipSpace /* = true */, bool bSkipEnter /* = true */) : bSkipSpace(bSkipSpace), bSkipEnter(bSkipEnter)
     {
         // Number Begin
         _0     = Rule('0', &context);
@@ -122,8 +122,16 @@ namespace QLanguage
                 result.push_back(Token(Token::Operator, string(ptr, size)));
                 first += size;
             }
-            else if (space.parse(first, last, ptr, size)) first += size;
-            else if (enter.parse(first, last, ptr, size)) first += size;
+            else if (space.parse(first, last, ptr, size))
+            {
+                if (!bSkipSpace) result.push_back(Token(Token::Space, string(ptr, size)));
+                first += size;
+            }
+            else if (enter.parse(first, last, ptr, size))
+            {
+                if (!bSkipEnter) result.push_back(Token(Token::Enter, string(ptr, size)));
+                first += size;
+            }
         }
         return true;
     }

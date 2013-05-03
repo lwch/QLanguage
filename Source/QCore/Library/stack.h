@@ -71,6 +71,16 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             container.pop_back();
         }
+
+        inline const_reference operator[](size_type n)const
+        {
+            return container[container.size() - n - 1];
+        }
+
+        inline reference operator[](size_type n)
+        {
+            return container[container.size() - n - 1];
+        }
     protected:
         Container container;
     };

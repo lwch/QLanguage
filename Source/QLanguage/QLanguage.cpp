@@ -9,50 +9,51 @@ using namespace QLanguage;
 
 int main()
 {
-    clock_t t = clock();
-    Lexer lexer;
-    cout << string::format("Make Lexer use of time: %ld", clock() - t) << endl;
-    string input = "int main()\n"
-                   "{\n"
-                   "    return 0;"
-                   "}\n";
-    lexer.parse(input);
-    cout << string::format("Total time: %ld", clock() - t) << endl;
+//     clock_t t = clock();
+//     Lexer lexer;
+//     cout << string::format("Make Lexer use of time: %ld", clock() - t) << endl;
+//     string input = "a a a";
+//     lexer.parse(input);
+//     cout << string::format("Total time: %ld", clock() - t) << endl;
+    list<Lexer::Token> l;
+    l.push_back(Lexer::Token(Lexer::Token::String, "a"));
+    l.push_back(Lexer::Token(Lexer::Token::String, "a"));
+    l.push_back(Lexer::Token(Lexer::Token::String, "a"));
 
     Rule::Context context;
 
-    Production::Item a(Rule('a', &context)), b(Rule('b', &context));
+    Rule ruleA('a', &context);
+    ruleA.buildDFA();
+#ifdef _DEBUG
+    ruleA.setShowName("a");
+#endif
+    Production::Item a(ruleA);
 
-    // Z¡úBB
-    // B¡úaB
-    // B¡úb
-    Production::Item Z("Z"), B("B");
+    // Z¡úZa
+    // Z¡úa
+    Production::Item Z("A");
     vector<Production::Item> v;
-    v.push_back(B);
-    v.push_back(B);
+    v.push_back(Z);
+    v.push_back(a);
     Production p1(Z, v);
 
-    v.clear();
-    v.push_back(Production::Item(a));
-    v.push_back(B);
-    Production p2(B, v);
-
-    Production p3(B, Production::Item(b));
+    Production p2(Z, a);
 
     vector<Production> productions;
     productions.push_back(p1);
     productions.push_back(p2);
-    productions.push_back(p3);
 
     LR0 lr0(productions, Z);
     lr0.make();
 
-    lr0.print(cin);
+    lr0.print(cout);
 
-//     LALR1 lalr1(lr0);
-//     lalr1.make();
-// 
-//     lalr1.print("LALR1.txt");
+    LALR1 lalr1(lr0);
+    lalr1.make();
+
+    lalr1.print(cout);
+
+    lalr1.parse(l);
 
     return 0;
 }

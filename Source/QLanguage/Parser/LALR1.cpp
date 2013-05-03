@@ -94,6 +94,10 @@ namespace QLanguage
                 }
             }
         }
+        vns.push_back_unique(lr0.start);
+        sort(vts.begin(), vts.end(), compare_production_item_idx);
+        sort(vns.begin(), vns.end(), compare_production_item_idx);
+        sort(items.begin(), items.end(), compare_item_idx);
         buildParserTable();
         return true;
     }
@@ -168,7 +172,6 @@ namespace QLanguage
 
     void LALR1::buildParserTable()
     {
-        typedef pair<uchar, uint> pair_type;
         table.initialize(items.size() * (vns.size() + vts.size() + 1));
         for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
         {
@@ -184,7 +187,7 @@ namespace QLanguage
                 {
                     if (p.left == lr0.begin)
                     {
-                        fillTable((*i)->idx, vts.size(), pair_type('A', 0));
+                        fillTable((*i)->idx, vts.size(), pair<uchar, ushort>('A', 0));
                     }
                     else
                     {
@@ -192,8 +195,10 @@ namespace QLanguage
                         {
                             long q = index_of(vts.begin(), vts.end(), *k, compare_production_item);
                             long r = index_of(lr0.inputProductions.begin(), lr0.inputProductions.end(), *j, compare_production);
-                            if (q == -1 || r == -1) continue;
-                            fillTable((*i)->idx, q, pair_type('R', r));
+                            if (r == -1) continue;
+                            if (k->type == LALR1Production::Item::End) q = vts.size();
+                            if (q == -1) continue;
+                            fillTable((*i)->idx, q, pair<uchar, ushort>('R', (ushort)r));
                         }
                     }
                 }
@@ -203,7 +208,7 @@ namespace QLanguage
 
     void LALR1::fillTable(Item* pItem, const Production::Item& c)
     {
-        if (c == lr0.begin)
+        if (c.name == "begin")
         {
             vector<Edge>::const_iterator first = edges[pItem].begin();
             vector<Edge>::const_iterator last = edges[pItem].end();
@@ -212,7 +217,7 @@ namespace QLanguage
 
             if (i == last) return;
 
-            fillTable(pItem->idx, vts.size(), pair<uchar, uint>(0, i->pTo->idx));
+            fillTable(pItem->idx, vts.size(), pair<uchar, ushort>(0, i->pTo->idx));
         }
         else if (c.isTermainalSymbol())
         {
@@ -224,7 +229,7 @@ namespace QLanguage
 
             if (idx == -1 || i == last) return;
 
-            fillTable(pItem->idx, idx, pair<uchar, uint>('S', i->pTo->idx));
+            fillTable(pItem->idx, idx, pair<uchar, ushort>('S', i->pTo->idx));
         }
         else
         {
@@ -236,13 +241,13 @@ namespace QLanguage
 
             if (idx == -1 || i == last) return;
 
-            fillTable(pItem->idx, vts.size() + 1 + idx, pair<uchar, uint>(0, i->pTo->idx));
+            fillTable(pItem->idx, vts.size() + 1 + idx, pair<uchar, ushort>(0, i->pTo->idx));
         }
     }
 
-    void LALR1::fillTable(uint iLine, uint iChar, const pair<uchar, uint>& p)
+    void LALR1::fillTable(uint iLine, uint iChar, const pair<uchar, ushort>& p)
     {
-        pair<uchar, uint>& pa = table[iLine * (vts.size() + 1 + vns.size()) + iChar];
+        pair<uchar, ushort>& pa = table[iLine * (vts.size() + 1 + vns.size()) + iChar];
         if (pa.first == 0 && pa.second == 0) pa = p;
         else if (pa.first == 'R' && p.first == 'S') pa = p;
     }
@@ -260,6 +265,16 @@ namespace QLanguage
     inline const bool LALR1::compare_production(const Production& p1, const LALR1Production& p2)
     {
         return p1.left == p2.left && p1.right == p2.right;
+    }
+
+    inline const bool LALR1::compare_item_idx(const Item* i1, const Item* i2)
+    {
+        return i1->idx < i2->idx;
+    }
+
+    inline const bool LALR1::compare_production_item_idx(const Production::Item& i1, const Production::Item& i2)
+    {
+        return i1.index < i2.index;
     }
 
     inline const bool LALR1::isVN(const Production::Item& i)
@@ -280,7 +295,6 @@ namespace QLanguage
     void LALR1::print(Library::ostream& stream)
     {
 #ifdef _DEBUG
-        hashset<Item*> s;
         stream << "-------- LALR(1) Start --------" << endl;
         stream << "----- State Machine Start -----" << endl;
         for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
@@ -288,12 +302,10 @@ namespace QLanguage
             for (vector<Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
             {
                 j->print(stream);
-                s.insert(j->pFrom);
-                s.insert(j->pTo);
             }
         }
         stream << string::format("start: %03d", pStart->idx) << endl << endl;
-        for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
+        for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
         {
             stream << string::format("Item: %d", (*i)->idx) << endl;
             for (vector<LALR1Production>::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
@@ -325,16 +337,16 @@ namespace QLanguage
             stream << pItem->idx;
             for (vector<Production::Item>::const_iterator j = vts.begin(), n = vts.end(); j != n; ++j)
             {
-                const pair<uchar, uint>& pa = table[idx++];
+                const pair<uchar, ushort>& pa = table[idx++];
                 if (pa.first) stream << "\t" << string::format("%c%u", pa.first, pa.second);
                 else stream << "\tε";
             }
-            const pair<uchar, uint>& pa = table[idx++];
+            const pair<uchar, ushort>& pa = table[idx++];
             if (pa.first) stream << "\t" << string::format("%c%u", pa.first, pa.second);
             else stream << "\tε";
             for (vector<Production::Item>::const_iterator j = vns.begin(), n = vns.end(); j != n; ++j)
             {
-                const pair<uchar, uint>& pa = table[idx++];
+                const pair<uchar, ushort>& pa = table[idx++];
                 if (pa.second) stream << "\t" << pa.second;
                 else stream << "\tε";
             }

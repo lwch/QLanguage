@@ -68,19 +68,26 @@ int main(int argv, char* args[])
             // String End
 
             // Token Start
-            Rule ruleToken("%token", &context);
+            Rule rulePrecent("%", &context);
+            rulePrecent.buildDFA();
+#ifdef _DEBUG
+            rulePrecent.setShowName("%");
+#endif
+            Production::Item itemRulePrecent(rulePrecent);
+
+            Rule ruleToken("token", &context);
             ruleToken.buildDFA();
 #ifdef _DEBUG
-            ruleToken.setShowName("%token");
+            ruleToken.setShowName("token");
 #endif
             Production::Item itemRuleToken(ruleToken);
             // Token End
 
             // Start Start
-            Rule ruleStart("%start", &context);
+            Rule ruleStart("start", &context);
             ruleStart.buildDFA();
 #ifdef _DEBUG
-            ruleStart.setShowName("%start");
+            ruleStart.setShowName("start");
 #endif
             Production::Item itemRuleStart(ruleStart);
             // Start End
@@ -166,9 +173,10 @@ int main(int argv, char* args[])
             v.clear();
 
             Production::Item itemToken("token");
+            v.push_back(itemRulePrecent);
             v.push_back(itemRuleToken);
             v.push_back(itemStrings);
-            Production productionToken(itemToken, v); // token -> "%token" strings
+            Production productionToken(itemToken, v); // token -> "%" "token" strings
             v.clear();
 
             Production::Item itemSomeTokens("someTokens");
@@ -195,15 +203,17 @@ int main(int argv, char* args[])
 
             Production::Item itemStart("start");
             v.push_back(itemSomeTokens);
+            v.push_back(itemRulePrecent);
             v.push_back(itemRuleStart);
             v.push_back(itemLetter);
             v.push_back(itemSomeProductions);
-            Production productionStart_HasToken(itemStart, v);   // start -> someTokens "%start" "{Letter}" someProductions
+            Production productionStart_HasToken(itemStart, v);   // start -> someTokens "%" "start" "{Letter}" someProductions
             v.clear();
+            v.push_back(itemRulePrecent);
             v.push_back(itemRuleStart);
             v.push_back(itemLetter);
             v.push_back(itemSomeProductions);
-            Production productionStart_HasntToken(itemStart, v); // start -> "%start" "{Letter}" someProductions
+            Production productionStart_HasntToken(itemStart, v); // start -> "%" "start" "{Letter}" someProductions
             v.clear();
 
             vector<Production> productions;
@@ -263,6 +273,17 @@ int main(int argv, char* args[])
             cout << "Make LALR(1) State Machine Finish ..." << endl;
             cout.setColor(cout.lightWith(stdstream::white));
             cout << string::format("Use of time: %d", c) << endl;
+
+            c = clock();
+            lalr1.output("QParserGenerator.ParserTable");
+            c = clock() - c;
+
+            cout.setColor(cout.lightWith(stdstream::green));
+            cout << "Output QParserGenerator LALR(1) ParserTable Finish ..." << endl;
+            cout.setColor(cout.lightWith(stdstream::white));
+            cout << string::format("Use of time: %d", c) << endl;
+
+            lalr1.parse(lexer.result);
         }
         catch (const error<char*>& e)
         {

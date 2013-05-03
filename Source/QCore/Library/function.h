@@ -40,6 +40,28 @@ namespace QLanguage
             typedef const Result& result_const_reference;
         };
 
+        template <typename T1, typename T2>
+        struct true_function_2 : public binary_function<T1, T2, const bool>
+        {
+            typedef binary_function<T1, T2, const bool> parent;
+
+            inline typename parent::result_type operator()(typename parent::first_argument_const_reference x, typename parent::second_argument_const_reference y)const
+            {
+                return true;
+            }
+        };
+
+        template <typename T1, typename T2>
+        struct false_function_2 : public binary_function<T1, T2, const bool>
+        {
+            typedef binary_function<T1, T2, const bool> parent;
+
+            inline typename parent::result_type operator()(typename parent::first_argument_const_reference x, typename parent::second_argument_const_reference y)const
+            {
+                return false;
+            }
+        };
+
         template <typename T>
         struct plus : public binary_function<T, T, T>
         {
@@ -187,6 +209,28 @@ namespace QLanguage
             inline typename parent::result_type operator()(typename parent::argument_const_reference x)const
             {
                 return !x;
+            }
+        };
+
+        template <typename T>
+        struct true_function_1 : public unary_function<T, const bool>
+        {
+            typedef unary_function<T, const bool> parent;
+
+            inline typename parent::result_type operator()(typename parent::argument_const_reference x)const
+            {
+                return true;
+            }
+        };
+
+        template <typename T>
+        struct false_function_1 : public unary_function<T, const bool>
+        {
+            typedef unary_function<T, const bool> parent;
+
+            inline typename parent::result_type operator()(typename parent::argument_const_reference x)const
+            {
+                return false;
             }
         };
 
