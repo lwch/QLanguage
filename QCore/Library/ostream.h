@@ -19,9 +19,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     template <typename T>
     class basic_ostream : public basic_ios<T>
     {
-        typedef basic_ostream<T> self;
-        typedef basic_ios<T>     parent;
-        typedef size_t           size_type;
+        typedef basic_ostream<T>                self;
+        typedef basic_ios<T>                    parent;
+        typedef size_t                          size_type;
+        typedef typename remove_unsigned<T>::no_unsigned no_unsigned;
     public:
         basic_ostream() : parent() {}
 
@@ -35,7 +36,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator<<(ulong)=0;
         virtual self& operator<<(llong)=0;
         virtual self& operator<<(ullong)=0;
-        virtual self& operator<<(T)=0;
+        virtual self& operator<<(char)=0;
+        virtual self& operator<<(uchar)=0;
         virtual self& operator<<(const T*)=0;
         virtual self& operator<<(const string&)=0;
 
@@ -46,11 +48,11 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return *this;
         }
 
-        virtual bool write(const char* buffer, size_type size)=0;
+        virtual bool write(const void* buffer, size_type size)=0;
         virtual bool flush()=0;
     protected:
-        inline string convert(long l)     { return string::format("%ld", l); }
-        inline string convert(ulong ul)   { return string::format("%u", ul); }
+        inline string convert(long l)     { return string::format("%ld", l);  }
+        inline string convert(ulong ul)   { return string::format("%u", ul);  }
         inline string convert(llong ll)   { return string::format("%ld", ll); }
         inline string convert(ullong ull) { return string::format("%u", ull); }
     };

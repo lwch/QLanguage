@@ -22,6 +22,19 @@ extern bool isX64();
 bool isWindows();
 bool isUnix();
 
+#define WINDOWS 0
+#define UNIX    1
+
+enum
+{
+    optr_type = (sizeof(void*) == 4) ? 86 : 64,
+#ifdef WIN32
+    os_type   = WINDOWS,
+#else
+    os_type   = UNIX,
+#endif
+};
+
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

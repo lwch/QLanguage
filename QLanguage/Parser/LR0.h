@@ -29,20 +29,16 @@ namespace QLanguage
         class Item
         {
         public:
-            map<Production::Item, vector<LR0Production> > data;
-#ifdef _DEBUG
+            vector<LR0Production> data;
             uint idx;
 
-            Item() : idx(inc()) {}
+            Item() : idx(0) {}
 
             static uint inc()
             {
                 static uint i = 0;
                 return i++;
             }
-#else
-            Item () {}
-#endif
 
             inline const bool operator==(const Item& x)const
             {
@@ -121,9 +117,8 @@ namespace QLanguage
         void print(Library::ostream& stream);
     protected:
         Item* closure(const vector<LR0Production>& x);
-        void closure(const LR0Production& x, map<LR0Production::Item, vector<LR0Production> >& y);
-        pair<Item*, bool> go(Item* i, const Production::Item& x);
-        void vs(Item* i, vector<Production::Item>& v);
+        void closure(const LR0Production& x, vector<LR0Production>& y);
+        pair<Item*, bool> go(LR0Production& p, const Production::Item& x);
     protected:
         Production::Item begin;
         Production::Item start;

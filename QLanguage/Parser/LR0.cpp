@@ -33,36 +33,24 @@ namespace QLanguage
         p.bKernel = true;
         kernel.push_back(p);
 
-        typedef pair<Item*, vector<Production::Item> > pair_type;
-        vector<Production::Item> v;
         pStart = closure(kernel);
         items.push_back(pStart);
-        vs(pStart, v);
-        queue<pair_type> s;
-        s.push(pair_type(pStart, v));
 
-        bool bContinue = true;
-        while (bContinue && !s.empty())
+        uint iPos = 0;
+        while (iPos < items.size())
         {
-            pair_type item = s.front();
-            s.pop();
-            for (vector<Production::Item>::const_iterator i = item.second.begin(), m = item.second.end(); i != m; ++i)
+            Item* pItem = items[iPos];
+            for (vector<LR0Production>::iterator i = pItem->data.begin(), m = pItem->data.end(); i != m; ++i)
             {
-                pair<Item*, bool> pNewItem = go(item.first, *i);
-                edges[item.first].push_back(Edge(item.first, pNewItem.first, *i));
-                if (!pNewItem.second) continue;
-                items.push_back(pNewItem.first);
-                for (map<LR0Production::Item, vector<LR0Production> >::iterator j = pNewItem.first->data.begin(), n = pNewItem.first->data.end(); j != n; ++j)
+                if (i->idx < i->right.size())
                 {
-                    for (vector<LR0Production>::iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
-                    {
-                        if (k->idx >= 1 && k->right[k->idx - 1] == start) pEnds.insert(pNewItem.first);
-                    }
+                    pair<Item*, bool> pa = go(*i, i->right[i->idx]);
+                    if (pa.second) items.push_back_unique(pa.first);
+                    edges[pItem].push_back_unique(Edge(pItem, pa.first, i->right[i->idx]));
+                    //if (i->idx == 0 && i->right[i->idx] == i->left) edges[pItem].push_back_unique(Edge(pItem, pItem, i->right[i->idx]));
                 }
-                v.clear();
-                vs(pNewItem.first, v);
-                s.push(pair_type(pNewItem.first, v));
             }
+            ++iPos;
         }
 
         return true;
@@ -73,11 +61,12 @@ namespace QLanguage
         Item* pItem = Item_Alloc::allocate();
         context.states.insert(pItem);
         construct(pItem);
+        pItem->idx = Item::inc();
         
         queue<LR0Production::Item> q;
         for (vector<LR0Production>::const_iterator i = x.begin(), m = x.end(); i != m; ++i)
         {
-            pItem->data[i->left].push_back_unique(*i);
+            pItem->data.push_back_unique(*i);
             q.push_unique(i->right[i->idx]);
         }
 
@@ -87,7 +76,7 @@ namespace QLanguage
             const LR0Production::Item& i = q.front();
             for (vector<Production>::const_iterator j = productionMap[i].begin(), n = productionMap[i].end(); j != n; ++j)
             {
-                if (!pItem->data[j->left].push_back_unique(*j))
+                if (!pItem->data.push_back_unique(*j))
                 {
                     bContinue = false;
                     break;
@@ -100,40 +89,34 @@ namespace QLanguage
         return pItem;
     }
 
-    void LR0::closure(const LR0Production& x, map<LR0Production::Item, vector<LR0Production> >& y)
+    void LR0::closure(const LR0Production& x, vector<LR0Production>& y)
     {
-        y[x.left].push_back_unique(x);
-        if (x.idx == x.right.size()) return;
-        if (x.right[x.idx].type == LR0Production::Item::NoTerminalSymbol) // 若是非终结符
+        y.push_back_unique(x);
+
+        uint iPos = 0;
+        while (iPos < y.size())
         {
-            // 将这个非终结符所对应的所有产生式加入其中
-            for (vector<Production>::const_iterator j = productionMap[x.right[x.idx]].begin(), n = productionMap[x.right[x.idx]].end(); j != n; ++j)
+            const LR0Production& p = y[iPos];
+            if (p.idx < p.right.size() && p.right[p.idx].type == LR0Production::Item::NoTerminalSymbol) // 若是非终结符
             {
-                if (!y[j->left].push_back_unique(*j)) break;
+                // 将这个非终结符所对应的所有产生式加入其中
+                for (vector<Production>::const_iterator j = productionMap[p.right[p.idx]].begin(), n = productionMap[p.right[p.idx]].end(); j != n; ++j)
+                {
+                    if (!y.push_back_unique(*j)) break;
+                }
             }
+            ++iPos;
         }
     }
 
-    pair<LR0::Item*, bool> LR0::go(Item* i, const Production::Item& x)
+    pair<LR0::Item*, bool> LR0::go(LR0Production& p, const Production::Item& x)
     {
         Item* pItem = Item_Alloc::allocate();
         construct(pItem);
 
-        for (map<LR0Production::Item, vector<LR0Production> >::iterator j = i->data.begin(), n = i->data.end(); j != n; ++j)
-        {
-            for (vector<LR0Production>::iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
-            {
-                if (k->idx < k->right.size() && k->right[k->idx] == x)
-                {
-                    if (k->idx < k->right.size())
-                    {
-                        LR0Production p = k->stepUp();
-                        p.bKernel = true;
-                        closure(p, pItem->data);
-                    }
-                }
-            }
-        }
+        LR0Production p1 = p.stepUp();
+        p1.bKernel = true;
+        closure(p1, pItem->data);
 
         Item* pOldItem = NULL;
 
@@ -143,20 +126,13 @@ namespace QLanguage
             Item_Alloc::deallocate(pItem);
             return pair<Item*, bool>(pOldItem, false);
         }
-        else context.states.insert(pItem);
+        else
+        {
+            pItem->idx = Item::inc();
+            context.states.insert(pItem);
+        }
 
         return pair<Item*, bool>(pItem, true);
-    }
-
-    void LR0::vs(Item* i, vector<Production::Item>& v)
-    {
-        for (map<LR0Production::Item, vector<LR0Production> >::const_iterator j = i->data.begin(), n = i->data.end(); j != n; ++j)
-        {
-            for (vector<LR0Production>::const_iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
-            {
-                if (k->idx < k->right.size()) v.push_back_unique(k->right[k->idx]);
-            }
-        }
     }
 
     void LR0::print(Library::ostream& stream)
@@ -177,12 +153,9 @@ namespace QLanguage
         for (hashset<Item*>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
         {
             stream << string::format("Item: %d", (*i)->idx) << endl;
-            for (map<Production::Item, vector<LR0Production> >::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
+            for (vector<LR0Production>::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
             {
-                for (vector<LR0Production>::const_iterator l = k->second.begin(), p = k->second.end(); l != p; ++l)
-                {
-                    l->print(stream);
-                }
+                k->print(stream);
             }
             stream << endl;
         }

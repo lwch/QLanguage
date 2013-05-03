@@ -230,22 +230,26 @@ typedef error<const char*> err;
             return buffer_read.size();
         }
 
-        virtual bool write(const char* buffer, size_type size)
+        virtual bool write(const void* buffer, size_type size)
         {
             CHECK_FILE_OPEN;
             CHECK_OUT_MODE;
 
+            if (size == 0) return true;
+
+            const char* lpBuffer = reinterpret_cast<const char*>(buffer);
+
             while (true)
             {
-                int written = ::WRITE(iFile, buffer, size);
+                int written = ::WRITE(iFile, lpBuffer, size);
                 if (written > 0)
                 {
                     ulTell += written;
                     if ((size_type)written == size) return true;
                     else
                     {
-                        buffer += written;
-                        size   -= written;
+                        lpBuffer += written;
+                        size     -= written;
                     }
                 }
                 else
@@ -552,11 +556,19 @@ typedef error<const char*> err;
             return *this;
         }
 
-        virtual self& operator<<(T c)
+        virtual self& operator<<(char c)
         {
             CHECK_OUT_MODE;
 
-            this->write(reinterpret_cast<char*>(&c), sizeof(T));
+            this->write(&c, sizeof(char));
+            return *this;
+        }
+
+        virtual self& operator<<(uchar c)
+        {
+            CHECK_OUT_MODE;
+
+            this->write(&c, sizeof(uchar));
             return *this;
         }
 

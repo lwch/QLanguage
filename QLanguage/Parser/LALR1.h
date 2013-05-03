@@ -16,7 +16,7 @@
 
 #include "LR0.h"
 #include "LRProduction.h"
-#include <iosfwd>
+#include "../Lexer/Lexer.h"
 
 namespace QLanguage
 {
@@ -29,8 +29,7 @@ namespace QLanguage
             vector<LALR1Production> data;
             uint idx;
 
-            Item() : idx(inc()) {}
-            Item(const LR0::Item& lr0Item) : idx(inc()) { createFromLR0(lr0Item); }
+            Item(const LR0::Item& lr0Item) : idx(lr0Item.idx) { createFromLR0(lr0Item); }
 
             inline const bool operator==(const Item& x)const
             {
@@ -45,12 +44,9 @@ namespace QLanguage
 
             void createFromLR0(const LR0::Item& lr0Item)
             {
-                for (map<Production::Item, vector<LR0Production> >::const_iterator j = lr0Item.data.begin(), n = lr0Item.data.end(); j != n; ++j)
+                for (vector<LR0Production>::const_iterator j = lr0Item.data.begin(), n = lr0Item.data.end(); j != n; ++j)
                 {
-                    for (vector<LR0Production>::const_iterator k = j->second.begin(), o = j->second.end(); k != o; ++k)
-                    {
-                        if (k->bKernel) data.push_back(*k);
-                    }
+                    if (j->bKernel) data.push_back(*j);
                 }
             }
         };
@@ -125,20 +121,27 @@ namespace QLanguage
         bool make();
 
         void print(Library::ostream& stream);
+        void output(const string& path);
+        bool parse(const list<Lexer::Token>& l);
     protected:
         void closure(Item* pKernel, vector<Production::Item>& vts);
         void go(const LALR1Production& p, Item* pTo, const Production::Item& item);
         void first(vector<Production::Item>::const_iterator first, vector<Production::Item>::const_iterator last, const vector<LALR1Production::Item>& wildCards, vector<LALR1Production::Item>& v);
         void buildParserTable();
         void fillTable(Item* pItem, const Production::Item& c);
-        void fillTable(uint iLine, uint iChar, const pair<uchar, uint>& p);
+        void fillTable(uint iLine, uint iChar, const pair<uchar, ushort>& p);
+        long index_of_vt(const string& str);
+        long getGoTo(ushort s, const Production::Item& i);
 
         inline static const bool compare_edge(const Edge& e, const Production::Item& i);
         inline static const bool compare_production_item(const Production::Item& i1, const LALR1Production::Item& i2);
         inline static const bool compare_production(const Production& p1, const LALR1Production& p2);
+        inline static const bool compare_item_idx(const Item* i1, const Item* i2);
+        inline static const bool compare_production_item_idx(const Production::Item& i1, const Production::Item& i2);
         inline static const bool isVN(const Production::Item& i);
         inline static const bool isVT(const Production::Item& i);
         inline static void addV(vector<Production::Item>& container, const Production::Item& i);
+        inline static void addEdgeItem(vector<Production::Item>& container, const Edge& e);
     protected:
         LR0& lr0;
 
@@ -147,7 +150,7 @@ namespace QLanguage
         hashmap<Item*, vector<Edge> > edges;
         vector<Item*> items;
 
-        vector<pair<uchar, uint> > table;
+        vector<pair<uchar, ushort> > table;
         vector<Production::Item>   vns;
         vector<Production::Item>   vts;
 

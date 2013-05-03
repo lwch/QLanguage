@@ -44,7 +44,7 @@ namespace QLanguage
             Token(Type type, const string& data) : type(type), data(data) {}
         };
     public:
-        Lexer();
+        Lexer(bool bSkipSpace = true, bool bSkipEnter = true);
         ~Lexer();
 
         bool parse(const string& input);
@@ -52,6 +52,8 @@ namespace QLanguage
         list<Token> result;
     protected:
         Rule::Context context;
+        bool bSkipSpace;
+        bool bSkipEnter;
         // Number Begin
         Rule _0;
         Rule _9;
