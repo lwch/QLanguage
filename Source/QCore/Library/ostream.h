@@ -22,7 +22,6 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         typedef basic_ostream<T>                self;
         typedef basic_ios<T>                    parent;
         typedef size_t                          size_type;
-        typedef typename remove_unsigned<T>::no_unsigned no_unsigned;
     public:
         basic_ostream() : parent() {}
 

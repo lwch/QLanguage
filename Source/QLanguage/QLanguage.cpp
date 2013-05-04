@@ -48,12 +48,12 @@ int main()
 
     lr0.print(cout);
 
-    LALR1 lalr1(lr0);
+    LALR1 lalr1(productions, Z);
     lalr1.make();
 
-    lalr1.print(cout);
-
-    lalr1.parse(l);
+//     lalr1.print(cout);
+// 
+//     lalr1.parse(l);
 
     return 0;
 }

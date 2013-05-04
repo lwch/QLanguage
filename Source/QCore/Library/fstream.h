@@ -356,7 +356,6 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         typedef fstream_basic<T> parent;
         typedef basic_istream<T> parent_i;
         typedef basic_ostream<T> parent_o;
-        typedef typename remove_unsigned<T> no_unsigned;
     public:
         basic_fstream() : parent() {}
         basic_fstream(const char* path, uchar mode) : parent(path, mode) {}

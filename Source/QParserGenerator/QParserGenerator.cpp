@@ -262,28 +262,28 @@ int main(int argv, char* args[])
             cout.setColor(cout.lightWith(stdstream::white));
             cout << string::format("Use of time: %d", c) << endl;
 
-            LALR1 lalr1(lr0);
-            c = clock();
-            lalr1.make();
-            c = clock() - c;
-            fstream lalr1stream("LALR1.txt", fstream::out);
-            lalr1.print(lalr1stream);
-
-            cout.setColor(cout.lightWith(stdstream::green));
-            cout << "Make LALR(1) State Machine Finish ..." << endl;
-            cout.setColor(cout.lightWith(stdstream::white));
-            cout << string::format("Use of time: %d", c) << endl;
-
-            c = clock();
-            lalr1.output("QParserGenerator.ParserTable");
-            c = clock() - c;
-
-            cout.setColor(cout.lightWith(stdstream::green));
-            cout << "Output QParserGenerator LALR(1) ParserTable Finish ..." << endl;
-            cout.setColor(cout.lightWith(stdstream::white));
-            cout << string::format("Use of time: %d", c) << endl;
-
-            lalr1.parse(lexer.result);
+//             LALR1 lalr1(lr0);
+//             c = clock();
+//             lalr1.make();
+//             c = clock() - c;
+//             fstream lalr1stream("LALR1.txt", fstream::out);
+//             lalr1.print(lalr1stream);
+// 
+//             cout.setColor(cout.lightWith(stdstream::green));
+//             cout << "Make LALR(1) State Machine Finish ..." << endl;
+//             cout.setColor(cout.lightWith(stdstream::white));
+//             cout << string::format("Use of time: %d", c) << endl;
+// 
+//             c = clock();
+//             lalr1.output("QParserGenerator.ParserTable");
+//             c = clock() - c;
+// 
+//             cout.setColor(cout.lightWith(stdstream::green));
+//             cout << "Output QParserGenerator LALR(1) ParserTable Finish ..." << endl;
+//             cout.setColor(cout.lightWith(stdstream::white));
+//             cout << string::format("Use of time: %d", c) << endl;
+// 
+//             lalr1.parse(lexer.result);
         }
         catch (const error<char*>& e)
         {
