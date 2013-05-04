@@ -121,6 +121,11 @@ namespace QLanguage
                 return type == x.type && (type == End ? true : rule == x.rule);
             }
 
+            inline const bool operator==(const Production::Item& x)const
+            {
+                return type == End ? false : rule == x.rule;
+            }
+
             inline const bool operator!=(const Item& x)const
             {
                 return type != x.type || (type == End ? true : rule != x.rule);
