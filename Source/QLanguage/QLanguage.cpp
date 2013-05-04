@@ -51,7 +51,7 @@ int main()
     LALR1 lalr1(productions, Z);
     lalr1.make();
 
-//     lalr1.print(cout);
+    lalr1.print(cout);
 // 
 //     lalr1.parse(l);
 

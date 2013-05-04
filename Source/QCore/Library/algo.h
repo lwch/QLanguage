@@ -214,6 +214,17 @@ namespace QLanguage
             return first;
         }
 
+        template <typename Iterator, typename Value>
+        Iterator find(Iterator first, Iterator last, const Value& value)
+        {
+            while (first != last)
+            {
+                if (*first == value) return first;
+                ++first;
+            }
+            return first;
+        }
+
         template <typename Iterator, typename Value, typename Compare>
         Iterator find(Iterator first, Iterator last, const Value& value, Compare comp)
         {

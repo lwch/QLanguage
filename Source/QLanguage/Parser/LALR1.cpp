@@ -24,12 +24,14 @@ namespace QLanguage
         p.wildCards.push_back(LALR1Production::Item());
         inputProductions[begin].push_back(p);
         inputProductions[begin].push_back(LALR1Production(begin, start, 1));
+        rules.push_back(LALR1Production(begin, start, 1));
         for (vector<Production>::const_iterator i = productions.begin(), m = productions.end(); i != m; ++i)
         {
             for (size_t j = 0, n = i->right.size(); j < n; ++j)
             {
                 inputProductions[i->left].push_back(LALR1Production(*i, j));
             }
+            rules.push_back(LALR1Production(*i, i->right.size()));
         }
     }
 
@@ -51,6 +53,8 @@ namespace QLanguage
             Item* pItem = q.front();
             vector<Production::Item> s;
             symbols(pItem, s);
+            select_into(s, vts, compare_production_item_is_vt, push_back_unique_vector<Production::Item>);
+            select_into(s, vns, compare_production_item_is_vn, push_back_unique_vector<Production::Item>);
             for (vector<Production::Item>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
             {
                 Item* pNewItem = NULL;
@@ -73,8 +77,24 @@ namespace QLanguage
             }
             q.pop();
         }
-
-        return true;
+        for (vector<Item*>::const_iterator i = changes.begin(), m = changes.end(); i != m; ++i)
+        {
+            vector<Production::Item> s;
+            symbols(*i, s);
+            for (vector<Production::Item>::const_iterator j = s.begin(), n = s.end(); j != n; ++j)
+            {
+                Item* pNewItem = NULL;
+                if (go(*i, *j, pNewItem))
+                {
+                    long n = itemIndex(pNewItem);
+                    if (n == -1) throw error<const char*>("unknown item", __FILE__, __LINE__);
+                    else items[n]->mergeWildCards(pNewItem);
+                }
+            }
+        }
+        sort(vts.begin(), vts.end());
+        sort(vns.begin(), vns.end());
+        return buildParserTable();
     }
 
     LALR1::Item* LALR1::closure(const vector<LALR1Production>& kernel)
@@ -183,20 +203,6 @@ namespace QLanguage
         return true;
     }
 
-    void LALR1::fromItoJ(const LALR1Production& p, vector<LALR1Production>& v)
-    {
-        const Production::Item& temp = p.right[p.idx];
-        for (vector<LALR1Production>::iterator i = inputProductions[p.left].begin(), m = inputProductions[p.left].end(); i != m; ++i)
-        {
-            if (i->left == p.left && i->idx > 0 && i->right[i->idx - 1] == temp)
-            {
-                //i->wildCards.clear();
-                i->wildCards.add(p.wildCards);
-                v.push_back(*i);
-            }
-        }
-    }
-
     long LALR1::itemIndex(Item* pItem)
     {
         for (size_t i = 0, m = items.size(); i < m; ++i)
@@ -204,5 +210,15 @@ namespace QLanguage
             if (items[i]->data == pItem->data) return i;
         }
         return -1;
+    }
+
+    bool LALR1::compare_production_item_is_vt(const Production::Item& i)
+    {
+        return i.isTermainalSymbol();
+    }
+
+    bool LALR1::compare_production_item_is_vn(const Production::Item& i)
+    {
+        return i.isNoTerminalSymbol();
     }
 }

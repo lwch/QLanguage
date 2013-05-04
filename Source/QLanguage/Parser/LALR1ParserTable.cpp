@@ -19,6 +19,126 @@
 
 namespace QLanguage
 {
+    bool LALR1::buildParserTable()
+    {
+        table.initialize(items.size() * (vts.size() + 1 + vns.size()));
+        vector<pair<uchar, ushort> >::iterator ptr = table.begin();
+        for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
+        {
+            const LALR1Production& p = (*i)->data.front();
+            for (size_t j = 0, n = vts.size(); j < n; ++j, ++ptr)
+            {
+                if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), vts[j]) != p.wildCards.end())
+                {
+                    ptr->first = 'R';
+                    ptr->second = (ushort)index_of(rules.begin(), rules.end(), p);
+                }
+                vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vts[j], compare_edge_item_is);
+                if (k != edges[*i].end())
+                {
+                    ptr->first = 'S';
+                    ptr->second = k->pTo->idx;
+                }
+            }
+            if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), LALR1Production::Item()) != p.wildCards.end())
+            {
+                if (p.left == begin && p.idx == p.right.size()) ptr->first = 'A';
+                else
+                {
+                    ptr->first = 'R';
+                    ptr->second = (ushort)index_of(rules.begin(), rules.end(), p);
+                }
+            }
+            ++ptr;
+            for (size_t j = 0, n = vns.size(); j < n; ++j, ++ptr)
+            {
+                vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vns[j], compare_edge_item_is);
+                if (k != edges[*i].end()) ptr->second = k->pTo->idx;
+            }
+        }
+        return true;
+    }
+
+    bool LALR1::compare_edge_item_is(const Edge& e, const Production::Item& x)
+    {
+        return e.item == x;
+    }
+
+    void LALR1::print(Library::ostream& stream)
+    {
+#ifdef _DEBUG
+        stream << "-------- LALR(1) Start --------" << endl;
+        stream << "----- State Machine Start -----" << endl;
+        for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
+        {
+            for (vector<Edge>::const_iterator j = i->second.begin(), n = i->second.end(); j != n; ++j)
+            {
+                j->print(stream);
+            }
+        }
+        stream << string::format("start: %03d", pStart->idx) << endl << endl;
+        for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
+        {
+            stream << string::format("Item: %d", (*i)->idx) << endl;
+            for (vector<LALR1Production>::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
+            {
+                k->print(stream);
+            }
+            stream << endl;
+        }
+        stream << "------ State Machine End ------" << endl;
+        stream << "------ Parse Table Start ------" << endl;
+        stream << string::format("Action Count: %d", vts.size() + 1)
+            << " "
+            << string::format("GoTo Count: %d", vns.size())
+            << endl;
+        for (vector<Production::Item>::const_iterator i = vts.begin(), m = vts.end(); i != m; ++i)
+        {
+            stream << "\t" << i->index;
+        }
+        stream << "\t$";
+        for (vector<Production::Item>::const_iterator i = vns.begin(), m = vns.end(); i != m; ++i)
+        {
+            stream << "\t" << i->index;
+        }
+        stream << endl;
+        uint idx = 0;
+        for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
+        {
+            Item* const pItem = *i;
+            stream << pItem->idx;
+            for (vector<Production::Item>::const_iterator j = vts.begin(), n = vts.end(); j != n; ++j)
+            {
+                const pair<uchar, ushort>& pa = table[idx++];
+                if (pa.first) stream << "\t" << string::format("%c%u", pa.first, pa.second);
+                else stream << "\tε";
+            }
+            const pair<uchar, ushort>& pa = table[idx++];
+            if (pa.first) stream << "\t" << string::format("%c%u", pa.first, pa.second);
+            else stream << "\tε";
+            for (vector<Production::Item>::const_iterator j = vns.begin(), n = vns.end(); j != n; ++j)
+            {
+                const pair<uchar, ushort>& pa = table[idx++];
+                if (pa.second) stream << "\t" << pa.second;
+                else stream << "\tε";
+            }
+            stream << endl;
+        }
+        stream << "VTS:" << endl;
+        for (vector<Production::Item>::const_iterator i = vts.begin(), m = vts.end(); i != m; ++i)
+        {
+            stream << i->index << " : " << i->rule.showName << endl;
+        }
+        stream << "VNS:" << endl;
+        for (vector<Production::Item>::const_iterator i = vns.begin(), m = vns.end(); i != m; ++i)
+        {
+            stream << i->index << " : " << i->name << endl;
+        }
+        stream << "------- Parse Table End -------" << endl;
+        stream << "--------- LALR(1) End ---------" << endl;
+#endif
+    }
+
 //     void LALR1::output(const string& path)
 //     {
 //         time_t t;

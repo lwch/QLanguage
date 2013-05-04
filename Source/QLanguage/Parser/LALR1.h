@@ -13,6 +13,7 @@
 #define _QLANGUAGE_LALR1_H_
 
 #include "LRProduction.h"
+#include "../../QCore/Library/function_additional.h"
 
 namespace QLanguage
 {
@@ -104,21 +105,31 @@ namespace QLanguage
         LALR1(const vector<Production>& productions, const Production::Item& start);
 
         bool make();
+
+        void print(Library::ostream& stream);
     protected:
         Item* closure(const vector<LALR1Production>& kernel);
         void firstX(const LALR1Production& p, vector<Production::Item>& v, size_t idx);
         void first(const LALR1Production& p, vector<Production::Item>& v, size_t idx);
         void symbols(Item* pItem, vector<Production::Item>& v);
         bool go(Item* pItem, const Production::Item& x, Item*& newItem);
-        void fromItoJ(const LALR1Production& p, vector<LALR1Production>& v);
         long itemIndex(Item* pItem);
+        bool buildParserTable();
+        static inline bool compare_production_item_is_vt(const Production::Item& i);
+        static inline bool compare_production_item_is_vn(const Production::Item& i);
+        static inline bool compare_edge_item_is(const Edge& e, const Production::Item& x);
     protected:
         Context context;
 
         Item* pStart;
         vector<Item*> items;
         hashmap<Item*, vector<Edge> > edges;
+        vector<pair<uchar, ushort> >    table;
 
+        vector<Production::Item> vts;
+        vector<Production::Item> vns;
+
+        vector<LALR1Production> rules;
         map<Production::Item, vector<LALR1Production> > inputProductions;
         Production::Item begin;
         const Production::Item& start;
