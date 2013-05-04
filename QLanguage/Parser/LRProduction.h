@@ -22,7 +22,9 @@ namespace QLanguage
         LR0Production() : Production(), bKernel(false) {}
         LR0Production(const Production::Item& left) : Production(left), idx(0), bKernel(false) {}
         LR0Production(const Production::Item& left, const vector<Production::Item>& right) : Production(left, right), idx(0), bKernel(false) {}
+        LR0Production(const Production::Item& left, const Production::Item& right, size_t pos) : Production(left, right), idx(pos), bKernel(false) {}
         LR0Production(const Production& p) : Production(p), idx(0), bKernel(false) {}
+        LR0Production(const Production& p, size_t pos) : Production(p), idx(pos), bKernel(false) {}
         LR0Production(const LR0Production& p) : Production(p), idx(p.idx), bKernel(p.bKernel) {}
 
         inline const bool operator==(const LR0Production& p)const
@@ -137,12 +139,21 @@ namespace QLanguage
         LALR1Production() : LR0Production() {}
         LALR1Production(const Production::Item& left) : LR0Production(left) {}
         LALR1Production(const Production::Item& left, const vector<Production::Item>& right) : LR0Production(left, right) {}
+        LALR1Production(const Production::Item& left, const Production::Item& right, size_t pos) : LR0Production(left, right, pos) {}
         LALR1Production(const LALR1Production& p) : LR0Production(p), wildCards(p.wildCards) {}
         LALR1Production(const LR0Production& p) : LR0Production(p) {}
+        LALR1Production(const Production& p, size_t pos) : LR0Production(p, pos) {}
 
         inline const bool operator==(const LALR1Production& p)const
         {
             return static_cast<LR0Production>(*this) == static_cast<LR0Production>(p);
+        }
+
+        inline LALR1Production stepUp()
+        {
+            LALR1Production x(*this);
+            ++x.idx;
+            return x;
         }
 
         void print(Library::ostream& stream)const

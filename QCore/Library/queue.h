@@ -52,7 +52,17 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return container.front();
         }
 
+        inline reference front()
+        {
+            return container.front();
+        }
+
         inline const_reference back()const
+        {
+            return container.back();
+        }
+
+        inline reference back()
         {
             return container.back();
         }
