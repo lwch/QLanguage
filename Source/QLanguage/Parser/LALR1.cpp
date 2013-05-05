@@ -13,26 +13,49 @@
 
 namespace QLanguage
 {
-    LALR1::LALR1(const vector<Production>& productions, const Production::Item& start)
+    LALR1::LALR1()
         :
 #ifdef _DEBUG
-        begin("begin"),
+        begin("begin")
+        ,
 #endif
-        start(start)
+        start(NULL)
     {
-        LALR1Production p(begin, start, 0);
+    }
+
+    LALR1::LALR1(const vector<Production>& productions, Production::Item& start)
+        :
+#ifdef _DEBUG
+        begin("begin")
+        ,
+#endif
+        start(&start)
+    {
+        setProductions(productions);
+    }
+
+    void LALR1::setProductions(const vector<Production>& productions)
+    {
+        inputProductions.clear();
+        _rules.clear();
+        LALR1Production p(begin, *start, 0);
         p.wildCards.push_back(LALR1Production::Item());
         inputProductions[begin].push_back(p);
-        inputProductions[begin].push_back(LALR1Production(begin, start, 1));
-        rules.push_back(LALR1Production(begin, start, 1));
+        inputProductions[begin].push_back(LALR1Production(begin, *start, 1));
+        _rules.push_back(LALR1Production(begin, *start, 1));
         for (vector<Production>::const_iterator i = productions.begin(), m = productions.end(); i != m; ++i)
         {
             for (size_t j = 0, n = i->right.size(); j < n; ++j)
             {
                 inputProductions[i->left].push_back(LALR1Production(*i, j));
             }
-            rules.push_back(LALR1Production(*i, i->right.size()));
+            _rules.push_back(LALR1Production(*i, i->right.size()));
         }
+    }
+
+    void LALR1::setStart(Production::Item* start)
+    {
+        this->start = start;
     }
 
     bool LALR1::make()
@@ -72,7 +95,7 @@ namespace QLanguage
                         items[n]->mergeWildCards(pNewItem);
                         changes.push_back_unique(items[n]);
                     }
-                    edges[pItem].push_back_unique(Edge(pItem, pNewItem, *i));
+                    edges[pItem].push_back_unique(Edge(pItem, n == -1 ? pNewItem : items[n], *i));
                 }
             }
             q.pop();

@@ -1,5 +1,4 @@
 #include "Lexer/Lexer.h"
-#include "Parser/LR0.h"
 #include "Parser/LALR1.h"
 
 #include <time.h>
@@ -42,11 +41,6 @@ int main()
     vector<Production> productions;
     productions.push_back(p1);
     productions.push_back(p2);
-
-    LR0 lr0(productions, Z);
-    lr0.make();
-
-    lr0.print(cout);
 
     LALR1 lalr1(productions, Z);
     lalr1.make();

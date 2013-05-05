@@ -38,7 +38,7 @@ namespace QLanguage
             uint index;
             string name;
 
-            Item() {}
+            Item() : type(NoTerminalSymbol), index(inc()) {}
             Item(const string& name) : type(NoTerminalSymbol), index(inc()), name(name) {}
             Item(const Item& i) : type(i.type), rule(i.rule), index(i.index), name(i.name) {}
             Item(const Rule& rule) : type(TerminalSymbol), rule(rule), index(inc()) {}

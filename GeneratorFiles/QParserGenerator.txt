@@ -1,6 +1,6 @@
-%token "%" "token" "start" "|" "->" ";"
+%token "%" "token" "start" "|" "->" ";";
 
-%start start
+%start start;
 
 strings             -> strings "{String}"
                     |  "{String}"
@@ -16,20 +16,20 @@ someProductionRight -> someProductionRight "|" oneProductionRight
                     |  oneProductionRight
                     ;
 
-token               -> "%" "token" strings
+token               -> "%" "token" strings ";"
                     ;
 
 someTokens          -> someTokens token
                     |  token
                     ;
 
-production          -> "{Letter}" "->" someProductionRight ";"
+production          -> "{Letter}" "-" ">" someProductionRight ";"
                     ;
 
 someProductions     -> someProductions production
                     |  production
                     ;
 
-start               -> someTokens "%" "start" "{Letter}" someProductions
-                    |  "%" "start" "{Letter}" someProductions
+start               -> someTokens "%" "start" "{Letter}" ";" someProductions
+                    |  "%" "start" "{Letter}" ";" someProductions
                     ;

@@ -7,7 +7,7 @@
 %token "call" "return";
 %token "dll" "com" "lib" "class" "alias";
 %token "true" "false";
-%token ";" "," "+" "-" "*" "/" "=" "[" "]" ":";
+%token ";" "," "+" "-" "*" "/" "=" "(" ")" "[" "]" ":";
 %token ">" "<" ">=" "<=" "==";
 %token "not" "and" "or";
 
@@ -20,18 +20,18 @@ var_type	->	"integer"
 
 value_type	->	array
 		|	"{String}"
-		|	"{Symbol}"
-		|	"{digit}"
-		|	"{real}"
+		|	"{Letter}"
+		|	"{Digit}"
+		|	"{Real}"
 		|	"true"
 		|	"false"
 		;
 
 assign_type	->	array
-		|	"{Symbol}"
+		|	"{Letter}"
 		;
 
-array		->	"{Symbol}" "[" value_list "]"
+array		->	"{Letter}" "[" value_list "]"
 		;
 
 paramter_list	->	paramter_list "," var_type value_type
@@ -74,30 +74,30 @@ stmt		->	define_desc
 		|	";"
 		;
 
-function_desc	->	"function" "{Symbol}" "{LQ}" "{RQ}" "as" var_type stmt_list "end" "function"
-		|	"function" "{Symbol}" "{LQ}" "{RQ}" stmt_list "end" "function"
-		|	"function" "{Symbol}" "{LQ}" "{RQ}" "as" var_type "end" "function"
-		|	"function" "{Symbol}" "{LQ}" "{RQ}" "end" "function"
-		|	"function" "{Symbol}" "{LQ}" paramter_list "{RQ}" "as" var_type stmt_list "end" "function"
-		|	"function" "{Symbol}" "{LQ}" paramter_list "{RQ}" stmt_list "end" "function"
-		|	"function" "{Symbol}" "{LQ}" paramter_list "{RQ}" "as" var_type "end" "function"
-		|	"function" "{Symbol}" "{LQ}" paramter_list "{RQ}" "end" "function"
+function_desc	->	"function" "{Letter}" "(" ")" "as" var_type stmt_list "end" "function"
+		|	"function" "{Letter}" "(" ")" stmt_list "end" "function"
+		|	"function" "{Letter}" "(" ")" "as" var_type "end" "function"
+		|	"function" "{Letter}" "(" ")" "end" "function"
+		|	"function" "{Letter}" "(" paramter_list ")" "as" var_type stmt_list "end" "function"
+		|	"function" "{Letter}" "(" paramter_list ")" stmt_list "end" "function"
+		|	"function" "{Letter}" "(" paramter_list ")" "as" var_type "end" "function"
+		|	"function" "{Letter}" "(" paramter_list ")" "end" "function"
 		;
 
-define_desc	->	define_desc "," "{Symbol}" "[" value_list "]"
-		|	define_desc "," "{Symbol}" "[" "]"
-		|	define_desc "," "{Symbol}" "=" value_type
-		|	define_desc "," "{Symbol}"
-		|	var_type "{Symbol}" "=" value_type
-		|	var_type "{Symbol}"
+define_desc	->	define_desc "," "{Letter}" "[" value_list "]"
+		|	define_desc "," "{Letter}" "[" "]"
+		|	define_desc "," "{Letter}" "=" value_type
+		|	define_desc "," "{Letter}"
+		|	var_type "{Letter}" "=" value_type
+		|	var_type "{Letter}"
 		;
 
-array_desc	->	array_desc "," "{Symbol}" "[" value_list "]"
-		|	array_desc "," "{Symbol}" "[" "]"
-		|	array_desc "," "{Symbol}" "=" value_type
-		|	array_desc "," "{Symbol}"
-		|	var_type "{Symbol}" "[" value_list "]"
-		|	var_type "{Symbol}" "[" "]"
+array_desc	->	array_desc "," "{Letter}" "[" value_list "]"
+		|	array_desc "," "{Letter}" "[" "]"
+		|	array_desc "," "{Letter}" "=" value_type
+		|	array_desc "," "{Letter}"
+		|	var_type "{Letter}" "[" value_list "]"
+		|	var_type "{Letter}" "[" "]"
 		;
 
 if_desc		->	"if" exp "then" "else" "end" "if"
@@ -136,12 +136,12 @@ for_desc3	->	stmt "do" stmt_list
 assign_desc	->	assign_type "=" exp
 		;
 
-call_desc1	->	"{Symbol}" "{LQ}" "{RQ}"
-		|	"{Symbol}" "{LQ}" value_list "{RQ}"
+call_desc1	->	"{Letter}" "(" ")"
+		|	"{Letter}" "(" value_list ")"
 		;
 
-call_desc2	->	"call" "{Symbol}" "{LQ}" "{RQ}"
-		|	"call" "{Symbol}" "{LQ}" value_list "{RQ}"
+call_desc2	->	"call" "{Letter}" "(" ")"
+		|	"call" "{Letter}" "(" value_list ")"
 		;
 
 switch_desc	->	"switch" exp "do" case_list "end" "switch"
@@ -162,20 +162,20 @@ return_desc	->	"return" exp
 		|	"return"
 		;
 
-dll_desc	->	"dll" "lib" "{Symbol}" "function" "{Symbol}" "{LQ}" "{RQ}"
-		|	"dll" "lib" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" "{RQ}"
-		|	"dll" "lib" "{Symbol}" "function" "{Symbol}" "{LQ}" paramter_list "{RQ}"
-		|	"dll" "lib" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" paramter_list "{RQ}"
+dll_desc	->	"dll" "lib" "{Letter}" "function" "{Letter}" "(" ")"
+		|	"dll" "lib" "{Letter}" "function" "{Letter}" "alias" "{Letter}" "(" ")"
+		|	"dll" "lib" "{Letter}" "function" "{Letter}" "(" paramter_list ")"
+		|	"dll" "lib" "{Letter}" "function" "{Letter}" "alias" "{Letter}" "(" paramter_list ")"
 		;
 
-com_desc	->	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "{LQ}" "{RQ}" "as" var_type
-		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "{LQ}" "{RQ}"
-		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" "{RQ}" "as" var_type
-		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" "{RQ}"
-		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "{LQ}" paramter_list "{RQ}" "as" var_type
-		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "{LQ}" paramter_list "{RQ}"
-		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" paramter_list "{RQ}" "as" var_type
-		|	"com" "lib" "{Symbol}" "class" "{Symbol}" "function" "{Symbol}" "alias" "{Symbol}" "{LQ}" paramter_list "{RQ}"
+com_desc	->	"com" "lib" "{Letter}" "class" "{Letter}" "function" "{Letter}" "(" ")" "as" var_type
+		|	"com" "lib" "{Letter}" "class" "{Letter}" "function" "{Letter}" "(" ")"
+		|	"com" "lib" "{Letter}" "class" "{Letter}" "function" "{Letter}" "alias" "{Letter}" "(" ")" "as" var_type
+		|	"com" "lib" "{Letter}" "class" "{Letter}" "function" "{Letter}" "alias" "{Letter}" "(" ")"
+		|	"com" "lib" "{Letter}" "class" "{Letter}" "function" "{Letter}" "(" paramter_list ")" "as" var_type
+		|	"com" "lib" "{Letter}" "class" "{Letter}" "function" "{Letter}" "(" paramter_list ")"
+		|	"com" "lib" "{Letter}" "class" "{Letter}" "function" "{Letter}" "alias" "{Letter}" "(" paramter_list ")" "as" var_type
+		|	"com" "lib" "{Letter}" "class" "{Letter}" "function" "{Letter}" "alias" "{Letter}" "(" paramter_list ")"
 		;
 
 exp		->	exp ">" exp1
@@ -199,7 +199,7 @@ exp2		->	exp2 "*" exp3
 		|	exp3
 		;
 
-exp3		->	"{LQ}" exp "{RQ}"
+exp3		->	"(" exp ")"
 		|	value_type
 		|	call_desc1
 		;
