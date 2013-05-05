@@ -19,6 +19,16 @@
 
 namespace QLanguage
 {
+    vector<Production> LALR1::rules()
+    {
+        vector<Production> v;
+        for (vector<LALR1Production>::const_iterator i = _rules.begin(), m = _rules.end(); i != m; ++i)
+        {
+            v.push_back(*i);
+        }
+        return v;
+    }
+
     bool LALR1::buildParserTable()
     {
         table.initialize(items.size() * (vts.size() + 1 + vns.size()));
@@ -31,7 +41,7 @@ namespace QLanguage
                 if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), vts[j]) != p.wildCards.end())
                 {
                     ptr->first = 'R';
-                    ptr->second = (ushort)index_of(rules.begin(), rules.end(), p);
+                    ptr->second = (ushort)index_of(_rules.begin(), _rules.end(), p);
                 }
                 vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vts[j], compare_edge_item_is);
                 if (k != edges[*i].end())
@@ -46,7 +56,7 @@ namespace QLanguage
                 else
                 {
                     ptr->first = 'R';
-                    ptr->second = (ushort)index_of(rules.begin(), rules.end(), p);
+                    ptr->second = (ushort)index_of(_rules.begin(), _rules.end(), p);
                 }
             }
             ++ptr;
@@ -139,79 +149,124 @@ namespace QLanguage
 #endif
     }
 
-//     void LALR1::output(const string& path)
-//     {
-//         time_t t;
-//         time(&t);
-//         char version = 1;
-//         fstream stream(path, fstream::out | fstream::binary);
-//         stream << PARSER_TABLE << version << (isX86() ? 86 : 64) << t << vts.size() << vns.size() << this->pStart->idx;
-//         for (vector<pair<uchar, ushort> >::const_iterator i = table.begin(), m = table.end(); i != m; ++i)
-//         {
-//             stream << i->first << i->second;
-//         }
-//     }
-// 
-//     bool LALR1::parse(const list<Lexer::Token>& l)
-//     {
-//         stack<ushort> status;
-//         status.push(pStart->idx);
-//         list<Lexer::Token> tokens = l;
-//         while (!tokens.empty())
-//         {
-//             Lexer::Token& tk = tokens.front();
-//             long idx = index_of_vt(tk.data);
-//             if (idx == -1)
-//             {
-//                 throw error<const char*>("get action error", __FILE__, __LINE__);
-//                 return false;
-//             }
-//             const pair<uchar, ushort>& act = table[status.top() * (vts.size() + 1 + vns.size()) + idx];
-//             switch (act.first)
-//             {
-//             case 'S':
-//                 status.push(act.second);
-//                 tokens.pop_front();
-//                 break;
-//             case 'R':
-//                 {
-//                     Production p = lr0.inputProductions[act.second];
-//                     long j = getGoTo(status[p.right.size() + 1], p.left);
-//                     if (j == -1)
-//                     {
-//                         throw error<const char*>("reduce error", __FILE__, __LINE__);
-//                         return false;
-//                     }
-//                     for (vector<Production::Item>::const_iterator k = p.right.begin(), o = p.right.end(); k != o; ++k)
-//                     {
-//                         status.pop();
-//                     }
-//                     status.push((ushort)j);
-//                 }
-//                 break;
-//             default:
-//                 throw error<const char*>("some error with syntax", __FILE__, __LINE__);
-//                 return false;
-//             }
-//         }
-//         return true;
-//     }
-// 
-//     long LALR1::index_of_vt(const string& str)
-//     {
-//         for (size_t i = 0, m = vts.size(); i < m; ++i)
-//         {
-//             char* o = NULL;
-//             size_t sz = 0;
-//             if (vts[i].rule.parse(str.begin(), str.end(), o, sz) && sz == str.size()) return i;
-//         }
-//         return -1;
-//     }
-// 
-//     long LALR1::getGoTo(ushort s, const Production::Item& i)
-//     {
-//         long j = index_of(vns.begin(), vns.end(), i);
-//         if (j == -1) return -1;
-//         return table[s * (vts.size() + 1 + vns.size()) + j].second;
-//     }
+    void LALR1::output(const string& path)
+    {
+        time_t t;
+        time(&t);
+        char version = 1;
+        fstream stream(path, fstream::out | fstream::binary);
+        stream << PARSER_TABLE << version << (isX86() ? 86 : 64) << t << vts.size() << vns.size() << this->pStart->idx;
+        for (vector<pair<uchar, ushort> >::const_iterator i = table.begin(), m = table.end(); i != m; ++i)
+        {
+            stream << i->first << i->second;
+        }
+    }
+
+    bool LALR1::parse(const list<Lexer::Token>& l, BasicParser* pParser)
+    {
+        stack<ushort> status;
+        status.push(pStart->idx);
+        list<Lexer::Token> tokens = l;
+        while (!tokens.empty())
+        {
+            Lexer::Token& tk = tokens.front();
+            long idx = index_of_vt(tk.data);
+            if (idx == -1)
+            {
+                throw error<const char*>("get action error", __FILE__, __LINE__);
+                return false;
+            }
+            const pair<uchar, ushort>& act = table[status.top() * (vts.size() + 1 + vns.size()) + idx];
+            switch (act.first)
+            {
+            case 'S':
+                if (!pParser->shift(tk.data))
+                {
+                    throw error<const char*>("shift error", __FILE__, __LINE__);
+                    return false;
+                }
+                status.push(act.second);
+                tokens.pop_front();
+                break;
+            case 'R':
+                {
+                    const LALR1Production& p = _rules[act.second];
+                    if (!pParser->reduce(act.second))
+                    {
+                        throw error<const char*>("reduce error", __FILE__, __LINE__);
+                        return false;
+                    }
+                    long j = getGoTo(status[p.right.size()], p.left);
+                    if (j == -1)
+                    {
+                        throw error<const char*>("reduce error", __FILE__, __LINE__);
+                        return false;
+                    }
+                    for (vector<Production::Item>::const_iterator k = p.right.begin(), o = p.right.end(); k != o; ++k)
+                    {
+                        status.pop();
+                    }
+                    status.push((ushort)j);
+                }
+                break;
+            case 'A':
+                return true;
+            default:
+                throw error<const char*>("some error with syntax", __FILE__, __LINE__);
+                return false;
+            }
+        }
+        while (!status.empty())
+        {
+            const pair<uchar, ushort>& act = table[status.top() * (vts.size() + 1 + vns.size()) + vts.size()];
+            switch (act.first)
+            {
+            case 'R':
+                {
+                    const LALR1Production& p = _rules[act.second];
+                    if (!pParser->reduce(act.second))
+                    {
+                        throw error<const char*>("reduce error", __FILE__, __LINE__);
+                        return false;
+                    }
+                    long j = getGoTo(status[p.right.size()], p.left);
+                    if (j == -1)
+                    {
+                        throw error<const char*>("reduce error", __FILE__, __LINE__);
+                        return false;
+                    }
+                    for (vector<Production::Item>::const_iterator k = p.right.begin(), o = p.right.end(); k != o; ++k)
+                    {
+                        status.pop();
+                    }
+                    status.push((ushort)j);
+                }
+                break;
+            case 'A':
+                return true;
+            default:
+                throw error<const char*>("some error with syntax", __FILE__, __LINE__);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    long LALR1::index_of_vt(const string& str)
+    {
+        for (size_t i = 0, m = vts.size(); i < m; ++i)
+        {
+            char* o = NULL;
+            size_t sz = 0;
+            if (vts[i].rule.parse(str.begin(), str.end(), o, sz) && sz == str.size()) return i;
+        }
+        return -1;
+    }
+
+    long LALR1::getGoTo(ushort s, const Production::Item& i)
+    {
+        long j = index_of(vns.begin(), vns.end(), i);
+        if (j == -1) return -1;
+        return table[s * (vts.size() + 1 + vns.size()) + vts.size() + 1 + j].second;
+    }
 }

@@ -12,11 +12,12 @@
 #include "../QCore/Library/fstream.h"
 
 #include "../QLanguage/Lexer/Lexer.h"
-#include "../QLanguage/Parser/LR0.h"
 #include "../QLanguage/Parser/LALR1.h"
+#include "Parser/Parser.h"
 
 #include <stdio.h>
 #include <time.h>
+#include <direct.h>
 
 using namespace QLanguage;
 using namespace QLanguage::Library;
@@ -27,14 +28,25 @@ int main(int argv, char* args[])
 #ifdef _DEBUG
     if (argv < 2)
     {
-        path = "QLanguage.txt";
+        char currentPath[MAX_PATH] = {0};
+        getcwd(currentPath, MAX_PATH);
+        path = currentPath;
+#ifdef WIN32
+        path += "/Debug/QLanguage.txt";
+#else
+        path += "/QLanguage.txt";
+#endif
     }
+    else path = args[1];
+#else
+    if (argv < 2) cout << "Please input Generator File";
     else path = args[1];
 #endif
     if (path.size())
     {
         try
         {
+            clock_t t = clock();
             // step1 lexer
             fstream fs(path, fstream::in | fstream::binary);
             string str(fs.size());
@@ -71,14 +83,14 @@ int main(int argv, char* args[])
             Rule rulePrecent("%", &context);
             rulePrecent.buildDFA();
 #ifdef _DEBUG
-            rulePrecent.setShowName("%");
+            rulePrecent.setShowName("\"%\"");
 #endif
             Production::Item itemRulePrecent(rulePrecent);
 
             Rule ruleToken("token", &context);
             ruleToken.buildDFA();
 #ifdef _DEBUG
-            ruleToken.setShowName("token");
+            ruleToken.setShowName("\"token\"");
 #endif
             Production::Item itemRuleToken(ruleToken);
             // Token End
@@ -87,7 +99,7 @@ int main(int argv, char* args[])
             Rule ruleStart("start", &context);
             ruleStart.buildDFA();
 #ifdef _DEBUG
-            ruleStart.setShowName("start");
+            ruleStart.setShowName("\"start\"");
 #endif
             Production::Item itemRuleStart(ruleStart);
             // Start End
@@ -118,19 +130,26 @@ int main(int argv, char* args[])
             // Letter End
 
             // Arrow Start
-            Rule ruleArrow("->", &context);
-            ruleArrow.buildDFA();
+            Rule ruleSub('-', &context);
+            ruleSub.buildDFA();
 #ifdef _DEBUG
-            ruleArrow.setShowName("->");
+            ruleSub.setShowName("\"-\"");
 #endif
-            Production::Item itemRuleArrow(ruleArrow);
+            Production::Item itemRuleSub(ruleSub);
+
+            Rule ruleMore('>', &context);
+            ruleMore.buildDFA();
+#ifdef _DEBUG
+            ruleMore.setShowName("\">\"");
+#endif
+            Production::Item itemRuleMore(ruleMore);
             // Arrow End
 
             // Or Start
             Rule ruleOr('|', &context);
             ruleOr.buildDFA();
 #ifdef _DEBUG
-            ruleOr.setShowName("|");
+            ruleOr.setShowName("\"|\"");
 #endif
             Production::Item itemRuleOr(ruleOr);
             // Or End
@@ -139,7 +158,7 @@ int main(int argv, char* args[])
             Rule ruleSemicolon(';', &context);
             ruleSemicolon.buildDFA();
 #ifdef _DEBUG
-            ruleSemicolon.setShowName(";");
+            ruleSemicolon.setShowName("\";\"");
 #endif
             Production::Item itemRuleSemicolon(ruleSemicolon);
             // Semicolon End
@@ -176,7 +195,8 @@ int main(int argv, char* args[])
             v.push_back(itemRulePrecent);
             v.push_back(itemRuleToken);
             v.push_back(itemStrings);
-            Production productionToken(itemToken, v); // token -> "%" "token" strings
+            v.push_back(itemRuleSemicolon);
+            Production productionToken(itemToken, v); // token -> "%" "token" strings ";"
             v.clear();
 
             Production::Item itemSomeTokens("someTokens");
@@ -188,10 +208,11 @@ int main(int argv, char* args[])
 
             Production::Item itemProduction("production");
             v.push_back(itemLetter);
-            v.push_back(itemRuleArrow);
+            v.push_back(itemRuleSub);
+            v.push_back(itemRuleMore);
             v.push_back(itemSomeProductionRight);
             v.push_back(itemRuleSemicolon);
-            Production productionProduction(itemProduction, v); // production -> "{Letter}" "->" someProductionRight ";"
+            Production productionProduction(itemProduction, v); // production -> "{Letter}" "-" ">" someProductionRight ";"
             v.clear();
 
             Production::Item itemSomeProductions("someProductions");
@@ -206,14 +227,16 @@ int main(int argv, char* args[])
             v.push_back(itemRulePrecent);
             v.push_back(itemRuleStart);
             v.push_back(itemLetter);
+            v.push_back(itemRuleSemicolon);
             v.push_back(itemSomeProductions);
-            Production productionStart_HasToken(itemStart, v);   // start -> someTokens "%" "start" "{Letter}" someProductions
+            Production productionStart_HasToken(itemStart, v);   // start -> someTokens "%" "start" "{Letter}" ";" someProductions
             v.clear();
             v.push_back(itemRulePrecent);
             v.push_back(itemRuleStart);
             v.push_back(itemLetter);
+            v.push_back(itemRuleSemicolon);
             v.push_back(itemSomeProductions);
-            Production productionStart_HasntToken(itemStart, v); // start -> "%" "start" "{Letter}" someProductions
+            Production productionStart_HasntToken(itemStart, v); // start -> "%" "start" "{Letter}" ";" someProductions
             v.clear();
 
             vector<Production> productions;
@@ -233,34 +256,22 @@ int main(int argv, char* args[])
             productions.push_back(productionSomeProductionRight_Or_OneProductionRight);
             // someProductionRight -> oneProductionRight
             productions.push_back(productionSomeProductionRight_OneProductionRight);
-            // token -> "%token" strings
+            // token -> "%" "token" strings ";"
             productions.push_back(productionToken);
             // someTokens -> someTokens token
             productions.push_back(productionSomeTokens_ItemToken);
             // someTokens -> token
             productions.push_back(productionSomeTokens_Token);
-            // production -> "{Letter}" "->" someProductionRight ";"
+            // production -> "{Letter}" "-" ">" someProductionRight ";"
             productions.push_back(productionProduction);
             // someProductions -> someProductions production
             productions.push_back(productionSomeProductions_ItemProduction);
             // someProductions -> production
             productions.push_back(productionSomeProductions_Production);
-            // start -> someTokens "%start" "{Letter}" someProductions
+            // start -> someTokens "%" "start" "{Letter}" ";" someProductions
             productions.push_back(productionStart_HasToken);
-            // start -> "%start" "{Letter}" someProductions
+            // start -> "%" "start" "{Letter}" ";" someProductions
             productions.push_back(productionStart_HasntToken);
-
-            LR0 lr0(productions, itemStart);
-            c = clock();
-            lr0.make();
-            c = clock() - c;
-            fstream lr0stream("LR0.txt", fstream::out);
-            lr0.print(lr0stream);
-
-            cout.setColor(cout.lightWith(stdstream::green));
-            cout << "Make LR(0) State Machine Finish ..." << endl;
-            cout.setColor(cout.lightWith(stdstream::white));
-            cout << string::format("Use of time: %d", c) << endl;
 
             LALR1 lalr1(productions, itemStart);
             c = clock();
@@ -273,17 +284,26 @@ int main(int argv, char* args[])
             cout << "Make LALR(1) State Machine Finish ..." << endl;
             cout.setColor(cout.lightWith(stdstream::white));
             cout << string::format("Use of time: %d", c) << endl;
-// 
-//             c = clock();
-//             lalr1.output("QParserGenerator.ParserTable");
-//             c = clock() - c;
-// 
-//             cout.setColor(cout.lightWith(stdstream::green));
-//             cout << "Output QParserGenerator LALR(1) ParserTable Finish ..." << endl;
-//             cout.setColor(cout.lightWith(stdstream::white));
-//             cout << string::format("Use of time: %d", c) << endl;
-// 
-//             lalr1.parse(lexer.result);
+
+            c = clock();
+            lalr1.output("QParserGenerator.ParserTable");
+            c = clock() - c;
+
+            cout.setColor(cout.lightWith(stdstream::green));
+            cout << "Output QParserGenerator LALR(1) ParserTable Finish ..." << endl;
+            cout.setColor(cout.lightWith(stdstream::white));
+            cout << string::format("Use of time: %d", c) << endl;
+
+            Parser parser(lalr1.rules());
+            parser.printRules("Rules.txt");
+            c = clock();
+            lalr1.parse(lexer.result, &parser);
+            c = clock() - c;
+
+            cout.setColor(cout.lightWith(stdstream::green));
+            cout << "Parse LALR(1) ParserTable Finish ..." << endl;
+            cout.setColor(cout.lightWith(stdstream::white));
+            cout << string::format("Use of time: %d", c) << endl;
         }
         catch (const error<char*>& e)
         {

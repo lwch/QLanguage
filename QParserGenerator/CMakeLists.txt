@@ -25,12 +25,21 @@ SOURCE_GROUP(Lexer FILES ${Lexer})
 
 FILE(GLOB Parser_Headers "../QLanguage/Parser/*.h")
 FILE(GLOB Parser_Sources "../QLanguage/Parser/*.cpp")
+# remove parser for QLanguage
+LIST(REMOVE_ITEM Parser_Headers "${CMAKE_CURRENT_SOURCE_DIR}/../QLanguage/Parser/Parser.h")
+LIST(REMOVE_ITEM Parser_Sources "${CMAKE_CURRENT_SOURCE_DIR}/../QLanguage/Parser/Parser.cpp")
 SET (Parser ${Parser_Headers} ${Parser_Sources})
 SOURCE_GROUP(Parser FILES ${Parser})
+
+FILE(GLOB Generator_Parser_Headers "Parser/*.h")
+FILE(GLOB Generator_Parser_Sources "Parser/*.cpp")
+SET (Generator_Parser ${Generator_Parser_Headers} ${Generator_Parser_Sources})
+SOURCE_GROUP(Parser FILES ${Generator_Parser})
 
 LIST (APPEND FILES
 	${Lexer}
 	${Parser}
+	${Generator_Parser}
 	QParserGenerator.cpp
 )
 

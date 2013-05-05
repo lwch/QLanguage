@@ -38,7 +38,7 @@ namespace regex
                 TFromTo  = 2,
                 TChar    = 4,
                 TString  = 8,
-                TEpsilon = 12
+                TEpsilon = 16
             };
 
             uchar type;
@@ -53,7 +53,7 @@ namespace regex
 
                 struct
                 {
-                    const char*  value;
+                    char*  value;
                     size_t size;
                 }String;
             }data;
@@ -78,9 +78,34 @@ namespace regex
             Variant(const char* value, bool bNot)
             {
                 memset(&data, 0, sizeof(data));
-                data.String.value = value;
                 data.String.size  = strlen(value);
+                data.String.value = allocator<char>::allocate(data.String.size + 1);
+                strcpy(data.String.value, value);
+                data.String.value[data.String.size] = 0;
                 type = bNot ? (TString | TNot) : TString;
+            }
+
+            Variant(const Variant& x)
+            {
+                type = x.type;
+                if (isString())
+                {
+                    memset(&data, 0, sizeof(data));
+                    data.String.size  = x.data.String.size;
+                    data.String.value = allocator<char>::allocate(x.data.String.size + 1);
+                    strcpy(data.String.value, x.data.String.value);
+                    data.String.value[data.String.size] = 0;
+                }
+                else data = x.data;
+            }
+
+            ~Variant()
+            {
+                if (isString() && data.String.value)
+                {
+                    destruct(data.String.value, data.String.value + data.String.size + 1);
+                    allocator<char>::deallocate(data.String.value, data.String.size + 1);
+                }
             }
 
             inline void negate()
@@ -124,7 +149,26 @@ namespace regex
 
             inline const bool operator==(const Variant& x)const
             {
-                return type == x.type && data.String.value == x.data.String.value && data.String.size == data.String.size;
+                //return type == x.type && data.String.value == x.data.String.value && data.String.size == data.String.size;
+                if (type != x.type) return false;
+                switch (trueType())
+                {
+                case TFromTo:
+                    return data.Char.value1 == x.data.Char.value1 && data.Char.value2 == x.data.Char.value2;
+                case TChar:
+                    return data.Char.value1 == x.data.Char.value1;
+                case TString:
+                    {
+                        if (data.String.size != x.data.String.size) return false;
+                        for (size_t i = 0, m = data.String.size; i < m; ++i)
+                        {
+                            if (data.String.value[i] != x.data.String.value[i]) return false;
+                        }
+                        return true;
+                    }
+                default:
+                    return false;
+                }
             }
         };
 

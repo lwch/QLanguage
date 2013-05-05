@@ -13,6 +13,8 @@
 #define _QLANGUAGE_LALR1_H_
 
 #include "LRProduction.h"
+#include "BasicParser.h"
+#include "../Lexer/Lexer.h"
 #include "../../QCore/Library/function_additional.h"
 
 namespace QLanguage
@@ -102,9 +104,16 @@ namespace QLanguage
 
         typedef allocator<Item> Item_Alloc;
     public:
-        LALR1(const vector<Production>& productions, const Production::Item& start);
+        LALR1();
+        LALR1(const vector<Production>& productions, Production::Item& start);
+
+        void setProductions(const vector<Production>& productions);
+        void setStart(Production::Item* start);
 
         bool make();
+        void output(const string& path);
+        bool parse(const list<Lexer::Token>& l, BasicParser* pParser);
+        vector<Production> rules();
 
         void print(Library::ostream& stream);
     protected:
@@ -115,6 +124,8 @@ namespace QLanguage
         bool go(Item* pItem, const Production::Item& x, Item*& newItem);
         long itemIndex(Item* pItem);
         bool buildParserTable();
+        long index_of_vt(const string& str);
+        long getGoTo(ushort s, const Production::Item& i);
         static inline bool compare_production_item_is_vt(const Production::Item& i);
         static inline bool compare_production_item_is_vn(const Production::Item& i);
         static inline bool compare_edge_item_is(const Edge& e, const Production::Item& x);
@@ -124,15 +135,15 @@ namespace QLanguage
         Item* pStart;
         vector<Item*> items;
         hashmap<Item*, vector<Edge> > edges;
-        vector<pair<uchar, ushort> >    table;
+        vector<pair<uchar, ushort> >  table;
 
         vector<Production::Item> vts;
         vector<Production::Item> vns;
 
-        vector<LALR1Production> rules;
+        vector<LALR1Production> _rules;
         map<Production::Item, vector<LALR1Production> > inputProductions;
         Production::Item begin;
-        const Production::Item& start;
+        Production::Item* start;
     };
 }
 
