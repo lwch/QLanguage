@@ -76,7 +76,6 @@ namespace QLanguage
 
     void LALR1::print(Library::ostream& stream)
     {
-#ifdef _DEBUG
         stream << "-------- LALR(1) Start --------" << endl;
         stream << "----- State Machine Start -----" << endl;
         for (hashmap<Item*, vector<Edge> >::const_iterator i = edges.begin(), m = edges.end(); i != m; ++i)
@@ -137,25 +136,36 @@ namespace QLanguage
         stream << "VTS:" << endl;
         for (vector<Production::Item>::const_iterator i = vts.begin(), m = vts.end(); i != m; ++i)
         {
-            stream << i->index << " : " << i->rule.showName << endl;
+            stream << i->index << " : "
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                   << i->rule.showName
+#else
+                   << "Rule"
+#endif
+                   << endl;
         }
         stream << "VNS:" << endl;
         for (vector<Production::Item>::const_iterator i = vns.begin(), m = vns.end(); i != m; ++i)
         {
-            stream << i->index << " : " << i->name << endl;
+            stream << i->index << " : "
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                   << i->name
+#else
+                   << "VN"
+#endif
+                   << endl;
         }
         stream << "------- Parse Table End -------" << endl;
         stream << "--------- LALR(1) End ---------" << endl;
-#endif
     }
 
     void LALR1::output(const string& path)
     {
         time_t t;
         time(&t);
-        char version = 1;
+        uchar version = 1;
         fstream stream(path, fstream::out | fstream::binary);
-        stream << PARSER_TABLE << version << (isX86() ? 86 : 64) << t << vts.size() << vns.size() << this->pStart->idx;
+        stream << PARSER_TABLE << version << sizeof(t) << t << vts.size() << vns.size() << items.size() << this->pStart->idx;
         for (vector<pair<uchar, ushort> >::const_iterator i = table.begin(), m = table.end(); i != m; ++i)
         {
             stream << i->first << i->second;
@@ -167,10 +177,11 @@ namespace QLanguage
         stack<ushort> status;
         status.push(pStart->idx);
         list<Lexer::Token> tokens = l;
+        long idx = 0;
         while (!tokens.empty())
         {
             Lexer::Token& tk = tokens.front();
-            long idx = index_of_vt(tk.data);
+            idx = index_of_vt(tk.data, idx);
             if (idx == -1)
             {
                 throw error<const char*>("get action error", __FILE__, __LINE__);
@@ -187,6 +198,7 @@ namespace QLanguage
                 }
                 status.push(act.second);
                 tokens.pop_front();
+                idx = 0;
                 break;
             case 'R':
                 {
@@ -207,13 +219,14 @@ namespace QLanguage
                         status.pop();
                     }
                     status.push((ushort)j);
+                    idx = 0;
                 }
                 break;
             case 'A':
                 return true;
             default:
-                throw error<const char*>("some error with syntax", __FILE__, __LINE__);
-                return false;
+                ++idx;
+                break;
             }
         }
         while (!status.empty())
@@ -252,9 +265,9 @@ namespace QLanguage
         return false;
     }
 
-    long LALR1::index_of_vt(const string& str)
+    long LALR1::index_of_vt(const string& str, long idx /* = 0 */)
     {
-        for (size_t i = 0, m = vts.size(); i < m; ++i)
+        for (size_t i = idx, m = vts.size(); i < m; ++i)
         {
             char* o = NULL;
             size_t sz = 0;

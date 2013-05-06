@@ -36,11 +36,23 @@ namespace QLanguage
 
             Rule rule;
             uint index;
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             string name;
+#endif
 
             Item() : type(NoTerminalSymbol), index(inc()) {}
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Item(const string& name) : type(NoTerminalSymbol), index(inc()), name(name) {}
-            Item(const Item& i) : type(i.type), rule(i.rule), index(i.index), name(i.name) {}
+#endif
+            Item(const Item& i)
+                : type(i.type)
+                , rule(i.rule)
+                , index(i.index)
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                , name(i.name)
+#endif
+            {
+            }
             Item(const Rule& rule) : type(TerminalSymbol), rule(rule), index(inc()) {}
 
             inline Item& operator=(const Item& i)
@@ -50,7 +62,9 @@ namespace QLanguage
                     type  = i.type;
                     rule  = i.rule;
                     index = i.index;
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
                     name  = i.name;
+#endif
                 }
                 return *this;
             }
@@ -100,8 +114,11 @@ namespace QLanguage
 
         void print(Library::ostream& stream)const
         {
-#ifdef _DEBUG
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             stream << string::format("%s ->", left.name.c_str());
+#else
+            stream << "VN ->";
+#endif
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
             {
                 if (i->type == Item::TerminalSymbol)
@@ -109,10 +126,16 @@ namespace QLanguage
                     stream << " ";
                     i->rule.printShowName(stream);
                 }
-                else stream << string::format(" %s", i->name.c_str());
+                else
+                {
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                    stream << string::format(" %s", i->name.c_str());
+#else
+                    stream << "VN";
+#endif
+                }
             }
             stream << endl;
-#endif
         }
     protected:
         static uint inc()

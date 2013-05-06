@@ -164,15 +164,20 @@ namespace QLanguage
         Production::Item* pItem = NULL;
         if (idx == -1)
         {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(shifts.back())));
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                          shifts.back()
+#endif
+                          )));
             pItem = &vns.back().second;
         }
         else pItem = &vns[idx].second;
         lalr1.setStart(pItem);
         lalr1.setProductions(productions);
         lalr1.make();
-        lalr1.print(cout);
-        lalr1.output("G.txt");
+        fstream s("QLanguage.lalr1", fstream::out | fstream::text);
+        lalr1.print(s);
+        lalr1.output("QLanguage.parsertable");
         shifts.pop_back();
         shifts.pop_back();
         shifts.pop_back();
@@ -186,8 +191,8 @@ namespace QLanguage
         shifts.pop_back();
         Rule r(s.c_str(), &context);
         r.buildDFA();
-#ifdef _DEBUG
-        r.setShowName(shifts.back());
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+        r.setShowName(s);
 #endif
         vts.push_back(pair<string, Production::Item>(s, r));
         return true;
@@ -200,8 +205,8 @@ namespace QLanguage
         shifts.pop_back();
         Rule r(s.c_str(), &context);
         r.buildDFA();
-#ifdef _DEBUG
-        r.setShowName(shifts.back());
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+        r.setShowName(s);
 #endif
         vts.push_back(pair<string, Production::Item>(s, r));
         return true;
@@ -214,7 +219,11 @@ namespace QLanguage
         Production::Item* pItem = NULL;
         if (idx == -1)
         {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(shifts.back())));
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                          shifts.back()
+#endif
+                          )));
             pItem = &vns.back().second;
         }
         else pItem = &vns[idx].second;
@@ -240,7 +249,11 @@ namespace QLanguage
         Production::Item* pItem = NULL;
         if (idx == -1)
         {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(shifts.back())));
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                          shifts.back()
+#endif
+                          )));
             pItem = &vns.back().second;
         }
         else pItem = &vns[idx].second;
@@ -285,7 +298,11 @@ namespace QLanguage
         Production::Item* pItem = NULL;
         if (idx == -1)
         {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(shifts.back())));
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                          shifts.back()
+#endif
+                          )));
             pItem = &vns.back().second;
         }
         else pItem = &vns[idx].second;

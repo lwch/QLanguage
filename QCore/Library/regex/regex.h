@@ -867,12 +867,15 @@ public:
 #endif
             fs << "----------- DFA End -----------" << endl;
         }
-
+#endif
         void printShowName(ostream& stream)const
         {
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             stream << showName;
-        }
+#else
+            stream << "Rule";
 #endif
+        }
     protected:
         static void copyEpsilonNFA_Edges(const Rule& from, Rule& to)
         {

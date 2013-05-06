@@ -66,8 +66,11 @@ namespace QLanguage
 
         void print(Library::ostream& stream)const
         {
-#ifdef _DEBUG
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             stream << string::format("%s ->", left.name.c_str());
+#else
+            stream << "VN ->";
+#endif
             uint j = 0;
             for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i,++j)
             {
@@ -77,11 +80,17 @@ namespace QLanguage
                     stream << " ";
                     i->rule.printShowName(stream);
                 }
-                else stream << string::format(" %s", i->name.c_str());
+                else
+                {
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                    stream << string::format(" %s", i->name.c_str());
+#else
+                    stream << " VN";
+#endif
+                }
             }
             if (bKernel) stream << "(Kernel)";
             stream << endl;
-#endif
         }
 
         inline LR0Production stepUp()
@@ -161,7 +170,6 @@ namespace QLanguage
 
         void print(Library::ostream& stream)const
         {
-#ifdef _DEBUG
             parent::print(stream);
             stream << "wildCards:" << endl;
             for (vector<Item>::const_iterator i = wildCards.begin(), m = wildCards.end(); i != m; ++i)
@@ -174,7 +182,6 @@ namespace QLanguage
                 else stream << "# ";
             }
             stream << endl;
-#endif
         }
     public:
         vector<Item> wildCards;
