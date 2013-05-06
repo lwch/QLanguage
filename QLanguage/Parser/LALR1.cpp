@@ -64,6 +64,7 @@ namespace QLanguage
         v.push_back(inputProductions[begin][0]);
         pStart = closure(v);
         pStart->idx = Item::inc();
+        context.states.insert(pStart);
         items.push_back(pStart);
 
         queue<Item*> q;
@@ -89,11 +90,14 @@ namespace QLanguage
                         pNewItem->idx = Item::inc();
                         q.push(pNewItem);
                         items.push_back(pNewItem);
+                        context.states.insert(pNewItem);
                     }
                     else
                     {
                         items[n]->mergeWildCards(pNewItem);
                         changes.push_back_unique(items[n]);
+                        destruct(pNewItem, has_destruct(*pNewItem));
+                        Item_Alloc::deallocate(pNewItem);
                     }
                     edges[pItem].push_back_unique(Edge(pItem, n == -1 ? pNewItem : items[n], *i));
                 }
@@ -124,7 +128,6 @@ namespace QLanguage
     {
         Item* pItem = Item_Alloc::allocate();
         construct(pItem);
-        context.states.insert(pItem);
 
         queue<LALR1Production> q;
 
