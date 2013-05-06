@@ -17,7 +17,11 @@
 
 #include <stdio.h>
 #include <time.h>
+#ifdef WIN32
 #include <direct.h>
+#else
+#include <unistd.h>
+#endif
 
 using namespace QLanguage;
 using namespace QLanguage::Library;
