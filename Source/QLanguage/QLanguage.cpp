@@ -30,7 +30,11 @@ int main()
 
     // Z¡úZa
     // Z¡úa
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
     Production::Item Z("A");
+#else
+    Production::Item Z;
+#endif
     vector<Production::Item> v;
     v.push_back(Z);
     v.push_back(a);

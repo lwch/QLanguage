@@ -32,7 +32,7 @@ namespace QLanguage
 
             void mergeWildCards(Item* pItem)
             {
-#ifdef _DEBUG
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
                 if (data.size() != pItem->data.size()) throw error<const char*>("compare size error", __FILE__, __LINE__);
 #endif
                 for (size_t i = 0, m = data.size(); i < m; ++i)
@@ -68,7 +68,6 @@ namespace QLanguage
 
             void print(Library::ostream& stream)const
             {
-#ifdef _DEBUG
                 stream << string::format("%03d -> %03d", pFrom->idx, pTo->idx);
                 if (item.type == Production::Item::TerminalSymbol)
                 {
@@ -76,9 +75,15 @@ namespace QLanguage
                     item.rule.printShowName(stream);
                     stream << ")";
                 }
-                else stream << string::format("(%s)", item.name.c_str());
-                stream << endl;
+                else
+                {
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                    stream << string::format("(%s)", item.name.c_str());
+#else
+                    stream << "(VT)";
 #endif
+                }
+                stream << endl;
             }
         };
     protected:
@@ -124,7 +129,7 @@ namespace QLanguage
         bool go(Item* pItem, const Production::Item& x, Item*& newItem);
         long itemIndex(Item* pItem);
         bool buildParserTable();
-        long index_of_vt(const string& str);
+        long index_of_vt(const string& str, long idx = 0);
         long getGoTo(ushort s, const Production::Item& i);
         static inline bool compare_production_item_is_vt(const Production::Item& i);
         static inline bool compare_production_item_is_vn(const Production::Item& i);

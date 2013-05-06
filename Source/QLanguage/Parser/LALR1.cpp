@@ -15,7 +15,7 @@ namespace QLanguage
 {
     LALR1::LALR1()
         :
-#ifdef _DEBUG
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
         begin("begin")
         ,
 #endif
@@ -25,7 +25,7 @@ namespace QLanguage
 
     LALR1::LALR1(const vector<Production>& productions, Production::Item& start)
         :
-#ifdef _DEBUG
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
         begin("begin")
         ,
 #endif
@@ -116,6 +116,8 @@ namespace QLanguage
                     long n = itemIndex(pNewItem);
                     if (n == -1) throw error<const char*>("unknown item", __FILE__, __LINE__);
                     else items[n]->mergeWildCards(pNewItem);
+                    destruct(pNewItem, has_destruct(*pNewItem));
+                    Item_Alloc::deallocate(pNewItem);
                 }
             }
         }

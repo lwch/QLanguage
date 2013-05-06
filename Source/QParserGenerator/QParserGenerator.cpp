@@ -49,7 +49,7 @@ int main(int argv, char* args[])
             //clock_t t = clock();
             // step1 lexer
             fstream fs(path, fstream::in | fstream::binary);
-            string str(fs.size());
+            string str(fs.size() + 1);
 
             fs.readAll(const_cast<char*>(str.c_str()), str.capacity());
             const_cast<char*>(str.c_str())[fs.size()] = 0;
@@ -165,14 +165,22 @@ int main(int argv, char* args[])
 
             vector<Production::Item> v;
 
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemStrings("strings");
+#else
+            Production::Item itemStrings;
+#endif
             v.push_back(itemStrings);
             v.push_back(itemString);
             Production productionStrings_String(itemStrings, v);              // string -> string "{String}"
             Production productionStrings_RuleString(itemStrings, itemString); // string -> "{String}"
             v.clear();
 
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemOneProductionRight("oneProductionRight");
+#else
+            Production::Item itemOneProductionRight;
+#endif
             v.push_back(itemOneProductionRight);
             v.push_back(itemLetter);
             Production productionOneProductionRight_Letter(itemOneProductionRight, v); // oneProductionRight -> oneProductionRight "{Letter}"
@@ -183,7 +191,11 @@ int main(int argv, char* args[])
             Production productionOneProductionRight_RuleLetter(itemOneProductionRight, itemLetter); // oneProductionRight -> "{Letter}"
             Production productionOneProductionRight_RuleString(itemOneProductionRight, itemString); // oneProductionRight -> "{String}"
 
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemSomeProductionRight("someProductionRight");
+#else
+            Production::Item itemSomeProductionRight;
+#endif
             v.push_back(itemSomeProductionRight);
             v.push_back(itemRuleOr);
             v.push_back(itemOneProductionRight);
@@ -191,7 +203,11 @@ int main(int argv, char* args[])
             Production productionSomeProductionRight_OneProductionRight(itemSomeProductionRight, itemOneProductionRight); // someProductionRight -> oneProductionRight
             v.clear();
 
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemToken("token");
+#else
+            Production::Item itemToken;
+#endif
             v.push_back(itemRulePrecent);
             v.push_back(itemRuleToken);
             v.push_back(itemStrings);
@@ -199,14 +215,22 @@ int main(int argv, char* args[])
             Production productionToken(itemToken, v); // token -> "%" "token" strings ";"
             v.clear();
 
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemSomeTokens("someTokens");
+#else
+            Production::Item itemSomeTokens;
+#endif
             v.push_back(itemSomeTokens);
             v.push_back(itemToken);
             Production productionSomeTokens_Token(itemSomeTokens, v);             // someTokens -> someTokens token
             v.clear();
             Production productionSomeTokens_ItemToken(itemSomeTokens, itemToken); // someTokens -> token
 
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemProduction("production");
+#else
+            Production::Item itemProduction;
+#endif
             v.push_back(itemLetter);
             v.push_back(itemRuleSub);
             v.push_back(itemRuleMore);
@@ -215,14 +239,22 @@ int main(int argv, char* args[])
             Production productionProduction(itemProduction, v); // production -> "{Letter}" "-" ">" someProductionRight ";"
             v.clear();
 
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemSomeProductions("someProductions");
+#else
+            Production::Item itemSomeProductions;
+#endif
             v.push_back(itemSomeProductions);
             v.push_back(itemProduction);
             Production productionSomeProductions_ItemProduction(itemSomeProductions, v);          // someProductions -> someProductions production
             v.clear();
             Production productionSomeProductions_Production(itemSomeProductions, itemProduction); // someProductions -> production
 
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemStart("start");
+#else
+            Production::Item itemStart;
+#endif
             v.push_back(itemSomeTokens);
             v.push_back(itemRulePrecent);
             v.push_back(itemRuleStart);
