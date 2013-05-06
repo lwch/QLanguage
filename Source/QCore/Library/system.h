@@ -16,24 +16,46 @@
 #include "definition.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
+    inline bool isX86()
+    {
+        return sizeof(void*) == 4;
+    }
 
-extern bool isX86();
-extern bool isX64();
-bool isWindows();
-bool isUnix();
+    inline bool isX64()
+    {
+        return sizeof(void*) == 8;
+    }
 
-#define WINDOWS 0
-#define UNIX    1
+    inline bool isWindows()
+    {
+    #ifdef WIN32
+        return true;
+    #else
+        return false;
+    #endif
+    }
 
-enum
-{
-    optr_type = (sizeof(void*) == 4) ? 86 : 64,
-#ifdef WIN32
-    os_type   = WINDOWS,
-#else
-    os_type   = UNIX,
-#endif
-};
+    inline bool isUnix()
+    {
+    #ifdef unix
+        return true;
+    #else
+        return false;
+    #endif
+    }
+
+    #define WINDOWS 0
+    #define UNIX    1
+
+    enum
+    {
+        optr_type = (sizeof(void*) == 4) ? 86 : 64,
+    #ifdef WIN32
+        os_type   = WINDOWS,
+    #else
+        os_type   = UNIX,
+    #endif
+    };
 
 NAMESPACE_QLANGUAGE_LIBRARY_END
 

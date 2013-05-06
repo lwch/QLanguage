@@ -46,7 +46,7 @@ int main(int argv, char* args[])
     {
         try
         {
-            clock_t t = clock();
+            //clock_t t = clock();
             // step1 lexer
             fstream fs(path, fstream::in | fstream::binary);
             string str(fs.size());
