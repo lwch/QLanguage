@@ -63,5 +63,5 @@ ADD_DEPENDENCIES(QParserGenerator QCore)
 
 ADD_CUSTOM_COMMAND(TARGET QParserGenerator POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				   "${PROJECT_SOURCE_DIR}/../../GeneratorFiles/QLanguage.txt"
-				   $<TARGET_FILE_DIR:QParserGenerator>)
+				   "${CMAKE_CURRENT_SOURCE_DIR}/../../GeneratorFiles/QLanguage.txt"
+				   "${CMAKE_CURRENT_BINARY_DIR}/QLanguage.txt")

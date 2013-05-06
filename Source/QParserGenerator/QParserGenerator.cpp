@@ -35,11 +35,7 @@ int main(int argv, char* args[])
         char currentPath[MAX_PATH] = {0};
         getcwd(currentPath, MAX_PATH);
         path = currentPath;
-#ifdef WIN32
-        path += "/Debug/QLanguage.txt";
-#else
         path += "/QLanguage.txt";
-#endif
     }
     else path = args[1];
 #else
