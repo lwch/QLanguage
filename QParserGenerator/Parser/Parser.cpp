@@ -329,7 +329,7 @@ namespace QLanguage
     {
         for (size_t i = 0, m = vns.size(); i < m; ++i)
         {
-            if (vns[i].first == s) return i;
+            if (vns[i].first == s) return (long)i;
         }
         return -1;
     }
@@ -338,7 +338,7 @@ namespace QLanguage
     {
         for (size_t i = 0, m = vts.size(); i < m; ++i)
         {
-            if (vts[i].first == s) return i;
+            if (vts[i].first == s) return (long)i;
         }
         return -1;
     }

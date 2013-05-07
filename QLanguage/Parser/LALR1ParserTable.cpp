@@ -271,7 +271,7 @@ namespace QLanguage
         {
             char* o = NULL;
             size_t sz = 0;
-            if (vts[i].rule.parse(str.begin(), str.end(), o, sz) && sz == str.size()) return i;
+            if (vts[i].rule.parse(str.begin(), str.end(), o, sz) && sz == str.size()) return (long)i;
         }
         return -1;
     }

@@ -235,7 +235,7 @@ namespace QLanguage
     {
         for (size_t i = 0, m = items.size(); i < m; ++i)
         {
-            if (items[i]->data == pItem->data) return i;
+            if (items[i]->data == pItem->data) return (long)i;
         }
         return -1;
     }

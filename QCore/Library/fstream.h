@@ -156,7 +156,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
             if (mode & append)
             {
-                ulTell = size();
+                ulTell = (ulong)size();
                 seek(0, end);
             }
             else ulTell = 0;
@@ -220,7 +220,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             case end:
                 if ((size_t)offset > size()) throw error<const char*>("offset out of range", __FILE__, __LINE__);
                 where  = SEEK_END;
-                ulTell = size() - offset;
+                ulTell = (ulong)(size() - offset);
                 break;
             case current:
                 if (tell() + offset >= size() || tell() + offset < 0) throw error<const char*>("offset out of range", __FILE__, __LINE__);
@@ -260,7 +260,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             int readen = 0;
             while (true)
             {
-                int _read = ::READ(iFile, buffer, _size);
+                int _read = ::READ(iFile, buffer, (uint)_size);
                 if (_read > 0)
                 {
                     readen += _read;
@@ -289,7 +289,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             int readen = 0;
             while (true)
             {
-                int _read = ::READ(iFile, ptr, _size);
+                int _read = ::READ(iFile, ptr, (uint)_size);
                 if (_read > 0)
                 {
                     readen += _read;
@@ -318,7 +318,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             const typename fstream_buffer<T>::value_type* buffer = this->buffer_write.pointer();
             while (true)
             {
-                int written = ::WRITE(iFile, buffer, size);
+                int written = ::WRITE(iFile, buffer, (uint)size);
                 if (written > 0)
                 {
                     ulTell += written;
