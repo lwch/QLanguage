@@ -62,8 +62,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             FILE* fp = fopen(path.c_str(), "wb");
             if (fp == NULL) throw error<const char*>("error open file", __FILE__, __LINE__);
             _BITMAPFILEHEADER fileHeader;
-            _BITMAPINFOHEADER infoHeader(width, height, type, sizePreLine * height);
-            fileHeader.size = sizeof(_BITMAPFILEHEADER) + sizeof(_BITMAPINFOHEADER) + sizePreLine * height;
+            _BITMAPINFOHEADER infoHeader((long)width, (long)height, type, (ulong)(sizePreLine * height));
+            fileHeader.size = (ulong)(sizeof(_BITMAPFILEHEADER) + sizeof(_BITMAPINFOHEADER) + sizePreLine * height);
             fileHeader.offset = sizeof(_BITMAPFILEHEADER) + sizeof(_BITMAPINFOHEADER);
             size_t quadCount = 0;
             switch (type)

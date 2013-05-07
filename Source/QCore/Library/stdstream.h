@@ -241,7 +241,7 @@ typedef error<const char*> err;
 
             while (true)
             {
-                int written = ::WRITE(iFile, lpBuffer, size);
+                int written = ::WRITE(iFile, lpBuffer, (uint)size);
                 if (written > 0)
                 {
                     ulTell += written;
