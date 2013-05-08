@@ -67,32 +67,32 @@ namespace regex
         }
     }
 
-    void Rule::Variant::negate()
+    inline void Rule::Variant::negate()
     {
         type ^= TNot;
     }
 
-    const bool Rule::Variant::isNot()const
+    inline const bool Rule::Variant::isNot()const
     {
         return (type & TNot) == TNot;
     }
 
-    const bool Rule::Variant::isEpsilon()const
+    inline const bool Rule::Variant::isEpsilon()const
     {
         return (type & TEpsilon) == TEpsilon;
     }
 
-    const bool Rule::Variant::isFromTo()const
+    inline const bool Rule::Variant::isFromTo()const
     {
         return (type & TFromTo) == TFromTo;
     }
 
-    const bool Rule::Variant::isChar()const
+    inline const bool Rule::Variant::isChar()const
     {
         return (type & TChar) == TChar;
     }
 
-    const bool Rule::Variant::isString()const
+    inline const bool Rule::Variant::isString()const
     {
         return (type & TString) == TString;
     }
@@ -182,6 +182,46 @@ namespace regex
     Rule::EpsilonNFA_Edge::EpsilonNFA_Edge(const char* x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo) : value(x, false), pFrom(pFrom), pTo(pTo)
     {
     }
+
+    inline void Rule::EpsilonNFA_Edge::negate()
+    {
+        value.negate();
+    }
+
+    inline const bool Rule::EpsilonNFA_Edge::isNot()const
+    {
+        return value.isNot();
+    }
+
+    inline const bool Rule::EpsilonNFA_Edge::isEpsilon()const
+    {
+        return value.isEpsilon();
+    }
+
+    inline const bool Rule::EpsilonNFA_Edge::isFromTo()const
+    {
+        return value.isFromTo();
+    }
+
+    inline const bool Rule::EpsilonNFA_Edge::isChar()const
+    {
+        return value.isChar();
+    }
+
+    inline const bool Rule::EpsilonNFA_Edge::isString()const
+    {
+        return value.isString();
+    }
+
+    inline const Rule::Variant::Type Rule::EpsilonNFA_Edge::edgeType()const
+    {
+        return value.trueType();
+    }
+
+    inline const bool Rule::EpsilonNFA_Edge::operator==(const EpsilonNFA_Edge& x)const
+    {
+        return pFrom == x.pFrom && pTo == x.pTo && value == x.value;
+    }
     // Rule::DFA_State
     struct Rule::DFA_State
     {
@@ -210,6 +250,36 @@ namespace regex
     // Rule::DFA_Edge
     Rule::DFA_Edge::DFA_Edge(const Variant& x, DFA_State* pFrom, DFA_State* pTo) : value(x), pFrom(pFrom), pTo(pTo)
     {
+    }
+
+    inline const bool Rule::DFA_Edge::isNot()const
+    {
+        return value.isNot();
+    }
+
+    inline const bool Rule::DFA_Edge::isFromTo()const
+    {
+        return value.isFromTo();
+    }
+
+    inline const bool Rule::DFA_Edge::isChar()const
+    {
+        return value.isChar();
+    }
+
+    inline const bool Rule::DFA_Edge::isString()const
+    {
+        return value.isString();
+    }
+
+    inline const Rule::Variant::Type Rule::DFA_Edge::edgeType()const
+    {
+        return value.trueType();
+    }
+
+    inline const bool Rule::DFA_Edge::operator==(const DFA_Edge& x)const
+    {
+        return pFrom == x.pFrom && pTo == x.pTo && value == x.value;
     }
 
     const bool Rule::DFA_Edge::compare(const char*& first, const char* last)const
@@ -244,6 +314,24 @@ namespace regex
             return false;
         }
         return false;
+    }
+
+    inline const bool Rule::DFA_Edge::compare_fromto(char c)const
+    {
+#ifdef _DEBUG
+        if (!isFromTo()) throw error<const char*>("error calling function compare_fromto!", __FILE__, __LINE__);
+#endif
+        if (isNot()) return c < value.data.Char.value1 || c > value.data.Char.value2;
+        else return c >= value.data.Char.value1 && c <= value.data.Char.value2;
+    }
+
+    inline const bool Rule::DFA_Edge::compare_char(char c)const
+    {
+#ifdef _DEBUG
+        if (!isChar()) throw error<const char*>("error calling function compare_char!", __FILE__, __LINE__);
+#endif
+        if (isNot()) return c != value.data.Char.value1;
+        else return c == value.data.Char.value1;
     }
 
     const bool Rule::DFA_Edge::compare_string(const char* first, const char* last, size_t& n)const
@@ -423,6 +511,14 @@ namespace regex
         return a;
     }
 
+    Rule Rule::opt()
+    {
+        Rule a(pContext);
+        cloneEpsilonNFA(*this, a);
+        a.epsilonNFA_Edges[a.pEpsilonStart].push_back(EpsilonNFA_Edge(a.pEpsilonStart, a.pEpsilonEnd));
+        return a;
+    }
+
     Rule Rule::operator*()
     {
         Rule a(pContext);
@@ -457,6 +553,29 @@ namespace regex
             }
         }
         return a;
+    }
+
+    Rule& Rule::operator=(const Rule& x)
+    {
+        if (&x != this)
+        {
+            pContext = x.pContext;
+
+            pEpsilonStart    = x.pEpsilonStart;
+            pEpsilonEnd      = x.pEpsilonEnd;
+            epsilonNFA_Edges = x.epsilonNFA_Edges;
+
+            pDFAStart       = x.pDFAStart;
+            pDFAEnds        = x.pDFAEnds;
+            dfa_Edges_Count = x.dfa_Edges_Count;
+            dfa_Edges       = x.dfa_Edges;
+
+            idx = x.idx;
+#ifdef _DEBUG
+            showName = x.showName;
+#endif
+        }
+        return *this;
     }
 
     void Rule::buildDFA()
@@ -551,6 +670,16 @@ namespace regex
             }
         }
         return MatchResult(output, -1);
+    }
+
+    const bool Rule::operator==(const Rule& r)const
+    {
+        return idx == r.idx;
+    }
+
+    const bool Rule::operator!=(const Rule& r)const
+    {
+        return idx != r.idx;
     }
 
     bool Rule::output(ostream& stream)
