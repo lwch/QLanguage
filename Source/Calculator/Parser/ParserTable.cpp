@@ -22,7 +22,7 @@ namespace QLanguage
     bool ParserTable::loadFromData(const char* data, size_t size)
     {
         if (compareString(data, size, PARSER_TABLE)) data += strlen(PARSER_TABLE);
-        uchar version = *data;
+        //uchar version = *data;
         ++data;
         uint timeSize = *reinterpret_cast<const uint*>(data);
         data += sizeof(uint);
@@ -33,7 +33,7 @@ namespace QLanguage
         data += sizeof(size_t);
         size_t itemCount = *reinterpret_cast<const size_t*>(data);
         data += sizeof(size_t);
-        uint startIndex = *reinterpret_cast<const uint*>(data);
+        //uint startIndex = *reinterpret_cast<const uint*>(data);
         data += sizeof(uint);
 
         vts.reserve(vtCount);

@@ -65,13 +65,13 @@ namespace regex
             Variant(const Variant& x);
             ~Variant();
 
-            inline void negate();
-            inline const bool isNot()const;
-            inline const bool isEpsilon()const;
-            inline const bool isFromTo()const;
-            inline const bool isChar()const;
-            inline const bool isString()const;
-            inline const Type trueType()const;
+            void negate();
+            const bool isNot()const;
+            const bool isEpsilon()const;
+            const bool isFromTo()const;
+            const bool isChar()const;
+            const bool isString()const;
+            const Type trueType()const;
 
             const bool operator==(const Variant& x)const;
 
@@ -92,45 +92,15 @@ namespace regex
             EpsilonNFA_Edge(char x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo);
             EpsilonNFA_Edge(const char* x, EpsilonNFA_State* pFrom, EpsilonNFA_State* pTo);
 
-            inline void negate()
-            {
-                value.negate();
-            }
+            void negate();
+            const bool isNot()const;
+            const bool isEpsilon()const;
+            const bool isFromTo()const;
+            const bool isChar()const;
+            const bool isString()const;
+            const Variant::Type edgeType()const;
 
-            inline const bool isNot()const
-            {
-                return value.isNot();
-            }
-
-            inline const bool isEpsilon()const
-            {
-                return value.isEpsilon();
-            }
-
-            inline const bool isFromTo()const
-            {
-                return value.isFromTo();
-            }
-
-            inline const bool isChar()const
-            {
-                return value.isChar();
-            }
-
-            inline const bool isString()const
-            {
-                return value.isString();
-            }
-
-            inline const Variant::Type edgeType()const
-            {
-                return value.trueType();
-            }
-
-            inline const bool operator==(const EpsilonNFA_Edge& x)const
-            {
-                return pFrom == x.pFrom && pTo == x.pTo;
-            }
+            const bool operator==(const EpsilonNFA_Edge& x)const;
         };
 
         struct DFA_State;
@@ -144,59 +114,20 @@ namespace regex
 
             DFA_Edge(const Variant& x, DFA_State* pFrom, DFA_State* pTo);
 
-            inline const bool isNot()const
-            {
-                return value.isNot();
-            }
+            const bool isNot()const;
+            const bool isFromTo()const;
+            const bool isChar()const;
+            const bool isString()const;
+            const Variant::Type edgeType()const;
 
-            inline const bool isFromTo()const
-            {
-                return value.isFromTo();
-            }
-
-            inline const bool isChar()const
-            {
-                return value.isChar();
-            }
-
-            inline const bool isString()const
-            {
-                return value.isString();
-            }
-
-            inline const Variant::Type edgeType()const
-            {
-                return value.trueType();
-            }
-
-            inline const bool operator==(const DFA_Edge& x)const
-            {
-                return pFrom == x.pFrom && pTo == x.pTo && value == x.value;
-            }
+            const bool operator==(const DFA_Edge& x)const;
 
             const bool compare(const char*& first, const char* last)const;
-
-            inline const bool compare_fromto(char c)const
-            {
-#ifdef _DEBUG
-                if (!isFromTo()) throw error<const char*>("error calling function compare_fromto!", __FILE__, __LINE__);
-#endif
-                if (isNot()) return c < value.data.Char.value1 || c > value.data.Char.value2;
-                else return c >= value.data.Char.value1 && c <= value.data.Char.value2;
-            }
-
-            inline const bool compare_char(char c)const
-            {
-#ifdef _DEBUG
-                if (!isChar()) throw error<const char*>("error calling function compare_char!", __FILE__, __LINE__);
-#endif
-                if (isNot()) return c != value.data.Char.value1;
-                else return c == value.data.Char.value1;
-            }
-
+            const bool compare_fromto(char c)const;
+            const bool compare_char(char c)const;
             const bool compare_string(const char* first, const char* last, size_t& n)const;
 
-            inline bool output(ostream& stream);
+            bool output(ostream& stream);
         };
 
         struct EpsilonClosureInfo
@@ -244,55 +175,19 @@ public:
         Rule operator+(const Rule& x);
         Rule operator-(const Rule& x);
         Rule operator|(const Rule& x);
-
-        inline Rule opt()
-        {
-            Rule a(pContext);
-            cloneEpsilonNFA(*this, a);
-            a.epsilonNFA_Edges[a.pEpsilonStart].push_back(EpsilonNFA_Edge(a.pEpsilonStart, a.pEpsilonEnd));
-            return a;
-        }
-
+        Rule opt();
         Rule operator*();
         Rule operator+();
         Rule operator!();
 
-        inline Rule& operator=(const Rule& x)
-        {
-            if (&x != this)
-            {
-                pContext = x.pContext;
-
-                pEpsilonStart    = x.pEpsilonStart;
-                pEpsilonEnd      = x.pEpsilonEnd;
-                epsilonNFA_Edges = x.epsilonNFA_Edges;
-
-                pDFAStart       = x.pDFAStart;
-                pDFAEnds        = x.pDFAEnds;
-                dfa_Edges_Count = x.dfa_Edges_Count;
-                dfa_Edges       = x.dfa_Edges;
-
-                idx = x.idx;
-#ifdef _DEBUG
-                showName = x.showName;
-#endif
-            }
-            return *this;
-        }
+        Rule& operator=(const Rule& x);
 
         void buildDFA();
         bool parse(const char* first, const char* last, char*& output, size_t& size);
         MatchResult match(const char* first, const char* last, size_t pos = 0);
 
-        inline const bool operator==(const Rule& r)const
-        {
-            return idx == r.idx;
-        }
-
-        inline const bool operator!=(const Rule& r)const
-        {
-            return idx != r.idx;
-        }
+        const bool operator==(const Rule& r)const;
+        const bool operator!=(const Rule& r)const;
 
         bool output(ostream& stream);
         void printEpsilonNFA(ostream& stream)const;
