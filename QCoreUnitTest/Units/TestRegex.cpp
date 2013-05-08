@@ -67,33 +67,33 @@ TEST_CASE(TestRegex)
 
 #ifdef _DEBUG
     cout << "========== digit start ==========" << endl;
-    digit.printEpsilonNFA();
-    digit.printDFA();
+    digit.printEpsilonNFA(cout);
+    digit.printDFA(cout);
     cout << "=========== digit end ===========" << endl;
 
     cout << "========== hex start ==========" << endl;
-    hex.printEpsilonNFA();
-    hex.printDFA();
+    hex.printEpsilonNFA(cout);
+    hex.printDFA(cout);
     cout << "=========== hex end ===========" << endl;
 
     cout << "========== real start ==========" << endl;
-    real.printEpsilonNFA();
-    real.printDFA();
+    real.printEpsilonNFA(cout);
+    real.printDFA(cout);
     cout << "=========== real end ===========" << endl;
 
     cout << "========== letter start ==========" << endl;
-    letter.printEpsilonNFA();
-    letter.printDFA();
+    letter.printEpsilonNFA(cout);
+    letter.printDFA(cout);
     cout << "=========== letter end ===========" << endl;
 
     cout << "========== space start ==========" << endl;
-    space.printEpsilonNFA();
-    space.printDFA();
+    space.printEpsilonNFA(cout);
+    space.printDFA(cout);
     cout << "=========== space end ===========" << endl;
 
     cout << "========== enter start ==========" << endl;
-    enter.printEpsilonNFA();
-    enter.printDFA();
+    enter.printEpsilonNFA(cout);
+    enter.printDFA(cout);
     cout << "=========== enter end ===========" << endl;
 #endif
 
