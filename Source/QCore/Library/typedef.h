@@ -52,36 +52,120 @@ namespace QLanguage
         struct remove_unsigned
         {
             typedef T no_unsigned;
+            enum { has_unsigned = false };
         };
 
         template <>
         struct remove_unsigned<uchar>
         {
             typedef char no_unsigned;
+            enum { has_unsigned = true };
         };
 
         template <>
         struct remove_unsigned<ushort>
         {
             typedef short no_unsigned;
+            enum { has_unsigned = true };
         };
 
         template <>
         struct remove_unsigned<uint>
         {
             typedef int no_unsigned;
+            enum { has_unsigned = true };
         };
 
         template <>
         struct remove_unsigned<ulong>
         {
             typedef long no_unsigned;
+            enum { has_unsigned = true };
         };
 
         template <>
         struct remove_unsigned<ullong>
         {
             typedef llong no_unsigned;
+            enum { has_unsigned = true };
+        };
+
+        template <typename T>
+        struct type_pointer
+        {
+            typedef T* pointer;
+        };
+
+        template <typename T>
+        struct signed_type
+        {
+            typedef T type;
+        };
+
+        template <>
+        struct signed_type<uchar>
+        {
+            typedef char type;
+        };
+
+        template <>
+        struct signed_type<ushort>
+        {
+            typedef short type;
+        };
+
+        template <>
+        struct signed_type<uint>
+        {
+            typedef int type;
+        };
+
+        template <>
+        struct signed_type<ulong>
+        {
+            typedef long type;
+        };
+
+        template <>
+        struct signed_type<ullong>
+        {
+            typedef llong type;
+        };
+
+        template <typename T>
+        struct unsigned_type
+        {
+            typedef T type;
+        };
+
+        template <>
+        struct unsigned_type<char>
+        {
+            typedef uchar type;
+        };
+
+        template <>
+        struct unsigned_type<short>
+        {
+            typedef ushort type;
+        };
+
+        template <>
+        struct unsigned_type<int>
+        {
+            typedef uint type;
+        };
+
+        template <>
+        struct unsigned_type<long>
+        {
+            typedef ulong type;
+        };
+
+        template <>
+        struct unsigned_type<llong>
+        {
+            typedef ullong type;
         };
     }
 }

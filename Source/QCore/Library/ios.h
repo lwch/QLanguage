@@ -24,8 +24,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     {
         typedef basic_ios<T> self;
     public:
-        typedef T            value_type;
-        typedef size_t       size_type;
+        typedef T                               value_type;
+        typedef size_t                          size_type;
+        typedef typename unsigned_type<T>::type _unsigned;
+        typedef typename signed_type<T>::type   _signed;
 
         enum radix_type
         {

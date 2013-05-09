@@ -682,7 +682,7 @@ namespace regex
         return idx != r.idx;
     }
 
-    bool Rule::output(ostream& stream)
+    const bool Rule::output(ostream& stream)const
     {
         stream << dfa_Edges_Count;
         for (hashmap<DFA_State*, vector<DFA_Edge> >::const_iterator i = dfa_Edges.begin(), m = dfa_Edges.end(); i != m; ++i)

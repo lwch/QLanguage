@@ -118,6 +118,36 @@ namespace QLanguage
         };
 
         template <>
+        class char_traits<uchar> : public __char_traits_base<uchar>
+        {
+        public:
+            static int compare(const uchar* s1, const uchar* s2, size_t n) 
+            {
+                return memcmp(s1, s2, n);
+            }
+
+            static size_t length(const uchar* s)
+            {
+                return strlen(reinterpret_cast<const char*>(s));
+            }
+
+            static void assign(uchar& c1, const uchar& c2)
+            {
+                c1 = c2;
+            }
+
+            static uchar* assign(uchar* s, size_t n, char c)
+            {
+                memset(s, c, n); return s;
+            }
+
+            static uchar eof()
+            {
+                return 0;
+            }
+        };
+
+        template <>
         class char_traits<wchar_t> : public __char_traits_base<wchar_t>
         {
         };
