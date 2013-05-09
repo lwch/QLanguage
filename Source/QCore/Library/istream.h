@@ -35,7 +35,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator>>(ulong&)=0;
         virtual self& operator>>(llong&)=0;
         virtual self& operator>>(ullong&)=0;
-        virtual self& operator>>(T&)=0;
+        virtual self& operator>>(typename parent::_unsigned&)=0;
+        virtual self& operator>>(typename parent::_signed&)=0;
 
         template <typename T1>
         self& operator>>(T1&)

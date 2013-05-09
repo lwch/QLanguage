@@ -15,6 +15,8 @@
 #include "../../QCore/Library/typedef.h"
 #include "../../QCore/Library/vector.h"
 #include "../../QLanguage/Parser/Production.h"
+#include "../../QLanguage/Lexer/Lexer.h"
+#include "../../QLanguage/Parser/BasicParser.h"
 
 namespace QLanguage
 {
@@ -26,6 +28,7 @@ namespace QLanguage
         ParserTable();
 
         bool loadFromData(const char* data, size_t size);
+        bool parse(const list<Lexer::Token>& l, BasicParser* pParser);
     protected:
         const bool compareString(const char* data, size_t size, const char* compare)const;
     protected:
@@ -33,6 +36,8 @@ namespace QLanguage
         vector<pair<uchar, ushort> > table;
         vector<Production::Item>     vts;
         vector<Production::Item>     vns;
+        vector<Production>           rules;
+        uint                         iStart;
     };
 }
 

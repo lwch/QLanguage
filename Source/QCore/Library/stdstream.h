@@ -481,7 +481,21 @@ typedef error<const char*> err;
             return *this;
         }
 
-        virtual self& operator>>(T& c)
+        virtual self& operator>>(typename basic_ios<T>::_unsigned& c)
+        {
+            CHECK_IN_MODE;
+            const typename parent::value_type* p = this->read_pointer();
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            c = *p;
+            this->step_read_cache(1);
+            return *this;
+        }
+
+        virtual self& operator>>(typename basic_ios<T>::_signed& c)
         {
             CHECK_IN_MODE;
             const typename parent::value_type* p = this->read_pointer();

@@ -31,13 +31,16 @@ namespace QLanguage
         data += sizeof(size_t);
         size_t vnCount = *reinterpret_cast<const size_t*>(data);
         data += sizeof(size_t);
+        size_t rulesCount = *reinterpret_cast<const size_t*>(data);
+        data += sizeof(size_t);
         size_t itemCount = *reinterpret_cast<const size_t*>(data);
         data += sizeof(size_t);
-        //uint startIndex = *reinterpret_cast<const uint*>(data);
+        iStart = *reinterpret_cast<const uint*>(data);
         data += sizeof(uint);
 
         vts.reserve(vtCount);
-        vns.reserve(vnCount);
+        //vns.reserve(vnCount);
+        rules.reserve(rulesCount);
         table.reserve(itemCount * (vtCount + 1 + vnCount));
 
         for (size_t i = 0; i < itemCount * (vtCount + 1 + vnCount); ++i)
@@ -56,6 +59,13 @@ namespace QLanguage
             item.loadFromData(data);
             vts.push_back(item);
         }
+
+        for (size_t i = 0; i < rulesCount; ++i)
+        {
+            Production p;
+            p.loadFromData(data, &ruleContext);
+            rules.push_back(p);
+        }
         return true;
     }
 
@@ -68,5 +78,98 @@ namespace QLanguage
             if (data[i] != compare[i]) return false;
         }
         return true;
+    }
+
+    bool ParserTable::parse(const list<Lexer::Token>& l, BasicParser* pParser)
+    {
+//         stack<ushort> status;
+//         status.push(iStart);
+//         list<Lexer::Token> tokens = l;
+//         long idx = 0;
+//         while (!tokens.empty())
+//         {
+//             Lexer::Token& tk = tokens.front();
+//             idx = index_of_vt(tk.data, idx);
+//             if (idx == -1)
+//             {
+//                 throw error<const char*>("get action error", __FILE__, __LINE__);
+//                 return false;
+//             }
+//             const pair<uchar, ushort>& act = table[status.top() * (vts.size() + 1 + vns.size()) + idx];
+//             switch (act.first)
+//             {
+//             case 'S':
+//                 if (!pParser->shift(tk.data))
+//                 {
+//                     throw error<const char*>("shift error", __FILE__, __LINE__);
+//                     return false;
+//                 }
+//                 status.push(act.second);
+//                 tokens.pop_front();
+//                 idx = 0;
+//                 break;
+//             case 'R':
+//                 {
+//                     const LALR1Production& p = _rules[act.second];
+//                     if (!pParser->reduce(act.second))
+//                     {
+//                         throw error<const char*>("reduce error", __FILE__, __LINE__);
+//                         return false;
+//                     }
+//                     long j = getGoTo(status[p.right.size()], p.left);
+//                     if (j == -1)
+//                     {
+//                         throw error<const char*>("reduce error", __FILE__, __LINE__);
+//                         return false;
+//                     }
+//                     for (vector<Production::Item>::const_iterator k = p.right.begin(), o = p.right.end(); k != o; ++k)
+//                     {
+//                         status.pop();
+//                     }
+//                     status.push((ushort)j);
+//                     idx = 0;
+//                 }
+//                 break;
+//             case 'A':
+//                 return true;
+//             default:
+//                 ++idx;
+//                 break;
+//             }
+//         }
+//         while (!status.empty())
+//         {
+//             const pair<uchar, ushort>& act = table[status.top() * (vts.size() + 1 + vns.size()) + vts.size()];
+//             switch (act.first)
+//             {
+//             case 'R':
+//                 {
+//                     const LALR1Production& p = _rules[act.second];
+//                     if (!pParser->reduce(act.second))
+//                     {
+//                         throw error<const char*>("reduce error", __FILE__, __LINE__);
+//                         return false;
+//                     }
+//                     long j = getGoTo(status[p.right.size()], p.left);
+//                     if (j == -1)
+//                     {
+//                         throw error<const char*>("reduce error", __FILE__, __LINE__);
+//                         return false;
+//                     }
+//                     for (vector<Production::Item>::const_iterator k = p.right.begin(), o = p.right.end(); k != o; ++k)
+//                     {
+//                         status.pop();
+//                     }
+//                     status.push((ushort)j);
+//                 }
+//                 break;
+//             case 'A':
+//                 return true;
+//             default:
+//                 throw error<const char*>("some error with syntax", __FILE__, __LINE__);
+//                 return false;
+//             }
+//         }
+        return false;
     }
 }

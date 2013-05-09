@@ -36,6 +36,7 @@ int main(int argv, char* args[])
         getcwd(currentPath, MAX_PATH);
         path = currentPath;
         path += "/QLanguage.txt";
+        //path = "C:\\QLanguage\\Source\\GeneratorFiles\\Calculator.txt";
     }
     else path = args[1];
 #else
