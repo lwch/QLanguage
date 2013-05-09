@@ -165,14 +165,18 @@ namespace QLanguage
         time(&t);
         uchar version = 1;
         fstream stream(path, fstream::out | fstream::binary);
-        stream << PARSER_TABLE << version << sizeof(t) << t << vts.size() << vns.size() << items.size() << this->pStart->idx;
+        stream << PARSER_TABLE << version << sizeof(t) << t << vts.size() << vns.size() << _rules.size() << items.size() << this->pStart->idx;
         for (vector<pair<uchar, ushort> >::const_iterator i = table.begin(), m = table.end(); i != m; ++i)
         {
             stream << i->first << i->second;
         }
         for (vector<Production::Item>::const_iterator i = vts.begin(), m = vts.end(); i != m; ++i)
         {
-            i->rule.output(stream);
+            if (!i->output(stream)) return;
+        }
+        for (vector<LALR1Production>::const_iterator i = _rules.begin(), m = _rules.end(); i != m; ++i)
+        {
+            if (!i->output(stream)) return;
         }
     }
 

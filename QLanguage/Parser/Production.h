@@ -103,12 +103,25 @@ namespace QLanguage
 
             bool loadFromData(const char*& data)
             {
-                return rule.loadFromData(data);
+                index = *reinterpret_cast<const uint*>(data);
+                data += sizeof(uint);
+                type = (Type)*data;
+                ++data;
+                return type == TerminalSymbol ? rule.loadFromData(data) : true;
             }
 
             bool loadFromStream(istream& stream)
             {
-                return rule.loadFromStream(stream);
+                stream >> index;
+                stream >> (uchar&)type;
+                return type == TerminalSymbol ? rule.loadFromStream(stream) : true;
+            }
+
+            inline const bool output(ostream& stream)const
+            {
+                stream << index;
+                stream << (uchar)type;
+                return type == TerminalSymbol ? rule.output(stream) : true;
             }
         };
     public:
@@ -147,6 +160,51 @@ namespace QLanguage
                 }
             }
             stream << endl;
+        }
+
+        bool loadFromData(const char*& data, Rule::Context* pContext)
+        {
+            index = *reinterpret_cast<const uint*>(data);
+            data += sizeof(uint);
+            if (!left.loadFromData(data)) return false;
+            size_t size = *reinterpret_cast<const size_t*>(data);
+            data += sizeof(size_t);
+            right.reserve(size);
+            for (size_t i = 0; i < size; ++i)
+            {
+                Production::Item item(pContext);
+                if (!item.loadFromData(data)) return false;
+                right.push_back(item);
+            }
+            return true;
+        }
+
+        bool loadFromStream(istream& stream, Rule::Context* pContext)
+        {
+            stream >> index;
+            if (!left.loadFromStream(stream)) return false;
+            size_t size;
+            stream >> size;
+            right.reserve(size);
+            for (size_t i = 0; i < size; ++i)
+            {
+                Production::Item item(pContext);
+                if (!item.loadFromStream(stream)) return false;
+                right.push_back(item);
+            }
+            return true;
+        }
+
+        const bool output(Library::ostream& stream)const
+        {
+            stream << index;
+            if (!left.output(stream)) return false;
+            stream << right.size();
+            for (vector<Production::Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
+            {
+                if (!i->output(stream)) return false;
+            }
+            return true;
         }
     protected:
         static uint inc()
