@@ -170,6 +170,10 @@ namespace QLanguage
         {
             stream << i->first << i->second;
         }
+        for (vector<Production::Item>::const_iterator i = vts.begin(), m = vts.end(); i != m; ++i)
+        {
+            i->rule.output(stream);
+        }
     }
 
     bool LALR1::parse(const list<Lexer::Token>& l, BasicParser* pParser)

@@ -189,7 +189,7 @@ public:
         const bool operator==(const Rule& r)const;
         const bool operator!=(const Rule& r)const;
 
-        bool output(ostream& stream);
+        const bool output(ostream& stream)const;
         void printEpsilonNFA(ostream& stream)const;
         void printDFA(ostream& stream)const;
         void printShowName(ostream& stream)const;

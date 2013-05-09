@@ -629,27 +629,51 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             return *this;
         }
 
-        virtual self& operator<<(char c)
+        virtual self& operator<<(typename basic_ios<T>::_unsigned c)
         {
             CHECK_OUT_MODE;
 
-            this->write(&c, sizeof(char));
+            this->write(&c, sizeof(typename basic_ios<T>::_unsigned));
             return *this;
         }
 
-        virtual self& operator<<(uchar c)
+        virtual self& operator<<(typename basic_ios<T>::_signed c)
         {
             CHECK_OUT_MODE;
 
-            this->write(&c, sizeof(uchar));
+            this->write(&c, sizeof(typename basic_ios<T>::_signed));
             return *this;
         }
 
-        virtual self& operator<<(const T* p)
+        virtual self& operator<<(typename basic_ios<T>::_unsigned* p)
         {
             CHECK_OUT_MODE;
 
-            this->write(p, fstream_buffer<T>::char_traits::length(p));
+            this->write(p, char_traits<typename basic_ios<T>::_unsigned>::length(p));
+            return *this;
+        }
+
+        virtual self& operator<<(const typename basic_ios<T>::_unsigned* p)
+        {
+            CHECK_OUT_MODE;
+
+            this->write(p, char_traits<typename basic_ios<T>::_unsigned>::length(p));
+            return *this;
+        }
+
+        virtual self& operator<<(typename basic_ios<T>::_signed* p)
+        {
+            CHECK_OUT_MODE;
+
+            this->write(p, char_traits<typename basic_ios<T>::_signed>::length(p));
+            return *this;
+        }
+
+        virtual self& operator<<(const typename basic_ios<T>::_signed* p)
+        {
+            CHECK_OUT_MODE;
+
+            this->write(p, char_traits<typename basic_ios<T>::_signed>::length(p));
             return *this;
         }
 

@@ -35,9 +35,12 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator<<(ulong)=0;
         virtual self& operator<<(llong)=0;
         virtual self& operator<<(ullong)=0;
-        virtual self& operator<<(char)=0;
-        virtual self& operator<<(uchar)=0;
-        virtual self& operator<<(const T*)=0;
+        virtual self& operator<<(typename basic_ios<T>::_unsigned)=0;
+        virtual self& operator<<(typename basic_ios<T>::_signed)=0;
+        virtual self& operator<<(typename basic_ios<T>::_unsigned*)=0;
+        virtual self& operator<<(const typename basic_ios<T>::_unsigned*)=0;
+        virtual self& operator<<(typename basic_ios<T>::_signed*)=0;
+        virtual self& operator<<(const typename basic_ios<T>::_signed*)=0;
         virtual self& operator<<(const string&)=0;
 
         template <typename T1>
