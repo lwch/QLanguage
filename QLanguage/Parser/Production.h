@@ -41,6 +41,7 @@ namespace QLanguage
 #endif
 
             Item() : type(NoTerminalSymbol), index(inc()) {}
+            Item(Rule::Context* pContext) : type(TerminalSymbol), rule(pContext), index(0) {}
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
             Item(const string& name) : type(NoTerminalSymbol), index(inc()), name(name) {}
 #endif
@@ -98,6 +99,16 @@ namespace QLanguage
             {
                 static uint i = 0;
                 return i++;
+            }
+
+            bool loadFromData(const char*& data)
+            {
+                return rule.loadFromData(data);
+            }
+
+            bool loadFromStream(istream& stream)
+            {
+                return rule.loadFromStream(stream);
             }
         };
     public:

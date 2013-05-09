@@ -17,6 +17,8 @@ namespace regex
     // Rule::Variant
     Rule::Variant::Variant() : type(TEpsilon)
     {
+        data.String.value = NULL;
+        data.String.size  = 0;
     }
 
     Rule::Variant::Variant(char value, bool bNot)
@@ -129,18 +131,109 @@ namespace regex
         }
     }
 
+    Rule::Variant& Rule::Variant::operator=(const Variant& x)
+    {
+        if (&x != this)
+        {
+            if (x.isString() && isString())
+            {
+                destruct(data.String.value, data.String.value + data.String.size + 1);
+                allocator<char>::deallocate(data.String.value, data.String.size + 1);
+            }
+            type = x.type;
+            switch (trueType())
+            {
+            case TFromTo:
+            case TChar:
+                memcpy(&data, &x.data, sizeof(data));
+                break;
+            case TString:
+                data.String.size  = x.data.String.size;
+                data.String.value = allocator<char>::allocate(data.String.size + 1);
+                strcpy(data.String.value, x.data.String.value);
+                data.String.value[data.String.size] = 0;
+                break;
+            default:
+                break;
+            }
+        }
+        return *this;
+    }
+
     bool Rule::Variant::output(ostream& stream)
     {
+        stream << type;
         switch (trueType())
         {
         case TFromTo:
-            stream << (uchar)TFromTo << data.Char.value1 << data.Char.value2;
+            stream << data.Char.value1 << data.Char.value2;
             return true;
         case TChar:
-            stream << (uchar)TChar << data.Char.value1;
+            stream << data.Char.value1;
             return true;
         case TString:
-            stream << (uchar)TString << data.String.size << data.String.value;
+            stream << data.String.size << data.String.value;
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    bool Rule::Variant::loadFromData(const char*& buffer)
+    {
+        if (isString() && data.String.value)
+        {
+            destruct(data.String.value, data.String.value + data.String.size + 1);
+            allocator<char>::deallocate(data.String.value, data.String.size + 1);
+        }
+        type = *buffer;
+        ++buffer;
+        switch (trueType())
+        {
+        case TFromTo:
+            data.Char.value1 = *buffer;
+            ++buffer;
+            data.Char.value2 = *buffer;
+            ++buffer;
+            return true;
+        case TChar:
+            data.Char.value1 = *buffer;
+            ++buffer;
+            return true;
+        case TString:
+            data.String.size = *reinterpret_cast<const size_t*>(buffer);
+            buffer += sizeof(size_t);
+            data.String.value = allocator<char>::allocate(data.String.size + 1);
+            if (!memcpy(data.String.value, buffer, data.String.size)) return false;
+            buffer += data.String.size;
+            data.String.value[data.String.size] = 0;
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    bool Rule::Variant::loadFromStream(istream& stream)
+    {
+        if (isString() && data.String.value)
+        {
+            destruct(data.String.value, data.String.value + data.String.size + 1);
+            allocator<char>::deallocate(data.String.value, data.String.size + 1);
+        }
+        stream >> type;
+        switch (trueType())
+        {
+        case TFromTo:
+            stream >> data.Char.value1 >> data.Char.value2;
+            return true;
+        case TChar:
+            stream >> data.Char.value1;
+            return true;
+        case TString:
+            stream >> data.String.size;
+            data.String.value = allocator<char>::allocate(data.String.size + 1);
+            if (!stream.readToBuffer(data.String.value, data.String.size)) return false;
+            data.String.value[data.String.size] = 0;
             return true;
         default:
             return false;
@@ -226,9 +319,13 @@ namespace regex
     struct Rule::DFA_State
     {
         vector<EpsilonNFA_State*> content;
-        bool                   bFlag;
-        bool                   bEnd;
-        uint                   idx;
+        bool                      bFlag;
+        bool                      bEnd;
+        uint                      idx;
+
+        DFA_State() : bFlag(false), bEnd(false), idx(inc())
+        {
+        }
 
         DFA_State(const vector<EpsilonNFA_State*>& x) : content(x), bFlag(false), bEnd(false), idx(inc())
         {
@@ -248,6 +345,10 @@ namespace regex
         }
     };
     // Rule::DFA_Edge
+    Rule::DFA_Edge::DFA_Edge() : pFrom(NULL), pTo(NULL)
+    {
+    }
+
     Rule::DFA_Edge::DFA_Edge(const Variant& x, DFA_State* pFrom, DFA_State* pTo) : value(x), pFrom(pFrom), pTo(pTo)
     {
     }
@@ -697,6 +798,101 @@ namespace regex
         for (set<DFA_State*>::const_iterator i = pDFAEnds.begin(), m = pDFAEnds.end(); i != m; ++i)
         {
             stream << (*i)->idx;
+        }
+        return true;
+    }
+
+    bool Rule::loadFromData(const char*& data)
+    {
+        dfa_Edges_Count = *reinterpret_cast<const size_t*>(data);
+        data += sizeof(size_t);
+        hashmap<uint, DFA_State*> m;
+        DFA_Edge edge;
+        for (size_t i = 0; i < dfa_Edges_Count; ++i)
+        {
+            uint iFrom, iTo;
+            iFrom = *reinterpret_cast<const uint*>(data);
+            data += sizeof(uint);
+            iTo   = *reinterpret_cast<const uint*>(data);
+            data += sizeof(uint);
+            DFA_State* pFrom = m[iFrom];
+            if (pFrom == NULL)
+            {
+                pFrom = m[iFrom] = DFA_State_Alloc::allocate();
+                construct(pFrom);
+                pContext->dfa_States.insert(pFrom);
+                pFrom->idx = iFrom;
+            }
+            DFA_State* pTo = m[iTo];
+            if (pTo == NULL)
+            {
+                pTo = m[iTo] = DFA_State_Alloc::allocate();
+                construct(pTo);
+                pContext->dfa_States.insert(pTo);
+                pTo->idx = iTo;
+            }
+            edge.pFrom = pFrom;
+            edge.pTo   = pTo;
+            edge.value.loadFromData(data);
+            dfa_Edges[pFrom].push_back(edge);
+        }
+        uint idx = *reinterpret_cast<const uint*>(data);
+        data += sizeof(uint);
+        if (m[idx] == NULL) return false;
+        pDFAStart = m[idx];
+        size_t size = *reinterpret_cast<const size_t*>(data);
+        data += sizeof(size_t);
+        for (size_t i = 0; i < size; ++i)
+        {
+            idx   = *reinterpret_cast<const uint*>(data);
+            data += sizeof(uint);
+            if (m[idx] == NULL) return false;
+            m[idx]->bEnd = true;
+            pDFAEnds.insert(m[idx]);
+        }
+        return true;
+    }
+
+    bool Rule::loadFromStream(istream& stream)
+    {
+        stream >> dfa_Edges_Count;
+        hashmap<uint, DFA_State*> m;
+        DFA_Edge edge;
+        for (size_t i = 0; i < dfa_Edges_Count; ++i)
+        {
+            int iFrom, iTo;
+            stream >> iFrom >> iTo;
+            DFA_State *pFrom = m[iFrom], *pTo = m[iTo];
+            if (pFrom == NULL)
+            {
+                pFrom = m[iFrom] = DFA_State_Alloc::allocate();
+                construct(pFrom);
+                pContext->dfa_States.insert(pFrom);
+                pFrom->idx = iFrom;
+            }
+            if (pTo == NULL)
+            {
+                pTo = m[iTo] = DFA_State_Alloc::allocate();
+                construct(pTo);
+                pContext->dfa_States.insert(pTo);
+                pTo->idx = iTo;
+            }
+            edge.pFrom = pFrom;
+            edge.pTo   = pTo;
+            edge.value.loadFromStream(stream);
+        }
+        uint idx;
+        stream >> idx;
+        if (m[idx] == NULL) return false;
+        pDFAStart = m[idx];
+        size_t size;
+        stream >> size;
+        for (size_t i = 0; i < size; ++i)
+        {
+            stream >> idx;
+            if (m[idx] == NULL) return false;
+            m[idx]->bEnd = true;
+            pDFAEnds.insert(m[idx]);
         }
         return true;
     }
