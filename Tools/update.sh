@@ -12,10 +12,22 @@ UNITTEST_EXEC=QCoreUnitTest
 GITHUB_PATH=~/QLanguage_GitHub/
 GITHUB_URL=git@github.com:lwch/QLanguage.git
 
+# GITHUB
+# first run git "svn clone" and "git remote add"
+#git svn clone $SOURCE_PATH $GITHUB_PATH
+cd $GITHUB_PATH
+#git remote add origin $GITHUB_URL
+git svn rebase > $CURRENT_PATH/git_push.txt
+git push -f >> $CURRENT_PATH/git_push.txt
+mail -s "GitHub push on time $DATE" $MAILADDR < $CURRENT_PATH/git_push.txt
+
 if [ -d "$EXPORT_PATH" ]; then
   rm -fr $EXPORT_PATH
 fi
-svn export $SOURCE_PATH $EXPORT_PATH
+# 有时候会少文件，应此废除
+#svn export $SOURCE_PATH $EXPORT_PATH
+mkdir $EXPORT_PATH
+cp -R $GITHUB_PATH/* $EXPORT_PATH
 cd $CMAKE_PATH && cmake -G "Unix Makefiles" > $CURRENT_PATH/cmake.txt $CMAKE_ARGS
 cd $CMAKE_PATH && make 2> $CURRENT_PATH/make.txt
 $UNITTEST_PATH/$UNITTEST_EXEC < $CURRENT_PATH/input.txt > $CURRENT_PATH/unittest.txt
@@ -23,11 +35,4 @@ mail -s "QLanguageUpdate on time $DATE(CMake Report)" $MAILADDR < $CURRENT_PATH/
 mail -s "QLanguageUpdate on time $DATE(Make Report)" $MAILADDR < $CURRENT_PATH/make.txt
 mail -s "QLanguageUpdate on time $DATE(UnitTest Report)" $MAILADDR < $CURRENT_PATH/unittest.txt
 
-# GITHUB
-# first run git "svn clone" and "git remote add"
-#git svn clone $SOURCE_PATH $GITHUB_PATH
-cd $GITHUB_PATH
-#git remote add origin $GITHUB_URL
-git svn rebase
-git push -f > $CURRENT_PATH/git_push.txt
-mail -s "GitHub push on time $DATE" $MAILADDR < $CURRENT_PATH/git_push.txt
+
