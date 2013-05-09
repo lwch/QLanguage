@@ -29,6 +29,7 @@ namespace QLanguage
     protected:
         const bool compareString(const char* data, size_t size, const char* compare)const;
     protected:
+        Rule::Context                ruleContext;
         vector<pair<uchar, ushort> > table;
         vector<Production::Item>     vts;
         vector<Production::Item>     vns;

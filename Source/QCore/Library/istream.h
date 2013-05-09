@@ -43,6 +43,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
             throw error<const char*>("doesn't support", __FILE__, __LINE__);
             return *this;
         }
+
+        virtual size_type readToBuffer(void* buffer, size_type size)=0;
     protected:
         template <typename Number>
         bool getInteger(const value_type* p, size_type size, Number& n, size_type& step_size)

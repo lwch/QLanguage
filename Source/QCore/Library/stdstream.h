@@ -230,6 +230,35 @@ typedef error<const char*> err;
             return buffer_read.size();
         }
 
+        virtual size_type readToBuffer(void* buffer, size_type sz)
+        {
+            CHECK_FILE_OPEN;
+            CHECK_IN_MODE;
+
+            char* lpBuffer = reinterpret_cast<char*>(buffer);
+            size_type _size  = min(sz, size());
+            int readen = 0;
+            while (true)
+            {
+                int _read = ::READ(iFile, lpBuffer, (uint)_size);
+                if (_read > 0)
+                {
+                    readen += _read;
+                    ulTell += _read;
+                    if ((size_type)readen == _size) return _size;
+                    else
+                    {
+                        lpBuffer += _read;
+                        _size    -= _read;
+                    }
+                }
+                else
+                {
+                    throw err("can't read file", __FILE__, __LINE__);
+                }
+            }
+        }
+
         virtual bool write(const void* buffer, size_type size)
         {
             CHECK_FILE_OPEN;

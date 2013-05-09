@@ -49,6 +49,13 @@ namespace QLanguage
             data += sizeof(ushort);
             table.push_back(p);
         }
+
+        for (size_t i = 0; i < vtCount; ++i)
+        {
+            Production::Item item(&ruleContext);
+            item.loadFromData(data);
+            vts.push_back(item);
+        }
         return true;
     }
 

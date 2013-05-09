@@ -74,8 +74,11 @@ namespace regex
             const Type trueType()const;
 
             const bool operator==(const Variant& x)const;
+            Variant& operator=(const Variant& x);
 
             bool output(ostream& stream);
+            bool loadFromData(const char*& buffer);
+            bool loadFromStream(istream& stream);
         };
 
         struct EpsilonNFA_State;
@@ -112,6 +115,7 @@ namespace regex
             DFA_State* pFrom;
             DFA_State* pTo;
 
+            DFA_Edge();
             DFA_Edge(const Variant& x, DFA_State* pFrom, DFA_State* pTo);
 
             const bool isNot()const;
@@ -190,6 +194,8 @@ public:
         const bool operator!=(const Rule& r)const;
 
         const bool output(ostream& stream)const;
+        bool loadFromData(const char*& data);
+        bool loadFromStream(istream& stream);
         void printEpsilonNFA(ostream& stream)const;
         void printDFA(ostream& stream)const;
         void printShowName(ostream& stream)const;
