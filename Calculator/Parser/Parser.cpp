@@ -40,31 +40,35 @@ namespace QLanguage
             return reduceReal();
         case 2: // value_type -> "{Digit}"
             return reduceDigit();
-        case 3: // exp -> exp "+" term
-            return reduceAdd();
-        case 4: // exp -> exp "-" term
-            return reduceSub();
+        case 3: // exp -> "+" value_type
+        case 4: // exp -> "-" value_type
+            return reduceSymValue();
         case 5:
             break;
-        case 6: // term -> term "*" factor
-            return reduceMul();
-        case 7: // term -> term "/" factor
-            return reduceDiv();
+        case 6: // exp -> exp "+" term
+            return reduceAdd();
+        case 7: // exp -> exp "-" term
+            return reduceSub();
         case 8:
             break;
-        case 9: // factor -> "(" exp ")"
-            return reduceBrackets();
-        case 10: // factor -> "sin" "(" exp ")"
-            return reduceSin();
-        case 11: // factor -> "cos" "(" exp ")"
-            return reduceCos();
-        case 12: // factor -> "log" "(" exp ")"
-            return reduceLog();
-        case 13: // exp -> "+" value_type
-        case 14: // exp -> "-" value_type
-            return reduceSymValue();
-        case 15: // exp -> value_type
+        case 9: // term -> term "*" factor
+            return reduceMul();
+        case 10: // term -> term "/" factor
+            return reduceDiv();
+        case 11:
             break;
+        case 12: // factor -> "sin" bracket
+            return reduceSin();
+        case 13: // factor -> "cos" bracket
+            return reduceCos();
+        case 14: // factor -> "log" bracket
+            return reduceLog();
+        case 15:
+            break;
+        case 16:
+            break;
+        case 17: // bracket -> "(" sym ")"
+            return reduceBrackets();
         default:
             return false;
         }
@@ -95,6 +99,7 @@ namespace QLanguage
         double op1 = numbers.top();
         numbers.pop();
         numbers.push(op1 + op2);
+        shifts.pop_back();
         return true;
     }
 
@@ -106,6 +111,7 @@ namespace QLanguage
         double op1 = numbers.top();
         numbers.pop();
         numbers.push(op1 - op2);
+        shifts.pop_back();
         return true;
     }
 
@@ -117,6 +123,7 @@ namespace QLanguage
         double op1 = numbers.top();
         numbers.pop();
         numbers.push(op1 * op2);
+        shifts.pop_back();
         return true;
     }
 
@@ -128,6 +135,7 @@ namespace QLanguage
         double op1 = numbers.top();
         numbers.pop();
         numbers.push(op1 / op2);
+        shifts.pop_back();
         return true;
     }
 
@@ -139,11 +147,9 @@ namespace QLanguage
         return true;
     }
 
-    // factor -> "sin" "(" exp ")"
+    // factor -> "sin" bracket
     bool Parser::reduceSin()
     {
-        shifts.pop_back();
-        shifts.pop_back();
         shifts.pop_back();
         double d = sin(numbers.top());
         numbers.pop();
@@ -151,11 +157,9 @@ namespace QLanguage
         return true;
     }
 
-    // factor -> "cos" "(" exp ")"
+    // factor -> "cos" bracket
     bool Parser::reduceCos()
     {
-        shifts.pop_back();
-        shifts.pop_back();
         shifts.pop_back();
         double d = cos(numbers.top());
         numbers.pop();
@@ -163,11 +167,9 @@ namespace QLanguage
         return true;
     }
 
-    // factor -> "log" "(" exp ")"
+    // factor -> "log" bracket
     bool Parser::reduceLog()
     {
-        shifts.pop_back();
-        shifts.pop_back();
         shifts.pop_back();
         double d = log(numbers.top());
         numbers.pop();
@@ -175,8 +177,8 @@ namespace QLanguage
         return true;
     }
 
-    // exp -> "+" value_type
-    // exp -> "-" value_type
+    // sym -> "+" exp
+    // sym -> "-" exp
     bool Parser::reduceSymValue()
     {
         if (shifts.back() == "-") numbers.top() = -numbers.top();
