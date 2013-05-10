@@ -31,12 +31,16 @@ namespace QLanguage
         bool parse(const list<Lexer::Token>& l, BasicParser* pParser);
     protected:
         const bool compareString(const char* data, size_t size, const char* compare)const;
+        long index_of_vt(const string& str, long idx = 0);
+        long getGoTo(ushort s, const Production::Item& i);
+    public:
+        vector<Production>           rules;
     protected:
         Rule::Context                ruleContext;
         vector<pair<uchar, ushort> > table;
         vector<Production::Item>     vts;
         vector<Production::Item>     vns;
-        vector<Production>           rules;
+        vector<uint>                 items;
         uint                         iStart;
     };
 }

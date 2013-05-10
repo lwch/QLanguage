@@ -129,7 +129,7 @@ namespace QLanguage
         Production(const Item& left) : left(left), index(inc()) {}
         Production(const Item& left, const Item& item) : left(left), index(inc()) { right.push_back(item); }
         Production(const Item& left, const vector<Item>& right) : left(left), right(right), index(inc()) {}
-        Production(const Production& p) : left(p.left), right(p.right), index(inc()) {}
+        Production(const Production& p) : left(p.left), right(p.right), index(p.index) {}
 
         inline const bool operator<(const Production& p)const
         {
@@ -215,7 +215,6 @@ namespace QLanguage
     public:
         Item left;
         vector<Item> right;
-    protected:
         uint index;
     };
 }

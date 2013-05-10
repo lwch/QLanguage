@@ -509,6 +509,20 @@ typedef error<const char*> err;
             return *this;
         }
 
+        virtual self& operator>>(string& s)
+        {
+            CHECK_IN_MODE;
+            const typename parent::value_type* p = this->read_pointer();
+            if (this->read_cache_size() < stdstream_buffer<T>::half_align)
+            {
+                this->read();
+                p = this->read_pointer();
+            }
+            s = string(p, this->read_cache_size());
+            this->step_read_cache(s.size());
+            return *this;
+        }
+
         template <typename T1>
         self& operator>>(T1& c)
         {
@@ -595,6 +609,24 @@ typedef error<const char*> err;
             CHECK_OUT_MODE;
 
             string str = this->convert(ull);
+            this->write(str.c_str(), str.size());
+            return *this;
+        }
+
+        virtual self& operator<<(float f)
+        {
+            CHECK_OUT_MODE;
+
+            string str = this->convert(f);
+            this->write(str.c_str(), str.size());
+            return *this;
+        }
+
+        virtual self& operator<<(double d)
+        {
+            CHECK_OUT_MODE;
+
+            string str = this->convert(d);
             this->write(str.c_str(), str.size());
             return *this;
         }

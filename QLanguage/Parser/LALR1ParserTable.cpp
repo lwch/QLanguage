@@ -174,9 +174,17 @@ namespace QLanguage
         {
             if (!i->output(stream)) return;
         }
+        for (vector<Production::Item>::const_iterator i = vns.begin(), m = vns.end(); i != m; ++i)
+        {
+            if (!i->output(stream)) return;
+        }
         for (vector<LALR1Production>::const_iterator i = _rules.begin(), m = _rules.end(); i != m; ++i)
         {
             if (!i->output(stream)) return;
+        }
+        for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
+        {
+            stream << (*i)->idx;
         }
     }
 
