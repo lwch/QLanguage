@@ -1,21 +1,26 @@
 %token "+" "-" "*" "/" "(" ")" "sin" "cos" "log";
 
-%start factor;
+%start exp;
 
-factor -> "{Digit}"
-       |  "+" factor
-       |  "-" factor
-       |  "(" exp ")"
-       |  "sin" "(" exp ")"
-       |  "cos" "(" exp ")"
-       |  "log" "(" exp ")"
-       ;
+value_type -> "{Real}"
+           |  "{Digit}"
+		   ;
+
+exp -> exp "+" term
+    |  exp "-" term
+	|  term
+    ;
 
 term -> term "*" factor
      |  term "/" factor
      |  factor
      ;
 
-exp -> exp "+" term
-    |  exp "-" term
-    ;
+factor -> "(" exp ")"
+       |  "sin" "(" exp ")"
+       |  "cos" "(" exp ")"
+       |  "log" "(" exp ")"
+	   |  "+" value_type
+	   |  "-" value_type
+	   |  value_type
+	   ;

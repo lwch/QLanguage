@@ -35,6 +35,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual self& operator<<(ulong)=0;
         virtual self& operator<<(llong)=0;
         virtual self& operator<<(ullong)=0;
+        virtual self& operator<<(float)=0;
+        virtual self& operator<<(double)=0;
         virtual self& operator<<(typename basic_ios<T>::_unsigned)=0;
         virtual self& operator<<(typename basic_ios<T>::_signed)=0;
         virtual self& operator<<(typename basic_ios<T>::_unsigned*)=0;
@@ -57,6 +59,8 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         inline string convert(ulong ul)   { return string::format("%u", ul);  }
         inline string convert(llong ll)   { return string::format("%ld", ll); }
         inline string convert(ullong ull) { return string::format("%u", ull); }
+        inline string convert(float f)    { return string::format("%f", f);   }
+        inline string convert(double d)   { return string::format("%f", d);   }
     };
 
     typedef basic_ostream<char> ostream;

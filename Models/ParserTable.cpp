@@ -1,14 +1,3 @@
-/********************************************************************
-	created:	2013/05/06
-	created:	6:5:2013   22:58
-	filename: 	E:\QLanguage\Source\Source\Calculator\Parser\ParserTable.cpp
-	file path:	E:\QLanguage\Source\Source\Calculator\Parser
-	file base:	ParserTable
-	file ext:	cpp
-	author:		lwch
-	
-	purpose:	
-*********************************************************************/
 #include "ParserTable.h"
 
 #define PARSER_TABLE "QPARSERGENERATOR PARSERTABLE"
@@ -178,7 +167,7 @@ namespace QLanguage
                 }
                 break;
             case 'A':
-                return pParser->reduce(0);
+                return true;
             default:
                 throw error<const char*>("some error with syntax", __FILE__, __LINE__);
                 return false;

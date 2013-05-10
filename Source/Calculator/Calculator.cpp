@@ -11,7 +11,11 @@
 *********************************************************************/
 #include "../QCore/Library/fstream.h"
 
+#include "../QLanguage/Lexer/Lexer.h"
+#include "../QLanguage/Parser/Production.h"
+
 #include "Parser/ParserTable.h"
+#include "Parser/Parser.h"
 
 #include <stdio.h>
 
@@ -31,6 +35,18 @@ int main()
 
     ParserTable parserTable;
     parserTable.loadFromData(str.c_str(), str.size());
+
+    string expression;
+    cout << "Please input expression:" << endl;
+    cin >> expression;
+
+    Lexer lexer;
+    if (lexer.parse(expression))
+    {
+        Parser parser(parserTable.rules);
+        if (!parserTable.parse(lexer.result, &parser)) cerr << "Parser error";
+    }
+    else cerr << "Lexer error";
 
     return 0;
 }
