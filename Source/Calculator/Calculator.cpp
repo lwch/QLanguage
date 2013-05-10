@@ -25,7 +25,6 @@ using namespace QLanguage::Library;
 int main()
 {
     fstream fs("Calculator.ParserTable", fstream::in | fstream::binary);
-    //fstream fs("C:\\QLanguage\\Project\\QLanguage\\QParserGenerator\\Debug\\QLanguage.ParserTable", fstream::in | fstream::binary);
     string str(fs.size() + 1);
 
     fs.readAll(const_cast<char*>(str.c_str()), str.capacity());
