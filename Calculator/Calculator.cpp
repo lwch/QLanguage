@@ -43,7 +43,22 @@ int main()
     if (lexer.parse(expression))
     {
         Parser parser(parserTable.rules);
-        if (!parserTable.parse(lexer.result, &parser)) cerr << "Parser error";
+        try
+        {
+            if (!parserTable.parse(lexer.result, &parser)) cerr << "Parser error";
+        }
+        catch (const error<char*>& e)
+        {
+            e.print();
+        }
+        catch (const error<const char*>& e)
+        {
+            e.print();
+        }
+        catch (const error<string>& e)
+        {
+            e.print();
+        }
     }
     else cerr << "Lexer error";
 
