@@ -92,9 +92,9 @@ namespace QLanguage
         size_t size;
         while (first != last)
         {
-            if (digit.parse(first, last, ptr, size))
+            if (real.parse(first, last, ptr, size))
             {
-                result.push_back(Token(Token::Digit, string(ptr, size)));
+                result.push_back(Token(Token::Real, string(ptr, size)));
                 first += size;
             }
             else if (hex.parse(first, last, ptr, size))
@@ -102,9 +102,9 @@ namespace QLanguage
                 result.push_back(Token(Token::Hex, string(ptr, size)));
                 first += size;
             }
-            else if (real.parse(first, last, ptr, size))
+            else if (digit.parse(first, last, ptr, size))
             {
-                result.push_back(Token(Token::Real, string(ptr, size)));
+                result.push_back(Token(Token::Digit, string(ptr, size)));
                 first += size;
             }
             else if (letter.parse(first, last, ptr, size))
