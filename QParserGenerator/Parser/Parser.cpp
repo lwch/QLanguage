@@ -98,49 +98,45 @@ namespace QLanguage
         case 0:  // begin -> start
             break;
         case 1:  // strings -> strings "{String}"
-            if (!reduceStrings1()) return false;
-            break;
+            return reduceStrings1();
         case 2:  // strings -> "{String}"
-            if (!reduceStrings2()) return false;
+            return reduceStrings2();
+        case 3:  // vs -> vs "{Letter}"
+            return reduceVs1();
+        case 4:  // vs -> vs "{String}"
+            return reduceVs2();
+        case 5:  // vs -> "{Letter}"
+            return reduceVs3();
+        case 6:  // vs -> "{String}"
+            return reduceVs4();
+        case 7:  // option -> "[" vs "]"
+            return reduceOption();
+        case 8:  // oneProductionRight -> oneProductionRight vs
+            return reduceRight1();
+        case 9:  // oneProductionRight -> oneProductionRight option
+            return reduceRight2();
+        case 10:  // oneProductionRight -> vs
+            return reduceRight3();
+        case 11:  // someProductionRight -> someProduction "|" oneProductionRight
+            return reduceSomeRight1();
+        case 12:  // someProductionRight -> oneProductionRight
+            return reduceSomeRight2();
+        case 13:  // token -> "%" "token" strings ";"
+            return reduceToken();
+        case 14: // someTokens -> token
             break;
-        case 3:  // oneProductionRight -> oneProductionRight "{Letter}"
-            if (!reduceRight1()) return false;
+        case 15: // someTokens -> someTokens token
             break;
-        case 4:  // oneProductionRight -> oneProductionRight "{String}"
-            if (!reduceRight2()) return false;
+        case 16: // production -> "{Letter}" "-" ">" someProductionRight ";"
+            return reduceProduction();
+        case 17: // someProductions -> someProductions production
             break;
-        case 5:  // oneProductionRight -> "{Letter}"
-            if (!reduceRight3()) return false;
+        case 18: // someProductions -> production
             break;
-        case 6:  // oneProductionRight -> "{String}"
-            if (!reduceRight4()) return false;
-            break;
-        case 7:  // someProductionRight -> someProduction "|" oneProductionRight
-            if (!reduceSomeRight1()) return false;
-            break;
-        case 8:  // someProductionRight -> oneProductionRight
-            if (!reduceSomeRight2()) return false;
-            break;
-        case 9:  // token -> "%" "token" strings ";"
-            if (!reduceToken()) return false;
-            break;
-        case 10: // someTokens -> token
-            break;
-        case 11: // someTokens -> someTokens token
-            break;
-        case 12: // production -> "{Letter}" "-" ">" someProductionRight ";"
-            if (!reduceProduction()) return false;
-            break;
-        case 13: // someProductions -> someProductions production
-            break;
-        case 14: // someProductions -> production
-            break;
-        case 15: // start -> someTokens "%" "start" "{Letter}" ";" someProductions
-            if (!reduceAll()) return false;
-            break;
-        case 16: // start -> "%" "start" "{Letter}" ";" someProductions
-            if (!reduceAll()) return false;
-            break;
+        case 19: // start -> someTokens "%" "start" "{Letter}" ";" someProductions
+            return reduceAll();
+        case 20: // start -> "%" "start" "{Letter}" ";" someProductions
+            return reduceAll();
         }
         return true;
     }
@@ -212,63 +208,100 @@ namespace QLanguage
         return true;
     }
 
-    // oneProductionRight -> oneProductionRight "{Letter}"
+    // vs -> vs "{Letter}"
+    bool Parser::reduceVs1()
+    {
+        long idx = indexOfVN(shifts.back());
+        Production::Item* pItem = NULL;
+        if (idx == -1)
+        {
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                          shifts.back()
+#endif
+                          )));
+            pItem = &vns.back().second;
+        }
+        else pItem = &vns[idx].second;
+        vs.push_back(*pItem);
+        shifts.pop_back();
+        return true;
+    }
+
+    // vs -> vs "{String}"
+    bool Parser::reduceVs2()
+    {
+        long idx = indexOfVT(string(shifts.back(), 1, shifts.back().size() - 2));
+        vs.push_back(vts[idx].second);
+        shifts.pop_back();
+        return true;
+    }
+
+    // vs -> "{Letter}"
+    bool Parser::reduceVs3()
+    {
+        vs.clear();
+        long idx = indexOfVN(shifts.back());
+        Production::Item* pItem = NULL;
+        if (idx == -1)
+        {
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+                shifts.back()
+#endif
+                )));
+            pItem = &vns.back().second;
+        }
+        else pItem = &vns[idx].second;
+        vs.push_back(*pItem);
+        shifts.pop_back();
+        return true;
+    }
+
+    // vs -> "{String}"
+    bool Parser::reduceVs4()
+    {
+        vs.clear();
+        long idx = indexOfVT(string(shifts.back(), 1, shifts.back().size() - 2));
+        vs.push_back(vts[idx].second);
+        shifts.pop_back();
+        return true;
+    }
+
+    // option -> "[" vs "]"
+    bool Parser::reduceOption()
+    {
+        shifts.pop_back();
+        shifts.pop_back();
+        return true;
+    }
+
+    // oneProductionRight -> oneProductionRight vs
     bool Parser::reduceRight1()
     {
-        long idx = indexOfVN(shifts.back());
-        Production::Item* pItem = NULL;
-        if (idx == -1)
+        for (vector<vector<Production::Item> >::iterator i = oneProductionRights.begin(), m = oneProductionRights.end(); i != m; ++i)
         {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-                          shifts.back()
-#endif
-                          )));
-            pItem = &vns.back().second;
+            i->add(vs);
         }
-        else pItem = &vns[idx].second;
-        right.push_back(*pItem);
-        shifts.pop_back();
         return true;
     }
 
-    // oneProductionRight -> oneProductionRight "{String}"
+    // oneProductionRight -> oneProductionRight option
     bool Parser::reduceRight2()
     {
-        long idx = indexOfVT(string(shifts.back(), 1, shifts.back().size() - 2));
-        right.push_back(vts[idx].second);
-        shifts.pop_back();
+        for (vector<vector<Production::Item> >::iterator i = oneProductionRights.begin(), m = oneProductionRights.end(); i != m; ++i)
+        {
+            oneProductionRights.push_back(*i);
+            oneProductionRights.back().add(vs);
+        }
         return true;
     }
 
-    // oneProductionRight -> "{Letter}"
+    // oneProductionRight -> vs
     bool Parser::reduceRight3()
     {
-        right.clear();
-        long idx = indexOfVN(shifts.back());
-        Production::Item* pItem = NULL;
-        if (idx == -1)
-        {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-                          shifts.back()
-#endif
-                          )));
-            pItem = &vns.back().second;
-        }
-        else pItem = &vns[idx].second;
-        right.push_back(*pItem);
-        shifts.pop_back();
-        return true;
-    }
-
-    // oneProductionRight -> "{String}"
-    bool Parser::reduceRight4()
-    {
-        right.clear();
-        long idx = indexOfVT(string(shifts.back(), 1, shifts.back().size() - 2));
-        right.push_back(vts[idx].second);
-        shifts.pop_back();
+        oneProductionRights.clear();
+        oneProductionRights.push_back(vs);
         return true;
     }
 
@@ -276,7 +309,10 @@ namespace QLanguage
     bool Parser::reduceSomeRight1()
     {
         shifts.pop_back();
-        rights.push_back(right);
+        for (vector<vector<Production::Item> >::const_iterator i = oneProductionRights.begin(), m = oneProductionRights.end(); i != m; ++i)
+        {
+            rights.push_back(*i);
+        }
         return true;
     }
 
@@ -284,7 +320,10 @@ namespace QLanguage
     bool Parser::reduceSomeRight2()
     {
         rights.clear();
-        rights.push_back(right);
+        for (vector<vector<Production::Item> >::const_iterator i = oneProductionRights.begin(), m = oneProductionRights.end(); i != m; ++i)
+        {
+            rights.push_back(*i);
+        }
         return true;
     }
 

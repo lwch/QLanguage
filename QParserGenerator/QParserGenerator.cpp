@@ -36,7 +36,7 @@ int main(int argv, char* args[])
         getcwd(currentPath, MAX_PATH);
         path = currentPath;
         path += "/QLanguage.txt";
-        //path = "C:\\QLanguage\\Source\\GeneratorFiles\\Calculator.txt";
+        //path = "C:\\QLanguage\\Source\\GeneratorFiles\\Test.txt";
     }
     else path = args[1];
 #else
@@ -164,6 +164,19 @@ int main(int argv, char* args[])
             Production::Item itemRuleSemicolon(ruleSemicolon);
             // Semicolon End
 
+            // SquareBrackets Start
+            Rule ruleSquareBrackets1('[', &context);
+            Rule ruleSquareBrackets2(']', &context);
+            ruleSquareBrackets1.buildDFA();
+            ruleSquareBrackets2.buildDFA();
+#ifdef _DEBUG
+            ruleSquareBrackets1.setShowName("\"[\"");
+            ruleSquareBrackets2.setShowName("\"]\"");
+#endif
+            Production::Item itemSquareBrackets1(ruleSquareBrackets1);
+            Production::Item itemSquareBrackets2(ruleSquareBrackets2);
+            // SquareBrackets End
+
             vector<Production::Item> v;
 
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
@@ -178,19 +191,55 @@ int main(int argv, char* args[])
             v.clear();
 
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
+            Production::Item itemVs("vs");
+#else
+            Production::Item itemVs;
+#endif
+            v.push_back(itemVs);
+            v.push_back(itemLetter);
+            Production productionVs_Letter(itemVs, v);
+            v.pop_back();
+            v.push_back(itemString);
+            Production productionVs_String(itemVs, v);
+            v.clear();
+            Production productionVs_RuleLetter(itemVs, itemLetter);
+            Production productionVs_RuleString(itemVs, itemString);
+
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+            Production::Item itemOption("option");
+#else
+            Production::Item itemOption;
+#endif
+            v.push_back(itemSquareBrackets1);
+            v.push_back(itemVs);
+            v.push_back(itemSquareBrackets2);
+            Production productionOption(itemOption, v);
+            v.clear();
+
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+            Production::Item itemOneProductionRightBack("oneProductionRightBack");
+#else
+            Production::Item itemOneProductionRightBack;
+#endif
+            v.push_back(itemOneProductionRightBack);
+            v.push_back(itemOption);
+            Production productionOneProductionRightBack_Options(itemOneProductionRightBack, v);
+            v.pop_back();
+            v.push_back(itemVs);
+            Production productionOneProductionRightBack_Vss(itemOneProductionRightBack, v);
+            v.clear();
+            Production productionOneProductionRightBack_Option(itemOneProductionRightBack, itemOption);
+            Production productionOneProductionRightBack_Vs(itemOneProductionRightBack, itemVs);
+
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemOneProductionRight("oneProductionRight");
 #else
             Production::Item itemOneProductionRight;
 #endif
-            v.push_back(itemOneProductionRight);
-            v.push_back(itemLetter);
-            Production productionOneProductionRight_Letter(itemOneProductionRight, v); // oneProductionRight -> oneProductionRight "{Letter}"
-            v.pop_back();
-            v.push_back(itemString);
-            Production productionOneProductionRight_String(itemOneProductionRight, v); // oneProductionRight -> oneProductionRight "{String}"
+            v.push_back(itemVs);
+            v.push_back(itemOneProductionRightBack);
+            Production productionOneProductionRight_Vs1(itemOneProductionRight, v); // oneProductionRight -> vs oneProductionRightBack
             v.clear();
-            Production productionOneProductionRight_RuleLetter(itemOneProductionRight, itemLetter); // oneProductionRight -> "{Letter}"
-            Production productionOneProductionRight_RuleString(itemOneProductionRight, itemString); // oneProductionRight -> "{String}"
 
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemSomeProductionRight("someProductionRight");
@@ -277,14 +326,23 @@ int main(int argv, char* args[])
             productions.push_back(productionStrings_String);
             // strings -> "{String}"
             productions.push_back(productionStrings_RuleString);
-            // oneProductionRight -> oneProductionRight "{Letter}"
-            productions.push_back(productionOneProductionRight_Letter);
-            // oneProductionRight -> oneProductionRight "{String}"
-            productions.push_back(productionOneProductionRight_String);
-            // oneProductionRight -> "{Letter}"
-            productions.push_back(productionOneProductionRight_RuleLetter);
-            // oneProductionRight -> "{String}"
-            productions.push_back(productionOneProductionRight_RuleString);
+            // vs -> vs "{Letter}"
+            productions.push_back(productionVs_Letter);
+            // vs -> vs "{String}"
+            productions.push_back(productionVs_String);
+            // vs -> "{Letter}"
+            productions.push_back(productionVs_RuleLetter);
+            // vs -> "{String}"
+            productions.push_back(productionVs_RuleString);
+            // option -> "[" vs "]"
+            productions.push_back(productionOption);
+            // oneProductionRightBack -> oneProductionRightBack option
+            productions.push_back(productionOneProductionRightBack_Options);
+            productions.push_back(productionOneProductionRightBack_Vss);
+            productions.push_back(productionOneProductionRightBack_Option);
+            productions.push_back(productionOneProductionRightBack_Vs);
+            // oneProductionRight -> vs oneProductionRightBack
+            productions.push_back(productionOneProductionRight_Vs1);
             // someProductionRight -> someProductionRight "|" oneProductionRight
             productions.push_back(productionSomeProductionRight_Or_OneProductionRight);
             // someProductionRight -> oneProductionRight

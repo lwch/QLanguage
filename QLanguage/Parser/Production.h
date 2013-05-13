@@ -47,12 +47,12 @@ namespace QLanguage
 #endif
             Item(const Item& i)
                 : type(i.type)
-                , rule(i.rule)
                 , index(i.index)
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
                 , name(i.name)
 #endif
             {
+                if (type == TerminalSymbol) rule = i.rule;
             }
             Item(const Rule& rule) : type(TerminalSymbol), rule(rule), index(inc()) {}
 

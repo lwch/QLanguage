@@ -30,14 +30,16 @@ namespace QLanguage
 
             Item() : idx(0) {}
 
-            void mergeWildCards(Item* pItem)
+            void mergeWildCards(Item* pItem, bool& bContinue)
             {
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
                 if (data.size() != pItem->data.size()) throw error<const char*>("compare size error", __FILE__, __LINE__);
 #endif
                 for (size_t i = 0, m = data.size(); i < m; ++i)
                 {
+                    size_t size = data[i].wildCards.size();
                     data[i].wildCards.add_unique(pItem->data[i].wildCards);
+                    if (data[i].wildCards.size() > size) bContinue = true;
                 }
             }
 
