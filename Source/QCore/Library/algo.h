@@ -293,6 +293,15 @@ namespace QLanguage
             }
         }
 
+        template <typename Container1, typename Container2, typename AddItem>
+        void select_into(const Container1& container, Container2& out, AddItem add)
+        {
+            for (typename __container_traits<Container1>::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
+            {
+                add(out, *i);
+            }
+        }
+
         template <typename Iterator, typename Value>
         inline void toArray(Iterator first, Iterator last, Value* pArray)
         {

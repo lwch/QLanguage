@@ -315,7 +315,7 @@ public:
         {
             const size_type old_size = size();
             iterator tmp = Alloc::allocate(count);
-            copy(begin(), end(), tmp);
+            uninitialized_copy(begin(), end(), tmp);
             destruct(start, finish);
             Alloc::deallocate(start, old_capacity);
             start = tmp;

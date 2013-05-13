@@ -72,6 +72,7 @@ namespace QLanguage
 
         vector<Item*> changes;
 
+        bool bContinue = false;
         while (!q.empty())
         {
             Item* pItem = q.front();
@@ -94,7 +95,7 @@ namespace QLanguage
                     }
                     else
                     {
-                        items[n]->mergeWildCards(pNewItem);
+                        items[n]->mergeWildCards(pNewItem, bContinue);
                         changes.push_back_unique(items[n]);
                         destruct(pNewItem, has_destruct(*pNewItem));
                         Item_Alloc::deallocate(pNewItem);
@@ -104,20 +105,24 @@ namespace QLanguage
             }
             q.pop();
         }
-        for (vector<Item*>::const_iterator i = changes.begin(), m = changes.end(); i != m; ++i)
+        while (bContinue)
         {
-            vector<Production::Item> s;
-            symbols(*i, s);
-            for (vector<Production::Item>::const_iterator j = s.begin(), n = s.end(); j != n; ++j)
+            bContinue = false;
+            for (vector<Item*>::const_iterator i = changes.begin(), m = changes.end(); i != m; ++i)
             {
-                Item* pNewItem = NULL;
-                if (go(*i, *j, pNewItem))
+                vector<Production::Item> s;
+                symbols(*i, s);
+                for (vector<Production::Item>::const_iterator j = s.begin(), n = s.end(); j != n; ++j)
                 {
-                    long n = itemIndex(pNewItem);
-                    if (n == -1) throw error<const char*>("unknown item", __FILE__, __LINE__);
-                    else items[n]->mergeWildCards(pNewItem);
-                    destruct(pNewItem, has_destruct(*pNewItem));
-                    Item_Alloc::deallocate(pNewItem);
+                    Item* pNewItem = NULL;
+                    if (go(*i, *j, pNewItem))
+                    {
+                        long n = itemIndex(pNewItem);
+                        if (n == -1) throw error<const char*>("unknown item", __FILE__, __LINE__);
+                        else items[n]->mergeWildCards(pNewItem, bContinue);
+                        destruct(pNewItem, has_destruct(*pNewItem));
+                        Item_Alloc::deallocate(pNewItem);
+                    }
                 }
             }
         }

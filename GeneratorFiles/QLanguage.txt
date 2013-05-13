@@ -74,23 +74,12 @@ stmt		->	define_desc
 		|	";"
 		;
 
-function_desc	->	"function" "{Letter}" "(" ")" "as" var_type stmt_list "end" "function"
-		|	"function" "{Letter}" "(" ")" stmt_list "end" "function"
-		|	"function" "{Letter}" "(" ")" "as" var_type "end" "function"
-		|	"function" "{Letter}" "(" ")" "end" "function"
-		|	"function" "{Letter}" "(" paramter_list ")" "as" var_type stmt_list "end" "function"
-		|	"function" "{Letter}" "(" paramter_list ")" stmt_list "end" "function"
-		|	"function" "{Letter}" "(" paramter_list ")" "as" var_type "end" "function"
-		|	"function" "{Letter}" "(" paramter_list ")" "end" "function"
-		;
+function_desc -> "function" "{Letter}" "(" [paramter_list] ")" ["as" var_type] [stmt_list] "end" "function";
 
-define_desc	->	define_desc "," "{Letter}" "[" value_list "]"
-		|	define_desc "," "{Letter}" "[" "]"
-		|	define_desc "," "{Letter}" "=" value_type
-		|	define_desc "," "{Letter}"
-		|	var_type "{Letter}" "=" value_type
-		|	var_type "{Letter}"
-		;
+define_desc	-> define_desc "," "{Letter}" "[" [value_list] "]"
+            |  define_desc "," "{Letter}" [ "=" value_type ]
+            |  var_type "{Letter}" [ "=" value_type ]
+            ;
 
 array_desc	->	array_desc "," "{Letter}" "[" value_list "]"
 		|	array_desc "," "{Letter}" "[" "]"

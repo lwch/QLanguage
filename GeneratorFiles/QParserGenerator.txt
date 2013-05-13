@@ -1,4 +1,4 @@
-%token "%" "token" "start" "|" "->" ";";
+%token "%" "token" "start" "|" "->" ";" "[" "]";
 
 %start start;
 
@@ -6,10 +6,22 @@ strings             -> strings "{String}"
                     |  "{String}"
                     ;
 
-oneProductionRight  -> oneProductionRight "{Letter}"
-                    |  oneProductionRight "{String}"
-                    |  "{Letter}"
-                    |  "{String}"
+vs                  -> vs "{Letter}"
+                    |  vs "{String}"
+					|  "{Letter}"
+					|  "{String}"
+					;
+
+option              -> "[" vs "]"
+                    ;
+
+oneProductionRightBack -> oneProductionRightBack option
+                       |  oneProductionRightBack vs
+					   |  option
+					   |  vs
+					   ;
+
+oneProductionRight  -> vs oneProductionRightBack
                     ;
 
 someProductionRight -> someProductionRight "|" oneProductionRight

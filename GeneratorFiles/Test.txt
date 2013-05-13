@@ -1,0 +1,11 @@
+%token "a" "b";
+
+%start start;
+
+start -> start a [ b ]
+      |  a [ b ]
+      ;
+
+a -> "a";
+
+b -> "b";

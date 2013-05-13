@@ -104,6 +104,11 @@ namespace QLanguage
             {
                 return node != x.node;
             }
+
+            inline typename __iterator<T, Size, Distance>::pointer operator->()const
+            {
+                return &node->data;
+            }
         };
 
         template <typename T, typename Size, typename Distance>
@@ -168,7 +173,7 @@ namespace QLanguage
                 return node != x.node;
             }
 
-            inline T* operator->()
+            inline __const_iterator<T, Size, Distance>::pointer operator->()const
             {
                 return &node->data;
             }
@@ -380,6 +385,22 @@ namespace QLanguage
                 }
                 insert(end(), x);
                 return true;
+            }
+
+            void add(const self& x)
+            {
+                for (const_iterator i = x.begin(), m = x.end(); i != m; ++i)
+                {
+                    push_back(*i);
+                }
+            }
+
+            void add_unique(const self& x)
+            {
+                for (const_iterator i = x.begin(), m = x.end(); i != m; ++i)
+                {
+                    push_back_unique(x);
+                }
             }
 
             void erase(const iterator& position)

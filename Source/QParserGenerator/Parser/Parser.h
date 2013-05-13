@@ -31,10 +31,14 @@ namespace QLanguage
         bool reduceAll();
         bool reduceStrings1();
         bool reduceStrings2();
+        bool reduceVs1();
+        bool reduceVs2();
+        bool reduceVs3();
+        bool reduceVs4();
+        bool reduceOption();
         bool reduceRight1();
         bool reduceRight2();
         bool reduceRight3();
-        bool reduceRight4();
         bool reduceSomeRight1();
         bool reduceSomeRight2();
         bool reduceProduction();
@@ -46,7 +50,8 @@ namespace QLanguage
         LALR1                             lalr1;
         vector<Production>                productions;
         vector<string>                    shifts;
-        vector<Production::Item>          right;
+        vector<Production::Item>          vs;
+        vector<vector<Production::Item> > oneProductionRights;
         vector<vector<Production::Item> > rights;
         regex::Rule::Context              context;
         vector<pair<string, Production::Item> > vns;
