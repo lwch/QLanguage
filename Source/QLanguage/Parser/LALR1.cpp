@@ -105,8 +105,12 @@ namespace QLanguage
             }
             q.pop();
         }
+        uint k = 1;
         while (bContinue)
         {
+            cout << "第" << k++ << "次传播" << endl;
+            vector<Item*> v;
+            v.reserve(changes.size());
             bContinue = false;
             for (vector<Item*>::const_iterator i = changes.begin(), m = changes.end(); i != m; ++i)
             {
@@ -119,12 +123,17 @@ namespace QLanguage
                     {
                         long n = itemIndex(pNewItem);
                         if (n == -1) throw error<const char*>("unknown item", __FILE__, __LINE__);
-                        else items[n]->mergeWildCards(pNewItem, bContinue);
-                        destruct(pNewItem, has_destruct(*pNewItem));
-                        Item_Alloc::deallocate(pNewItem);
+                        else
+                        {
+                            items[n]->mergeWildCards(pNewItem, bContinue);
+                            v.push_back(items[n]);
+                            destruct(pNewItem, has_destruct(*pNewItem));
+                            Item_Alloc::deallocate(pNewItem);
+                        }
                     }
                 }
             }
+            changes = v;
         }
         sort(vts.begin(), vts.end());
         sort(vns.begin(), vns.end());

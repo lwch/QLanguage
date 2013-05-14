@@ -111,31 +111,33 @@ namespace QLanguage
             return reduceVs4();
         case 7:  // option -> "[" vs "]"
             return reduceOption();
-        case 8:  // oneProductionRight -> oneProductionRight vs
+        case 8:  // oneProductionRight -> oneProductionRight option
             return reduceRight1();
-        case 9:  // oneProductionRight -> oneProductionRight option
+        case 9:  // oneProductionRight -> oneProductionRight vs
             return reduceRight2();
-        case 10:  // oneProductionRight -> vs
+        case 10: // oneProductionRight -> option
             return reduceRight3();
-        case 11:  // someProductionRight -> someProduction "|" oneProductionRight
+        case 11: // oneProductionRight -> vs
+            return reduceRight4();
+        case 12: // someProductionRight -> someProduction "|" oneProductionRight
             return reduceSomeRight1();
-        case 12:  // someProductionRight -> oneProductionRight
+        case 13: // someProductionRight -> oneProductionRight
             return reduceSomeRight2();
-        case 13:  // token -> "%" "token" strings ";"
+        case 14: // token -> "%" "token" strings ";"
             return reduceToken();
-        case 14: // someTokens -> token
+        case 15: // someTokens -> token
             break;
-        case 15: // someTokens -> someTokens token
+        case 16: // someTokens -> someTokens token
             break;
-        case 16: // production -> "{Letter}" "-" ">" someProductionRight ";"
+        case 17: // production -> "{Letter}" "-" ">" someProductionRight ";"
             return reduceProduction();
-        case 17: // someProductions -> someProductions production
+        case 18: // someProductions -> someProductions production
             break;
-        case 18: // someProductions -> production
+        case 19: // someProductions -> production
             break;
-        case 19: // start -> someTokens "%" "start" "{Letter}" ";" someProductions
+        case 20: // start -> someTokens "%" "start" "{Letter}" ";" someProductions
             return reduceAll();
-        case 20: // start -> "%" "start" "{Letter}" ";" someProductions
+        case 21: // start -> "%" "start" "{Letter}" ";" someProductions
             return reduceAll();
         }
         return true;
@@ -289,16 +291,27 @@ namespace QLanguage
     // oneProductionRight -> oneProductionRight option
     bool Parser::reduceRight2()
     {
-        for (vector<vector<Production::Item> >::iterator i = oneProductionRights.begin(), m = oneProductionRights.end(); i != m; ++i)
+        vector<Production::Item> v;
+        oneProductionRights.reserve(oneProductionRights.size() << 1);
+        for (size_t i = 0, m = oneProductionRights.size(); i < m; ++i)
         {
-            oneProductionRights.push_back(*i);
-            oneProductionRights.back().add(vs);
+            v = oneProductionRights[i];
+            oneProductionRights[i].add(vs);
+            oneProductionRights.push_back(v);
         }
         return true;
     }
 
-    // oneProductionRight -> vs
+    // oneProductionRight -> option
     bool Parser::reduceRight3()
+    {
+        oneProductionRights.clear();
+        oneProductionRights.push_back(vs);
+        return true;
+    }
+
+    // oneProductionRight -> vs
+    bool Parser::reduceRight4()
     {
         oneProductionRights.clear();
         oneProductionRights.push_back(vs);

@@ -39,6 +39,7 @@ namespace QLanguage
         bool reduceRight1();
         bool reduceRight2();
         bool reduceRight3();
+        bool reduceRight4();
         bool reduceSomeRight1();
         bool reduceSomeRight2();
         bool reduceProduction();
