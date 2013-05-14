@@ -1,4 +1,4 @@
-%token "%" "token" "start" "|" "->" ";" "[" "]";
+%token "%" "token" "start" "|" "-" ">" ";" "[" "]";
 
 %start start;
 

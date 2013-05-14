@@ -463,6 +463,7 @@ public:
 
     inline void pop_front()
     {
+        if (empty()) throw error<const char*>("empty vector", __FILE__, __LINE__);
         erase(begin());
     }
 

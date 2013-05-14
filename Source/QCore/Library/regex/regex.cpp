@@ -463,10 +463,8 @@ namespace regex
     {
     }
 
-    Rule::EpsilonClosureInfo::EpsilonClosureInfo(const EpsilonClosureInfo& x)
+    Rule::EpsilonClosureInfo::EpsilonClosureInfo(const EpsilonClosureInfo& x) : states(x.states), variants(x.variants)
     {
-        states   = x.states;
-        variants = x.variants;
     }
     // Rule::Context
     void Rule::Context::clear()
