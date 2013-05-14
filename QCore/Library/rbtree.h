@@ -561,10 +561,10 @@ protected:
 
     pair<iterator, bool> insert_unique(const value_type& x, link_type& node, link_type _parent)
     {
-        if(node != NULL)
+        if (node != NULL)
         {
-            if(less_compare(key(x), key(node->data))) return insert_unique(x, node->left, node);
-            else if(equal_compare(key(x), key(node->data))) return pair<iterator, bool>(node, false);
+            if (less_compare(key(x), key(node->data))) return insert_unique(x, node->left, node);
+            else if (equal_compare(key(x), key(node->data))) return pair<iterator, bool>(node, false);
             else return insert_unique(x, node->right, node);
         }
         else

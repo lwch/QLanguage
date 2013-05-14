@@ -235,9 +235,10 @@ namespace QLanguage
     bool LALR1::go(Item* pItem, const Production::Item& x, Item*& newItem)
     {
         vector<LALR1Production> j;
+        j.reserve(pItem->data.size());
         for (vector<LALR1Production>::iterator i = pItem->data.begin(), m = pItem->data.end(); i != m; ++i)
         {
-            if (i->idx < i->right.size() && i->right[i->idx] == x) j.push_back_unique(i->stepUp());// fromItoJ(*i, j);
+            if (i->idx < i->right.size() && i->right[i->idx] == x) j.push_back(LALR1Production(*i, i->idx + 1));//j.push_back_unique(i->stepUp());
         }
         if (j.empty()) return false;
 

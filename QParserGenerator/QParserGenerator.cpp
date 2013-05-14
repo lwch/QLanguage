@@ -35,9 +35,10 @@ int main(int argv, char* args[])
         char currentPath[MAX_PATH] = {0};
         getcwd(currentPath, MAX_PATH);
         path = currentPath;
-        //path += "/QLanguage.txt";
+        path += "/QLanguage.txt";
         //path = "C:\\QLanguage\\Source\\GeneratorFiles\\Test.txt";
-        path = "C:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
+        //path = "C:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
+        //path = "E:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
     }
     else path = args[1];
 #else
