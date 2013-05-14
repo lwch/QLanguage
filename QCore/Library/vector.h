@@ -586,9 +586,7 @@ public:
     inline void add(const self& x)
     {
         reserve(size() + x.size());
-        pointer p = finish;
-        for (const_iterator i = x.begin(), m = x.end(); i != m; ++i, ++p) construct(p);
-        finish = copy(x.begin(), x.end(), end());
+        finish = uninitialized_copy(x.begin(), x.end(), end());
     }
 
     inline void add_unique(const self& x)

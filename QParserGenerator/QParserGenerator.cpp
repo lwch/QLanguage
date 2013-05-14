@@ -35,8 +35,9 @@ int main(int argv, char* args[])
         char currentPath[MAX_PATH] = {0};
         getcwd(currentPath, MAX_PATH);
         path = currentPath;
-        path += "/QLanguage.txt";
+        //path += "/QLanguage.txt";
         //path = "C:\\QLanguage\\Source\\GeneratorFiles\\Test.txt";
+        path = "C:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
     }
     else path = args[1];
 #else
@@ -217,29 +218,19 @@ int main(int argv, char* args[])
             v.clear();
 
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
-            Production::Item itemOneProductionRightBack("oneProductionRightBack");
-#else
-            Production::Item itemOneProductionRightBack;
-#endif
-            v.push_back(itemOneProductionRightBack);
-            v.push_back(itemOption);
-            Production productionOneProductionRightBack_Options(itemOneProductionRightBack, v);
-            v.pop_back();
-            v.push_back(itemVs);
-            Production productionOneProductionRightBack_Vss(itemOneProductionRightBack, v);
-            v.clear();
-            Production productionOneProductionRightBack_Option(itemOneProductionRightBack, itemOption);
-            Production productionOneProductionRightBack_Vs(itemOneProductionRightBack, itemVs);
-
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemOneProductionRight("oneProductionRight");
 #else
             Production::Item itemOneProductionRight;
 #endif
+            v.push_back(itemOneProductionRight);
+            v.push_back(itemOption);
+            Production productionOneProductionRight_Options(itemOneProductionRight, v); // oneProductionRight -> vs oneProductionRightBack
+            v.pop_back();
             v.push_back(itemVs);
-            v.push_back(itemOneProductionRightBack);
-            Production productionOneProductionRight_Vs1(itemOneProductionRight, v); // oneProductionRight -> vs oneProductionRightBack
+            Production productionOneProductionRight_Vss(itemOneProductionRight, v);
             v.clear();
+            Production productionOneProductionRight_Option(itemOneProductionRight, itemOption);
+            Production productionOneProductionRight_Vs(itemOneProductionRight, itemVs);
 
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemSomeProductionRight("someProductionRight");
@@ -336,13 +327,11 @@ int main(int argv, char* args[])
             productions.push_back(productionVs_RuleString);
             // option -> "[" vs "]"
             productions.push_back(productionOption);
-            // oneProductionRightBack -> oneProductionRightBack option
-            productions.push_back(productionOneProductionRightBack_Options);
-            productions.push_back(productionOneProductionRightBack_Vss);
-            productions.push_back(productionOneProductionRightBack_Option);
-            productions.push_back(productionOneProductionRightBack_Vs);
             // oneProductionRight -> vs oneProductionRightBack
-            productions.push_back(productionOneProductionRight_Vs1);
+            productions.push_back(productionOneProductionRight_Options);
+            productions.push_back(productionOneProductionRight_Vss);
+            productions.push_back(productionOneProductionRight_Option);
+            productions.push_back(productionOneProductionRight_Vs);
             // someProductionRight -> someProductionRight "|" oneProductionRight
             productions.push_back(productionSomeProductionRight_Or_OneProductionRight);
             // someProductionRight -> oneProductionRight
