@@ -39,13 +39,21 @@ namespace QLanguage
 
             set() {}
 
-            set(const self& x) : container(x.instance) {}
+            set(const self& x) : container(x.container) {}
 
             ~set() {}
 
             inline pair<iterator, bool> insert(const value_type& x)
             {
                 return container.insert_unique(x);
+            }
+
+            void insert(const self& x)
+            {
+                for (const_iterator i = x.begin(), m = x.end(); i != m; ++i)
+                {
+                    container.insert_unique(*i);
+                }
             }
 
             inline void erase(iterator position)

@@ -69,7 +69,12 @@ namespace QLanguage
         template <class InputIterator, class ForwardIterator>
         inline ForwardIterator uninitialized_copy(InputIterator first, InputIterator last, ForwardIterator result)
         {
-            while(first != last) construct(&*result++, *first++);
+            while(first != last)
+            {
+                construct(&*result, *first);
+                ++result;
+                ++first;
+            }
             return result;
         }
 

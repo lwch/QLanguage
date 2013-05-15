@@ -414,7 +414,7 @@ public:
         }
         else
         {
-            insert_aux(end(), x);
+            insert_back(x);
         }
     }
 
@@ -431,7 +431,7 @@ public:
         }
         else
         {
-            insert_aux(end(), x);
+            insert_back(x);
         }
         return true;
     }
@@ -450,7 +450,7 @@ public:
         }
         else
         {
-            insert_aux(end(), x);
+            insert_back(x);
         }
         return true;
     }
@@ -609,7 +609,7 @@ public:
 protected:
     void insert_aux(const iterator position, const T& x)
     {
-        if(finish != end_of_element)
+        if (finish != end_of_element)
         {
             construct(&*finish, *(finish - 1));
             T x_copy = x;
@@ -632,6 +632,21 @@ protected:
             finish = tmp + old_size + 1;
             start = tmp;
         }
+    }
+
+    void insert_back(const T& x)
+    {
+        const size_type old_size = size();
+        const size_type new_size = old_size == 0 ? 2 : old_size * 2;
+        iterator tmp = Alloc::allocate(new_size);
+        uninitialized_copy(begin(), end(), tmp);
+        iterator new_position = tmp + size();
+        construct(&*new_position, x);
+        destruct(begin(), end());
+        Alloc::deallocate(begin(), old_size);
+        end_of_element = tmp + new_size;
+        finish = tmp + old_size + 1;
+        start = tmp;
     }
 };
 NAMESPACE_QLANGUAGE_LIBRARY_END

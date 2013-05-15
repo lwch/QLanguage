@@ -162,7 +162,7 @@ namespace QLanguage
                 free_handler = h;
             }
         protected:
-            static MemoryPool* getPool()
+            inline static MemoryPool* getPool()
             {
                 static MemoryPool pool;
                 return &pool;
