@@ -126,7 +126,7 @@ namespace QLanguage
                         else
                         {
                             items[n]->mergeWildCards(pNewItem, bContinue);
-                            v.push_back(items[n]);
+                            v.push_back_unique(items[n]);
                             destruct(pNewItem, has_destruct(*pNewItem));
                             Item_Alloc::deallocate(pNewItem);
                         }

@@ -592,10 +592,11 @@ public:
 
     inline void add_unique(const self& x)
     {
-      for (const_iterator i = x.begin(), m = x.end(); i != m; ++i)
-      {
-        push_back_unique(*i);
-      }
+        reserve(size() + x.size());
+        for (const_iterator i = x.begin(), m = x.end(); i != m; ++i)
+        {
+            push_back_unique(*i);
+        }
     }
 
     template <typename Compare>
