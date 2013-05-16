@@ -97,7 +97,6 @@ namespace QLanguage
             }
             q.pop();
         }
-        uint k = 1;
         while (bContinue)
         {
             vector<Item*> v;

@@ -173,7 +173,7 @@ namespace QLanguage
                 return node != x.node;
             }
 
-            inline __const_iterator<T, Size, Distance>::pointer operator->()const
+            inline typename __const_iterator<T, Size, Distance>::pointer operator->()const
             {
                 return &node->data;
             }
