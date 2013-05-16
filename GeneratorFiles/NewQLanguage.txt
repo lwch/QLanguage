@@ -1,0 +1,116 @@
+%token "void" "char" "short" "int" "long" "float" "double";
+%token "unsigned";
+%token "string";
+%token "(" ")" "{" "}" "[" "]" "," ";";
+%token "if" "else";
+%token "for";
+%token "while";
+%token "do";
+%token ">" "<" "=" "!" "&" "|" "^";
+%token "+" "-" "*" "/" "%";
+
+%start start;
+
+unsigned -> "unsigned"
+         ;
+
+type_desc -> [unsigned] "char"
+          |  [unsigned] "short"
+          |  [unsigned] "int"
+          |  [unsigned] "long"
+          |  "float"
+          |  "double"
+          |  "string"
+          ;
+
+value_desc -> "{Real}"
+           |  "{Digit}"
+           |  "{Letter}"
+           |  "{String}"
+           ;
+
+array_lst -> array_lst "[" "{Digit}" "]"
+          |  "[" "{Digit}" "]"
+          ;
+
+start -> item_list
+      ;
+
+paramter_list -> paramter_list paramter
+              |  paramter
+              ;
+
+paramter -> type_desc ["{Letter}"]
+         ;
+
+item_list -> item_list item
+          |  item
+          ;
+
+item -> function_desc
+     |  declare_desc ";"
+     ;
+
+stmt_list -> stmt_list stmt ";"
+          |  stmt ";"
+          ;
+
+block -> "{" [stmt_list] "}"
+      ;
+
+function_desc -> type_desc "{Letter}" "(" [paramter_list] ")" block
+              |  "void" "{Letter}" "(" [paramter_list] ")" block
+              ;
+
+stmt -> declare_desc
+     |  if_desc
+     |  for_desc
+     |  while_desc
+     |  do_desc
+     ;
+
+declare_desc -> declare_desc "," "{Letter}" [array_lst]
+             |  type_desc "{Letter}" [array_lst]
+             ;
+
+if_desc -> "if" "(" exp ")" block ["else" block]
+        ;
+
+for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
+         ;
+
+while_desc -> "while" "(" exp ")" block
+           ;
+
+do_desc -> "do" block "while" "(" exp ")"
+        ;
+
+exp -> exp ">" "=" exp1
+    |  exp "<" "=" exp1
+    |  exp "=" "=" exp1
+    |  exp ">" exp1
+    |  exp "<" exp1
+    |  exp "=" exp1
+    |  exp "&" "&" exp1
+    |  exp "|" "|" exp1
+    |  exp "&" exp1
+    |  exp "|" exp1
+    |  exp "^" exp1
+    |  "!" exp1
+    |  exp1
+    ;
+
+exp1 -> exp1 "+" exp2
+     |  exp1 "-" exp2
+     |  exp2
+     ;
+
+exp2 -> exp2 "*" exp3
+     |  exp2 "/" exp3
+     |  exp2 "%" exp3
+     |  exp3
+     ;
+
+exp3 -> "(" exp ")"
+     |  value_desc
+     ;

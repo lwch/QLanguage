@@ -55,11 +55,9 @@ namespace QLanguage
                Rule('(', &context) | Rule(')', &context) |
                Rule('{', &context) | Rule('}', &context) |
                Rule('[', &context) | Rule(']', &context) |
-               Rule(">=", &context) | Rule("<=", &context) | Rule("==", &context) | Rule("!=", &context) | Rule("+=", &context) | Rule("-=", &context) |
-               Rule("++", &context) | Rule("--", &context) |
                Rule('>', &context) | Rule('<', &context) | Rule('=', &context) |
                Rule('+', &context) | Rule('-', &context) | Rule('*', &context) | Rule('/', &context) |
-               Rule('&', &context) | Rule('|', &context) | Rule('^', &context) | Rule('%', &context);
+               Rule('&', &context) | Rule('|', &context) | Rule('^', &context) | Rule('%', &context) | Rule('!', &context);
         optr.buildDFA();
         // Operator End
 
