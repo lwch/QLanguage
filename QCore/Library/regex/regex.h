@@ -172,9 +172,7 @@ public:
 
         ~Rule() {}
 
-#ifdef _DEBUG
         inline void setShowName(const string& showName) { this->showName = showName; }
-#endif
 
         Rule operator+(const Rule& x);
         Rule operator-(const Rule& x);
@@ -227,9 +225,7 @@ public:
         Context* pContext;
         uint     idx;
     public:
-#ifdef _DEBUG
         string   showName;
-#endif
     };
 }
 NAMESPACE_QLANGUAGE_LIBRARY_END

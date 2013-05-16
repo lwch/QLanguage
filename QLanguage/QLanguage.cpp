@@ -23,18 +23,12 @@ int main()
 
     Rule ruleA('a', &context);
     ruleA.buildDFA();
-#ifdef _DEBUG
     ruleA.setShowName("a");
-#endif
     Production::Item a(ruleA);
 
     // Z¡úZa
     // Z¡úa
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
     Production::Item Z("A");
-#else
-    Production::Item Z;
-#endif
     vector<Production::Item> v;
     v.push_back(Z);
     v.push_back(a);

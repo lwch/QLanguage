@@ -20,13 +20,11 @@ namespace QLanguage
     class Parser : public BasicParser
     {
     public:
-        Parser(const vector<Production>& productions);
+        Parser(const vector<Production>& productions, const string& parserTablePath);
         virtual ~Parser();
 
         virtual bool shift(const string& s);
         virtual bool reduce(ushort i);
-
-        void printRules(const string& path);
     protected:
         bool reduceAll();
         bool reduceStrings1();
@@ -59,6 +57,7 @@ namespace QLanguage
         vector<pair<string, Production::Item> > vts;
         Production::Item                  itemString;
         Production::Item                  itemLetter;
+        string                            parserTablePath;
 #ifdef _DEBUG
         fstream                           stream;
 #endif

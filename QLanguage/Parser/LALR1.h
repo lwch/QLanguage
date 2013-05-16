@@ -79,11 +79,7 @@ namespace QLanguage
                 }
                 else
                 {
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
                     stream << string::format("(%s)", item.name.c_str());
-#else
-                    stream << "(VT)";
-#endif
                 }
                 stream << endl;
             }
@@ -120,9 +116,11 @@ namespace QLanguage
         bool make();
         void output(const string& path);
         bool parse(const list<Lexer::Token>& l, BasicParser* pParser);
-        vector<Production> rules();
+        inline vector<Production> rules() { return _rules; }
 
         void print(Library::ostream& stream);
+
+        void printRules(Library::ostream& stream);
     protected:
         Item* closure(const vector<LALR1Production>& kernel);
         void firstX(const LALR1Production& p, vector<Production::Item>& v, size_t idx);
@@ -147,7 +145,7 @@ namespace QLanguage
         vector<Production::Item> vts;
         vector<Production::Item> vns;
 
-        vector<LALR1Production> _rules;
+        vector<Production> _rules;
         map<Production::Item, vector<LALR1Production> > inputProductions;
         Production::Item begin;
         Production::Item* start;

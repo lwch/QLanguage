@@ -19,16 +19,6 @@
 
 namespace QLanguage
 {
-    vector<Production> LALR1::rules()
-    {
-        vector<Production> v;
-        for (vector<LALR1Production>::const_iterator i = _rules.begin(), m = _rules.end(); i != m; ++i)
-        {
-            v.push_back(*i);
-        }
-        return v;
-    }
-
     bool LALR1::buildParserTable()
     {
         table.initialize(items.size() * (vts.size() + 1 + vns.size()));
@@ -137,26 +127,27 @@ namespace QLanguage
         for (vector<Production::Item>::const_iterator i = vts.begin(), m = vts.end(); i != m; ++i)
         {
             stream << i->index << " : "
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
                    << i->rule.showName
-#else
-                   << "Rule"
-#endif
                    << endl;
         }
         stream << "VNS:" << endl;
         for (vector<Production::Item>::const_iterator i = vns.begin(), m = vns.end(); i != m; ++i)
         {
             stream << i->index << " : "
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
                    << i->name
-#else
-                   << "VN"
-#endif
                    << endl;
         }
         stream << "------- Parse Table End -------" << endl;
         stream << "--------- LALR(1) End ---------" << endl;
+    }
+
+    void LALR1::printRules(Library::ostream& stream)
+    {
+        for (size_t i = 0, m = _rules.size(); i < m; ++i)
+        {
+            stream << i << " : ";
+            _rules[i].print(stream);
+        }
     }
 
     void LALR1::output(const string& path)
@@ -178,7 +169,7 @@ namespace QLanguage
         {
             if (!i->output(stream)) return;
         }
-        for (vector<LALR1Production>::const_iterator i = _rules.begin(), m = _rules.end(); i != m; ++i)
+        for (vector<Production>::const_iterator i = _rules.begin(), m = _rules.end(); i != m; ++i)
         {
             if (!i->output(stream)) return;
         }
@@ -218,7 +209,7 @@ namespace QLanguage
                 break;
             case 'R':
                 {
-                    const LALR1Production& p = _rules[act.second];
+                    const Production& p = _rules[act.second];
                     if (!pParser->reduce(act.second))
                     {
                         throw error<const char*>("reduce error", __FILE__, __LINE__);
@@ -252,7 +243,7 @@ namespace QLanguage
             {
             case 'R':
                 {
-                    const LALR1Production& p = _rules[act.second];
+                    const Production& p = _rules[act.second];
                     if (!pParser->reduce(act.second))
                     {
                         throw error<const char*>("reduce error", __FILE__, __LINE__);

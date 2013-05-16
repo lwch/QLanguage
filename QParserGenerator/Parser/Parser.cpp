@@ -13,7 +13,7 @@
 
 namespace QLanguage
 {
-    Parser::Parser(const vector<Production>& productions) : BasicParser(productions)
+    Parser::Parser(const vector<Production>& productions, const string& parserTablePath) : BasicParser(productions), parserTablePath(parserTablePath)
     {
 #ifdef _DEBUG
         stream.open("ParserResult.txt", fstream::out | fstream::binary);
@@ -22,9 +22,7 @@ namespace QLanguage
         Rule quotationMarks = Rule('\"', &context);
         Rule ruleString = quotationMarks + *!quotationMarks + quotationMarks;
         ruleString.buildDFA();
-#ifdef _DEBUG
         ruleString.setShowName("\"{String}\"");
-#endif
         Production::Item itemString(ruleString);
         // String End
 
@@ -34,9 +32,7 @@ namespace QLanguage
         Rule _0_9  = _0 - _9;
         Rule ruleDigit = +_0_9;
         ruleDigit.buildDFA();
-#ifdef _DEBUG
         ruleDigit.setShowName("\"{Digit}\"");
-#endif
         Production::Item itemDigit(ruleDigit);
         // Digit End
 
@@ -44,9 +40,7 @@ namespace QLanguage
         Rule _point('.', &context);
         Rule ruleReal = *_0_9 + _point + +_0_9;
         ruleReal.buildDFA();
-#ifdef _DEBUG
         ruleReal.setShowName("\"{Real}\"");
-#endif
         Production::Item itemReal(ruleReal);
         // Real End
 
@@ -62,9 +56,7 @@ namespace QLanguage
             (+(_ | _a_z | _A_Z))) +
             *(_ | ruleDigit | _a_z | _A_Z);
         ruleLetter.buildDFA();
-#ifdef _DEBUG
         ruleLetter.setShowName("\"{Letter}\"");
-#endif
         Production::Item itemLetter(ruleLetter);
         // Letter End
 
@@ -143,16 +135,6 @@ namespace QLanguage
         return true;
     }
 
-    void Parser::printRules(const string& path)
-    {
-        fstream fs(path, fstream::out | fstream::text);
-        for (size_t i = 0, m = inputProductions.size(); i < m; ++i)
-        {
-            fs << i << " : ";
-            inputProductions[i].print(fs);
-        }
-    }
-
     // start -> someTokens "%" "start" "{Letter}" ";" someProductions
     // start -> "%" "start" "{Letter}" ";" someProductions
     bool Parser::reduceAll()
@@ -162,20 +144,18 @@ namespace QLanguage
         Production::Item* pItem = NULL;
         if (idx == -1)
         {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-                          shifts.back()
-#endif
-                          )));
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(shifts.back() )));
             pItem = &vns.back().second;
         }
         else pItem = &vns[idx].second;
         lalr1.setStart(pItem);
         lalr1.setProductions(productions);
         lalr1.make();
-        fstream s("QLanguage.lalr1", fstream::out | fstream::text);
-        lalr1.print(s);
-        lalr1.output("QLanguage.parsertable");
+//         fstream s("QLanguage.lalr1", fstream::out | fstream::text);
+//         lalr1.print(s);
+        lalr1.output(parserTablePath);
+        fstream fs("Rules.txt", fstream::out | fstream::text);
+        lalr1.printRules(fs);
         shifts.pop_back();
         shifts.pop_back();
         shifts.pop_back();
@@ -189,9 +169,7 @@ namespace QLanguage
         shifts.pop_back();
         Rule r(s.c_str(), &context);
         r.buildDFA();
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
         r.setShowName(s);
-#endif
         vts.push_back(pair<string, Production::Item>(s, r));
         return true;
     }
@@ -203,9 +181,7 @@ namespace QLanguage
         shifts.pop_back();
         Rule r(s.c_str(), &context);
         r.buildDFA();
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
         r.setShowName(s);
-#endif
         vts.push_back(pair<string, Production::Item>(s, r));
         return true;
     }
@@ -217,11 +193,7 @@ namespace QLanguage
         Production::Item* pItem = NULL;
         if (idx == -1)
         {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-                          shifts.back()
-#endif
-                          )));
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(shifts.back())));
             pItem = &vns.back().second;
         }
         else pItem = &vns[idx].second;
@@ -247,11 +219,7 @@ namespace QLanguage
         Production::Item* pItem = NULL;
         if (idx == -1)
         {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-                shifts.back()
-#endif
-                )));
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(shifts.back())));
             pItem = &vns.back().second;
         }
         else pItem = &vns[idx].second;
@@ -281,16 +249,6 @@ namespace QLanguage
     // oneProductionRight -> oneProductionRight vs
     bool Parser::reduceRight1()
     {
-        for (vector<vector<Production::Item> >::iterator i = oneProductionRights.begin(), m = oneProductionRights.end(); i != m; ++i)
-        {
-            i->add(vs);
-        }
-        return true;
-    }
-
-    // oneProductionRight -> oneProductionRight option
-    bool Parser::reduceRight2()
-    {
         vector<Production::Item> v;
         oneProductionRights.reserve(oneProductionRights.size() << 1);
         for (size_t i = 0, m = oneProductionRights.size(); i < m; ++i)
@@ -298,6 +256,16 @@ namespace QLanguage
             v = oneProductionRights[i];
             oneProductionRights[i].add(vs);
             oneProductionRights.push_back(v);
+        }
+        return true;
+    }
+
+    // oneProductionRight -> oneProductionRight option
+    bool Parser::reduceRight2()
+    {
+        for (vector<vector<Production::Item> >::iterator i = oneProductionRights.begin(), m = oneProductionRights.end(); i != m; ++i)
+        {
+            i->add(vs);
         }
         return true;
     }
@@ -350,11 +318,7 @@ namespace QLanguage
         Production::Item* pItem = NULL;
         if (idx == -1)
         {
-            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-                          shifts.back()
-#endif
-                          )));
+            vns.push_back(pair<string, Production::Item>(shifts.back(), Production::Item(shifts.back())));
             pItem = &vns.back().second;
         }
         else pItem = &vns[idx].second;

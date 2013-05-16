@@ -23,6 +23,8 @@ using namespace QLanguage::Library::regex;
 
 namespace QLanguage
 {
+    class LALR1Production;
+
     class Production
     {
     public:
@@ -36,39 +38,15 @@ namespace QLanguage
 
             Rule rule;
             uint index;
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             string name;
-#endif
 
-            Item() : type(NoTerminalSymbol), index(inc()) {}
-            Item(Rule::Context* pContext) : type(TerminalSymbol), rule(pContext), index(0) {}
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-            Item(const string& name) : type(NoTerminalSymbol), index(inc()), name(name) {}
-#endif
-            Item(const Item& i)
-                : type(i.type)
-                , index(i.index)
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-                , name(i.name)
-#endif
-            {
-                if (type == TerminalSymbol) rule = i.rule;
-            }
-            Item(const Rule& rule) : type(TerminalSymbol), rule(rule), index(inc()) {}
+            Item();
+            Item(Rule::Context* pContext);
+            Item(const string& name);
+            Item(const Rule& rule);
+            Item(const Item& i);
 
-            inline Item& operator=(const Item& i)
-            {
-                if (&i != this)
-                {
-                    type  = i.type;
-                    rule  = i.rule;
-                    index = i.index;
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-                    name  = i.name;
-#endif
-                }
-                return *this;
-            }
+            Item& operator=(const Item& i);
 
             inline const bool operator<(const Item& x)const
             {
@@ -95,123 +73,35 @@ namespace QLanguage
                 return type == TerminalSymbol;
             }
 
-            static uint inc()
-            {
-                static uint i = 0;
-                return i++;
-            }
+            static uint inc();
 
-            bool loadFromData(const char*& data)
-            {
-                index = *reinterpret_cast<const uint*>(data);
-                data += sizeof(uint);
-                type = (Type)*data;
-                ++data;
-                return type == TerminalSymbol ? rule.loadFromData(data) : true;
-            }
+            bool loadFromData(const char*& data);
+            bool loadFromStream(istream& stream);
 
-            bool loadFromStream(istream& stream)
-            {
-                stream >> index;
-                stream >> (uchar&)type;
-                return type == TerminalSymbol ? rule.loadFromStream(stream) : true;
-            }
-
-            inline const bool output(ostream& stream)const
-            {
-                stream << index;
-                stream << (uchar)type;
-                return type == TerminalSymbol ? rule.output(stream) : true;
-            }
+            const bool output(ostream& stream)const;
         };
     public:
-        Production() {}
-        Production(const Item& left) : left(left), index(inc()) {}
-        Production(const Item& left, const Item& item) : left(left), index(inc()) { right.push_back(item); }
-        Production(const Item& left, const vector<Item>& right) : left(left), right(right), index(inc()) {}
-        Production(const Production& p) : left(p.left), right(p.right), index(p.index) {}
+        Production();
+        Production(const Item& left);
+        Production(const Item& left, const Item& item);
+        Production(const Item& left, const vector<Item>& right);
+        Production(const Production& p);
+
+        const bool operator==(const LALR1Production& p)const;
 
         inline const bool operator<(const Production& p)const
         {
             return index < p.index;
         }
 
-        void print(Library::ostream& stream)const
-        {
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-            stream << string::format("%s ->", left.name.c_str());
-#else
-            stream << "VN ->";
-#endif
-            for (vector<Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
-            {
-                if (i->type == Item::TerminalSymbol)
-                {
-                    stream << " ";
-                    i->rule.printShowName(stream);
-                }
-                else
-                {
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-                    stream << string::format(" %s", i->name.c_str());
-#else
-                    stream << "VN";
-#endif
-                }
-            }
-            stream << endl;
-        }
+        void print(Library::ostream& stream)const;
 
-        bool loadFromData(const char*& data, Rule::Context* pContext)
-        {
-            index = *reinterpret_cast<const uint*>(data);
-            data += sizeof(uint);
-            if (!left.loadFromData(data)) return false;
-            size_t size = *reinterpret_cast<const size_t*>(data);
-            data += sizeof(size_t);
-            right.reserve(size);
-            for (size_t i = 0; i < size; ++i)
-            {
-                Production::Item item(pContext);
-                if (!item.loadFromData(data)) return false;
-                right.push_back(item);
-            }
-            return true;
-        }
+        bool loadFromData(const char*& data, Rule::Context* pContext);
+        bool loadFromStream(istream& stream, Rule::Context* pContext);
 
-        bool loadFromStream(istream& stream, Rule::Context* pContext)
-        {
-            stream >> index;
-            if (!left.loadFromStream(stream)) return false;
-            size_t size;
-            stream >> size;
-            right.reserve(size);
-            for (size_t i = 0; i < size; ++i)
-            {
-                Production::Item item(pContext);
-                if (!item.loadFromStream(stream)) return false;
-                right.push_back(item);
-            }
-            return true;
-        }
-
-        const bool output(Library::ostream& stream)const
-        {
-            stream << index;
-            if (!left.output(stream)) return false;
-            stream << right.size();
-            for (vector<Production::Item>::const_iterator i = right.begin(), m = right.end(); i != m; ++i)
-            {
-                if (!i->output(stream)) return false;
-            }
-            return true;
-        }
+        const bool output(Library::ostream& stream)const;
     protected:
-        static uint inc()
-        {
-            static uint i = 0;
-            return i++;
-        }
+        static uint inc();
     public:
         Item left;
         vector<Item> right;

@@ -14,22 +14,14 @@
 namespace QLanguage
 {
     LALR1::LALR1()
-        :
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-        begin("begin")
-        ,
-#endif
-        start(NULL)
+        : begin("begin")
+        , start(NULL)
     {
     }
 
     LALR1::LALR1(const vector<Production>& productions, Production::Item& start)
-        :
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
-        begin("begin")
-        ,
-#endif
-        start(&start)
+        : begin("begin")
+        , start(&start)
     {
         setProductions(productions);
     }
@@ -108,7 +100,6 @@ namespace QLanguage
         uint k = 1;
         while (bContinue)
         {
-            cout << "第" << k++ << "次传播" << endl;
             vector<Item*> v;
             v.reserve(changes.size());
             bContinue = false;

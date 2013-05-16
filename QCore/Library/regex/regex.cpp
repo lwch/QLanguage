@@ -541,9 +541,7 @@ namespace regex
         dfa_Edges       = x.dfa_Edges;
 
         idx = x.idx;
-#ifdef _DEBUG
         showName = x.showName;
-#endif
     }
 
     Rule Rule::operator+(const Rule& x)
@@ -670,9 +668,7 @@ namespace regex
             dfa_Edges       = x.dfa_Edges;
 
             idx = x.idx;
-#ifdef _DEBUG
             showName = x.showName;
-#endif
         }
         return *this;
     }
@@ -986,11 +982,7 @@ namespace regex
 
     void Rule::printShowName(ostream& stream)const
     {
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
         stream << showName;
-#else
-        stream << "Rule";
-#endif
     }
 
     void Rule::copyEpsilonNFA_Edges(const Rule& from, Rule& to)
