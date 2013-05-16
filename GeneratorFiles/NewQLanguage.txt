@@ -49,6 +49,7 @@ item -> function_desc
      ;
 
 stmt_list -> [stmt_list] stmt ";"
+          |  [stmt_list] block
           ;
 
 block -> "{" [stmt_list] "}"
@@ -63,6 +64,7 @@ stmt -> declare_desc
      |  for_desc
      |  while_desc
      |  do_desc
+     |  exp
      ;
 
 declare_desc -> [declare_desc] "," "{Letter}" [array_lst]
