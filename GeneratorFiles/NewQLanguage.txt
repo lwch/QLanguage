@@ -29,30 +29,26 @@ value_desc -> "{Real}"
            |  "{String}"
            ;
 
-array_lst -> array_lst "[" "{Digit}" "]"
-          |  "[" "{Digit}" "]"
+array_lst -> [array_lst] "[" "{Digit}" "]"
           ;
 
 start -> item_list
       ;
 
-paramter_list -> paramter_list paramter
-              |  paramter
+paramter_list -> [paramter_list] paramter
               ;
 
 paramter -> type_desc ["{Letter}"]
          ;
 
-item_list -> item_list item
-          |  item
+item_list -> [item_list] item
           ;
 
 item -> function_desc
      |  declare_desc ";"
      ;
 
-stmt_list -> stmt_list stmt ";"
-          |  stmt ";"
+stmt_list -> [stmt_list] stmt ";"
           ;
 
 block -> "{" [stmt_list] "}"
@@ -69,8 +65,7 @@ stmt -> declare_desc
      |  do_desc
      ;
 
-declare_desc -> declare_desc "," "{Letter}" [array_lst]
-             |  type_desc "{Letter}" [array_lst]
+declare_desc -> [declare_desc] "," "{Letter}" [array_lst]
              ;
 
 if_desc -> "if" "(" exp ")" block ["else" block]
