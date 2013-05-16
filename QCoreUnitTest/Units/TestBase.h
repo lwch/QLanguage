@@ -87,6 +87,65 @@ namespace QLanguage
             nameFilterPtr nameFilter;
         };
 
+        struct SmallObject
+        {
+            uint idx;
+
+            enum
+            {
+                Char,
+                Short,
+                Int,
+                Long,
+                UChar,
+                UShort,
+                UInt,
+                ULong,
+                Float,
+                Double,
+                Pointer
+            } type;
+
+            union
+            {
+                char   char_value;
+                short  short_value;
+                int    int_value;
+                long   long_value;
+                uchar  uchar_value;
+                ushort ushort_value;
+                uint   uint_value;
+                ulong  ulong_value;
+                float  float_value;
+                double double_value;
+                void*  pointer_value;
+            } data;
+
+            SmallObject();
+            SmallObject(char   value);
+            SmallObject(short  value);
+            SmallObject(int    value);
+            SmallObject(long   value);
+            SmallObject(uchar  value);
+            SmallObject(ushort value);
+            SmallObject(uint   value);
+            SmallObject(ulong  value);
+            SmallObject(float  value);
+            SmallObject(double value);
+            SmallObject(void*  value);
+            SmallObject(const SmallObject& o);
+
+            static uint inc();
+
+            SmallObject& operator=(const SmallObject& o);
+            const bool operator==(const SmallObject& o)const;
+            const bool operator!=(const SmallObject& o)const;
+            const bool operator<(const SmallObject& o)const;
+            const bool operator>(const SmallObject& o)const;
+            const bool operator<=(const SmallObject& o)const;
+            const bool operator>=(const SmallObject& o)const;
+        };
+
         #define TEST_SPEED_INSERT_COUNT 10000
 
         #define PrintMessage(str) \
