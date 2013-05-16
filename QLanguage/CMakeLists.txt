@@ -55,3 +55,8 @@ IF (NOT TARGET QCore)
 	SUBDIRS(../QCore)
 ENDIF()
 ADD_DEPENDENCIES(QLanguage QCore)
+
+ADD_CUSTOM_COMMAND(TARGET QLanguage POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				   "${CMAKE_CURRENT_SOURCE_DIR}/QLanguage.ParserTable"
+				   "${CMAKE_CURRENT_BINARY_DIR}/QLanguage.ParserTable")
