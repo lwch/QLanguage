@@ -28,28 +28,37 @@ using namespace QLanguage::Library;
 
 int main(int argv, char* args[])
 {
-    string path;
+    string path, outputPath;
 #ifdef _DEBUG
-    if (argv < 2)
+    if (argv < 3)
     {
         char currentPath[MAX_PATH] = {0};
         getcwd(currentPath, MAX_PATH);
         path = currentPath;
         path += "/QLanguage.txt";
+        outputPath = currentPath;
+        outputPath += "/QLanguage.ParserTable";
         //path = "C:\\QLanguage\\Source\\GeneratorFiles\\Test.txt";
         //path = "C:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
         //path = "E:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
     }
-    else path = args[1];
+    else
+    {
+        path = args[1];
+        outputPath = args[2];
+    }
 #else
-    if (argv < 2) cout << "Please input Generator File";
-    else path = args[1];
+    if (argv < 3) cout << "Please input Generator File and Output Path";
+    else
+    {
+        path = args[1];
+        outputPath = args[2];
+    }
 #endif
-    if (path.size())
+    if (path.size() && outputPath.size())
     {
         try
         {
-            //clock_t t = clock();
             // step1 lexer
             fstream fs(path, fstream::in | fstream::binary);
             string str(fs.size() + 1);
@@ -76,34 +85,26 @@ int main(int argv, char* args[])
             Rule quotationMarks = Rule('\"', &context);
             Rule ruleString = quotationMarks + *!quotationMarks + quotationMarks;
             ruleString.buildDFA();
-#ifdef _DEBUG
             ruleString.setShowName("\"{String}\"");
-#endif
             Production::Item itemString(ruleString);
             // String End
 
             // Token Start
             Rule rulePrecent("%", &context);
             rulePrecent.buildDFA();
-#ifdef _DEBUG
             rulePrecent.setShowName("\"%\"");
-#endif
             Production::Item itemRulePrecent(rulePrecent);
 
             Rule ruleToken("token", &context);
             ruleToken.buildDFA();
-#ifdef _DEBUG
             ruleToken.setShowName("\"token\"");
-#endif
             Production::Item itemRuleToken(ruleToken);
             // Token End
 
             // Start Start
             Rule ruleStart("start", &context);
             ruleStart.buildDFA();
-#ifdef _DEBUG
             ruleStart.setShowName("\"start\"");
-#endif
             Production::Item itemRuleStart(ruleStart);
             // Start End
 
@@ -126,43 +127,33 @@ int main(int argv, char* args[])
                 (+(_ | _a_z | _A_Z))) +
                 *(_ | ruleDigit | _a_z | _A_Z);
             ruleLetter.buildDFA();
-#ifdef _DEBUG
             ruleLetter.setShowName("\"{Letter}\"");
-#endif
             Production::Item itemLetter(ruleLetter);
             // Letter End
 
             // Arrow Start
             Rule ruleSub('-', &context);
             ruleSub.buildDFA();
-#ifdef _DEBUG
             ruleSub.setShowName("\"-\"");
-#endif
             Production::Item itemRuleSub(ruleSub);
 
             Rule ruleMore('>', &context);
             ruleMore.buildDFA();
-#ifdef _DEBUG
             ruleMore.setShowName("\">\"");
-#endif
             Production::Item itemRuleMore(ruleMore);
             // Arrow End
 
             // Or Start
             Rule ruleOr('|', &context);
             ruleOr.buildDFA();
-#ifdef _DEBUG
             ruleOr.setShowName("\"|\"");
-#endif
             Production::Item itemRuleOr(ruleOr);
             // Or End
 
             // Semicolon Start
             Rule ruleSemicolon(';', &context);
             ruleSemicolon.buildDFA();
-#ifdef _DEBUG
             ruleSemicolon.setShowName("\";\"");
-#endif
             Production::Item itemRuleSemicolon(ruleSemicolon);
             // Semicolon End
 
@@ -171,32 +162,22 @@ int main(int argv, char* args[])
             Rule ruleSquareBrackets2(']', &context);
             ruleSquareBrackets1.buildDFA();
             ruleSquareBrackets2.buildDFA();
-#ifdef _DEBUG
             ruleSquareBrackets1.setShowName("\"[\"");
             ruleSquareBrackets2.setShowName("\"]\"");
-#endif
             Production::Item itemSquareBrackets1(ruleSquareBrackets1);
             Production::Item itemSquareBrackets2(ruleSquareBrackets2);
             // SquareBrackets End
 
             vector<Production::Item> v;
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemStrings("strings");
-#else
-            Production::Item itemStrings;
-#endif
             v.push_back(itemStrings);
             v.push_back(itemString);
             Production productionStrings_String(itemStrings, v);              // string -> string "{String}"
             Production productionStrings_RuleString(itemStrings, itemString); // string -> "{String}"
             v.clear();
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemVs("vs");
-#else
-            Production::Item itemVs;
-#endif
             v.push_back(itemVs);
             v.push_back(itemLetter);
             Production productionVs_Letter(itemVs, v);
@@ -207,22 +188,14 @@ int main(int argv, char* args[])
             Production productionVs_RuleLetter(itemVs, itemLetter);
             Production productionVs_RuleString(itemVs, itemString);
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemOption("option");
-#else
-            Production::Item itemOption;
-#endif
             v.push_back(itemSquareBrackets1);
             v.push_back(itemVs);
             v.push_back(itemSquareBrackets2);
             Production productionOption(itemOption, v);
             v.clear();
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemOneProductionRight("oneProductionRight");
-#else
-            Production::Item itemOneProductionRight;
-#endif
             v.push_back(itemOneProductionRight);
             v.push_back(itemOption);
             Production productionOneProductionRight_Options(itemOneProductionRight, v); // oneProductionRight -> vs oneProductionRightBack
@@ -233,11 +206,7 @@ int main(int argv, char* args[])
             Production productionOneProductionRight_Option(itemOneProductionRight, itemOption);
             Production productionOneProductionRight_Vs(itemOneProductionRight, itemVs);
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemSomeProductionRight("someProductionRight");
-#else
-            Production::Item itemSomeProductionRight;
-#endif
             v.push_back(itemSomeProductionRight);
             v.push_back(itemRuleOr);
             v.push_back(itemOneProductionRight);
@@ -245,11 +214,7 @@ int main(int argv, char* args[])
             Production productionSomeProductionRight_OneProductionRight(itemSomeProductionRight, itemOneProductionRight); // someProductionRight -> oneProductionRight
             v.clear();
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemToken("token");
-#else
-            Production::Item itemToken;
-#endif
             v.push_back(itemRulePrecent);
             v.push_back(itemRuleToken);
             v.push_back(itemStrings);
@@ -257,22 +222,14 @@ int main(int argv, char* args[])
             Production productionToken(itemToken, v); // token -> "%" "token" strings ";"
             v.clear();
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemSomeTokens("someTokens");
-#else
-            Production::Item itemSomeTokens;
-#endif
             v.push_back(itemSomeTokens);
             v.push_back(itemToken);
             Production productionSomeTokens_Token(itemSomeTokens, v);             // someTokens -> someTokens token
             v.clear();
             Production productionSomeTokens_ItemToken(itemSomeTokens, itemToken); // someTokens -> token
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemProduction("production");
-#else
-            Production::Item itemProduction;
-#endif
             v.push_back(itemLetter);
             v.push_back(itemRuleSub);
             v.push_back(itemRuleMore);
@@ -281,22 +238,14 @@ int main(int argv, char* args[])
             Production productionProduction(itemProduction, v); // production -> "{Letter}" "-" ">" someProductionRight ";"
             v.clear();
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemSomeProductions("someProductions");
-#else
-            Production::Item itemSomeProductions;
-#endif
             v.push_back(itemSomeProductions);
             v.push_back(itemProduction);
             Production productionSomeProductions_ItemProduction(itemSomeProductions, v);          // someProductions -> someProductions production
             v.clear();
             Production productionSomeProductions_Production(itemSomeProductions, itemProduction); // someProductions -> production
 
-#if defined(_DEBUG) && DEBUG_LEVEL == 3
             Production::Item itemStart("start");
-#else
-            Production::Item itemStart;
-#endif
             v.push_back(itemSomeTokens);
             v.push_back(itemRulePrecent);
             v.push_back(itemRuleStart);
@@ -358,25 +307,24 @@ int main(int argv, char* args[])
             c = clock();
             lalr1.make();
             c = clock() - c;
-            fstream lalr1stream("LALR1.txt", fstream::out);
-            lalr1.print(lalr1stream);
+//             fstream lalr1stream("LALR1.txt", fstream::out);
+//             lalr1.print(lalr1stream);
 
             cout.setColor(cout.lightWith(stdstream::green));
             cout << "Make LALR(1) State Machine Finish ..." << endl;
             cout.setColor(cout.lightWith(stdstream::white));
             cout << string::format("Use of time: %d", c) << endl;
 
-            c = clock();
-            lalr1.output("QParserGenerator.ParserTable");
-            c = clock() - c;
+//             c = clock();
+//             lalr1.output("QParserGenerator.ParserTable");
+//             c = clock() - c;
+// 
+//             cout.setColor(cout.lightWith(stdstream::green));
+//             cout << "Output QParserGenerator LALR(1) ParserTable Finish ..." << endl;
+//             cout.setColor(cout.lightWith(stdstream::white));
+//             cout << string::format("Use of time: %d", c) << endl;
 
-            cout.setColor(cout.lightWith(stdstream::green));
-            cout << "Output QParserGenerator LALR(1) ParserTable Finish ..." << endl;
-            cout.setColor(cout.lightWith(stdstream::white));
-            cout << string::format("Use of time: %d", c) << endl;
-
-            Parser parser(lalr1.rules());
-            parser.printRules("Rules.txt");
+            Parser parser(lalr1.rules(), outputPath);
             c = clock();
             lalr1.parse(lexer.result, &parser);
             c = clock() - c;
