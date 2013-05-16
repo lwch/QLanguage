@@ -275,6 +275,7 @@ namespace QLanguage
     {
         oneProductionRights.clear();
         oneProductionRights.push_back(vs);
+        oneProductionRights.push_back(vector<Production::Item>());
         return true;
     }
 
@@ -356,6 +357,7 @@ namespace QLanguage
         {
             if (vts[i].first == s) return (long)i;
         }
+        throw error<string>(string::format("undefined vt: %s", s.c_str()), __FILE__, __LINE__);
         return -1;
     }
 }

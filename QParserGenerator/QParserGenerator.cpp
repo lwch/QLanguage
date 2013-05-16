@@ -38,7 +38,7 @@ int main(int argv, char* args[])
         path += "/QLanguage.txt";
         outputPath = currentPath;
         outputPath += "/QLanguage.ParserTable";
-        //path = "C:\\QLanguage\\Source\\GeneratorFiles\\Test.txt";
+        path = "C:\\QLanguage\\Source\\GeneratorFiles\\NewQLanguage.txt";
         //path = "C:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
         //path = "E:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
     }
@@ -339,6 +339,10 @@ int main(int argv, char* args[])
             e.print();
         }
         catch (const error<const char*>& e)
+        {
+            e.print();
+        }
+        catch (const error<string>& e)
         {
             e.print();
         }
