@@ -14,68 +14,167 @@
 
 #include "../../QCore/Library/function.h"
 
-typedef hashtable<int, int, identity<int> > hashtable_type;
-
-TEST_CASE(TestHashTable)
+namespace QLanguage
 {
-    hashtable_type hashtable;
-    hashtable_type::iterator i = hashtable.insert_equal(1);
-    TEST_ASSERT(i == hashtable.end(), "invalid iterator!");
-    TEST_ASSERT(hashtable.find(1) == hashtable.end(), "invalid find value!");
-    hashtable_type::iterator j = hashtable.insert_equal(1);
-    TEST_ASSERT(i == j, "invalid insert same value!");
-
-    pair<hashtable_type::iterator, bool> k = hashtable.insert_unique(2);
-    TEST_ASSERT(!k.second, "invalid insert unique value with different value!");
-    TEST_ASSERT(hashtable.find(2) == hashtable.end(), "invalid find value!");
-    pair<hashtable_type::iterator, bool> l = hashtable.insert_unique(1);
-    TEST_ASSERT(l.second, "invalid insert unique value with same value!");
-
-    TEST_ASSERT(hashtable.size() != 3, "invalid tree size!");
-    for (int i = 0; i < 10; ++i)
+    namespace UnitTest
     {
-        hashtable.insert_equal(i);
-        switch (i)
+        template <typename T>
+        void test()
         {
-        case 1:
-            TEST_ASSERT(hashtable.count(i) != 3, "invalid tree node count with %d!", i);
-            break;
-        case 2:
-            TEST_ASSERT(hashtable.count(i) != 2, "invalid tree node count with %d!", i);
-            break;
-        default:
-            TEST_ASSERT(hashtable.count(i) != 1, "invalid tree node count with %d!", i);
-            break;
+            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > ht;
+            typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator i = ht.insert_equal((T)1);
+            TEST_ASSERT(i == ht.end(), "invalid iterator!");
+            TEST_ASSERT(ht.find((T)1) == ht.end(), "invalid find value!");
+            typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator j = ht.insert_equal((T)1);
+            TEST_ASSERT(i == j, "invalid insert same value!");
+
+            pair<typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator, bool> k = ht.insert_unique((T)2);
+            TEST_ASSERT(!k.second, "invalid insert unique value with different value!");
+            TEST_ASSERT(ht.find((T)2) == ht.end(), "invalid find value!");
+            pair<typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator, bool> l = ht.insert_unique((T)1);
+            TEST_ASSERT(l.second, "invalid insert unique value with same value!");
+
+            TEST_ASSERT(ht.size() != 3, "invalid tree size!");
+            for (int i = 0; i < 10; ++i)
+            {
+                ht.insert_equal((T)i);
+                switch (i)
+                {
+                case 1:
+                    TEST_ASSERT(ht.count((T)i) != 3, "invalid tree node count with %d!", i);
+                    break;
+                case 2:
+                    TEST_ASSERT(ht.count((T)i) != 2, "invalid tree node count with %d!", i);
+                    break;
+                default:
+                    TEST_ASSERT(ht.count((T)i) != 1, "invalid tree node count with %d!", i);
+                    break;
+                }
+            }
+            ht.erase(ht.begin());
+            TEST_ASSERT(ht.size() != 12, "invalid tree size!");
+            ht.erase((T)1);
+            TEST_ASSERT(ht.size() != 11, "invalid tree size!");
+            ht.erase(ht.begin(), ++++++ht.begin());
+            TEST_ASSERT(ht.size() != 8, "invalid tree size!");
+            ht.erase(ht.begin(), ht.end());
+            TEST_ASSERT(ht.size(), "tree is not empty!");
+            TEST_ASSERT(!ht.empty(), "tree is not empty!");
+            cout << "test finished with type: " << ht.begin()->type2String() << endl;
+        }
+
+        template <typename T>
+        void speed()
+        {
+            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > hashtable;
+
+            srand(clock());
+
+            TIME_START;
+            for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+            {
+                hashtable.insert_equal((T)rand());
+            }
+            SHOW_TIME_COST_SECONDS;
+
+            TIME_START;
+            for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+            {
+                hashtable.find((T)rand());
+            }
+            SHOW_TIME_COST_SECONDS;
+
+            cout << "speed test finished with type: " << hashtable.begin()->type2String() << endl;
+        }
+
+        TEST_CASE(TestHashTable_Int)
+        {
+            hashtable<int, int, identity<int> > ht;
+            hashtable<int, int, identity<int> >::iterator i = ht.insert_equal(1);
+            TEST_ASSERT(i == ht.end(), "invalid iterator!");
+            TEST_ASSERT(ht.find(1) == ht.end(), "invalid find value!");
+            hashtable<int, int, identity<int> >::iterator j = ht.insert_equal(1);
+            TEST_ASSERT(i == j, "invalid insert same value!");
+
+            pair<hashtable<int, int, identity<int> >::iterator, bool> k = ht.insert_unique(2);
+            TEST_ASSERT(!k.second, "invalid insert unique value with different value!");
+            TEST_ASSERT(ht.find(2) == ht.end(), "invalid find value!");
+            pair<hashtable<int, int, identity<int> >::iterator, bool> l = ht.insert_unique(1);
+            TEST_ASSERT(l.second, "invalid insert unique value with same value!");
+
+            TEST_ASSERT(ht.size() != 3, "invalid tree size!");
+            for (int i = 0; i < 10; ++i)
+            {
+                ht.insert_equal(i);
+                switch (i)
+                {
+                case 1:
+                    TEST_ASSERT(ht.count(i) != 3, "invalid tree node count with %d!", i);
+                    break;
+                case 2:
+                    TEST_ASSERT(ht.count(i) != 2, "invalid tree node count with %d!", i);
+                    break;
+                default:
+                    TEST_ASSERT(ht.count(i) != 1, "invalid tree node count with %d!", i);
+                    break;
+                }
+            }
+            ht.erase(ht.begin());
+            TEST_ASSERT(ht.size() != 12, "invalid tree size!");
+            ht.erase(1);
+            TEST_ASSERT(ht.size() != 11, "invalid tree size!");
+            ht.erase(ht.begin(), ++++++ht.begin());
+            TEST_ASSERT(ht.size() != 8, "invalid tree size!");
+            ht.erase(ht.begin(), ht.end());
+            TEST_ASSERT(ht.size(), "tree is not empty!");
+            TEST_ASSERT(!ht.empty(), "tree is not empty!");
+        }
+
+        TEST_CASE(TestHashTable_SmallObject)
+        {
+            test<char>();
+            test<short>();
+            test<int>();
+            test<long>();
+            test<uchar>();
+            test<ushort>();
+            test<uint>();
+            test<ulong>();
+            test<void*>();
+        }
+
+        TEST_CASE(TestHashTable_Speed_Int)
+        {
+            hashtable<int, int, identity<int> > hashtable;
+
+            srand(clock());
+
+            TIME_START;
+            for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+            {
+                hashtable.insert_equal(rand());
+            }
+            SHOW_TIME_COST_SECONDS;
+
+            TIME_START;
+            for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+            {
+                hashtable.find(rand());
+            }
+            SHOW_TIME_COST_SECONDS;
+        }
+
+        TEST_CASE(TestHashTable_Speed_SmallObject)
+        {
+            speed<char>();
+            speed<short>();
+            speed<int>();
+            speed<long>();
+            speed<uchar>();
+            speed<ushort>();
+            speed<uint>();
+            speed<ulong>();
+            speed<void*>();
         }
     }
-    hashtable.erase(hashtable.begin());
-    TEST_ASSERT(hashtable.size() != 12, "invalid tree size!");
-    hashtable.erase(1);
-    TEST_ASSERT(hashtable.size() != 11, "invalid tree size!");
-    hashtable.erase(hashtable.begin(), ++++++hashtable.begin());
-    TEST_ASSERT(hashtable.size() != 8, "invalid tree size!");
-    hashtable.erase(hashtable.begin(), hashtable.end());
-    TEST_ASSERT(hashtable.size(), "tree is not empty!");
-    TEST_ASSERT(!hashtable.empty(), "tree is not empty!");
-}
-
-TEST_CASE(TestHashTable_Speed)
-{
-    hashtable_type hashtable;
-
-    srand(clock());
-
-    TIME_START;
-    for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
-    {
-        hashtable.insert_equal(rand());
-    }
-    SHOW_TIME_COST_SECONDS;
-
-    TIME_START;
-    for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
-    {
-        hashtable.find(rand());
-    }
-    SHOW_TIME_COST_SECONDS;
 }

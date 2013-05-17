@@ -16,63 +16,52 @@
 #include "typedef.h"
 #include "string.h"
 
-namespace QLanguage
-{
-    namespace Library
-    {
 #define HASH_KEY_TYPE ulong
-        template <typename T>
-        class hash
-        {
-        public:
-            typedef T value_type;
+template <typename T>
+struct hash
+{
+    typedef T value_type;
 
-            inline const HASH_KEY_TYPE operator()(const value_type&)const
-            {
-                return 0;
-            }
-        };
-
-        template <typename T>
-        class hash<T*>
-        {
-        public:
-            inline const HASH_KEY_TYPE operator()(T* x)const
-            {
-                return reinterpret_cast<HASH_KEY_TYPE>(x);
-            }
-        };
-
-        template <typename T>
-        class hash<const T*>
-        {
-        public:
-            inline const HASH_KEY_TYPE operator()(const T* x)const
-            {
-                return reinterpret_cast<HASH_KEY_TYPE>(x);
-            }
-        };
-
-        template <>
-        class hash<int>
-        {
-        public:
-            inline const HASH_KEY_TYPE operator()(int x)const
-            {
-                return x;
-            }
-        };
-
-        template <>
-        class hash<string>
-        {
-        public:
-            inline const HASH_KEY_TYPE operator()(const string& x)const
-            {
-                return reinterpret_cast<HASH_KEY_TYPE>(x.c_str());
-            }
-        };
+    inline const HASH_KEY_TYPE operator()(const value_type&)const
+    {
+        return 0;
     }
-}
+};
+
+template <typename T>
+struct hash<T*>
+{
+    inline const HASH_KEY_TYPE operator()(T* x)const
+    {
+        return reinterpret_cast<HASH_KEY_TYPE>(x);
+    }
+};
+
+template <typename T>
+struct hash<const T*>
+{
+    inline const HASH_KEY_TYPE operator()(const T* x)const
+    {
+        return reinterpret_cast<HASH_KEY_TYPE>(x);
+    }
+};
+
+template <>
+struct hash<int>
+{
+    inline const HASH_KEY_TYPE operator()(int x)const
+    {
+        return x;
+    }
+};
+
+template <>
+struct hash<QLanguage::Library::string>
+{
+    inline const HASH_KEY_TYPE operator()(const QLanguage::Library::string& x)const
+    {
+        return reinterpret_cast<HASH_KEY_TYPE>(x.c_str());
+    }
+};
 
 #endif

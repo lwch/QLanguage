@@ -13,86 +13,203 @@
 
 #include "TestMap.h"
 
-typedef map<int, int> map_type;
-
-TEST_CASE(TestMap)
+namespace QLanguage
 {
-    map_type map;
-    pair<map_type::iterator, bool> i = map.insert(pair<int, int>(1, 1));
-    TEST_ASSERT(!i.second, "insert set error!");
-    TEST_ASSERT(i.first == map.end(), "invalid iterator!");
-    TEST_ASSERT(map.find(1) == map.end(), "invalid find value!");
-
-    pair<map_type::iterator, bool> k = map.insert(pair<int, int>(2, 2));
-    TEST_ASSERT(!k.second, "invalid insert unique value with different value!");
-    TEST_ASSERT(map.find(2) == map.end(), "invalid find value!");
-    pair<map_type::iterator, bool> l = map.insert(pair<int, int>(1, 1));
-    TEST_ASSERT(l.second, "invalid insert unique value with same value!");
-
-    TEST_ASSERT(map.size() != 2, "invalid tree size!");
-    for(int i = 0; i < 10; ++i)
+    namespace UnitTest
     {
-        pair<map_type::iterator, bool> r = map.insert(pair<int, int>(i, i));
-        switch(i)
+        template <typename T>
+        void test()
         {
-        case 1:
-        case 2:
-            TEST_ASSERT(r.second, "insert value successed of value: %d!", i);
-            break;
-        default:
-            TEST_ASSERT(!r.second, "insert value faild of value: %d!", i);
-            break;
+            map<SmallObject<T>, int> m;
+            pair<typename map<SmallObject<T>, int>::iterator, bool> i = m.insert(pair<SmallObject<T>, int>((T)1, 1));
+            TEST_ASSERT(!i.second, "insert set error!");
+            TEST_ASSERT(i.first == m.end(), "invalid iterator!");
+            TEST_ASSERT(m.find((T)1) == m.end(), "invalid find value!");
+
+            pair<typename map<SmallObject<T>, int>::iterator, bool> k = m.insert(pair<SmallObject<T>, int>((T)2, 2));
+            TEST_ASSERT(!k.second, "invalid insert unique value with different value!");
+            TEST_ASSERT(m.find((T)2) == m.end(), "invalid find value!");
+            pair<typename map<SmallObject<T>, int>::iterator, bool> l = m.insert(pair<SmallObject<T>, int>((T)1, 1));
+            TEST_ASSERT(l.second, "invalid insert unique value with same value!");
+
+            TEST_ASSERT(m.size() != 2, "invalid tree size!");
+            for(int i = 0; i < 10; ++i)
+            {
+                pair<typename map<SmallObject<T>, int>::iterator, bool> r = m.insert(pair<SmallObject<T>, int>((T)i, i));
+                switch(i)
+                {
+                case 1:
+                case 2:
+                    TEST_ASSERT(r.second, "insert value successed of value: %d!", i);
+                    break;
+                default:
+                    TEST_ASSERT(!r.second, "insert value faild of value: %d!", i);
+                    break;
+                }
+                TEST_ASSERT(m[(T)i] != i, "invalid value of key: %d!", i);
+            }
+            TEST_ASSERT(m.size() != 10, "invalid tree size!");
+            m.erase(m.begin());
+            TEST_ASSERT(m.size() != 9, "invalid tree size!");
+            m.erase((T)1);
+            TEST_ASSERT(m.size() != 8, "invalid tree size!");
+            m.erase(m.begin(), ++++++m.begin());
+            TEST_ASSERT(m.size() != 5, "invalid tree size!");
+            m.erase(m.begin(), m.end());
+            TEST_ASSERT(m.size(), "tree is not empty!");
+            TEST_ASSERT(!m.empty(), "tree is not empty!");
+            for(int i = 10; i < 20; ++i)
+            {
+                m[(T)i] = i;
+                TEST_ASSERT(m[(T)i] != i, "invalid value of key: %d!", i);
+            }
+            TEST_ASSERT(m.size() != 10, "tree is not empty!");
+            TEST_ASSERT(m.empty(), "tree is not empty!");
+
+            map<int, int> m1;
+            m1[0] = 0;
+            m1[3] = 3;
+            try
+            {
+                m1[2] = 2;
+            }
+            catch (...)
+            {
+                PrintError("error to set map key: 2, value: 2!");
+            }
+            cout << "test finished with type: " << m.begin()->first.type2String() << endl;
         }
-        TEST_ASSERT(map[i] != i, "invalid value of key: %d!", i);
-    }
-    TEST_ASSERT(map.size() != 10, "invalid tree size!");
-    map.erase(map.begin());
-    TEST_ASSERT(map.size() != 9, "invalid tree size!");
-    map.erase(1);
-    TEST_ASSERT(map.size() != 8, "invalid tree size!");
-    map.erase(map.begin(), ++++++map.begin());
-    TEST_ASSERT(map.size() != 5, "invalid tree size!");
-    map.erase(map.begin(), map.end());
-    TEST_ASSERT(map.size(), "tree is not empty!");
-    TEST_ASSERT(!map.empty(), "tree is not empty!");
-    for(int i = 10; i < 20; ++i)
-    {
-        map[i] = i;
-        TEST_ASSERT(map[i] != i, "invalid value of key: %d!", i);
-    }
-    TEST_ASSERT(map.size() != 10, "tree is not empty!");
-    TEST_ASSERT(map.empty(), "tree is not empty!");
 
-    map_type m;
-    m[0] = 0;
-    m[3] = 3;
-    try
-    {
-        m[2] = 2;
-    }
-    catch (...)
-    {
-        PrintError("error to set map key: 2, value: 2!");
-    }
-}
+        template <typename T>
+        void speed()
+        {
+            map<SmallObject<T>, int> map;
 
-TEST_CASE(TestMap_Speed)
-{
-    map_type map;
+            srand(clock());
 
-    srand(clock());
+            TIME_START;
+            for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+            {
+                map.insert(pair<SmallObject<T>, int>((T)rand(), i));
+            }
+            SHOW_TIME_COST_SECONDS;
 
-    TIME_START;
-    for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
-    {
-        map.insert(pair<int, int>(rand(), i));
+            TIME_START;
+            for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+            {
+                map.find((T)rand());
+            }
+            SHOW_TIME_COST_SECONDS;
+
+            cout << "speed test finished with type: " << map.begin()->first.type2String() << endl;
+        }
+
+        TEST_CASE(TestMap_Int)
+        {
+            map<int, int> m;
+            pair<map<int, int>::iterator, bool> i = m.insert(pair<int, int>(1, 1));
+            TEST_ASSERT(!i.second, "insert set error!");
+            TEST_ASSERT(i.first == m.end(), "invalid iterator!");
+            TEST_ASSERT(m.find(1) == m.end(), "invalid find value!");
+
+            pair<map<int, int>::iterator, bool> k = m.insert(pair<int, int>(2, 2));
+            TEST_ASSERT(!k.second, "invalid insert unique value with different value!");
+            TEST_ASSERT(m.find(2) == m.end(), "invalid find value!");
+            pair<map<int, int>::iterator, bool> l = m.insert(pair<int, int>(1, 1));
+            TEST_ASSERT(l.second, "invalid insert unique value with same value!");
+
+            TEST_ASSERT(m.size() != 2, "invalid tree size!");
+            for(int i = 0; i < 10; ++i)
+            {
+                pair<map<int, int>::iterator, bool> r = m.insert(pair<int, int>(i, i));
+                switch(i)
+                {
+                case 1:
+                case 2:
+                    TEST_ASSERT(r.second, "insert value successed of value: %d!", i);
+                    break;
+                default:
+                    TEST_ASSERT(!r.second, "insert value faild of value: %d!", i);
+                    break;
+                }
+                TEST_ASSERT(m[i] != i, "invalid value of key: %d!", i);
+            }
+            TEST_ASSERT(m.size() != 10, "invalid tree size!");
+            m.erase(m.begin());
+            TEST_ASSERT(m.size() != 9, "invalid tree size!");
+            m.erase(1);
+            TEST_ASSERT(m.size() != 8, "invalid tree size!");
+            m.erase(m.begin(), ++++++m.begin());
+            TEST_ASSERT(m.size() != 5, "invalid tree size!");
+            m.erase(m.begin(), m.end());
+            TEST_ASSERT(m.size(), "tree is not empty!");
+            TEST_ASSERT(!m.empty(), "tree is not empty!");
+            for(int i = 10; i < 20; ++i)
+            {
+                m[i] = i;
+                TEST_ASSERT(m[i] != i, "invalid value of key: %d!", i);
+            }
+            TEST_ASSERT(m.size() != 10, "tree is not empty!");
+            TEST_ASSERT(m.empty(), "tree is not empty!");
+
+            map<int, int> m1;
+            m1[0] = 0;
+            m1[3] = 3;
+            try
+            {
+                m1[2] = 2;
+            }
+            catch (...)
+            {
+                PrintError("error to set map key: 2, value: 2!");
+            }
+        }
+
+        TEST_CASE(TestMap_SmallObject)
+        {
+            test<char>();
+            test<short>();
+            test<int>();
+            test<long>();
+            test<uchar>();
+            test<ushort>();
+            test<uint>();
+            test<ulong>();
+            test<void*>();
+        }
+
+        TEST_CASE(TestMap_Speed_Int)
+        {
+            map<int, int> map;
+
+            srand(clock());
+
+            TIME_START;
+            for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+            {
+                map.insert(pair<int, int>(rand(), i));
+            }
+            SHOW_TIME_COST_SECONDS;
+
+            TIME_START;
+            for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
+            {
+                map.find(rand());
+            }
+            SHOW_TIME_COST_SECONDS;
+        }
+
+        TEST_CASE(TestMap_Speed_SmallObject)
+        {
+            speed<char>();
+            speed<short>();
+            speed<int>();
+            speed<long>();
+            speed<uchar>();
+            speed<ushort>();
+            speed<uint>();
+            speed<ulong>();
+            speed<void*>();
+        }
     }
-    SHOW_TIME_COST_SECONDS;
-
-    TIME_START;
-    for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
-    {
-        map.find(rand());
-    }
-    SHOW_TIME_COST_SECONDS;
 }

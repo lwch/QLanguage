@@ -13,37 +13,43 @@
 #include "../../QCore/Library/function.h"
 #include "TestCombinator.h"
 
-class TestCombinatorResult : public CombinatorResult<string>
+namespace QLanguage
 {
-public:
-    TestCombinatorResult operator+(const TestCombinatorResult& result)
+    namespace UnitTest
     {
-        return TestCombinatorResult();
+        class TestCombinatorResult : public CombinatorResult<string>
+        {
+        public:
+            TestCombinatorResult operator+(const TestCombinatorResult& result)
+            {
+                return TestCombinatorResult();
+            }
+
+            inline TestCombinatorResult& operator+=(const TestCombinatorResult& x)
+            {
+                return *this;
+            }
+        };
+
+        class TestCombinatorResultSelector : public DefaultCombinatorResultSelector
+        {
+        public:
+            const string operator()(const TestCombinatorResult& result)const
+            {
+                return result.result;
+            }
+        };
+
+        typedef CombinatorRule<string, TestCombinatorResult, TestCombinatorResultSelector, emptystring> CombinatorRule_Type;
+
+        TEST_CASE(TestCombinator)
+        {
+        //     CombinatorRule_Type a, b, c, d, e;
+        //     CombinatorRule_Type f = a + b;
+        //     CombinatorRule_Type g = c | f;
+        //     a = d + e;
+        //     TestCombinatorResult result;
+        //     g.parse("test", result);
+        }
     }
-
-    inline TestCombinatorResult& operator+=(const TestCombinatorResult& x)
-    {
-        return *this;
-    }
-};
-
-class TestCombinatorResultSelector : public DefaultCombinatorResultSelector
-{
-public:
-    const string operator()(const TestCombinatorResult& result)const
-    {
-        return result.result;
-    }
-};
-
-typedef CombinatorRule<string, TestCombinatorResult, TestCombinatorResultSelector, emptystring> CombinatorRule_Type;
-
-TEST_CASE(TestCombinator)
-{
-//     CombinatorRule_Type a, b, c, d, e;
-//     CombinatorRule_Type f = a + b;
-//     CombinatorRule_Type g = c | f;
-//     a = d + e;
-//     TestCombinatorResult result;
-//     g.parse("test", result);
 }

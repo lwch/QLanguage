@@ -17,6 +17,7 @@
 #include "../../QCore/Library/iostream.h"
 #include "../../QCore/Library/pair.h"
 #include "../../QCore/Library/string.h"
+#include "../../QCore/Library/hash.h"
 
 #include <time.h>
 
@@ -87,63 +88,159 @@ namespace QLanguage
             nameFilterPtr nameFilter;
         };
 
+#define SMALLOBJECT(T) \
+        uint idx; \
+        T    value; \
+        SmallObject() : idx(inc()) {} \
+        SmallObject(T value) : idx(inc()), value(value) {} \
+        SmallObject(const SmallObject& o) : idx(o.idx), value(o.value) {} \
+        static uint inc() \
+        { \
+            static uint i = 0; \
+            return i++; \
+        } \
+        SmallObject& operator=(const SmallObject& o) \
+        { \
+            if (&o != this) \
+            { \
+                idx   = o.idx; \
+                value = o.value; \
+            } \
+            return *this; \
+        } \
+        inline const bool operator==(const SmallObject& o)const \
+        { \
+            return value == o.value; \
+        } \
+        inline const bool operator!=(const SmallObject& o)const \
+        { \
+            return value != o.value; \
+        } \
+        inline const bool operator<(const SmallObject& o)const \
+        { \
+            return value < o.value; \
+        } \
+        inline const bool operator>(const SmallObject& o)const \
+        { \
+            return value > o.value; \
+        } \
+        inline const bool operator<=(const SmallObject& o)const \
+        { \
+            return value <= o.value; \
+        } \
+        inline const bool operator>=(const SmallObject& o)const \
+        { \
+            return value >= o.value; \
+        }
+
+        template <typename T>
         struct SmallObject
         {
-            uint idx;
+            SMALLOBJECT(T)
 
-            enum
+            inline const char* type2String()const
             {
-                Char,
-                Short,
-                Int,
-                Long,
-                UChar,
-                UShort,
-                UInt,
-                ULong,
-                Float,
-                Double,
-                Pointer
-            } type;
+                return "";
+            }
+        };
 
-            union
+        template <>
+        struct SmallObject<char>
+        {
+            SMALLOBJECT(char)
+
+            inline const char* type2String()const
             {
-                char   char_value;
-                short  short_value;
-                int    int_value;
-                long   long_value;
-                uchar  uchar_value;
-                ushort ushort_value;
-                uint   uint_value;
-                ulong  ulong_value;
-                float  float_value;
-                double double_value;
-                void*  pointer_value;
-            } data;
+                return "char";
+            }
+        };
 
-            SmallObject();
-            SmallObject(char   value);
-            SmallObject(short  value);
-            SmallObject(int    value);
-            SmallObject(long   value);
-            SmallObject(uchar  value);
-            SmallObject(ushort value);
-            SmallObject(uint   value);
-            SmallObject(ulong  value);
-            SmallObject(float  value);
-            SmallObject(double value);
-            SmallObject(void*  value);
-            SmallObject(const SmallObject& o);
+        template <>
+        struct SmallObject<short>
+        {
+            SMALLOBJECT(short)
 
-            static uint inc();
+            inline const char* type2String()const
+            {
+                return "short";
+            }
+        };
 
-            SmallObject& operator=(const SmallObject& o);
-            const bool operator==(const SmallObject& o)const;
-            const bool operator!=(const SmallObject& o)const;
-            const bool operator<(const SmallObject& o)const;
-            const bool operator>(const SmallObject& o)const;
-            const bool operator<=(const SmallObject& o)const;
-            const bool operator>=(const SmallObject& o)const;
+        template <>
+        struct SmallObject<int>
+        {
+            SMALLOBJECT(int)
+
+            inline const char* type2String()const
+            {
+                return "int";
+            }
+        };
+
+        template <>
+        struct SmallObject<long>
+        {
+            SMALLOBJECT(long)
+
+            inline const char* type2String()const
+            {
+                return "long";
+            }
+        };
+
+        template <>
+        struct SmallObject<uchar>
+        {
+            SMALLOBJECT(uchar)
+
+            inline const char* type2String()const
+            {
+                return "uchar";
+            }
+        };
+
+        template <>
+        struct SmallObject<ushort>
+        {
+            SMALLOBJECT(ushort)
+
+            inline const char* type2String()const
+            {
+                return "ushort";
+            }
+        };
+
+        template <>
+        struct SmallObject<uint>
+        {
+            SMALLOBJECT(uint)
+
+            inline const char* type2String()const
+            {
+                return "uint";
+            }
+        };
+
+        template <>
+        struct SmallObject<ulong>
+        {
+            SMALLOBJECT(ulong)
+
+            inline const char* type2String()const
+            {
+                return "ulong";
+            }
+        };
+
+        template <>
+        struct SmallObject<void*>
+        {
+            SMALLOBJECT(void*)
+
+            inline const char* type2String()const
+            {
+                return "void*";
+            }
         };
 
         #define TEST_SPEED_INSERT_COUNT 10000
@@ -225,5 +322,14 @@ namespace QLanguage
         #define SET_NAME_FILTER(func) CaseMap::getInstance()->setNameFilter(func);
     }
 }
+
+template <typename T>
+struct hash<QLanguage::UnitTest::SmallObject<T> >
+{
+    inline const HASH_KEY_TYPE operator()(const QLanguage::UnitTest::SmallObject<T>& x)const
+    {
+        return (HASH_KEY_TYPE)x.value;
+    }
+};
 
 #endif
