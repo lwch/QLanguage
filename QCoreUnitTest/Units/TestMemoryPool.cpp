@@ -12,17 +12,23 @@
 
 #include "TestMemoryPool.h"
 
-TEST_CASE(TestMemoryPool)
+namespace QLanguage
 {
-    MemoryPool pool;
-    TIME_START;
-    for(int i = 0; i < 128; ++i)
+    namespace UnitTest
     {
-        for(int j = 0; j < 100; ++j)
+        TEST_CASE(TestMemoryPool)
         {
-            void* p = pool.allocate(i, NULL);
-            pool.deallocate(p, i);
+            MemoryPool pool;
+            TIME_START;
+            for(int i = 0; i < 128; ++i)
+            {
+                for(int j = 0; j < 100; ++j)
+                {
+                    void* p = pool.allocate(i, NULL);
+                    pool.deallocate(p, i);
+                }
+            }
+            SHOW_TIME_COST_SECONDS;
         }
     }
-    SHOW_TIME_COST_SECONDS;
 }

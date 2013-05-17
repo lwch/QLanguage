@@ -462,6 +462,7 @@ public:
                 --length;
                 break;
             }
+            current = current->next;
         }
     }
 
