@@ -22,9 +22,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 class MemoryPool
 {
 protected:
-#define ALIGN     sizeof(void*)
-#define MAX_BYTES 128
-#define MAX_COUNT (MAX_BYTES / ALIGN)
+    enum { ALIGN = sizeof(void*), MAX_BYTES = 128, MAX_COUNT = MAX_BYTES / ALIGN};
 
     typedef size_t size_type;
 public:

@@ -45,6 +45,7 @@ namespace QLanguage
             Item(const string& name);
             Item(const Rule& rule);
             Item(const Item& i);
+            ~Item();
 
             Item& operator=(const Item& i);
 

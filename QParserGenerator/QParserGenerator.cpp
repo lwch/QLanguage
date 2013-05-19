@@ -38,9 +38,9 @@ int main(int argv, char* args[])
         path += "/QLanguage.txt";
         outputPath = currentPath;
         outputPath += "/QLanguage.ParserTable";
-        path = "C:\\QLanguage\\Source\\GeneratorFiles\\NewQLanguage.txt";
+        //path = "C:\\QLanguage\\Source\\GeneratorFiles\\NewQLanguage.txt";
         //path = "C:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
-        //path = "E:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
+        //path = "E:\\QLanguage\\Source\\GeneratorFiles\\NewQLanguage.txt";
     }
     else
     {

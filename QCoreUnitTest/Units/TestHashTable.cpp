@@ -19,7 +19,7 @@ namespace QLanguage
     namespace UnitTest
     {
         template <typename T>
-        void test()
+        void test_hashtable()
         {
             hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > ht;
             typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator i = ht.insert_equal((T)1);
@@ -51,6 +51,10 @@ namespace QLanguage
                     break;
                 }
             }
+            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > ht1 = ht;
+            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > ht2;
+            ht2 = ht1;
+
             ht.erase(ht.begin());
             TEST_ASSERT(ht.size() != 12, "invalid tree size!");
             ht.erase((T)1);
@@ -64,7 +68,7 @@ namespace QLanguage
         }
 
         template <typename T>
-        void speed()
+        void speed_hashtable()
         {
             hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > hashtable;
 
@@ -119,6 +123,10 @@ namespace QLanguage
                     break;
                 }
             }
+            hashtable<int, int, identity<int> > ht1 = ht;
+            hashtable<int, int, identity<int> > ht2;
+            ht2 = ht1;
+
             ht.erase(ht.begin());
             TEST_ASSERT(ht.size() != 12, "invalid tree size!");
             ht.erase(1);
@@ -132,15 +140,15 @@ namespace QLanguage
 
         TEST_CASE(TestHashTable_SmallObject)
         {
-            test<char>();
-            test<short>();
-            test<int>();
-            test<long>();
-            test<uchar>();
-            test<ushort>();
-            test<uint>();
-            test<ulong>();
-            test<void*>();
+            test_hashtable<char>();
+            test_hashtable<short>();
+            test_hashtable<int>();
+            test_hashtable<long>();
+            test_hashtable<uchar>();
+            test_hashtable<ushort>();
+            test_hashtable<uint>();
+            test_hashtable<ulong>();
+            test_hashtable<void*>();
         }
 
         TEST_CASE(TestHashTable_Speed_Int)
@@ -166,15 +174,15 @@ namespace QLanguage
 
         TEST_CASE(TestHashTable_Speed_SmallObject)
         {
-            speed<char>();
-            speed<short>();
-            speed<int>();
-            speed<long>();
-            speed<uchar>();
-            speed<ushort>();
-            speed<uint>();
-            speed<ulong>();
-            speed<void*>();
+            speed_hashtable<char>();
+            speed_hashtable<short>();
+            speed_hashtable<int>();
+            speed_hashtable<long>();
+            speed_hashtable<uchar>();
+            speed_hashtable<ushort>();
+            speed_hashtable<uint>();
+            speed_hashtable<ulong>();
+            speed_hashtable<void*>();
         }
     }
 }

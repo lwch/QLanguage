@@ -44,7 +44,7 @@ public:
 
     hashmap() {}
 
-    hashmap(const self& x) : container(x.instance) {}
+    hashmap(const self& x) : container(x.container) {}
 
     ~hashmap() {}
 

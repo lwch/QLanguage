@@ -529,19 +529,17 @@ namespace regex
         pContext->epsilonNFA_States.insert(pEpsilonEnd);
     }
 
-    Rule::Rule(const Rule& x) : pContext(x.pContext)
+    Rule::Rule(const Rule& x)
+        : pEpsilonStart(x.pEpsilonStart), pEpsilonEnd(x.pEpsilonEnd), epsilonNFA_Edges(x.epsilonNFA_Edges)
+        , pDFAStart(x.pDFAStart), pDFAEnds(x.pDFAEnds), dfa_Edges_Count(x.dfa_Edges_Count), dfa_Edges(x.dfa_Edges)
+        , pContext(x.pContext)
+        , idx(x.idx)
+        , showName(x.showName)
     {
-        pEpsilonStart    = x.pEpsilonStart;
-        pEpsilonEnd      = x.pEpsilonEnd;
-        epsilonNFA_Edges = x.epsilonNFA_Edges;
+    }
 
-        pDFAStart       = x.pDFAStart;
-        pDFAEnds        = x.pDFAEnds;
-        dfa_Edges_Count = x.dfa_Edges_Count;
-        dfa_Edges       = x.dfa_Edges;
-
-        idx = x.idx;
-        showName = x.showName;
+    Rule::~Rule()
+    {
     }
 
     Rule Rule::operator+(const Rule& x)

@@ -31,9 +31,12 @@ namespace QLanguage
     {
     }
 
-    Production::Item::Item(const Item& i) : type(i.type) , index(i.index) , name(i.name)
+    Production::Item::Item(const Item& i) : type(i.type) , rule(i.rule), index(i.index) , name(i.name)
     {
-        if (type == TerminalSymbol) rule = i.rule;
+    }
+
+    Production::Item::~Item()
+    {
     }
 
     Production::Item& Production::Item::operator=(const Item& i)
