@@ -43,7 +43,7 @@ namespace QLanguage
     {
     }
 
-    LALR1Production::LALR1Production(const Production& p, uint pos) : parent(p), idx(pos)
+    LALR1Production::LALR1Production(const Production& p, size_t pos) : parent(p), idx(pos)
     {
     }
 
@@ -51,7 +51,7 @@ namespace QLanguage
     {
     }
 
-    LALR1Production::LALR1Production(const LALR1Production& p, uint pos) : parent(p), idx(pos), wildCards(p.wildCards)
+    LALR1Production::LALR1Production(const LALR1Production& p, size_t pos) : parent(p), idx(pos), wildCards(p.wildCards)
     {
     }
 

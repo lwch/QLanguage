@@ -49,9 +49,9 @@ namespace QLanguage
         LALR1Production();
         LALR1Production(const Production::Item& left, const vector<Production::Item>& right);
         LALR1Production(const Production::Item& left, const Production::Item& right, size_t pos);
-        LALR1Production(const Production& p, uint pos);
+        LALR1Production(const Production& p, size_t pos);
         LALR1Production(const LALR1Production& p);
-        LALR1Production(const LALR1Production& p, uint pos);
+        LALR1Production(const LALR1Production& p, size_t pos);
 
         const bool operator==(const LALR1Production& p)const;
         const bool operator!=(const LALR1Production& p)const;
@@ -67,7 +67,7 @@ namespace QLanguage
 
         void print(Library::ostream& stream)const;
     public:
-        uint         idx;
+        size_t       idx;
         vector<Item> wildCards;
     };
 }
