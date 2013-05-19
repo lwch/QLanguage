@@ -40,6 +40,10 @@ public:
     {
         prev = next = NULL;
     }
+
+    ~__hashtable_bucket_node()
+    {
+    }
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T, typename HashTable_Type>
@@ -325,8 +329,7 @@ public:
             while (current)
             {
                 link_type next = current->next;
-                destruct(&current->data, has_destruct(current->data));
-                destruct(&current, has_destruct(*current));
+                destruct(current, has_destruct(*current));
                 Alloc::deallocate(current);
                 current = next;
             }
@@ -435,7 +438,6 @@ public:
             else buckets[idx] = p->next;
 
             if (p->next) p->next->prev = p->prev;
-            destruct(&p->data, has_destruct(p->data));
             destruct(p, has_destruct(*p));
             Alloc::deallocate(p);
             --buckets_length[idx];
@@ -455,7 +457,6 @@ public:
                 else buckets[idx] = current->next;
 
                 if (current->next) current->next->prev = current->prev;
-                destruct(&current->data, has_destruct(current->data));
                 destruct(current, has_destruct(*current));
                 Alloc::deallocate(current);
                 --buckets_length[idx];
@@ -750,32 +751,26 @@ protected:
         clear();
 
         buckets.clear();
-        buckets_length.clear();
 
         buckets.reserve(x.buckets.size());
-        buckets_length.reserve(x.buckets_length.size());
+        buckets_length = x.buckets_length;
 
         for (typename buckets_type::size_type i = 0, m = x.buckets.size(); i < m; ++i)
         {
-            buckets.push_back(NULL);
-            buckets_length.push_back(0);
-        }
-
-        for (typename buckets_type::size_type i = 0, m = buckets.size(); i < m; ++i)
-        {
             link_type pNode = x.buckets[i];
+            link_type pHaed = NULL;
             while (pNode)
             {
                 link_type pNewNode = Alloc::allocate();
                 construct(pNewNode, pNode->data);
 
-                pNewNode->next = buckets[i];
-                if (buckets[i]) buckets[i]->prev = pNewNode;
-                buckets[i] = pNewNode;
+                pNewNode->next = pHaed;
+                if (pHaed) pHaed->prev = pNewNode;
+                pHaed = pNewNode;
 
                 pNode = pNode->next;
             }
-
+            buckets.push_back(pHaed);
         }
         length         = x.length;
         key            = x.key;

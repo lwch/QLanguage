@@ -18,7 +18,7 @@ namespace QLanguage
     namespace UnitTest
     {
         template <typename T>
-        void test()
+        void test_set()
         {
             set<SmallObject<T> > s;
             pair<typename set<SmallObject<T> >::iterator, bool> i = s.insert((T)1);
@@ -75,7 +75,7 @@ namespace QLanguage
         }
 
         template <typename T>
-        void speed()
+        void speed_set()
         {
             set<SmallObject<T> > set;
 
@@ -154,15 +154,15 @@ namespace QLanguage
 
         TEST_CASE(TestSet_SmallObject)
         {
-            test<char>();
-            test<short>();
-            test<int>();
-            test<long>();
-            test<uchar>();
-            test<ushort>();
-            test<uint>();
-            test<ulong>();
-            test<void*>();
+            test_set<char>();
+            test_set<short>();
+            test_set<int>();
+            test_set<long>();
+            test_set<uchar>();
+            test_set<ushort>();
+            test_set<uint>();
+            test_set<ulong>();
+            test_set<void*>();
         }
 
         TEST_CASE(TestSet_Speed_Int)
@@ -188,15 +188,15 @@ namespace QLanguage
 
         TEST_CASE(TestSet_Speed_SmallObject)
         {
-            speed<char>();
-            speed<short>();
-            speed<int>();
-            speed<long>();
-            speed<uchar>();
-            speed<ushort>();
-            speed<uint>();
-            speed<ulong>();
-            speed<void*>();
+            speed_set<char>();
+            speed_set<short>();
+            speed_set<int>();
+            speed_set<long>();
+            speed_set<uchar>();
+            speed_set<ushort>();
+            speed_set<uint>();
+            speed_set<ulong>();
+            speed_set<void*>();
         }
     }
 }

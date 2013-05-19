@@ -541,19 +541,21 @@ public:
 
     self& operator=(const self& x)
     {
-        if(&x == this) return *this;
-        size_type const other_size = x.size();
-        if(other_size > capacity())
+        if (&x != this)
         {
+            size_type const other_size = x.size();
             destruct(start, finish);
-            Alloc::deallocate(start, capacity());
-            start = Alloc::allocate(other_size);
-            finish = uninitialized_copy(x.begin(), x.end(), start);
-            end_of_element = start + other_size;
-        }
-        else
-        {
-            finish = uninitialized_copy(x.begin(), x.end(), start);
+            if (other_size > capacity())
+            {
+                Alloc::deallocate(start, capacity());
+                start = Alloc::allocate(other_size);
+                finish = uninitialized_copy(x.begin(), x.end(), start);
+                end_of_element = start + other_size;
+            }
+            else
+            {
+                finish = uninitialized_copy(x.begin(), x.end(), start);
+            }
         }
         return *this;
     }

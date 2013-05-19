@@ -18,7 +18,7 @@ namespace QLanguage
     namespace UnitTest
     {
         template <typename T>
-        void test()
+        void test_hashset()
         {
             hashset<SmallObject<T> > set;
             pair<typename hashset<SmallObject<T> >::iterator, bool> i = set.insert((T)1);
@@ -75,7 +75,7 @@ namespace QLanguage
         }
 
         template <typename T>
-        void speed()
+        void speed_hashset()
         {
             hashset<SmallObject<T> > set;
 
@@ -154,15 +154,15 @@ namespace QLanguage
 
         TEST_CASE(TestHashSet_SmallObject)
         {
-            test<char>();
-            test<short>();
-            test<int>();
-            test<long>();
-            test<uchar>();
-            test<ushort>();
-            test<uint>();
-            test<ulong>();
-            test<void*>();
+            test_hashset<char>();
+            test_hashset<short>();
+            test_hashset<int>();
+            test_hashset<long>();
+            test_hashset<uchar>();
+            test_hashset<ushort>();
+            test_hashset<uint>();
+            test_hashset<ulong>();
+            test_hashset<void*>();
         }
 
         TEST_CASE(TestHashSet_Speed_Int)
@@ -188,15 +188,15 @@ namespace QLanguage
 
         TEST_CASE(TestHashSet_Speed_SmallOjbect)
         {
-            speed<char>();
-            speed<short>();
-            speed<int>();
-            speed<long>();
-            speed<uchar>();
-            speed<ushort>();
-            speed<uint>();
-            speed<ulong>();
-            speed<void*>();
+            speed_hashset<char>();
+            speed_hashset<short>();
+            speed_hashset<int>();
+            speed_hashset<long>();
+            speed_hashset<uchar>();
+            speed_hashset<ushort>();
+            speed_hashset<uint>();
+            speed_hashset<ulong>();
+            speed_hashset<void*>();
         }
     }
 }

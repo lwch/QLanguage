@@ -18,7 +18,7 @@ namespace QLanguage
     namespace UnitTest
     {
         template <typename T>
-        void test()
+        void test_hashmap()
         {
             hashmap<SmallObject<T>, int> map;
             pair<typename hashmap<SmallObject<T>, int>::iterator, bool> i = map.insert(pair<SmallObject<T>, int>((T)1, 1));
@@ -81,7 +81,7 @@ namespace QLanguage
         }
 
         template <typename T>
-        void speed()
+        void speed_hashmap()
         {
             hashmap<SmallObject<T>, int> map;
 
@@ -167,15 +167,15 @@ namespace QLanguage
 
         TEST_CASE(TestHashMap_SmallObject)
         {
-            test<char>();
-            test<short>();
-            test<int>();
-            test<long>();
-            test<uchar>();
-            test<ushort>();
-            test<uint>();
-            test<ulong>();
-            test<void*>();
+            test_hashmap<char>();
+            test_hashmap<short>();
+            test_hashmap<int>();
+            test_hashmap<long>();
+            test_hashmap<uchar>();
+            test_hashmap<ushort>();
+            test_hashmap<uint>();
+            test_hashmap<ulong>();
+            test_hashmap<void*>();
         }
 
         TEST_CASE(TestHashMap_Speed_Int)
@@ -201,15 +201,15 @@ namespace QLanguage
 
         TEST_CASE(TestHashMap_Speed_SmallObject)
         {
-            speed<char>();
-            speed<short>();
-            speed<int>();
-            speed<long>();
-            speed<uchar>();
-            speed<ushort>();
-            speed<uint>();
-            speed<ulong>();
-            speed<void*>();
+            speed_hashmap<char>();
+            speed_hashmap<short>();
+            speed_hashmap<int>();
+            speed_hashmap<long>();
+            speed_hashmap<uchar>();
+            speed_hashmap<ushort>();
+            speed_hashmap<uint>();
+            speed_hashmap<ulong>();
+            speed_hashmap<void*>();
         }
     }
 }

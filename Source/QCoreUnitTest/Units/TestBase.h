@@ -243,7 +243,7 @@ namespace QLanguage
             }
         };
 
-        #define TEST_SPEED_INSERT_COUNT 10000
+        #define TEST_SPEED_INSERT_COUNT 1000
 
         #define PrintMessage(str) \
         cout.setColor(cout.lightWith(stdstream::green)); \

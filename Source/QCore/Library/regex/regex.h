@@ -170,7 +170,7 @@ public:
         Rule(const char* x, Context* pContext);
         Rule(const Rule& x);
 
-        ~Rule() {}
+        ~Rule();
 
         inline void setShowName(const string& showName) { this->showName = showName; }
 

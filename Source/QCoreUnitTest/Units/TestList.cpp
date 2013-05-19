@@ -20,7 +20,7 @@ namespace QLanguage
     namespace UnitTest
     {
         template <typename T>
-        void test()
+        void test_list()
         {
             SmallObject<T> l[5] = {(T)1, (T)2, (T)3, (T)4, (T)5};
             list<SmallObject<T> > a;
@@ -68,7 +68,7 @@ namespace QLanguage
         }
 
         template <typename T>
-        void speed()
+        void speed_list()
         {
             list<SmallObject<T> > a;
 
@@ -139,15 +139,15 @@ namespace QLanguage
 
         TEST_CASE(TestList_SmallObject)
         {
-            test<char>();
-            test<short>();
-            test<int>();
-            test<long>();
-            test<uchar>();
-            test<ushort>();
-            test<uint>();
-            test<ulong>();
-            test<void*>();
+            test_list<char>();
+            test_list<short>();
+            test_list<int>();
+            test_list<long>();
+            test_list<uchar>();
+            test_list<ushort>();
+            test_list<uint>();
+            test_list<ulong>();
+            test_list<void*>();
         }
 
         TEST_CASE(TestList_Speed_Int)
@@ -173,15 +173,15 @@ namespace QLanguage
 
         TEST_CASE(TestList_Speed_SmallObject)
         {
-            speed<char>();
-            speed<short>();
-            speed<int>();
-            speed<long>();
-            speed<uchar>();
-            speed<ushort>();
-            speed<uint>();
-            speed<ulong>();
-            speed<void*>();
+            speed_list<char>();
+            speed_list<short>();
+            speed_list<int>();
+            speed_list<long>();
+            speed_list<uchar>();
+            speed_list<ushort>();
+            speed_list<uint>();
+            speed_list<ulong>();
+            speed_list<void*>();
         }
     }
 }

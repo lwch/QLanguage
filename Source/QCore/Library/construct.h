@@ -59,7 +59,7 @@ namespace QLanguage
         template <typename ForwardIterator>
         inline void destruct(ForwardIterator first, ForwardIterator last)
         {
-            while(first != last)
+            while (first != last)
             {
                 destruct(&*first, has_destruct(*first));
                 ++first;
@@ -69,7 +69,7 @@ namespace QLanguage
         template <class InputIterator, class ForwardIterator>
         inline ForwardIterator uninitialized_copy(InputIterator first, InputIterator last, ForwardIterator result)
         {
-            while(first != last)
+            while (first != last)
             {
                 construct(&*result, *first);
                 ++result;

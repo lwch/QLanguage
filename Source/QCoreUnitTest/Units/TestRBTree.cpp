@@ -18,7 +18,7 @@ namespace QLanguage
     namespace UnitTest
     {
         template <typename T>
-        void test()
+        void test_rbtree()
         {
             rbtree<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > tree;
             typename rbtree<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator i = tree.insert_equal((T)1);
@@ -78,7 +78,7 @@ namespace QLanguage
         }
 
         template <typename T>
-        void speed()
+        void speed_rbtree()
         {
             rbtree<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > tree;
 
@@ -160,15 +160,15 @@ namespace QLanguage
 
         TEST_CASE(TestRBTree_SmallObject)
         {
-            test<char>();
-            test<short>();
-            test<int>();
-            test<long>();
-            test<uchar>();
-            test<ushort>();
-            test<uint>();
-            test<ulong>();
-            test<void*>();
+            test_rbtree<char>();
+            test_rbtree<short>();
+            test_rbtree<int>();
+            test_rbtree<long>();
+            test_rbtree<uchar>();
+            test_rbtree<ushort>();
+            test_rbtree<uint>();
+            test_rbtree<ulong>();
+            test_rbtree<void*>();
         }
 
         TEST_CASE(TestRBTree_Speed_Int)
@@ -194,15 +194,15 @@ namespace QLanguage
 
         TEST_CASE(TestRBTree_Speed_SmallObject)
         {
-            speed<char>();
-            speed<short>();
-            speed<int>();
-            speed<long>();
-            speed<uchar>();
-            speed<ushort>();
-            speed<uint>();
-            speed<ulong>();
-            speed<void*>();
+            speed_rbtree<char>();
+            speed_rbtree<short>();
+            speed_rbtree<int>();
+            speed_rbtree<long>();
+            speed_rbtree<uchar>();
+            speed_rbtree<ushort>();
+            speed_rbtree<uint>();
+            speed_rbtree<ulong>();
+            speed_rbtree<void*>();
         }
     }
 }

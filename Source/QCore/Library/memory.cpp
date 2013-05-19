@@ -133,8 +133,8 @@ void* MemoryPool::allocate(size_type n, void(*h)(size_type))
 
 void MemoryPool::deallocate(void* p, size_type n)
 {
-    if(p == 0) return;
-    if(n > MAX_BYTES)
+    if (p == 0) return;
+    if (n > MAX_BYTES)
     {
         free(p);
         return;
