@@ -1,8 +1,8 @@
 /********************************************************************
 	created:	2013/05/06
 	created:	6:5:2013   22:57
-	filename: 	\Calculator\Parser\ParserTable.h
-	file path:	\Calculator\Parser
+	filename: 	\QLanguage\Parser\ParserTable.h
+	file path:	\QLanguage\Parser
 	file base:	ParserTable
 	file ext:	h
 	author:		lwch

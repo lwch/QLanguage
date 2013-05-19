@@ -1044,7 +1044,10 @@ namespace regex
         {
             for (vector<EpsilonNFA_Edge>::const_iterator j = epsilonNFA_Edges[pState].begin(), n = epsilonNFA_Edges[pState].end(); j != n; ++j)
             {
-                if (j->isEpsilon() && v.push_back_unique(j->pTo)) epsilonClosure(j->pTo, info, v);
+                if (j->isEpsilon())
+                {
+                    if (v.push_back_unique(j->pTo)) epsilonClosure(j->pTo, info, v);
+                }
                 else info.variants.push_back_unique(j->value);
             }
         }

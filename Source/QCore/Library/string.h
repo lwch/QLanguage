@@ -367,8 +367,14 @@ public:
 
     ~basic_string()
     {
-        destruct(start, finish);
+        clear();
         if (start != iterator::null()) Alloc::deallocate(start, end_of_element - start);
+    }
+
+    void clear()
+    {
+        destruct(start, finish);
+        finish = start;
     }
 
     inline const T* c_str()const

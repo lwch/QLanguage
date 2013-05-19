@@ -1,51 +1,92 @@
+/********************************************************************
+	created:	2013/05/19
+	created:	19:5:2013   20:23
+	filename: 	\QLanguage\QLanguage.cpp
+	file path:	\QLanguage
+	file base:	QLanguage
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
 #include "Lexer/Lexer.h"
-#include "Parser/LALR1.h"
+#include "Parser/ParserTable.h"
+#include "Parser/Parser.h"
 
 #include <time.h>
 #include <stdio.h>
 
+#ifdef WIN32
+#include <direct.h>
+#else
+#include <unistd.h>
+#endif
+
 using namespace QLanguage;
 
-int main()
+int main(int argv, char* args[])
 {
-//     clock_t t = clock();
-//     Lexer lexer;
-//     cout << string::format("Make Lexer use of time: %ld", clock() - t) << endl;
-//     string input = "a a a";
-//     lexer.parse(input);
-//     cout << string::format("Total time: %ld", clock() - t) << endl;
-    list<Lexer::Token> l;
-    l.push_back(Lexer::Token(Lexer::Token::String, "a"));
-    l.push_back(Lexer::Token(Lexer::Token::String, "a"));
-    l.push_back(Lexer::Token(Lexer::Token::String, "a"));
+    string path;
+#ifdef _DEBUG
+    if (argv < 2)
+    {
+        char currentPath[MAX_PATH] = {0};
+        getcwd(currentPath, MAX_PATH);
+        path = currentPath;
+        path += "/test.txt";
+    }
+#else
+    if (argv < 2)
+    {
+        cout << "please input file" << endl;
+        return 1;
+    }
+#endif
+    else path = args[1];
 
-    Rule::Context context;
+    fstream fs("QLanguage.ParserTable", fstream::in | fstream::binary);
+    string str(fs.size() + 1);
 
-    Rule ruleA('a', &context);
-    ruleA.buildDFA();
-    ruleA.setShowName("a");
-    Production::Item a(ruleA);
+    fs.readAll(const_cast<char*>(str.c_str()), str.capacity());
+    const_cast<char*>(str.c_str())[fs.size()] = 0;
+    str.setsize(fs.size());
+    fs.close();
 
-    // Z¡úZa
-    // Z¡úa
-    Production::Item Z("A");
-    vector<Production::Item> v;
-    v.push_back(Z);
-    v.push_back(a);
-    Production p1(Z, v);
+    ParserTable parserTable;
+    parserTable.loadFromData(str.c_str(), str.size());
 
-    Production p2(Z, a);
+    str.clear();
+    fs.open(path.c_str(), fstream::in | fstream::text);
+    str.reserve(fs.size() + 1);
 
-    vector<Production> productions;
-    productions.push_back(p1);
-    productions.push_back(p2);
+    fs.readAll(const_cast<char*>(str.c_str()), str.capacity());
+    const_cast<char*>(str.c_str())[fs.size()] = 0;
+    str.setsize(fs.size());
+    fs.close();
 
-    LALR1 lalr1(productions, Z);
-    lalr1.make();
+    Lexer lexer;
+    clock_t c = clock();
+    if (lexer.parse(str))
+    {
+        c = clock() - c;
+        cout.setColor(cout.lightWith(stdstream::green));
+        cout << "Lexer Parse Finish ..." << endl;
+        cout.setColor(cout.lightWith(stdstream::white));
+        cout << string::format("Use of time: %d", c) << endl;
 
-    lalr1.print(cout);
-// 
-//     lalr1.parse(l);
+        Parser parser(parserTable.rules);
+        c = clock();
+        if (parserTable.parse(lexer.result, &parser))
+        {
+            c = clock() - c;
+            cout.setColor(cout.lightWith(stdstream::green));
+            cout << "Parser Parse Finish ..." << endl;
+            cout.setColor(cout.lightWith(stdstream::white));
+            cout << string::format("Use of time: %d", c) << endl;
+        }
+        else cerr << "parser error" << endl;
+    }
+    else cerr << "lexer parse error" << endl;
 
     return 0;
 }

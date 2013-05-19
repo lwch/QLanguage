@@ -14,7 +14,7 @@
 #include "../QLanguage/Lexer/Lexer.h"
 #include "../QLanguage/Parser/Production.h"
 
-#include "Parser/ParserTable.h"
+#include "../QLanguage/Parser/ParserTable.h"
 #include "Parser/Parser.h"
 
 #include <stdio.h>

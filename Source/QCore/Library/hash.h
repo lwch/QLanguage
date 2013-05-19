@@ -24,6 +24,7 @@ struct hash
 
     inline const HASH_KEY_TYPE operator()(const value_type&)const
     {
+        throw QLanguage::Library::error<const char*>("please write hash function", __FILE__, __LINE__);
         return 0;
     }
 };
@@ -47,11 +48,92 @@ struct hash<const T*>
 };
 
 template <>
+struct hash<char>
+{
+    inline const HASH_KEY_TYPE operator()(const char& x)const
+    {
+        return (HASH_KEY_TYPE)&x + x;
+    }
+};
+
+template <>
+struct hash<short>
+{
+    inline const HASH_KEY_TYPE operator()(const short& x)const
+    {
+        return (HASH_KEY_TYPE)&x + x;
+    }
+};
+
+template <>
 struct hash<int>
 {
     inline const HASH_KEY_TYPE operator()(int x)const
     {
         return x;
+    }
+};
+
+template <>
+struct hash<long>
+{
+    inline const HASH_KEY_TYPE operator()(long x)const
+    {
+        return x;
+    }
+};
+
+template <>
+struct hash<llong>
+{
+    inline const HASH_KEY_TYPE operator()(llong x)const
+    {
+        return (HASH_KEY_TYPE)x;
+    }
+};
+
+template <>
+struct hash<uchar>
+{
+    inline const HASH_KEY_TYPE operator()(const uchar& x)const
+    {
+        return (HASH_KEY_TYPE)&x + x;
+    }
+};
+
+template <>
+struct hash<ushort>
+{
+    inline const HASH_KEY_TYPE operator()(const ushort& x)const
+    {
+        return (HASH_KEY_TYPE)&x + x;
+    }
+};
+
+template <>
+struct hash<uint>
+{
+    inline const HASH_KEY_TYPE operator()(uint x)const
+    {
+        return x;
+    }
+};
+
+template <>
+struct hash<ulong>
+{
+    inline const HASH_KEY_TYPE operator()(ulong x)const
+    {
+        return x;
+    }
+};
+
+template <>
+struct hash<ullong>
+{
+    inline const HASH_KEY_TYPE operator()(ullong x)const
+    {
+        return (HASH_KEY_TYPE)x;
     }
 };
 

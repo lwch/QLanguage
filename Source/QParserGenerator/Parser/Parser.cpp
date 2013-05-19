@@ -150,10 +150,18 @@ namespace QLanguage
         else pItem = &vns[idx].second;
         lalr1.setStart(pItem);
         lalr1.setProductions(productions);
-        lalr1.make();
+        if (!lalr1.make())
+        {
+            cerr << "lalr1 make error" << endl;
+            return false;
+        }
 //         fstream s("QLanguage.lalr1", fstream::out | fstream::text);
 //         lalr1.print(s);
-        lalr1.output(parserTablePath);
+        if (!lalr1.output(parserTablePath))
+        {
+            cerr << "lalr1 output error" << endl;
+            return false;
+        }
         fstream fs("Rules.txt", fstream::out | fstream::text);
         lalr1.printRules(fs);
         shifts.pop_back();

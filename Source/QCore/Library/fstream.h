@@ -287,6 +287,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
 
             size_type _size  = min(sz, size());
             int readen = 0;
+            if (_size == 0) return true;
             while (true)
             {
                 int _read = ::READ(iFile, ptr, (uint)_size);

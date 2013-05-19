@@ -167,7 +167,7 @@ namespace QLanguage
                 }
                 break;
             case 'A':
-                return true;
+                return pParser->reduce(0);
             default:
                 throw error<const char*>("some error with syntax", __FILE__, __LINE__);
                 return false;
