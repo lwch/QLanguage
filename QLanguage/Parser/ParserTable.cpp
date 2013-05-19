@@ -1,8 +1,8 @@
 /********************************************************************
 	created:	2013/05/06
 	created:	6:5:2013   22:58
-	filename: 	E:\QLanguage\Source\Source\Calculator\Parser\ParserTable.cpp
-	file path:	E:\QLanguage\Source\Source\Calculator\Parser
+	filename: 	\QLanguage\Parser\ParserTable.cpp
+	file path:	\QLanguage\Parser
 	file base:	ParserTable
 	file ext:	cpp
 	author:		lwch
@@ -19,8 +19,11 @@ namespace QLanguage
     {
     }
 
+    char* gpdata = NULL;
+
     bool ParserTable::loadFromData(const char* data, size_t size)
     {
+        gpdata = const_cast<char*>(data);
         if (compareString(data, size, PARSER_TABLE)) data += strlen(PARSER_TABLE);
         //uchar version = *data;
         ++data;

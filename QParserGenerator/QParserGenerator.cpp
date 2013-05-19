@@ -48,7 +48,7 @@ int main(int argv, char* args[])
         outputPath = args[2];
     }
 #else
-    if (argv < 3) cout << "Please input Generator File and Output Path";
+    if (argv < 3) cout << "Please input Generator File and Output Path" << endl;
     else
     {
         path = args[1];

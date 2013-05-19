@@ -150,7 +150,7 @@ namespace QLanguage
         }
     }
 
-    void LALR1::output(const string& path)
+    bool LALR1::output(const string& path)
     {
         time_t t;
         time(&t);
@@ -163,20 +163,21 @@ namespace QLanguage
         }
         for (vector<Production::Item>::const_iterator i = vts.begin(), m = vts.end(); i != m; ++i)
         {
-            if (!i->output(stream)) return;
+            if (!i->output(stream)) return false;
         }
         for (vector<Production::Item>::const_iterator i = vns.begin(), m = vns.end(); i != m; ++i)
         {
-            if (!i->output(stream)) return;
+            if (!i->output(stream)) return false;
         }
         for (vector<Production>::const_iterator i = _rules.begin(), m = _rules.end(); i != m; ++i)
         {
-            if (!i->output(stream)) return;
+            if (!i->output(stream)) return false;
         }
         for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
         {
             stream << (*i)->idx;
         }
+        return true;
     }
 
     bool LALR1::parse(const list<Lexer::Token>& l, BasicParser* pParser)

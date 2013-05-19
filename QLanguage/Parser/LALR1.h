@@ -114,7 +114,7 @@ namespace QLanguage
         void setStart(Production::Item* start);
 
         bool make();
-        void output(const string& path);
+        bool output(const string& path);
         bool parse(const list<Lexer::Token>& l, BasicParser* pParser);
         inline vector<Production> rules() { return _rules; }
 
