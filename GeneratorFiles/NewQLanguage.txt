@@ -1,7 +1,10 @@
 %token "void" "char" "short" "int" "long" "float" "double";
 %token "unsigned";
 %token "string";
-%token "(" ")" "{" "}" "[" "]" "," ";";
+%token "interface" "class";
+%token "public" "private" "protected";
+%token "implement" "extend";
+%token "(" ")" "{" "}" "[" "]" "," ";" ".";
 %token "if" "else";
 %token "for";
 %token "while";
@@ -11,13 +14,10 @@
 
 %start start;
 
-unsigned -> "unsigned"
-         ;
-
-type_desc -> [unsigned] "char"
-          |  [unsigned] "short"
-          |  [unsigned] "int"
-          |  [unsigned] "long"
+type_desc -> ["unsigned"] "char"
+          |  ["unsigned"] "short"
+          |  ["unsigned"] "int"
+          |  ["unsigned"] "long"
           |  "float"
           |  "double"
           |  "string"
@@ -28,6 +28,11 @@ value_desc -> "{Real}"
            |  "{Letter}"
            |  "{String}"
            ;
+
+attribute -> "public"
+          |  "private"
+          |  "protected"
+          ;
 
 array_lst -> [array_lst] "[" "{Digit}" "]"
           ;
@@ -44,34 +49,76 @@ paramter -> type_desc ["{Letter}"]
 item_list -> [item_list] item
           ;
 
-item -> function_desc
+item -> global_function_desc
      |  declare_desc ";"
+     |  interface_desc
+     |  class_desc
      ;
 
-stmt_list -> [stmt_list] stmt ";"
+stmt_list -> [stmt_list] stmt
           |  [stmt_list] block
           ;
 
 block -> "{" [stmt_list] "}"
       ;
 
-function_desc -> type_desc "{Letter}" "(" [paramter_list] ")" block
-              |  "void" "{Letter}" "(" [paramter_list] ")" block
+global_function_desc -> type_desc "{Letter}" "(" [paramter_list] ")" block
+                     |  "void" "{Letter}" "(" [paramter_list] ")" block
+                     ;
+
+function_declare -> type_desc "{Letter}" "(" [paramter_list] ")" ";"
+                 |  "void" "{Letter}" "(" [paramter_list] ")" ";"
+                 ;
+
+interface_desc -> "interface" "{Letter}" "{" [interface_content] "}"
+               ;
+
+interface_content -> [interface_content] function_declare
+                  ;
+
+class_desc -> class_desc1 [class_desc2] "{" [class_content] "}"
+           ;
+
+class_desc1 -> "class" ["{Letter}"]
+            ;
+
+class_desc2 -> attribute "implement" "{Letter}"
+            |  attribute "extend" "{Letter}"
+			;
+
+class_content -> [class_content] function_desc
+              |  [class_content] declare_desc ";"
               ;
 
-stmt -> declare_desc
+function_desc -> [attribute] type_desc "{Letter}" "(" [paramter_list] ")" block
+              |  [attribute] "void" "{Letter}" "(" [paramter_list] ")" block
+              ;
+
+stmt -> assign_desc ";"
+     |  declare_desc ";"
      |  if_desc
      |  for_desc
-     |  while_desc
-     |  do_desc
-     |  exp
+     |  while_desc ";"
+     |  do_desc ";"
      ;
 
-declare_desc -> [declare_desc] "," "{Letter}" [array_lst]
+declare_desc -> declare_desc "," "{Letter}" [array_lst]
+             |  "{Letter}" "{Letter}" [array_lst]
              ;
 
-if_desc -> "if" "(" exp ")" block ["else" block]
+assign_desc -> assign_left "=" exp
+            ;
+
+assign_left -> "{Letter}"
+			;
+
+if_desc -> "if" "(" exp ")" stmt [if_desc2]
+        |  "if" "(" exp ")" block [if_desc2]
         ;
+
+if_desc2 -> "else" stmt
+         |  "else" block
+         ;
 
 for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
          ;

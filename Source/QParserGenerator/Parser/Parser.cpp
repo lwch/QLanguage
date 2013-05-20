@@ -155,8 +155,8 @@ namespace QLanguage
             cerr << "lalr1 make error" << endl;
             return false;
         }
-//         fstream s("QLanguage.lalr1", fstream::out | fstream::text);
-//         lalr1.print(s);
+        fstream s("QLanguage.lalr1", fstream::out | fstream::text);
+        lalr1.print(s);
         if (!lalr1.output(parserTablePath))
         {
             cerr << "lalr1 output error" << endl;
@@ -174,11 +174,11 @@ namespace QLanguage
     bool Parser::reduceStrings1()
     {
         string s = string(shifts.back(), 1, shifts.back().size() - 2);
-        shifts.pop_back();
         Rule r(s.c_str(), &context);
         r.buildDFA();
-        r.setShowName(s);
+        r.setShowName(shifts.back());
         vts.push_back(pair<string, Production::Item>(s, r));
+        shifts.pop_back();
         return true;
     }
 
@@ -186,11 +186,11 @@ namespace QLanguage
     bool Parser::reduceStrings2()
     {
         string s = string(shifts.back(), 1, shifts.back().size() - 2);
-        shifts.pop_back();
         Rule r(s.c_str(), &context);
         r.buildDFA();
-        r.setShowName(s);
+        r.setShowName(shifts.back());
         vts.push_back(pair<string, Production::Item>(s, r));
+        shifts.pop_back();
         return true;
     }
 
