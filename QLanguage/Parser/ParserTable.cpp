@@ -102,7 +102,7 @@ namespace QLanguage
         stack<ushort> status;
         status.push(iStart);
         list<Lexer::Token> tokens = l;
-        long idx = 0;
+        long idx = vts.size() - 1;
         while (!tokens.empty())
         {
             Lexer::Token& tk = tokens.front();
@@ -123,7 +123,7 @@ namespace QLanguage
                 }
                 status.push(act.second);
                 tokens.pop_front();
-                idx = 0;
+                idx = vts.size() - 1;
                 break;
             case 'R':
                 {
@@ -144,13 +144,14 @@ namespace QLanguage
                         status.pop();
                     }
                     status.push((ushort)j);
-                    idx = 0;
+                    idx = vts.size() - 1;
                 }
                 break;
             case 'A':
                 return true;
             default:
-                ++idx;
+                if (idx == 0) throw error<const char*>("get action error", __FILE__, __LINE__);
+                --idx;
                 break;
             }
         }
@@ -192,7 +193,7 @@ namespace QLanguage
 
     long ParserTable::index_of_vt(const string& str, long idx /* = 0 */)
     {
-        for (size_t i = idx, m = vts.size(); i < m; ++i)
+        for (long i = idx; i >= 0; --i)
         {
             char* o = NULL;
             size_t sz = 0;
