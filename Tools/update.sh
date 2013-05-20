@@ -28,7 +28,7 @@ fi
 #svn export $SOURCE_PATH $EXPORT_PATH
 mkdir $EXPORT_PATH
 cp -R $GITHUB_PATH/* $EXPORT_PATH
-cd $CMAKE_PATH && cmake -G "Unix Makefiles" > $CURRENT_PATH/cmake.txt $CMAKE_ARGS
+cd $CMAKE_PATH && cmake -G "Unix Makefiles" -DENABLE_SPEED_TEST=OFF > $CURRENT_PATH/cmake.txt $CMAKE_ARGS
 cd $CMAKE_PATH && make 2> $CURRENT_PATH/make.txt
 $UNITTEST_PATH/$UNITTEST_EXEC < $CURRENT_PATH/input.txt > $CURRENT_PATH/unittest.txt
 mail -s "QLanguageUpdate on time $DATE(CMake Report)" $MAILADDR < $CURRENT_PATH/cmake.txt
