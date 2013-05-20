@@ -32,10 +32,10 @@ namespace QLanguage
             pair<typename hashset<SmallObject<T> >::iterator, bool> l = set.insert((T)1);
             TEST_ASSERT(l.second, "invalid insert unique value with same value!");
 
-            TEST_ASSERT(set.minimum() != set.begin(), "invalid minimum value with tree begin!");
-            TEST_ASSERT(set.maximum() == set.end(), "invalid maximum value with tree end!");
+            TEST_ASSERT(*set.minimum() != (T)1, "invalid minimum of hashset: %d!", set.minimum()->value);
+            TEST_ASSERT(*set.maximum() != (T)2, "invalid maximum of hashset: %d!", set.maximum()->value);
 
-            TEST_ASSERT(set.size() != 2, "invalid tree size!");
+            TEST_ASSERT(set.size() != 2, "invalid hashset size!");
             for(int i = 0; i < 10; ++i)
             {
                 pair<typename hashset<SmallObject<T> >::iterator, bool> r = set.insert((T)i);
@@ -50,26 +50,26 @@ namespace QLanguage
                     break;
                 }
             }
-            TEST_ASSERT(*set.minimum() != 0, "invalid minimum of tree: %d", set.minimum()->value);
-            TEST_ASSERT(*set.maximum() != (T)9, "invalid maximum of tree: %d", set.maximum()->value);
-            TEST_ASSERT(set.size() != 10, "invalid tree size!");
+            TEST_ASSERT(*set.minimum() != 0, "invalid minimum of hashset: %d", set.minimum()->value);
+            TEST_ASSERT(*set.maximum() != (T)9, "invalid maximum of hashset: %d", set.maximum()->value);
+            TEST_ASSERT(set.size() != 10, "invalid hashset size!");
             set.erase(set.begin());
-            TEST_ASSERT(*set.minimum() != (T)1, "invalid minimum of tree: %d", set.minimum()->value);
-            TEST_ASSERT(*set.maximum() != (T)9, "invalid maximum of tree: %d", set.maximum()->value);
-            TEST_ASSERT(set.size() != 9, "invalid tree size!");
+            TEST_ASSERT(*set.minimum() != 0, "invalid minimum of hashset: %d", set.minimum()->value);
+            TEST_ASSERT(*set.maximum() != (T)9, "invalid maximum of hashset: %d", set.maximum()->value);
+            TEST_ASSERT(set.size() != 9, "invalid hashset size!");
             set.erase((T)1);
-            TEST_ASSERT(*set.minimum() != (T)2, "invalid minimum of tree: %d", set.minimum()->value);
-            TEST_ASSERT(*set.maximum() != (T)9, "invalid maximum of tree: %d", set.maximum()->value);
-            TEST_ASSERT(set.size() != 8, "invalid tree size!");
+            TEST_ASSERT(*set.minimum() != 0, "invalid minimum of hashset: %d", set.minimum()->value);
+            TEST_ASSERT(*set.maximum() != (T)9, "invalid maximum of hashset: %d", set.maximum()->value);
+            TEST_ASSERT(set.size() != 8, "invalid hashset size!");
             set.erase(set.begin(), ++++++set.begin());
-            TEST_ASSERT(*set.minimum() != (T)5, "invalid minimum of tree: %d", set.minimum()->value);
-            TEST_ASSERT(*set.maximum() != (T)9, "invalid maximum of tree: %d", set.maximum()->value);
-            TEST_ASSERT(set.size() != 5, "invalid tree size!");
+            TEST_ASSERT(*set.minimum() != (T)2 && *set.minimum() != (T)0, "invalid minimum of hashset: %d", set.minimum()->value);
+            TEST_ASSERT(*set.maximum() != (T)9 && *set.maximum() != (T)7, "invalid maximum of hashset: %d", set.maximum()->value);
+            TEST_ASSERT(set.size() != 5, "invalid hashset size!");
             set.erase(set.begin(), set.end());
-            TEST_ASSERT(set.minimum() != set.end(), "invalid minimum iterator of tree!");
-            TEST_ASSERT(set.maximum() != set.end(), "invalid maximum iterator of tree!");
-            TEST_ASSERT(set.size(), "tree is not empty!");
-            TEST_ASSERT(!set.empty(), "tree is not empty!");
+            TEST_ASSERT(set.minimum() != set.end(), "invalid minimum iterator of hashset!");
+            TEST_ASSERT(set.maximum() != set.end(), "invalid maximum iterator of hashset!");
+            TEST_ASSERT(set.size(), "hashset is not empty!");
+            TEST_ASSERT(!set.empty(), "hashset is not empty!");
 
             cout << "test finished with type: " << set.begin()->type2String() << endl;
         }
@@ -112,10 +112,10 @@ namespace QLanguage
             pair<hashset<int>::iterator, bool> l = set.insert(1);
             TEST_ASSERT(l.second, "invalid insert unique value with same value!");
 
-            TEST_ASSERT(set.minimum() != set.begin(), "invalid minimum value with tree begin!");
-            TEST_ASSERT(set.maximum() == set.end(), "invalid maximum value with tree end!");
+            TEST_ASSERT(*set.minimum() != 1, "invalid minimum of hashset: %d!", *set.minimum());
+            TEST_ASSERT(*set.maximum() != 2, "invalid maximum of hashset: %d!", *set.maximum());
 
-            TEST_ASSERT(set.size() != 2, "invalid tree size!");
+            TEST_ASSERT(set.size() != 2, "invalid hashset size!");
             for(int i = 0; i < 10; ++i)
             {
                 pair<hashset<int>::iterator, bool> r = set.insert(i);
@@ -130,26 +130,26 @@ namespace QLanguage
                     break;
                 }
             }
-            TEST_ASSERT(*set.minimum() != 0, "invalid minimum of tree: %d", *set.minimum());
-            TEST_ASSERT(*set.maximum() != 9, "invalid maximum of tree: %d", *set.maximum());
-            TEST_ASSERT(set.size() != 10, "invalid tree size!");
+            TEST_ASSERT(*set.minimum() != 0, "invalid minimum of hashset: %d", *set.minimum());
+            TEST_ASSERT(*set.maximum() != 9, "invalid maximum of hashset: %d", *set.maximum());
+            TEST_ASSERT(set.size() != 10, "invalid hashset size!");
             set.erase(set.begin());
-            TEST_ASSERT(*set.minimum() != 1, "invalid minimum of tree: %d", *set.minimum());
-            TEST_ASSERT(*set.maximum() != 9, "invalid maximum of tree: %d", *set.maximum());
-            TEST_ASSERT(set.size() != 9, "invalid tree size!");
+            TEST_ASSERT(*set.minimum() != 0, "invalid minimum of hashset: %d", *set.minimum());
+            TEST_ASSERT(*set.maximum() != 9, "invalid maximum of hashset: %d", *set.maximum());
+            TEST_ASSERT(set.size() != 9, "invalid hashset size!");
             set.erase(1);
-            TEST_ASSERT(*set.minimum() != 2, "invalid minimum of tree: %d", *set.minimum());
-            TEST_ASSERT(*set.maximum() != 9, "invalid maximum of tree: %d", *set.maximum());
-            TEST_ASSERT(set.size() != 8, "invalid tree size!");
+            TEST_ASSERT(*set.minimum() != 0, "invalid minimum of hashset: %d", *set.minimum());
+            TEST_ASSERT(*set.maximum() != 9, "invalid maximum of hashset: %d", *set.maximum());
+            TEST_ASSERT(set.size() != 8, "invalid hashset size!");
             set.erase(set.begin(), ++++++set.begin());
-            TEST_ASSERT(*set.minimum() != 5, "invalid minimum of tree: %d", *set.minimum());
-            TEST_ASSERT(*set.maximum() != 9, "invalid maximum of tree: %d", *set.maximum());
-            TEST_ASSERT(set.size() != 5, "invalid tree size!");
+            TEST_ASSERT(*set.minimum() != 2, "invalid minimum of hashset: %d", *set.minimum());
+            TEST_ASSERT(*set.maximum() != 9, "invalid maximum of hashset: %d", *set.maximum());
+            TEST_ASSERT(set.size() != 5, "invalid hashset size!");
             set.erase(set.begin(), set.end());
-            TEST_ASSERT(set.minimum() != set.end(), "invalid minimum iterator of tree!");
-            TEST_ASSERT(set.maximum() != set.end(), "invalid maximum iterator of tree!");
-            TEST_ASSERT(set.size(), "tree is not empty!");
-            TEST_ASSERT(!set.empty(), "tree is not empty!");
+            TEST_ASSERT(set.minimum() != set.end(), "invalid minimum iterator of hashset!");
+            TEST_ASSERT(set.maximum() != set.end(), "invalid maximum iterator of hashset!");
+            TEST_ASSERT(set.size(), "hashset is not empty!");
+            TEST_ASSERT(!set.empty(), "hashset is not empty!");
         }
 
         TEST_CASE(TestHashSet_SmallObject)

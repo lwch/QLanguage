@@ -328,7 +328,7 @@ struct hash<QLanguage::UnitTest::SmallObject<T> >
 {
     inline const HASH_KEY_TYPE operator()(const QLanguage::UnitTest::SmallObject<T>& x)const
     {
-        return (HASH_KEY_TYPE)x.value;
+        return hash_seq((const uchar*)&x.value, sizeof(x.value));
     }
 };
 

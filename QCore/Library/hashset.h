@@ -23,13 +23,15 @@ namespace QLanguage
                   typename Hash = hash<T>,
                   size_t Max_Bucket_Length = 11,
                   bool Resize = true,
+                  typename Less = less<T>,
+                  typename Greater = greater<T>,
                   typename Compare = equal_to<T> >
         class hashset
         {
         protected:
             typedef T key_type;
             typedef T value_type;
-            typedef hashtable<key_type, value_type, identity<value_type>, Max_Bucket_Length, Resize, Hash, Compare> container_type;
+            typedef hashtable<key_type, value_type, identity<key_type>, identity<value_type>, Max_Bucket_Length, Resize, Hash, Less, Greater, Compare> container_type;
             typedef hashset<T, Hash, Max_Bucket_Length, Resize, Compare> self;
 
             container_type container;
