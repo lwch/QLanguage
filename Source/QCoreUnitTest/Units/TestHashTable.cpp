@@ -21,17 +21,17 @@ namespace QLanguage
         template <typename T>
         void test_hashtable()
         {
-            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > ht;
-            typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator i = ht.insert_equal((T)1);
+            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> >, identity<SmallObject<T> > > ht;
+            typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> >, identity<SmallObject<T> > >::iterator i = ht.insert_equal((T)1);
             TEST_ASSERT(i == ht.end(), "invalid iterator!");
             TEST_ASSERT(ht.find((T)1) == ht.end(), "invalid find value!");
-            typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator j = ht.insert_equal((T)1);
+            typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> >, identity<SmallObject<T> > >::iterator j = ht.insert_equal((T)1);
             TEST_ASSERT(i == j, "invalid insert same value!");
 
-            pair<typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator, bool> k = ht.insert_unique((T)2);
+            pair<typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> >, identity<SmallObject<T> > >::iterator, bool> k = ht.insert_unique((T)2);
             TEST_ASSERT(!k.second, "invalid insert unique value with different value!");
             TEST_ASSERT(ht.find((T)2) == ht.end(), "invalid find value!");
-            pair<typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > >::iterator, bool> l = ht.insert_unique((T)1);
+            pair<typename hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> >, identity<SmallObject<T> > >::iterator, bool> l = ht.insert_unique((T)1);
             TEST_ASSERT(l.second, "invalid insert unique value with same value!");
 
             TEST_ASSERT(ht.size() != 3, "invalid tree size!");
@@ -51,8 +51,8 @@ namespace QLanguage
                     break;
                 }
             }
-            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > ht1 = ht;
-            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > ht2;
+            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> >, identity<SmallObject<T> > > ht1 = ht;
+            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> >, identity<SmallObject<T> > > ht2;
             ht2 = ht1;
 
             ht.erase(ht.begin());
@@ -70,7 +70,7 @@ namespace QLanguage
         template <typename T>
         void speed_hashtable()
         {
-            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> > > hashtable;
+            hashtable<SmallObject<T>, SmallObject<T>, identity<SmallObject<T> >, identity<SmallObject<T> > > hashtable;
 
             srand(clock());
 
@@ -93,17 +93,17 @@ namespace QLanguage
 
         TEST_CASE(TestHashTable_Int)
         {
-            hashtable<int, int, identity<int> > ht;
-            hashtable<int, int, identity<int> >::iterator i = ht.insert_equal(1);
+            hashtable<int, int, identity<int>, identity<int> > ht;
+            hashtable<int, int, identity<int>, identity<int> >::iterator i = ht.insert_equal(1);
             TEST_ASSERT(i == ht.end(), "invalid iterator!");
             TEST_ASSERT(ht.find(1) == ht.end(), "invalid find value!");
-            hashtable<int, int, identity<int> >::iterator j = ht.insert_equal(1);
+            hashtable<int, int, identity<int>, identity<int> >::iterator j = ht.insert_equal(1);
             TEST_ASSERT(i == j, "invalid insert same value!");
 
-            pair<hashtable<int, int, identity<int> >::iterator, bool> k = ht.insert_unique(2);
+            pair<hashtable<int, int, identity<int>, identity<int> >::iterator, bool> k = ht.insert_unique(2);
             TEST_ASSERT(!k.second, "invalid insert unique value with different value!");
             TEST_ASSERT(ht.find(2) == ht.end(), "invalid find value!");
-            pair<hashtable<int, int, identity<int> >::iterator, bool> l = ht.insert_unique(1);
+            pair<hashtable<int, int, identity<int>, identity<int> >::iterator, bool> l = ht.insert_unique(1);
             TEST_ASSERT(l.second, "invalid insert unique value with same value!");
 
             TEST_ASSERT(ht.size() != 3, "invalid tree size!");
@@ -123,8 +123,8 @@ namespace QLanguage
                     break;
                 }
             }
-            hashtable<int, int, identity<int> > ht1 = ht;
-            hashtable<int, int, identity<int> > ht2;
+            hashtable<int, int, identity<int>, identity<int> > ht1 = ht;
+            hashtable<int, int, identity<int>, identity<int> > ht2;
             ht2 = ht1;
 
             ht.erase(ht.begin());
@@ -153,7 +153,7 @@ namespace QLanguage
 
         TEST_CASE(TestHashTable_Speed_Int)
         {
-            hashtable<int, int, identity<int> > hashtable;
+            hashtable<int, int, identity<int>, identity<int> > hashtable;
 
             srand(clock());
 

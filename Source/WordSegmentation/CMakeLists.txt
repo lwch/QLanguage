@@ -3,6 +3,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(WordSegmentation)
 
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../check_bits.cmake)
+
 IF(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 FILE(GLOB VLD_Headers "../QCore/vld/*.h")
 FILE(GLOB VLD_Sources "../QCore/vld/*.cpp")

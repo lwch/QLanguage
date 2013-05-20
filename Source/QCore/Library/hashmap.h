@@ -30,7 +30,7 @@ protected:
     typedef Key          key_type;
     typedef T            data_type;
     typedef pair<Key, T> value_type;
-    typedef hashtable<key_type, value_type, select1st<value_type>, Max_Bucket_Length, Resize, Hash, Compare> instance_type;
+    typedef hashtable<key_type, value_type, select1st<value_type>, select2nd<value_type>, Max_Bucket_Length, Resize, Hash, Compare> instance_type;
     typedef hashmap<Key, T, Hash, Max_Bucket_Length, Resize, Compare> self;
 
     instance_type container;

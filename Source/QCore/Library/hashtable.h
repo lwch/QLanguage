@@ -49,7 +49,7 @@ public:
 template <typename T, typename HashTable_Type>
 class __hashtable_iterator_base : public bidirectional_iterator
 {
-    template <typename K, typename V, typename KOV,
+    template <typename K, typename V, typename KOV, typename VOV,
         size_t MBL,
         bool R,
         typename H,
@@ -120,7 +120,7 @@ protected:
         node = node->next;
         if (node == NULL)
         {
-            HASH_KEY_TYPE bucket = ht.index(ht.key(prev->data));
+            HASH_KEY_TYPE bucket = ht.index(ht._key(prev->data));
             typename __container_traits<typename HashTable_Type::buckets_type>::size_type size = ht.buckets.size();
             while(++bucket < size && (node = ht.buckets[bucket]) == NULL);
         }
@@ -128,7 +128,7 @@ protected:
 
     void dec()
     {
-        HASH_KEY_TYPE idx = ht.index(ht.key(node->data));
+        HASH_KEY_TYPE idx = ht.index(ht._key(node->data));
         node_type* prev = node;
         node = node->prev;
         if (node == NULL)
@@ -227,7 +227,7 @@ public:
     }
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename Key, typename Value, typename KeyOfValue,
+template <typename Key, typename Value, typename KeyOfValue, typename ValueOfValue,
     size_t Max_Bucket_Length = 11,
     bool Resize = true,
     typename Hash = hash<Key>,
@@ -236,7 +236,7 @@ template <typename Key, typename Value, typename KeyOfValue,
     typename Compare = equal_to<Key> >
 class hashtable
 {
-    typedef hashtable<Key, Value, KeyOfValue, Max_Bucket_Length, Resize, Hash, Less, Greater, Compare> self;
+    typedef hashtable<Key, Value, KeyOfValue, ValueOfValue, Max_Bucket_Length, Resize, Hash, Less, Greater, Compare> self;
     typedef Key                             key_type;
     typedef __hashtable_bucket_node<Value>  node_type;
     typedef node_type*                      link_type;
@@ -263,7 +263,8 @@ public:
     typedef __reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
 protected:
     size_type           length;
-    KeyOfValue          key;
+    KeyOfValue          _key;
+    ValueOfValue        _value;
     Hash                hash;
     Less                less;
     Greater             greater;
@@ -297,6 +298,14 @@ public:
 //     }
 
     hashtable(const self& x)
+        : length(x.length)
+        , _key(x._key)
+        , _value(x._value)
+        , hash(x.hash)
+        , less(x.less)
+        , greater(x.greater)
+        , compare(x.compare)
+        , buckets_length(x.buckets_length)
     {
         copyFrom(x);
     }
@@ -419,7 +428,7 @@ public:
         link_type current = buckets[idx];
         while (current)
         {
-            if (compare(k, key(current->data)))
+            if (compare(k, _key(current->data)))
             {
                 return current->data;
             }
@@ -433,7 +442,7 @@ public:
         link_type p = position.node;
         if (p)
         {
-            HASH_KEY_TYPE idx = index(key(p->data));
+            HASH_KEY_TYPE idx = index(_key(p->data));
             if (p->prev) p->prev->next = p->next;
             else buckets[idx] = p->next;
 
@@ -451,7 +460,7 @@ public:
         link_type current = buckets[idx];
         while (current)
         {
-            if (compare(k, key(current->data)))
+            if (compare(k, _key(current->data)))
             {
                 if (current->prev) current->prev->next = current->next;
                 else buckets[idx] = current->next;
@@ -483,7 +492,7 @@ public:
         link_type current = buckets[idx];
         while (current)
         {
-            if (compare(k, key(current->data))) break;
+            if (compare(k, _key(current->data))) break;
             current = current->next;
         }
         return iterator(current, *this);
@@ -495,7 +504,7 @@ public:
         link_type current = buckets[idx];
         while (current)
         {
-            if (compare(k, key(current->data))) break;
+            if (compare(k, _key(current->data))) break;
             current = current->next;
         }
         return const_iterator(current, *this);
@@ -510,7 +519,7 @@ public:
 
         while (current)
         {
-            if (compare(k, key(current->data)))
+            if (compare(k, _key(current->data)))
             {
                 ++n;
                 bStart = true;
@@ -531,7 +540,7 @@ public:
 
         while (current)
         {
-            if (compare(k, key(current->data)))
+            if (compare(k, _key(current->data)))
             {
                 first = current;
                 bStart = true;
@@ -553,7 +562,7 @@ public:
 
         while (current)
         {
-            if (compare(k, key(current->data)))
+            if (compare(k, _key(current->data)))
             {
                 first = current;
                 bStart = true;
@@ -636,7 +645,7 @@ public:
             while (current)
             {
                 if (j == NULL) j = current;
-                else if (greater(current->data, j->data)) j = current;
+                else if (greater(_value(current->data), _value(j->data))) j = current;
                 current = current->next;
             }
         }
@@ -652,7 +661,7 @@ public:
             while (current)
             {
                 if (j == NULL) j = current;
-                else if (less(current->data, j->data)) j = current;
+                else if (less(_value(current->data), _value(j->data))) j = current;
                 current = current->next;
             }
         }
@@ -674,6 +683,15 @@ public:
         if (&x != this)
         {
             copyFrom(x);
+
+            length         = x.length;
+            _key           = x._key;
+            _value         = x._value;
+            hash           = x.hash;
+            less           = x.less;
+            greater        = x.greater;
+            compare        = x.compare;
+            buckets_length = x.buckets_length;
         }
         return *this;
     }
@@ -685,7 +703,7 @@ protected:
 
     inline HASH_KEY_TYPE index(const value_type& x, typename __container_traits<buckets_type>::size_type sz)
     {
-        return hash(key(x)) % sz;
+        return hash(_key(x)) % sz;
     }
 
     inline bool willResize(HASH_KEY_TYPE bucket_index)
@@ -700,10 +718,10 @@ protected:
         link_type node = Alloc::allocate();
         construct(node, x);
         link_type current = buckets[idx];
-        key_type k = key(x);
+        key_type k = _key(x);
         while (current)
         {
-            if (compare(k, key(current->data)))
+            if (compare(k, _key(current->data)))
             {
                 node->next = current->next;
                 node->prev = current;
@@ -730,7 +748,7 @@ protected:
         link_type current = buckets[idx];
         while (current)
         {
-            if (compare(key(x), key(current->data)))
+            if (compare(_key(x), _key(current->data)))
             {
                 return pair<iterator, bool>(iterator(current, *this), false);
             }
@@ -772,13 +790,6 @@ protected:
             }
             buckets.push_back(pHaed);
         }
-        length         = x.length;
-        key            = x.key;
-        hash           = x.hash;
-        less           = x.less;
-        greater        = x.greater;
-        compare        = x.compare;
-        buckets_length = x.buckets_length;
     }
 };
 
