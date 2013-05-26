@@ -95,7 +95,22 @@ namespace QLanguage
 
     void LALR1Production::print(Library::ostream& stream)const
     {
-        parent::print(stream);
+        stream << string::format("%s ->", left.name.c_str());
+        for (size_t i = 0, m = right.size(); i < m; ++i)
+        {
+            if (i == idx) stream << " .";
+            if (right[i].type == parent::Item::TerminalSymbol)
+            {
+                stream << " ";
+                right[i].rule.printShowName(stream);
+            }
+            else
+            {
+                stream << string::format(" %s", right[i].name.c_str());
+            }
+        }
+        stream << endl;
+
         stream << "wildCards:" << endl;
         for (vector<Item>::const_iterator i = wildCards.begin(), m = wildCards.end(); i != m; ++i)
         {
