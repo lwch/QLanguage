@@ -1,9 +1,10 @@
-%token "void" "char" "short" "int" "long" "float" "double";
+%token "void" "char" "short" "int" "long" "float" "double" "as";
 %token "unsigned";
 %token "string";
 %token "interface" "class";
 %token "public" "private" "protected";
 %token "implement" "extend";
+%token "return";
 %token "(" ")" "{" "}" "[" "]" "," ";" ".";
 %token "if" "else";
 %token "for";
@@ -26,25 +27,46 @@ type_desc -> ["unsigned"] "char"
 
 value_desc -> "{Real}"
            |  "{Digit}"
+		   |  member_desc
            |  "{Letter}"
            |  "{String}"
+		   |  array_value_desc
            ;
+
+values -> "{" values "}"
+       |  values "," value_desc
+       |  value_desc
+	   ;
+
+member_desc -> member_desc "." "{Letter}"
+            |  "{Letter}"
+			;
+
+array_value_desc -> "{" values "}"
+                 ;
+
+value_list -> value_list "," exp
+           |  exp
+		   ;
 
 attribute -> "public"
           |  "private"
           |  "protected"
           ;
 
-array_lst -> [array_lst] "[" "{Digit}" "]"
+array_lst -> array_lst "[" ["{Digit}"] "]"
+          |  "[" ["{Digit}"] "]"
           ;
 
 start -> item_list
       ;
 
-paramter_list -> [paramter_list] paramter
+paramter_list -> paramter_list "," paramter
+              |  paramter
               ;
 
-paramter -> type_desc ["{Letter}"]
+paramter -> type_desc "{Letter}" [array_lst]
+         |  type_desc
          ;
 
 item_list -> [item_list] item
@@ -88,7 +110,7 @@ class_desc2 -> attribute "implement" "{Letter}"
 			;
 
 class_content -> [class_content] function_desc
-              |  [class_content] declare_desc ";"
+              |  [class_content] [attribute] declare_desc ";"
               ;
 
 function_desc -> [attribute] type_desc "{Letter}" "(" [paramter_list] ")" block
@@ -96,22 +118,24 @@ function_desc -> [attribute] type_desc "{Letter}" "(" [paramter_list] ")" block
               ;
 
 stmt -> assign_desc ";"
+     |  call_desc ";"
      |  declare_desc ";"
      |  if_desc
      |  for_desc
      |  while_desc ";"
      |  do_desc ";"
+	 |  return_desc ";"
      ;
 
-declare_desc -> declare_desc "," "{Letter}" [array_lst]
-             |  type_desc "{Letter}" [array_lst]
+declare_desc -> declare_desc "," "{Letter}" [array_lst] ["=" exp]
+             |  type_desc "{Letter}" [array_lst] ["=" exp]
              ;
 
-assign_desc -> assign_left "=" exp
+assign_desc -> exp "=" exp
             ;
 
-assign_left -> "{Letter}"
-			;
+call_desc -> member_desc "(" [value_list] ")"
+          ;
 
 if_desc -> "if" "(" exp ")" stmt [if_desc2]
         |  "if" "(" exp ")" block [if_desc2]
@@ -129,6 +153,9 @@ while_desc -> "while" "(" exp ")" block
 
 do_desc -> "do" block "while" "(" exp ")"
         ;
+
+return_desc -> "return" exp
+            ;
 
 exp -> exp ">" "=" exp1
     |  exp "<" "=" exp1
@@ -157,5 +184,6 @@ exp2 -> exp2 "*" exp3
      ;
 
 exp3 -> "(" exp ")"
-     |  value_desc
+     |  call_desc
+     |  value_desc ["as" "{Letter}"]
      ;

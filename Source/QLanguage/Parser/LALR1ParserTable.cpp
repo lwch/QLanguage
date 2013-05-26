@@ -34,11 +34,14 @@ namespace QLanguage
                 {
                     if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), vts[j]) != p.wildCards.end())
                     {
-                        ptr->first = 'R';
-                        ptr->second = (ushort)index_of(_rules.begin(), _rules.end(), p);
+                        if (ptr->first != 'S') // 移进归约冲突，默认移进
+                        {
+                            ptr->first = 'R';
+                            ptr->second = (ushort)index_of(_rules.begin(), _rules.end(), p);
+                        }
                     }
                     vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vts[j], compare_edge_item_is);
-                    if (k != edges[*i].end())
+                    if (k != edges[*i].end() && ptr->first != 'S') // 移进移进冲突，默认取第一条产生式的
                     {
                         ptr->first = 'S';
                         ptr->second = k->pTo->idx;
@@ -56,8 +59,11 @@ namespace QLanguage
                 ++ptr;
                 for (size_t j = 0, n = vns.size(); j < n; ++j, ++ptr)
                 {
-                    vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vns[j], compare_edge_item_is);
-                    if (k != edges[*i].end()) ptr->second = k->pTo->idx;
+                    if (ptr->second == 0)
+                    {
+                        vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vns[j], compare_edge_item_is);
+                        if (k != edges[*i].end()) ptr->second = k->pTo->idx;
+                    }
                 }
             }
         }

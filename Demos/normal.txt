@@ -1,0 +1,80 @@
+interface Object
+{
+    void construct();
+
+    string toString();
+}
+
+class Rect public implement Object
+{
+    public void construct()
+    {
+        left = top = right = bottom = 0;
+    }
+
+    public void construct(int left, int top, int right, int bottom)
+    {
+        this.left   = left;
+        this.top    = top;
+        this.right  = right;
+        this.bottom = bottom;
+    }
+
+    public int width()
+    {
+        return right - left;
+    }
+
+    public int height()
+    {
+        return top - bottom;
+    }
+
+    public string toString()
+    {
+        return "";
+    }
+
+    public int left, top, right, bottom;
+}
+
+class IntegerArray public implement Object
+{
+    public void construct(int values[])
+    {
+        this.values = values;
+    }
+
+    public string toString()
+    {
+        return "";
+    }
+
+    public int values[];
+}
+
+class IntegerArray2 public implement Object
+{
+    public void construct(int values[][])
+    {
+        this.values = values;
+    }
+
+    public string toString()
+    {
+        return "";
+    }
+
+    public int values[][];
+}
+
+int main()
+{
+    Rect r = {1, 2, 3, 4};
+    int width  = r.width();
+    int height = r.height();
+    IntegerArray a1 = {1, 2, 3, 4};
+    IntegerArray a2 = {{1}, {2, 3}, {4}};
+    Object o = r as Object;
+    return 0;
+}
