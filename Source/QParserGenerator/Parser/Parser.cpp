@@ -155,8 +155,8 @@ namespace QLanguage
             cerr << "lalr1 make error" << endl;
             return false;
         }
-        fstream s("QLanguage.lalr1", fstream::out | fstream::text);
-        lalr1.print(s);
+//         fstream s("QLanguage.lalr1", fstream::out | fstream::text);
+//         lalr1.print(s);
         if (!lalr1.output(parserTablePath))
         {
             cerr << "lalr1 output error" << endl;
