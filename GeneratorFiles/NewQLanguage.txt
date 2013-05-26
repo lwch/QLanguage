@@ -21,6 +21,7 @@ type_desc -> ["unsigned"] "char"
           |  "float"
           |  "double"
           |  "string"
+		  |  "{Letter}"
           ;
 
 value_desc -> "{Real}"
@@ -103,7 +104,7 @@ stmt -> assign_desc ";"
      ;
 
 declare_desc -> declare_desc "," "{Letter}" [array_lst]
-             |  "{Letter}" "{Letter}" [array_lst]
+             |  type_desc "{Letter}" [array_lst]
              ;
 
 assign_desc -> assign_left "=" exp

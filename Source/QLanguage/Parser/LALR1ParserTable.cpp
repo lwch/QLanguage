@@ -25,35 +25,40 @@ namespace QLanguage
         vector<pair<uchar, ushort> >::iterator ptr = table.begin();
         for (vector<Item*>::const_iterator i = items.begin(), m = items.end(); i != m; ++i)
         {
-            const LALR1Production& p = (*i)->data.front();
-            for (size_t j = 0, n = vts.size(); j < n; ++j, ++ptr)
+            vector<pair<uchar, ushort> >::iterator pt = ptr;
+            for (vector<LALR1Production>::const_iterator k = (*i)->data.begin(), o = (*i)->data.end(); k != o; ++k)
             {
-                if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), vts[j]) != p.wildCards.end())
+                const LALR1Production& p = *k;
+                ptr = pt;
+                for (size_t j = 0, n = vts.size(); j < n; ++j, ++ptr)
                 {
-                    ptr->first = 'R';
-                    ptr->second = (ushort)index_of(_rules.begin(), _rules.end(), p);
+                    if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), vts[j]) != p.wildCards.end())
+                    {
+                        ptr->first = 'R';
+                        ptr->second = (ushort)index_of(_rules.begin(), _rules.end(), p);
+                    }
+                    vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vts[j], compare_edge_item_is);
+                    if (k != edges[*i].end())
+                    {
+                        ptr->first = 'S';
+                        ptr->second = k->pTo->idx;
+                    }
                 }
-                vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vts[j], compare_edge_item_is);
-                if (k != edges[*i].end())
+                if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), LALR1Production::Item()) != p.wildCards.end())
                 {
-                    ptr->first = 'S';
-                    ptr->second = k->pTo->idx;
+                    if (p.left == begin && p.idx == p.right.size()) ptr->first = 'A';
+                    else
+                    {
+                        ptr->first = 'R';
+                        ptr->second = (ushort)index_of(_rules.begin(), _rules.end(), p);
+                    }
                 }
-            }
-            if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), LALR1Production::Item()) != p.wildCards.end())
-            {
-                if (p.left == begin && p.idx == p.right.size()) ptr->first = 'A';
-                else
+                ++ptr;
+                for (size_t j = 0, n = vns.size(); j < n; ++j, ++ptr)
                 {
-                    ptr->first = 'R';
-                    ptr->second = (ushort)index_of(_rules.begin(), _rules.end(), p);
+                    vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vns[j], compare_edge_item_is);
+                    if (k != edges[*i].end()) ptr->second = k->pTo->idx;
                 }
-            }
-            ++ptr;
-            for (size_t j = 0, n = vns.size(); j < n; ++j, ++ptr)
-            {
-                vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vns[j], compare_edge_item_is);
-                if (k != edges[*i].end()) ptr->second = k->pTo->idx;
             }
         }
         return true;
