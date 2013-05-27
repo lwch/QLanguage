@@ -5,7 +5,8 @@
 %token "public" "private" "protected";
 %token "implement" "extend";
 %token "return";
-%token "(" ")" "{" "}" "[" "]" "," ";" ".";
+%token "template" "typename";
+%token "(" ")" "{" "}" "[" "]" "<" ">" "," ";" ".";
 %token "if" "else";
 %token "for";
 %token "while";
@@ -85,12 +86,23 @@ stmt_list -> [stmt_list] stmt
 block -> "{" [stmt_list] "}"
       ;
 
-global_function_desc -> type_desc "{Letter}" "(" [paramter_list] ")" block
-                     |  "void" "{Letter}" "(" [paramter_list] ")" block
+template_desc -> "template" "<" [template_list] ">"
+              ;
+
+template_list -> template_list "," template_item
+              |  template_item
+              ;
+
+template_item -> "typename" "{Letter}"
+              |  type_desc "{Letter}"
+			  ;
+
+global_function_desc -> [template_desc] type_desc "{Letter}" "(" [paramter_list] ")" block
+                     |  [template_desc] "void" "{Letter}" "(" [paramter_list] ")" block
                      ;
 
-function_declare -> type_desc "{Letter}" "(" [paramter_list] ")" ";"
-                 |  "void" "{Letter}" "(" [paramter_list] ")" ";"
+function_declare -> [template_desc] type_desc "{Letter}" "(" [paramter_list] ")" ";"
+                 |  [template_desc] "void" "{Letter}" "(" [paramter_list] ")" ";"
                  ;
 
 interface_desc -> "interface" "{Letter}" "{" [interface_content] "}"
@@ -99,7 +111,7 @@ interface_desc -> "interface" "{Letter}" "{" [interface_content] "}"
 interface_content -> [interface_content] function_declare
                   ;
 
-class_desc -> class_desc1 [class_desc2] "{" [class_content] "}"
+class_desc -> [template_desc] class_desc1 [class_desc2] "{" [class_content] "}"
            ;
 
 class_desc1 -> "class" ["{Letter}"]
@@ -113,8 +125,8 @@ class_content -> [class_content] function_desc
               |  [class_content] [attribute] declare_desc ";"
               ;
 
-function_desc -> [attribute] type_desc "{Letter}" "(" [paramter_list] ")" block
-              |  [attribute] "void" "{Letter}" "(" [paramter_list] ")" block
+function_desc -> [template_desc] [attribute] type_desc "{Letter}" "(" [paramter_list] ")" block
+              |  [template_desc] [attribute] "void" "{Letter}" "(" [paramter_list] ")" block
               ;
 
 stmt -> assign_desc ";"

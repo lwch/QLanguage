@@ -68,6 +68,21 @@ class IntegerArray2 public implement Object
     public int values[][];
 }
 
+template <typename T>
+class TemplateObject public implement Object
+{
+    template <int n>
+    int value()
+    {
+        return n;
+    }
+}
+
+template <typename T, int n>
+int template_function(T m)
+{
+}
+
 int main()
 {
     Rect r = {1, 2, 3, 4};
