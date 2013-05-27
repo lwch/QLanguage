@@ -64,29 +64,44 @@ int main(int argv, char* args[])
     str.setsize(fs.size());
     fs.close();
 
-    Lexer lexer;
-    clock_t c = clock();
-    if (lexer.parse(str))
+    try
     {
-        c = clock() - c;
-        cout.setColor(cout.lightWith(stdstream::green));
-        cout << "Lexer Parse Finish ..." << endl;
-        cout.setColor(cout.lightWith(stdstream::white));
-        cout << string::format("Use of time: %d", c) << endl;
-
-        Parser parser(parserTable.rules);
-        c = clock();
-        if (parserTable.parse(lexer.result, &parser))
+        Lexer lexer;
+        clock_t c = clock();
+        if (lexer.parse(str))
         {
             c = clock() - c;
             cout.setColor(cout.lightWith(stdstream::green));
-            cout << "Parser Parse Finish ..." << endl;
+            cout << "Lexer Parse Finish ..." << endl;
             cout.setColor(cout.lightWith(stdstream::white));
             cout << string::format("Use of time: %d", c) << endl;
+
+            Parser parser(parserTable.rules);
+            c = clock();
+            if (parserTable.parse(lexer.result, &parser))
+            {
+                c = clock() - c;
+                cout.setColor(cout.lightWith(stdstream::green));
+                cout << "Parser Parse Finish ..." << endl;
+                cout.setColor(cout.lightWith(stdstream::white));
+                cout << string::format("Use of time: %d", c) << endl;
+            }
+            else cerr << "parser error" << endl;
         }
-        else cerr << "parser error" << endl;
+        else cerr << "lexer parse error" << endl;
     }
-    else cerr << "lexer parse error" << endl;
+    catch (const error<const char*>& e)
+    {
+        e.print();
+    }
+    catch (const error<char*>& e)
+    {
+        e.print();
+    }
+    catch (const error<string>& e)
+    {
+        e.print();
+    }
 
     return 0;
 }

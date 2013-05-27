@@ -150,7 +150,11 @@ namespace QLanguage
             case 'A':
                 return true;
             default:
-                if (idx == 0) throw error<const char*>("get action error", __FILE__, __LINE__);
+                if (idx == 0)
+                {
+                    throw error<const char*>("get action error", __FILE__, __LINE__);
+                    return false;
+                }
                 --idx;
                 break;
             }
