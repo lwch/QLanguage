@@ -1,4 +1,5 @@
-%token "void" "char" "short" "int" "long" "float" "double" "as";
+%token "void" "char" "short" "int" "long" "float" "double" "auto" "as";
+%token "true" "false";
 %token "unsigned";
 %token "string";
 %token "interface" "class";
@@ -23,13 +24,19 @@ type_desc -> ["unsigned"] "char"
           |  "float"
           |  "double"
           |  "string"
+		  |  "auto"
 		  |  "{Letter}"
           ;
 
-value_desc -> "{Real}"
+member_desc -> member_desc "." "{Letter}"
+            |  "{Letter}"
+			;
+
+value_desc -> "true"
+           |  "false"
+		   |  "{Real}"
            |  "{Digit}"
 		   |  member_desc
-           |  "{Letter}"
            |  "{String}"
 		   |  array_value_desc
            ;
@@ -38,10 +45,6 @@ values -> "{" values "}"
        |  values "," value_desc
        |  value_desc
 	   ;
-
-member_desc -> member_desc "." "{Letter}"
-            |  "{Letter}"
-			;
 
 array_value_desc -> "{" values "}"
                  ;
@@ -136,14 +139,21 @@ stmt -> assign_desc ";"
      |  for_desc
      |  while_desc ";"
      |  do_desc ";"
-	 |  return_desc ";"
+	 |  return_desc
      ;
 
 declare_desc -> declare_desc "," "{Letter}" [array_lst] ["=" exp]
              |  type_desc "{Letter}" [array_lst] ["=" exp]
              ;
 
-assign_desc -> exp "=" exp
+assign_desc -> member_desc "+" "=" exp
+			|  member_desc "-" "=" exp
+			|  member_desc "&" "=" exp
+			|  member_desc "|" "=" exp
+			|  member_desc "^" "=" exp
+			|  member_desc "<" "<" "=" exp
+			|  member_desc ">" ">" "=" exp
+			|  member_desc "=" exp
             ;
 
 call_desc -> member_desc "(" [value_list] ")"
@@ -166,7 +176,8 @@ while_desc -> "while" "(" exp ")" block
 do_desc -> "do" block "while" "(" exp ")"
         ;
 
-return_desc -> "return" exp
+return_desc -> "return" block
+            |  "return" exp ";"
             ;
 
 exp -> exp ">" "=" exp1
@@ -180,22 +191,27 @@ exp -> exp ">" "=" exp1
     |  exp "&" exp1
     |  exp "|" exp1
     |  exp "^" exp1
-    |  "!" exp1
-    |  exp1
+	|  exp1
     ;
 
-exp1 -> exp1 "+" exp2
-     |  exp1 "-" exp2
+exp1 -> "!" exp2
+	 |  "+" exp2
+	 |  "-" exp2
      |  exp2
-     ;
+	 ;
 
-exp2 -> exp2 "*" exp3
-     |  exp2 "/" exp3
-     |  exp2 "%" exp3
+exp2 -> exp2 "+" exp3
+     |  exp2 "-" exp3
      |  exp3
      ;
 
-exp3 -> "(" exp ")"
+exp3 -> exp3 "*" exp4
+     |  exp3 "/" exp4
+     |  exp3 "%" exp4
+     |  exp4
+     ;
+
+exp4 -> "(" exp ")"
      |  call_desc
      |  value_desc ["as" "{Letter}"]
      ;

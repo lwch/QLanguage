@@ -19,7 +19,7 @@
 
 namespace QLanguage
 {
-    bool LALR1::buildParserTable()
+    bool LALR1::buildParserTable(ostream& errStream)
     {
         table.initialize(items.size() * (vts.size() + 1 + vns.size()));
         vector<pair<uchar, ushort> >::iterator ptr = table.begin();
@@ -34,17 +34,23 @@ namespace QLanguage
                 {
                     if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), vts[j]) != p.wildCards.end())
                     {
+                        ushort z = (ushort)index_of(_rules.begin(), _rules.end(), p);
+                        if (ptr->first && (ptr->first != 'R' || ptr->second != z)) errStream << ptr->first << '(' << ptr->second << ") -> R(" << z << ')' << endl;
                         if (ptr->first != 'S') // 移进归约冲突，默认移进
                         {
                             ptr->first = 'R';
-                            ptr->second = (ushort)index_of(_rules.begin(), _rules.end(), p);
+                            ptr->second = z;
                         }
                     }
                     vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vts[j], compare_edge_item_is);
-                    if (k != edges[*i].end() && ptr->first != 'S') // 移进移进冲突，默认取第一条产生式的
+                    if (k != edges[*i].end())
                     {
-                        ptr->first = 'S';
-                        ptr->second = k->pTo->idx;
+                        if (ptr->first && (ptr->first != 'S' || ptr->second != k->pTo->idx)) errStream << ptr->first << '(' << ptr->second << ") -> S(" << k->pTo->idx << ')' << endl;
+                        if (ptr->first != 'S') // 移进移进冲突，默认取第一条产生式的
+                        {
+                            ptr->first = 'S';
+                            ptr->second = k->pTo->idx;
+                        }
                     }
                 }
                 if (p.idx == p.right.size() && find(p.wildCards.begin(), p.wildCards.end(), LALR1Production::Item()) != p.wildCards.end())

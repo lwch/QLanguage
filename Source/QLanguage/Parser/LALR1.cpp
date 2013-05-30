@@ -50,7 +50,7 @@ namespace QLanguage
         this->start = start;
     }
 
-    bool LALR1::make()
+    bool LALR1::make(ostream& errStream)
     {
         vector<LALR1Production> v;
         v.push_back(inputProductions[begin][0]);
@@ -127,7 +127,7 @@ namespace QLanguage
         }
         sort(vts.begin(), vts.end());
         sort(vns.begin(), vns.end());
-        return buildParserTable();
+        return buildParserTable(errStream);
     }
 
     LALR1::Item* LALR1::closure(const vector<LALR1Production>& kernel)

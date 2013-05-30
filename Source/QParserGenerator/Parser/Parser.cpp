@@ -150,7 +150,8 @@ namespace QLanguage
         else pItem = &vns[idx].second;
         lalr1.setStart(pItem);
         lalr1.setProductions(productions);
-        if (!lalr1.make())
+        fstream errStream("QLanguage.error", fstream::out | fstream::text);
+        if (!lalr1.make(errStream))
         {
             cerr << "lalr1 make error" << endl;
             return false;

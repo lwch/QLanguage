@@ -91,5 +91,8 @@ int main()
     IntegerArray a1 = {1, 2, 3, 4};
     IntegerArray a2 = {{1}, {2, 3}, {4}};
     Object o = r as Object;
+    width -= 100;
+    width = height = 100;
+    width = -100;
     return 0;
 }
