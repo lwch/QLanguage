@@ -43,6 +43,16 @@ namespace QLanguage
                 }
             }
 
+            void print(ostream& stream)
+            {
+                stream << string::format("Item: %d", idx) << endl;
+                for (vector<LALR1Production>::const_iterator k = data.begin(), o = data.end(); k != o; ++k)
+                {
+                    k->print(stream);
+                }
+                stream << endl;
+            }
+
             inline const bool operator==(const Item& x)const
             {
                 return data == x.data;

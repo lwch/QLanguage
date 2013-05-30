@@ -1,17 +1,15 @@
-%token "[" "]" "," ";";
+%token "=" "+" "*" "id";
 
-%start start;
+%start S;
 
-array_lst -> [array_lst] "[" "{Digit}" "]"
-          ;
+S -> L "=" R
+  | R "+"
+  | R
+  ;
 
-start -> declare
-      ;
+L -> "*" R
+  |  "id"
+  ;
 
-declare -> declare_desc ";"
-        ;
-
-declare_desc -> declare_desc "," "{Letter}" array_lst
-             |  "{Letter}" "{Letter}" array_lst
-             |  "{Letter}" "{Letter}"
-             ;
+R -> L
+  ;
