@@ -19,11 +19,8 @@ namespace QLanguage
     {
     }
 
-    char* gpdata = NULL;
-
     bool ParserTable::loadFromData(const char* data, size_t size)
     {
-        gpdata = const_cast<char*>(data);
         if (compareString(data, size, PARSER_TABLE)) data += strlen(PARSER_TABLE);
         //uchar version = *data;
         ++data;
