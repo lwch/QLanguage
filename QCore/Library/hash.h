@@ -122,7 +122,7 @@ struct hash<QLanguage::Library::string>
 {
     inline const HASH_KEY_TYPE operator()(const QLanguage::Library::string& x)const
     {
-        return reinterpret_cast<HASH_KEY_TYPE>(x.c_str());
+        return hash_seq(reinterpret_cast<const uchar*>(x.c_str()), x.size());
     }
 };
 

@@ -113,7 +113,7 @@ namespace QLanguage
         void setProductions(const vector<Production>& productions);
         void setStart(Production::Item* start);
 
-        bool make();
+        bool make(ostream& errStream);
         bool output(const string& path);
         bool parse(const list<Lexer::Token>& l, BasicParser* pParser);
         inline vector<Production> rules() { return _rules; }
@@ -128,7 +128,7 @@ namespace QLanguage
         void symbols(Item* pItem, vector<Production::Item>& v);
         bool go(Item* pItem, const Production::Item& x, Item*& newItem);
         long itemIndex(Item* pItem);
-        bool buildParserTable();
+        bool buildParserTable(ostream& errStream);
         long index_of_vt(const string& str, long idx = 0);
         long getGoTo(ushort s, const Production::Item& i);
         static inline bool compare_production_item_is_vt(const Production::Item& i);

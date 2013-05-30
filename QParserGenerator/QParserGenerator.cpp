@@ -305,7 +305,7 @@ int main(int argv, char* args[])
 
             LALR1 lalr1(productions, itemStart);
             c = clock();
-            lalr1.make();
+            lalr1.make(cout);
             c = clock() - c;
 //             fstream lalr1stream("LALR1.txt", fstream::out);
 //             lalr1.print(lalr1stream);
