@@ -24,34 +24,34 @@ type_desc -> ["unsigned"] "char"
           |  "float"
           |  "double"
           |  "string"
-		  |  "auto"
-		  |  "{Letter}"
+          |  "auto"
+          |  "{Letter}"
           ;
 
 member_desc -> member_desc "." "{Letter}"
             |  "{Letter}"
-			;
+            ;
 
 value_desc -> "true"
            |  "false"
-		   |  "{Real}"
+           |  "{Real}"
            |  "{Digit}"
-		   |  member_desc
+           |  member_desc
            |  "{String}"
-		   |  array_value_desc
+           |  array_value_desc
            ;
 
 values -> "{" values "}"
        |  values "," value_desc
        |  value_desc
-	   ;
+       ;
 
 array_value_desc -> "{" values "}"
                  ;
 
 value_list -> value_list "," exp
            |  exp
-		   ;
+           ;
 
 attribute -> "public"
           |  "private"
@@ -98,7 +98,7 @@ template_list -> template_list "," template_item
 
 template_item -> "typename" "{Letter}"
               |  type_desc "{Letter}"
-			  ;
+              ;
 
 global_function_desc -> [template_desc] type_desc "{Letter}" "(" [paramter_list] ")" block
                      |  [template_desc] "void" "{Letter}" "(" [paramter_list] ")" block
@@ -122,7 +122,7 @@ class_desc1 -> "class" ["{Letter}"]
 
 class_desc2 -> attribute "implement" "{Letter}"
             |  attribute "extend" "{Letter}"
-			;
+            ;
 
 class_content -> [class_content] function_desc
               |  [class_content] [attribute] declare_desc ";"
@@ -139,7 +139,7 @@ stmt -> assign_desc ";"
      |  for_desc
      |  while_desc ";"
      |  do_desc ";"
-	 |  return_desc
+     |  return_desc
      ;
 
 declare_desc -> declare_desc "," "{Letter}" [array_lst] ["=" exp]
@@ -147,13 +147,13 @@ declare_desc -> declare_desc "," "{Letter}" [array_lst] ["=" exp]
              ;
 
 assign_desc -> member_desc "+" "=" exp
-			|  member_desc "-" "=" exp
-			|  member_desc "&" "=" exp
-			|  member_desc "|" "=" exp
-			|  member_desc "^" "=" exp
-			|  member_desc "<" "<" "=" exp
-			|  member_desc ">" ">" "=" exp
-			|  member_desc "=" exp
+            |  member_desc "-" "=" exp
+            |  member_desc "&" "=" exp
+            |  member_desc "|" "=" exp
+            |  member_desc "^" "=" exp
+            |  member_desc "<" "<" "=" exp
+            |  member_desc ">" ">" "=" exp
+            |  member_desc "=" exp
             ;
 
 call_desc -> member_desc "(" [value_list] ")"
@@ -191,14 +191,14 @@ exp -> exp ">" "=" exp1
     |  exp "&" exp1
     |  exp "|" exp1
     |  exp "^" exp1
-	|  exp1
+    |  exp1
     ;
 
 exp1 -> "!" exp2
-	 |  "+" exp2
-	 |  "-" exp2
+     |  "+" exp2
+     |  "-" exp2
      |  exp2
-	 ;
+     ;
 
 exp2 -> exp2 "+" exp3
      |  exp2 "-" exp3
