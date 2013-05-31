@@ -30,9 +30,15 @@ FILE(GLOB Parser_Sources "Parser/*.cpp")
 SET (Parser ${Parser_Headers} ${Parser_Sources})
 SOURCE_GROUP(Parser FILES ${Parser})
 
+FILE(GLOB Parser_SyntaxTree_Headers "Parser/SyntaxTree/*.h")
+FILE(GLOB Parser_SyntaxTree_Sources "Parser/SyntaxTree/*.cpp")
+SET (Parser_SyntaxTree ${Parser_SyntaxTree_Headers} ${Parser_SyntaxTree_Sources})
+SOURCE_GROUP(Parser\\SyntaxTree FILES ${Parser_SyntaxTree})
+
 LIST (APPEND FILES
 	${Lexer}
 	${Parser}
+	${Parser_SyntaxTree}
 	QLanguage.cpp
 )
 
