@@ -1,0 +1,178 @@
+0 : begin -> start
+1 : type_desc -> "unsigned" "char"
+2 : type_desc -> "char"
+3 : type_desc -> "unsigned" "short"
+4 : type_desc -> "short"
+5 : type_desc -> "unsigned" "int"
+6 : type_desc -> "int"
+7 : type_desc -> "unsigned" "long"
+8 : type_desc -> "long"
+9 : type_desc -> "float"
+10 : type_desc -> "double"
+11 : type_desc -> "string"
+12 : type_desc -> "auto"
+13 : type_desc -> "{Letter}"
+14 : member_desc -> member_desc "." "{Letter}"
+15 : member_desc -> "{Letter}"
+16 : value_desc -> "true"
+17 : value_desc -> "false"
+18 : value_desc -> "{Real}"
+19 : value_desc -> "{Digit}"
+20 : value_desc -> member_desc
+21 : value_desc -> "{String}"
+22 : value_desc -> array_value_desc
+23 : values -> "{" values "}"
+24 : values -> values "," value_desc
+25 : values -> value_desc
+26 : array_value_desc -> "{" values "}"
+27 : value_list -> value_list "," exp
+28 : value_list -> exp
+29 : attribute -> "public"
+30 : attribute -> "private"
+31 : attribute -> "protected"
+32 : array_lst -> array_lst "[" "{Digit}" "]"
+33 : array_lst -> array_lst "[" "]"
+34 : array_lst -> "[" "{Digit}" "]"
+35 : array_lst -> "[" "]"
+36 : start -> item_list
+37 : paramter_list -> paramter_list "," paramter
+38 : paramter_list -> paramter
+39 : paramter -> type_desc "{Letter}" array_lst
+40 : paramter -> type_desc "{Letter}"
+41 : paramter -> type_desc
+42 : item_list -> item_list item
+43 : item_list -> item
+44 : item -> global_function_desc
+45 : item -> declare_desc ";"
+46 : item -> interface_desc
+47 : item -> class_desc
+48 : stmt_list -> stmt_list stmt
+49 : stmt_list -> stmt
+50 : stmt_list -> stmt_list block
+51 : stmt_list -> block
+52 : block -> "{" stmt_list "}"
+53 : block -> "{" "}"
+54 : template_desc -> "template" "<" template_list ">"
+55 : template_desc -> "template" "<" ">"
+56 : template_list -> template_list "," template_item
+57 : template_list -> template_item
+58 : template_item -> "typename" "{Letter}"
+59 : template_item -> type_desc "{Letter}"
+60 : global_function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
+61 : global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
+62 : global_function_desc -> template_desc type_desc "{Letter}" "(" ")" block
+63 : global_function_desc -> type_desc "{Letter}" "(" ")" block
+64 : global_function_desc -> template_desc "void" "{Letter}" "(" paramter_list ")" block
+65 : global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+66 : global_function_desc -> template_desc "void" "{Letter}" "(" ")" block
+67 : global_function_desc -> "void" "{Letter}" "(" ")" block
+68 : function_declare -> template_desc type_desc "{Letter}" "(" paramter_list ")" ";"
+69 : function_declare -> type_desc "{Letter}" "(" paramter_list ")" ";"
+70 : function_declare -> template_desc type_desc "{Letter}" "(" ")" ";"
+71 : function_declare -> type_desc "{Letter}" "(" ")" ";"
+72 : function_declare -> template_desc "void" "{Letter}" "(" paramter_list ")" ";"
+73 : function_declare -> "void" "{Letter}" "(" paramter_list ")" ";"
+74 : function_declare -> template_desc "void" "{Letter}" "(" ")" ";"
+75 : function_declare -> "void" "{Letter}" "(" ")" ";"
+76 : interface_desc -> "interface" "{Letter}" "{" interface_content "}"
+77 : interface_desc -> "interface" "{Letter}" "{" "}"
+78 : interface_content -> interface_content function_declare
+79 : interface_content -> function_declare
+80 : class_desc -> template_desc class_desc1 class_desc2 "{" class_content "}"
+81 : class_desc -> class_desc1 class_desc2 "{" class_content "}"
+82 : class_desc -> template_desc class_desc1 "{" class_content "}"
+83 : class_desc -> class_desc1 "{" class_content "}"
+84 : class_desc -> template_desc class_desc1 class_desc2 "{" "}"
+85 : class_desc -> class_desc1 class_desc2 "{" "}"
+86 : class_desc -> template_desc class_desc1 "{" "}"
+87 : class_desc -> class_desc1 "{" "}"
+88 : class_desc1 -> "class" "{Letter}"
+89 : class_desc1 -> "class"
+90 : class_desc2 -> attribute "implement" "{Letter}"
+91 : class_desc2 -> attribute "extend" "{Letter}"
+92 : class_content -> class_content function_desc
+93 : class_content -> function_desc
+94 : class_content -> class_content attribute declare_desc ";"
+95 : class_content -> attribute declare_desc ";"
+96 : class_content -> class_content declare_desc ";"
+97 : class_content -> declare_desc ";"
+98 : function_desc -> template_desc attribute type_desc "{Letter}" "(" paramter_list ")" block
+99 : function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block
+100 : function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
+101 : function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
+102 : function_desc -> template_desc attribute type_desc "{Letter}" "(" ")" block
+103 : function_desc -> attribute type_desc "{Letter}" "(" ")" block
+104 : function_desc -> template_desc type_desc "{Letter}" "(" ")" block
+105 : function_desc -> type_desc "{Letter}" "(" ")" block
+106 : function_desc -> template_desc attribute "void" "{Letter}" "(" paramter_list ")" block
+107 : function_desc -> attribute "void" "{Letter}" "(" paramter_list ")" block
+108 : function_desc -> template_desc "void" "{Letter}" "(" paramter_list ")" block
+109 : function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+110 : function_desc -> template_desc attribute "void" "{Letter}" "(" ")" block
+111 : function_desc -> attribute "void" "{Letter}" "(" ")" block
+112 : function_desc -> template_desc "void" "{Letter}" "(" ")" block
+113 : function_desc -> "void" "{Letter}" "(" ")" block
+114 : stmt -> assign_desc ";"
+115 : stmt -> call_desc ";"
+116 : stmt -> declare_desc ";"
+117 : stmt -> if_desc
+118 : stmt -> for_desc
+119 : stmt -> while_desc ";"
+120 : stmt -> do_desc ";"
+121 : stmt -> return_desc
+122 : declare_desc -> declare_desc "," "{Letter}" array_lst "=" exp
+123 : declare_desc -> declare_desc "," "{Letter}" "=" exp
+124 : declare_desc -> declare_desc "," "{Letter}" array_lst
+125 : declare_desc -> declare_desc "," "{Letter}"
+126 : declare_desc -> type_desc "{Letter}" array_lst "=" exp
+127 : declare_desc -> type_desc "{Letter}" "=" exp
+128 : declare_desc -> type_desc "{Letter}" array_lst
+129 : declare_desc -> type_desc "{Letter}"
+130 : assign_desc -> member_desc "+" "=" exp
+131 : assign_desc -> member_desc "-" "=" exp
+132 : assign_desc -> member_desc "&" "=" exp
+133 : assign_desc -> member_desc "|" "=" exp
+134 : assign_desc -> member_desc "^" "=" exp
+135 : assign_desc -> member_desc "<" "<" "=" exp
+136 : assign_desc -> member_desc ">" ">" "=" exp
+137 : assign_desc -> member_desc "=" exp
+138 : call_desc -> member_desc "(" value_list ")"
+139 : call_desc -> member_desc "(" ")"
+140 : if_desc -> "if" "(" exp ")" stmt if_desc2
+141 : if_desc -> "if" "(" exp ")" stmt
+142 : if_desc -> "if" "(" exp ")" block if_desc2
+143 : if_desc -> "if" "(" exp ")" block
+144 : if_desc2 -> "else" stmt
+145 : if_desc2 -> "else" block
+146 : for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
+147 : while_desc -> "while" "(" exp ")" block
+148 : do_desc -> "do" block "while" "(" exp ")"
+149 : return_desc -> "return" block
+150 : return_desc -> "return" exp ";"
+151 : exp -> exp ">" "=" exp1
+152 : exp -> exp "<" "=" exp1
+153 : exp -> exp "=" "=" exp1
+154 : exp -> exp ">" exp1
+155 : exp -> exp "<" exp1
+156 : exp -> exp "=" exp1
+157 : exp -> exp "&" "&" exp1
+158 : exp -> exp "|" "|" exp1
+159 : exp -> exp "&" exp1
+160 : exp -> exp "|" exp1
+161 : exp -> exp "^" exp1
+162 : exp -> exp1
+163 : exp1 -> "!" exp2
+164 : exp1 -> "+" exp2
+165 : exp1 -> "-" exp2
+166 : exp1 -> exp2
+167 : exp2 -> exp2 "+" exp3
+168 : exp2 -> exp2 "-" exp3
+169 : exp2 -> exp3
+170 : exp3 -> exp3 "*" exp4
+171 : exp3 -> exp3 "/" exp4
+172 : exp3 -> exp3 "%" exp4
+173 : exp3 -> exp4
+174 : exp4 -> "(" exp ")"
+175 : exp4 -> call_desc
+176 : exp4 -> value_desc "as" "{Letter}"
+177 : exp4 -> value_desc

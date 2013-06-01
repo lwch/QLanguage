@@ -1,4 +1,4 @@
-#ifndef _WORDSEGMENTATION_NODE_H_
+﻿#ifndef _WORDSEGMENTATION_NODE_H_
 #define _WORDSEGMENTATION_NODE_H_
 
 #include "../../QCore/Library/allocator.h"
