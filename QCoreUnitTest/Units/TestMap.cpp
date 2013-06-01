@@ -33,7 +33,7 @@ namespace QLanguage
             TEST_ASSERT(l.second, "invalid insert unique value with same value!");
 
             TEST_ASSERT(m.size() != 2, "invalid tree size!");
-            for(int i = 0; i < 10; ++i)
+            for(long i = 0; i < 10; ++i)
             {
                 pair<typename map<SmallObject<T>, int>::iterator, bool> r = m.insert(pair<SmallObject<T>, int>((T)i, i));
                 switch(i)
@@ -58,7 +58,7 @@ namespace QLanguage
             m.erase(m.begin(), m.end());
             TEST_ASSERT(m.size(), "tree is not empty!");
             TEST_ASSERT(!m.empty(), "tree is not empty!");
-            for(int i = 10; i < 20; ++i)
+            for(long i = 10; i < 20; ++i)
             {
                 m[(T)i] = i;
                 TEST_ASSERT(m[(T)i] != i, "invalid value of key: %d!", i);
@@ -90,14 +90,14 @@ namespace QLanguage
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                map.insert(pair<SmallObject<T>, int>((T)rand(), i));
+                map.insert(pair<SmallObject<T>, int>((T)(long)rand(), i));
             }
             SHOW_TIME_COST_SECONDS;
 
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                map.find((T)rand());
+                map.find((T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 

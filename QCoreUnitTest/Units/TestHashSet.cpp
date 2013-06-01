@@ -36,7 +36,7 @@ namespace QLanguage
             TEST_ASSERT(*set.maximum() != (T)2, "invalid maximum of hashset: %d!", set.maximum()->value);
 
             TEST_ASSERT(set.size() != 2, "invalid hashset size!");
-            for(int i = 0; i < 10; ++i)
+            for(long i = 0; i < 10; ++i)
             {
                 pair<typename hashset<SmallObject<T> >::iterator, bool> r = set.insert((T)i);
                 switch(i)
@@ -84,14 +84,14 @@ namespace QLanguage
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                set.insert((T)rand());
+                set.insert((T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                set.find((T)rand());
+                set.find((T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 

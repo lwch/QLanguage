@@ -27,14 +27,14 @@ namespace QLanguage
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                a.push_back((T)rand());
+                a.push_back((T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                find(a.begin(), a.end(), (T)rand());
+                find(a.begin(), a.end(), (T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 
@@ -50,7 +50,7 @@ namespace QLanguage
             vector<SmallObject<T> > c(10);
             vector<SmallObject<T> > d(b);
             vector<SmallObject<T> > e(l, l + sizeof(l) / sizeof(SmallObject<T>));
-            for(int i = 0; i < 10; ++i)
+            for(long i = 0; i < 10; ++i)
             {
                 a.push_back((T)i);
                 TEST_ASSERT(a.size()  != (vector<int>::size_type)(i + 1), "invalid vector size: %d!", a.size());
@@ -64,7 +64,7 @@ namespace QLanguage
             TEST_ASSERT(a[2] != 0, "invalid vector value of index 2!");
             TEST_ASSERT(a.size() != 11, "invalid vector size: %d!", a.size());
 
-            for(int i = 0; i < 3; ++i)
+            for(long i = 0; i < 3; ++i)
             {
                 a.pop_back();
                 TEST_ASSERT(a.size()  != (vector<int>::size_type)(11 - i - 1), "invalid vector size: %d!", a.size());

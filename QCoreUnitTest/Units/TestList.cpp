@@ -28,7 +28,7 @@ namespace QLanguage
             list<SmallObject<T> > c(10);
             list<SmallObject<T> > d(b);
             list<SmallObject<T> > e(l, l + sizeof(l) / sizeof(int));
-            for(int i = 0; i < 10; ++i)
+            for(long i = 0; i < 10; ++i)
             {
                 a.push_back((T)i);
                 TEST_ASSERT(a.size()  != (list<int>::size_type)(i + 1), "invalid list size: %d!", a.size());
@@ -42,7 +42,7 @@ namespace QLanguage
             TEST_ASSERT(a[2] != 0, "invalid list value of index 2!");
             TEST_ASSERT(a.size() != 11, "invalid list size: %d!", a.size());
 
-            for(int i = 0; i < 3; ++i)
+            for(long i = 0; i < 3; ++i)
             {
                 a.pop_back();
                 TEST_ASSERT(a.size()  != (list<int>::size_type)(11 - i - 1), "invalid list size: %d!", a.size());
@@ -56,7 +56,7 @@ namespace QLanguage
             TEST_ASSERT(a[2] == 0, "invalid list value of index 2!");
             TEST_ASSERT(a.size() != 7, "invalid list size: %d!", a.size());
 
-            for(int i = 0; i < 3; ++i)
+            for(long i = 0; i < 3; ++i)
             {
                 a.pop_front();
                 TEST_ASSERT(a.size()  != (list<int>::size_type)(7 - i - 1), "invalid list size: %d!", a.size());
@@ -77,14 +77,14 @@ namespace QLanguage
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                a.push_back((T)rand());
+                a.push_back((T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                find(a.begin(), a.end(), (T)rand());
+                find(a.begin(), a.end(), (T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 

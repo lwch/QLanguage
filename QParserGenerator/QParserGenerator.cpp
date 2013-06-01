@@ -21,6 +21,7 @@
 #include <direct.h>
 #else
 #include <unistd.h>
+#include <limits.h>
 #endif
 
 using namespace QLanguage;
@@ -32,8 +33,13 @@ int main(int argv, char* args[])
 #ifdef _DEBUG
     if (argv < 3)
     {
+#ifdef WIN32
         char currentPath[MAX_PATH] = {0};
         getcwd(currentPath, MAX_PATH);
+#else
+        char currentPath[PATH_MAX] = {0};
+        getcwd(currentPath, PATH_MAX);
+#endif
         path = currentPath;
         path += "/QLanguage.txt";
         outputPath = currentPath;

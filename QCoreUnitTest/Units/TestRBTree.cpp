@@ -37,7 +37,7 @@ namespace QLanguage
             TEST_ASSERT(tree.maximum() == tree.end(), "invalid maximum value with tree end!");
 
             TEST_ASSERT(tree.size() != 3, "invalid tree size!");
-            for (int i = 0; i < 10; ++i)
+            for (long i = 0; i < 10; ++i)
             {
                 tree.insert_equal((T)i);
                 switch (i)
@@ -87,14 +87,14 @@ namespace QLanguage
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                tree.insert_equal((T)rand());
+                tree.insert_equal((T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                tree.find((T)rand());
+                tree.find((T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 
