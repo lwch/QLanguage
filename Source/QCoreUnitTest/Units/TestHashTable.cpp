@@ -35,7 +35,7 @@ namespace QLanguage
             TEST_ASSERT(l.second, "invalid insert unique value with same value!");
 
             TEST_ASSERT(ht.size() != 3, "invalid tree size!");
-            for (int i = 0; i < 10; ++i)
+            for (long i = 0; i < 10; ++i)
             {
                 ht.insert_equal((T)i);
                 switch (i)
@@ -77,14 +77,14 @@ namespace QLanguage
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                hashtable.insert_equal((T)rand());
+                hashtable.insert_equal((T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 
             TIME_START;
             for(int i = 0; i < TEST_SPEED_INSERT_COUNT; ++i)
             {
-                hashtable.find((T)rand());
+                hashtable.find((T)(long)rand());
             }
             SHOW_TIME_COST_SECONDS;
 
