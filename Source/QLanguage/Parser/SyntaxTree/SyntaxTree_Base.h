@@ -30,11 +30,6 @@ namespace QLanguage
 
         inline const uint size()const { return _size; }
 
-        inline void setNext(SyntaxTree_Base* next)
-        {
-            this->next = next;
-        }
-
         inline void pushChild(SyntaxTree_Base* child)
         {
             childs.push_back(child);
@@ -42,7 +37,6 @@ namespace QLanguage
     protected:
         uint                     _size;
         vector<SyntaxTree_Base*> childs;
-        SyntaxTree_Base*         next;
     };
 }
 

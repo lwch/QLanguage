@@ -1,4 +1,4 @@
-// 
+﻿// 
 
 void memcpy(char* dest, const char* src, int size);
 void print_string(const char* s);

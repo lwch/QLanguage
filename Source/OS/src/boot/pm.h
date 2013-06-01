@@ -1,4 +1,4 @@
-/* GDT Descriptor Attributes
+﻿/* GDT Descriptor Attributes
      DA_  : Descriptor Attribute
      D    : Data Segment
      C    : Code Segment

@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:	2013/05/31
 	created:	31:5:2013   17:28
 	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_GlobalFunction.cpp
@@ -12,11 +12,12 @@
 #include "../Parser.h"
 
 #include "SyntaxTree_Type.h"
+#include "SyntaxTree_Block.h"
 #include "SyntaxTree_GlobalFunction.h"
 
 namespace QLanguage
 {
-    SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(const string& name, SyntaxTree_Type& returnType) : parent(sizeof(SyntaxTree_GlobalFunction)), name(name), returnType(returnType)
+    SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(const string& name, SyntaxTree_Type& returnType, SyntaxTree_Block& block) : parent(sizeof(SyntaxTree_GlobalFunction)), name(name), returnType(returnType), block(block)
     {
     }
 
@@ -44,11 +45,14 @@ namespace QLanguage
         shifts.pop();
         shifts.pop();
         SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
-        construct(pGlobalFunction, shifts.top(), dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack.top()));
+        construct(pGlobalFunction, shifts.top(), dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pGlobalFunction);
 
         syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pGlobalFunction);
+
         shifts.pop();
         return true;
     }

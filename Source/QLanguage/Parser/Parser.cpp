@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:	2013/05/05
 	created:	5:5:2013   20:35
 	filename: 	\QLanguage\Parser\Parser.cpp
@@ -56,6 +56,22 @@ namespace QLanguage
         case TYPE_DESC_AUTO:                   // type_desc -> "auto"
         case TYPE_DESC_LETTER:                 // type_desc -> "{Letter}"
             return reduceType1Size(i);
+        case VALUE_DESC_TRUE:                  // value_desc -> "true"
+        case VALUE_DESC_FALSE:                 // value_desc -> "false"
+        case VALUE_DESC_REAL:                  // value_desc -> "{Real}"
+        case VALUE_DESC_DIGIT:                 // value_desc -> "{Digit}"
+        case VALUE_DESC_STRING:                // value_desc -> "{String}"
+            return reduceValueNormal(i);
+        case STMT_LIST_STMT_LIST_STMT:         // stmt_list -> stmt_list stmt
+        case STMT_LIST_STMT_LIST_BLOCK:        // stmt_list -> stmt
+            return reduceStmtList2Size();
+        case STMT_LIST_STMT:                   // stmt_list -> stmt_list block
+        case STMT_LIST_BLOCK:                  // stmt_list -> block
+            return reduceStmtList1Size();
+        case BLOCK_STMT_LIST:                  // block -> "{" stmt_list "}"
+            return reduceBlockStmts();
+        case BLOCK_EMPTY:                      // block -> "{" "}"
+            return reduceBlockEmpty();
         case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:
             return reduceGlobalFunction4();
         case STMT_DECLARE:                     // stmt -> declare_desc ";"
@@ -63,6 +79,8 @@ namespace QLanguage
         case DECLARE_DESC_DECLARE_DESC_LETTER: // declare_desc -> declare_desc "," "{Letter}"
         case DECLARE_DESC_LETTER:              // declare_desc -> type_desc "{Letter}"
             return reduceDeclare48(i);
+        case RETURN_DESC_EXP:                  // return_desc -> "return" exp ";"
+            return reduceReturnExp();
         }
         return true;
     }

@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <Windows.h>
 
 #if defined(_DEBUG) && defined(_WINDOWS_)
