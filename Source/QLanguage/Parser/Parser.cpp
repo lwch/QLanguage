@@ -39,7 +39,7 @@ namespace QLanguage
         switch (i)
         {
         case 0:   // begin -> start
-            printf("");
+            cout << "finish";
             break;
         case TYPE_DESC_UNSIGNED_CHAR:          // type_desc -> "unsigned" "char"
         case TYPE_DESC_UNSIGNED_SHORT:         // type_desc -> "unsigned" "short"
