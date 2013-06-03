@@ -56,4 +56,28 @@ namespace QLanguage
         shifts.pop();
         return true;
     }
+
+    // global_function_desc -> "void" "{Letter}" "(" ")" block
+    bool Parser::reduceGlobalFunction8()
+    {
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Type* pReturnType = allocator<SyntaxTree_Type>::allocate();
+        construct(pReturnType, "void", SyntaxTree_Type::Void);
+
+        context.data.insert(pReturnType);
+
+        SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
+        construct(pGlobalFunction, shifts.top(), *pReturnType, dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
+
+        context.data.insert(pGlobalFunction);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pGlobalFunction);
+
+        shifts.pop();
+        shifts.pop();
+        return true;
+    }
 }

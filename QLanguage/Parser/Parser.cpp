@@ -56,12 +56,26 @@ namespace QLanguage
         case TYPE_DESC_AUTO:                   // type_desc -> "auto"
         case TYPE_DESC_LETTER:                 // type_desc -> "{Letter}"
             return reduceType1Size(i);
+        case MEMBER_DESC_MEMBER_DESC_LETTER:   // member_desc -> member_desc "." "{Letter}"
+            return reduceMember2Size();
+        case MEMBER_DESC_LETTER:               // member_desc -> "{Letter}"
+            return reduceMember1Size();
         case VALUE_DESC_TRUE:                  // value_desc -> "true"
         case VALUE_DESC_FALSE:                 // value_desc -> "false"
         case VALUE_DESC_REAL:                  // value_desc -> "{Real}"
         case VALUE_DESC_DIGIT:                 // value_desc -> "{Digit}"
         case VALUE_DESC_STRING:                // value_desc -> "{String}"
             return reduceValueNormal(i);
+        case VALUE_LIST_VALUE_LIST_EXP:        // value_list -> value_list "," exp
+            return reduceValueList2Size();
+        case VALUE_LIST_EXP:                   // value_list -> exp
+            return reduceValueList1Size();
+        case ITEM_LIST_ITEM_LIST_ITEM:         // item_list -> item_list item
+            return reduceItemList2Size();
+        case ITEM_LIST_ITEM:                   // item_list -> item
+            return reduceItemList1Size();
+        case ITEM_DECLARE_DESC:                // item -> declare_desc ";"
+            return pop1Shifts();
         case STMT_LIST_STMT_LIST_STMT:         // stmt_list -> stmt_list stmt
         case STMT_LIST_STMT_LIST_BLOCK:        // stmt_list -> stmt
             return reduceStmtList2Size();
@@ -72,8 +86,10 @@ namespace QLanguage
             return reduceBlockStmts();
         case BLOCK_EMPTY:                      // block -> "{" "}"
             return reduceBlockEmpty();
-        case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:
+        case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK: // global_function_desc -> type_desc "{Letter}" "(" ")" block
             return reduceGlobalFunction4();
+        case GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK:
+            return reduceGlobalFunction8();
         case STMT_DECLARE:                     // stmt -> declare_desc ";"
             return pop1Shifts();
         case DECLARE_DESC_DECLARE_DESC_LETTER: // declare_desc -> declare_desc "," "{Letter}"

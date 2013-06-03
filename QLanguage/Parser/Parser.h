@@ -32,11 +32,18 @@ namespace QLanguage
 #define TYPE_DESC_STRING                             11  // type_desc -> "string"
 #define TYPE_DESC_AUTO                               12  // type_desc -> "auto"
 #define TYPE_DESC_LETTER                             13  // type_desc -> "{Letter}"
+#define MEMBER_DESC_MEMBER_DESC_LETTER               14  // member_desc -> member_desc "." "{Letter}"
+#define MEMBER_DESC_LETTER                           15  // member_desc -> "{Letter}"
 #define VALUE_DESC_TRUE                              16  // value_desc -> "true"
 #define VALUE_DESC_FALSE                             17  // value_desc -> "false"
 #define VALUE_DESC_REAL                              18  // value_desc -> "{Real}"
 #define VALUE_DESC_DIGIT                             19  // value_desc -> "{Digit}"
 #define VALUE_DESC_STRING                            21  // value_desc -> "{String}"
+#define VALUE_LIST_VALUE_LIST_EXP                    27  // value_list -> value_list "," exp
+#define VALUE_LIST_EXP                               28  // value_list -> exp
+#define ITEM_LIST_ITEM_LIST_ITEM                     42  // item_list -> item_list item
+#define ITEM_LIST_ITEM                               43  // item_list -> item
+#define ITEM_DECLARE_DESC                            45  // item -> declare_desc ";"
 #define STMT_LIST_STMT_LIST_STMT                     48  // stmt_list -> stmt_list stmt
 #define STMT_LIST_STMT                               49  // stmt_list -> stmt
 #define STMT_LIST_STMT_LIST_BLOCK                    50  // stmt_list -> stmt_list block
@@ -44,6 +51,7 @@ namespace QLanguage
 #define BLOCK_STMT_LIST                              52  // block -> "{" stmt_list "}"
 #define BLOCK_EMPTY                                  53  // block -> "{" "}"
 #define GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK 63  // global_function_desc -> type_desc "{Letter}" "(" ")" block
+#define GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK      67  // global_function_desc -> "void" "{Letter}" "(" ")" block
 #define STMT_DECLARE                                 116 // stmt -> declare_desc ";"
 #define DECLARE_DESC_DECLARE_DESC_LETTER             125 // declare_desc -> declare_desc "," "{Letter}"
 #define DECLARE_DESC_LETTER                          129 // declare_desc -> type_desc "{Letter}"
@@ -60,12 +68,19 @@ namespace QLanguage
     protected:
         bool reduceType1Size(ushort i);
         bool reduceType2Size(ushort i);
+        bool reduceMember2Size();
+        bool reduceMember1Size();
         bool reduceValueNormal(ushort i);
+        bool reduceValueList2Size();
+        bool reduceValueList1Size();
+        bool reduceItemList2Size();
+        bool reduceItemList1Size();
         bool reduceStmtList2Size();
         bool reduceStmtList1Size();
         bool reduceBlockStmts();
         bool reduceBlockEmpty();
         bool reduceGlobalFunction4();
+        bool reduceGlobalFunction8();
         bool reduceDeclare48(ushort i);
         bool reduceReturnExp();
 
