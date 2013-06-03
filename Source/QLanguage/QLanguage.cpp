@@ -108,6 +108,10 @@ int main(int argv, char* args[])
     {
         e.print();
     }
+    catch (...)
+    {
+        cerr << "unknown error" << endl;
+    }
 
     return 0;
 }
