@@ -41,6 +41,8 @@ namespace QLanguage
 #define VALUE_DESC_STRING                            21  // value_desc -> "{String}"
 #define VALUE_LIST_VALUE_LIST_EXP                    27  // value_list -> value_list "," exp
 #define VALUE_LIST_EXP                               28  // value_list -> exp
+#define PARAMTER_TYPE_DESC_LETTER                    40  // paramter -> type_desc "{Letter}"
+#define PARAMTER_TYPE_DESC                           41  // paramter -> type_desc
 #define ITEM_LIST_ITEM_LIST_ITEM                     42  // item_list -> item_list item
 #define ITEM_LIST_ITEM                               43  // item_list -> item
 #define ITEM_DECLARE_DESC                            45  // item -> declare_desc ";"
@@ -51,10 +53,14 @@ namespace QLanguage
 #define BLOCK_STMT_LIST                              52  // block -> "{" stmt_list "}"
 #define BLOCK_EMPTY                                  53  // block -> "{" "}"
 #define GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK 63  // global_function_desc -> type_desc "{Letter}" "(" ")" block
+#define GLOBAL_FUNCTION_DESC_VOID_PARAM_LIST_BLOCK   65  // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
 #define GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK      67  // global_function_desc -> "void" "{Letter}" "(" ")" block
+#define STMT_CALL                                    115 // stmt -> call_desc ";"
 #define STMT_DECLARE                                 116 // stmt -> declare_desc ";"
 #define DECLARE_DESC_DECLARE_DESC_LETTER             125 // declare_desc -> declare_desc "," "{Letter}"
 #define DECLARE_DESC_LETTER                          129 // declare_desc -> type_desc "{Letter}"
+#define CALL_DESC_VALUE_LIST                         138 // call_desc -> member_desc "(" value_list ")"
+#define CALL_DESC_NOPARAM                            139 // call_desc -> member_desc "(" ")"
 #define RETURN_DESC_EXP                              150 // return_desc -> "return" exp ";"
 
     class Parser : public BasicParser
@@ -73,6 +79,8 @@ namespace QLanguage
         bool reduceValueNormal(ushort i);
         bool reduceValueList2Size();
         bool reduceValueList1Size();
+        bool reduceParamterNamed();
+        bool reduceParamterNoName();
         bool reduceItemList2Size();
         bool reduceItemList1Size();
         bool reduceStmtList2Size();
@@ -80,8 +88,11 @@ namespace QLanguage
         bool reduceBlockStmts();
         bool reduceBlockEmpty();
         bool reduceGlobalFunction4();
+        bool reduceGlobalFunction6();
         bool reduceGlobalFunction8();
         bool reduceDeclare48(ushort i);
+        bool reduceCall1();
+        bool reduceCall2();
         bool reduceReturnExp();
 
         inline bool pop1Shifts()
@@ -103,6 +114,9 @@ namespace QLanguage
         }context;
         stack<SyntaxTree_Base*>  syntaxTreeStack;
         stack<string>            shifts;
+#if defined(_DEBUG ) && DEBUG_LEVEL == 3
+        fstream                  result;
+#endif
     };
 }
 

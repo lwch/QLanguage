@@ -26,11 +26,6 @@ namespace QLanguage
     {
     }
 
-    const bool SyntaxTree_Value::operator==(const SyntaxTree_Value& x)const
-    {
-        return value == x.value;
-    }
-
     // value_desc -> "true"
     // value_desc -> "false"
     // value_desc -> "{Real}"

@@ -24,6 +24,14 @@ namespace QLanguage
         virtual ~SyntaxTree_MemberList();
 
         virtual void print(ostream& stream, uint indent)const;
+
+        inline virtual const bool operator==(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_MemberList*, &x);
+#endif
+            return childs.size() == x.childs.size();
+        }
     };
 }
 

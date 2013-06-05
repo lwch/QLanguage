@@ -54,9 +54,13 @@ namespace QLanguage
 
         const Type trueType()const;
 
-        const bool operator==(const SyntaxTree_Type& x)const;
-        const bool operator==(const string& x)const;
-        const bool operator!=(const SyntaxTree_Type& x)const;
+        inline virtual const bool operator==(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_Type*, &x);
+#endif
+            return name == dynamic_cast<const SyntaxTree_Type*>(&x)->name;
+        }
     protected:
         static inline uint inc()
         {

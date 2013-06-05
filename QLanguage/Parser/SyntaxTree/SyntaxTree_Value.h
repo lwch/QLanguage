@@ -33,7 +33,14 @@ namespace QLanguage
 
         virtual void print(ostream& stream, uint indent)const;
 
-        const bool operator==(const SyntaxTree_Value& x)const;
+        inline virtual const bool operator==(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_Value*, &x);
+#endif
+            return type == dynamic_cast<const SyntaxTree_Value*>(&x)->type &&
+                   value == dynamic_cast<const SyntaxTree_Value*>(&x)->value;
+        }
     protected:
         string value;
         Type   type;

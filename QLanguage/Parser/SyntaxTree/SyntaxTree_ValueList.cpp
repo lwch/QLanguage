@@ -25,4 +25,32 @@ namespace QLanguage
     void SyntaxTree_ValueList::print(ostream& stream, uint indent)const
     {
     }
+
+    // value_list -> value_list "," exp
+    bool Parser::reduceValueList2Size()
+    {
+        SyntaxTree_ValueList* pValueList = dynamic_cast<SyntaxTree_ValueList*>(syntaxTreeStack[1]);
+
+        pValueList->pushChild(syntaxTreeStack.top());
+
+        syntaxTreeStack.pop();
+
+        shifts.pop();
+        return true;
+    }
+
+    // value_list -> exp
+    bool Parser::reduceValueList1Size()
+    {
+        SyntaxTree_ValueList* pValueList = allocator<SyntaxTree_ValueList>::allocate();
+        construct(pValueList);
+
+        context.data.insert(pValueList);
+
+        pValueList->pushChild(syntaxTreeStack.top());
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pValueList);
+        return true;
+    }
 }
