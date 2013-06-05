@@ -25,6 +25,14 @@ namespace QLanguage
         virtual ~SyntaxTree_Block();
 
         virtual void print(ostream& stream, uint indent)const;
+
+        inline virtual const bool operator==(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_Block*, &x);
+#endif
+            return *pStmts == *dynamic_cast<const SyntaxTree_Block*>(&x)->pStmts;
+        }
     protected:
         SyntaxTree_Base* pStmts;
     };

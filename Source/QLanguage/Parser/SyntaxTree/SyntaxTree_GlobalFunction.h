@@ -17,6 +17,7 @@
 namespace QLanguage
 {
     class SyntaxTree_Type;
+    class SyntaxTree_ParamterList;
     class SyntaxTree_Block;
 
     class SyntaxTree_GlobalFunction : public SyntaxTree_Base
@@ -24,15 +25,24 @@ namespace QLanguage
         typedef SyntaxTree_Base parent;
     public:
         SyntaxTree_GlobalFunction(const string& name, SyntaxTree_Type& returnType, SyntaxTree_Block& block);
+        SyntaxTree_GlobalFunction(const string& name, SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList, SyntaxTree_Block& block);
         virtual ~SyntaxTree_GlobalFunction();
 
         virtual void print(ostream& stream, uint indent)const;
 
-        const bool operator==(const SyntaxTree_GlobalFunction& x)const;
+        inline virtual const bool operator==(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_GlobalFunction*, &x);
+#endif
+            return name == dynamic_cast<const SyntaxTree_GlobalFunction*>(&x)->name &&
+                  *pParamterList == *dynamic_cast<const SyntaxTree_GlobalFunction*>(&x)->pParamterList &&
+                  returnType == dynamic_cast<const SyntaxTree_GlobalFunction*>(&x)->returnType;
+        }
     protected:
         string                   name;
         SyntaxTree_Type&         returnType;
-        vector<SyntaxTree_Type*> params;
+        SyntaxTree_ParamterList* pParamterList;
         SyntaxTree_Block&        block;
     };
 }

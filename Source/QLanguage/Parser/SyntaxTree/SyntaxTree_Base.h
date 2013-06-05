@@ -19,9 +19,16 @@ namespace QLanguage
 {
     using namespace Library;
 
+#define TRY_CAST(type, value) if (static_cast<type>(value) == NULL) throw error<string>(string::format("can't cast to type: %s", #type), __FILE__, __LINE__)
+
     class SyntaxTree_Base
     {
         enum { indent = 2 };
+
+        friend class SyntaxTree_ItemList;
+        friend class SyntaxTree_MemberList;
+        friend class SyntaxTree_StmtList;
+        friend class SyntaxTree_ValueList;
     public:
         SyntaxTree_Base(uint size);
         virtual ~SyntaxTree_Base();
@@ -34,6 +41,8 @@ namespace QLanguage
         {
             childs.push_back(child);
         }
+
+        virtual const bool operator==(const SyntaxTree_Base& x)const=0;
     protected:
         uint                     _size;
         vector<SyntaxTree_Base*> childs;

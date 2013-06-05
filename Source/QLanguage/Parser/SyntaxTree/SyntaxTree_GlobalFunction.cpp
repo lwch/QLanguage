@@ -12,6 +12,7 @@
 #include "../Parser.h"
 
 #include "SyntaxTree_Type.h"
+#include "SyntaxTree_ParamterList.h"
 #include "SyntaxTree_Block.h"
 #include "SyntaxTree_GlobalFunction.h"
 
@@ -21,22 +22,16 @@ namespace QLanguage
     {
     }
 
+    SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(const string& name, SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList, SyntaxTree_Block& block) : parent(sizeof(SyntaxTree_GlobalFunction)), name(name), returnType(returnType), pParamterList(pParamterList), block(block)
+    {
+    }
+
     SyntaxTree_GlobalFunction::~SyntaxTree_GlobalFunction()
     {
     }
 
     void SyntaxTree_GlobalFunction::print(ostream& stream, uint indent)const
     {
-    }
-
-    const bool SyntaxTree_GlobalFunction::operator==(const SyntaxTree_GlobalFunction& x)const
-    {
-        if (params.size() != x.size()) return false;
-        for (size_t i = 0, m = params.size(); i < m; ++i)
-        {
-            if (*params[i] != *x.params[i]) return false;
-        }
-        return name == x.name && returnType == x.returnType;
     }
 
     // global_function_desc -> type_desc "{Letter}" "(" ")" block
@@ -53,6 +48,31 @@ namespace QLanguage
         syntaxTreeStack.pop();
         syntaxTreeStack.push(pGlobalFunction);
 
+        shifts.pop();
+        return true;
+    }
+
+    // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+    bool Parser::reduceGlobalFunction6()
+    {
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Type* pReturnType = allocator<SyntaxTree_Type>::allocate();
+        construct(pReturnType, "void", SyntaxTree_Type::Void);
+
+        context.data.insert(pReturnType);
+
+        SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
+        construct(pGlobalFunction, shifts.top(), *pReturnType, dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]), dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
+
+        context.data.insert(pGlobalFunction);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pGlobalFunction);
+
+        shifts.pop();
         shifts.pop();
         return true;
     }

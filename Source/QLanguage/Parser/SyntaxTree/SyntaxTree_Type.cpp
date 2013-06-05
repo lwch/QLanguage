@@ -44,21 +44,6 @@ namespace QLanguage
         }
     }
 
-    const bool SyntaxTree_Type::operator==(const SyntaxTree_Type& x)const
-    {
-        return name == x.name;
-    }
-
-    const bool SyntaxTree_Type::operator==(const string& x)const
-    {
-        return name == x;
-    }
-
-    const bool SyntaxTree_Type::operator!=(const SyntaxTree_Type& x)const
-    {
-        return name != x.name;
-    }
-
     // type_desc -> "unsigned" "char"
     // type_desc -> "unsigned" "short"
     // type_desc -> "unsigned" "int"

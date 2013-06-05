@@ -25,7 +25,14 @@ namespace QLanguage
 
         virtual void print(ostream& stream, uint indent)const;
 
-        const bool operator==(const SyntaxTree_DeclareName& x)const;
+        inline virtual const bool operator==(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_DeclareName*, &x);
+#endif
+            return name == dynamic_cast<const SyntaxTree_DeclareName*>(&x)->name &&
+                   bArray == dynamic_cast<const SyntaxTree_DeclareName*>(&x)->bArray;
+        }
     protected:
         static inline uint inc()
         {

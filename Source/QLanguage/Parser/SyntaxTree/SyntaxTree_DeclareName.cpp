@@ -26,11 +26,6 @@ namespace QLanguage
     {
     }
 
-    const bool SyntaxTree_DeclareName::operator==(const SyntaxTree_DeclareName& x)const
-    {
-        return name == x.name && bArray == x.bArray;
-    }
-
     // declare_desc -> declare_desc "," "{Letter}"
     // declare_desc -> type_desc "{Letter}"
     bool Parser::reduceDeclare48(ushort i)

@@ -15,7 +15,11 @@
 
 namespace QLanguage
 {
-    Parser::Parser(const vector<Production>& productions) : BasicParser(productions)
+    Parser::Parser(const vector<Production>& productions)
+        : BasicParser(productions)
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+        , result("Result.txt", fstream::out | fstream::text)
+#endif
     {
     }
 
@@ -36,6 +40,9 @@ namespace QLanguage
 
     bool Parser::reduce(ushort i)
     {
+#if defined(_DEBUG) && DEBUG_LEVEL == 3
+        result << "reduce by rule: " << i << endl;
+#endif
         switch (i)
         {
         case 0:   // begin -> start
@@ -70,6 +77,10 @@ namespace QLanguage
             return reduceValueList2Size();
         case VALUE_LIST_EXP:                   // value_list -> exp
             return reduceValueList1Size();
+        case PARAMTER_TYPE_DESC_LETTER:        // paramter -> type_desc "{Letter}"
+            return reduceParamterNamed();
+        case PARAMTER_TYPE_DESC:               // paramter -> type_desc
+            return reduceParamterNoName();
         case ITEM_LIST_ITEM_LIST_ITEM:         // item_list -> item_list item
             return reduceItemList2Size();
         case ITEM_LIST_ITEM:                   // item_list -> item
@@ -88,13 +99,20 @@ namespace QLanguage
             return reduceBlockEmpty();
         case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK: // global_function_desc -> type_desc "{Letter}" "(" ")" block
             return reduceGlobalFunction4();
-        case GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK:
+        case GLOBAL_FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:   // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+            return reduceGlobalFunction6();
+        case GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK:      // global_function_desc -> "void" "{Letter}" "(" ")" block
             return reduceGlobalFunction8();
+        case STMT_CALL:                        // stmt -> call_desc ";"
         case STMT_DECLARE:                     // stmt -> declare_desc ";"
             return pop1Shifts();
         case DECLARE_DESC_DECLARE_DESC_LETTER: // declare_desc -> declare_desc "," "{Letter}"
         case DECLARE_DESC_LETTER:              // declare_desc -> type_desc "{Letter}"
             return reduceDeclare48(i);
+        case CALL_DESC_VALUE_LIST:             // call_desc -> member_desc "(" value_list ")"
+            return reduceCall1();
+        case CALL_DESC_NOPARAM:                // call_desc -> member_desc "(" ")"
+            return reduceCall2();
         case RETURN_DESC_EXP:                  // return_desc -> "return" exp ";"
             return reduceReturnExp();
         }
