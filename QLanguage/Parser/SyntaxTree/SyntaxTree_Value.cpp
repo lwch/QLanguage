@@ -18,7 +18,7 @@ namespace QLanguage
     {
     }
 
-    SyntaxTree_Value::SyntaxTree_Value(SyntaxTree_MemberList* pMemberList) : parent(sizeof(SyntaxTree_Value)), pMemberList(pMemberList), type(Member)
+    SyntaxTree_Value::SyntaxTree_Value(SyntaxTree_MemberList* pMemberList) : parent(sizeof(SyntaxTree_Value)), type(Member), pMemberList(pMemberList)
     {
     }
 

@@ -110,12 +110,22 @@ namespace QLanguage
             return reduceBlockStmts();
         case BLOCK_EMPTY:                      // block -> "{" "}"
             return reduceBlockEmpty();
-        case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK: // global_function_desc -> type_desc "{Letter}" "(" ")" block
+        case GLOBAL_FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK: // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
+            return reduceGlobalFunction2();
+        case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:    // global_function_desc -> type_desc "{Letter}" "(" ")" block
             return reduceGlobalFunction4();
-        case GLOBAL_FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:   // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+        case GLOBAL_FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:      // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
             return reduceGlobalFunction6();
-        case GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK:      // global_function_desc -> "void" "{Letter}" "(" ")" block
+        case GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK:         // global_function_desc -> "void" "{Letter}" "(" ")" block
             return reduceGlobalFunction8();
+        case FUNCTION_DESC_TYPE_DESC_PARAM_LIST:              // function_desc -> type_desc "{Letter}" "(" paramter_list ")" ";"
+            return reduceGlobalFunction2();
+        case FUNCTION_DESC_TYPE_DESC_NOPARAM:                 // function_desc -> type_desc "{Letter}" "(" ")" ";"
+            return reduceGlobalFunction4();
+        case FUNCTION_DESC_VOID_PARAM_LIST:                   // function_desc -> "void" "{Letter}" "(" paramter_list ")" ";"
+            return reduceFunctionDeclare6();
+        case FUNCTION_DESC_VOID_NOPARAM:                      // function_desc -> "void" "{Letter}" "(" ")" ";"
+            return reduceFunctionDeclare8();
         case STMT_CALL:                        // stmt -> call_desc ";"
         case STMT_DECLARE:                     // stmt -> declare_desc ";"
             return pop1Shifts();
