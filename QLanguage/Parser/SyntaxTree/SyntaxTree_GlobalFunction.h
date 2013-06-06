@@ -39,6 +39,16 @@ namespace QLanguage
                   *pParamterList == *dynamic_cast<const SyntaxTree_GlobalFunction*>(&x)->pParamterList &&
                   returnType == dynamic_cast<const SyntaxTree_GlobalFunction*>(&x)->returnType;
         }
+
+        inline virtual const bool operator!=(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_GlobalFunction*, &x);
+#endif
+            return name != dynamic_cast<const SyntaxTree_GlobalFunction*>(&x)->name ||
+                  *pParamterList != *dynamic_cast<const SyntaxTree_GlobalFunction*>(&x)->pParamterList ||
+                   returnType != dynamic_cast<const SyntaxTree_GlobalFunction*>(&x)->returnType;
+        }
     protected:
         string                   name;
         SyntaxTree_Type&         returnType;

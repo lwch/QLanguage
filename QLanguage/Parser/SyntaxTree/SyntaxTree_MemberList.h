@@ -32,6 +32,14 @@ namespace QLanguage
 #endif
             return childs.size() == x.childs.size();
         }
+
+        inline virtual const bool operator!=(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_MemberList*, &x);
+#endif
+            return childs.size() != x.childs.size();
+        }
     };
 }
 

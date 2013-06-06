@@ -35,6 +35,14 @@ namespace QLanguage
 #endif
             return type == dynamic_cast<const SyntaxTree_Paramter*>(&x)->type;
         }
+
+        inline virtual const bool operator!=(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_Paramter*, &x);
+#endif
+            return type != dynamic_cast<const SyntaxTree_Paramter*>(&x)->type;
+        }
     protected:
         SyntaxTree_Type& type;
         string           name;

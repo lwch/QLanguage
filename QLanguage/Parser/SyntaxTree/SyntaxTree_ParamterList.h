@@ -25,13 +25,30 @@ namespace QLanguage
 
         virtual void print(ostream& stream, uint indent)const;
 
-        inline virtual const bool operator==(const SyntaxTree_ParamterList& x)const
+        inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_ParamterList*, &x);
 #endif
-            // TODO 实现类型的比较
+            if (childs.size() != x.childs.size()) return false;
+            for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(), j = x.childs.begin(); i != m; ++i)
+            {
+                if (**i != **j) return false;
+            }
             return true;
+        }
+
+        inline virtual const bool operator!=(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_ParamterList*, &x);
+#endif
+            if (childs.size() != x.childs.size()) return true;
+            for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(), j = x.childs.begin(); i != m; ++i)
+            {
+                if (**i != **j) return true;
+            }
+            return false;
         }
     };
 }

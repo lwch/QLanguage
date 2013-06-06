@@ -73,10 +73,20 @@ namespace QLanguage
         case VALUE_DESC_DIGIT:                 // value_desc -> "{Digit}"
         case VALUE_DESC_STRING:                // value_desc -> "{String}"
             return reduceValueNormal(i);
+        case VALUE_DESC_MEMBER_DESC:           // value_desc -> member_desc
+            return reduceValueMember();
         case VALUE_LIST_VALUE_LIST_EXP:        // value_list -> value_list "," exp
             return reduceValueList2Size();
         case VALUE_LIST_EXP:                   // value_list -> exp
             return reduceValueList1Size();
+        case ATTRIBUTE_PUBLIC:                 // attribute -> "public"
+        case ATTRIBUTE_PRIVATE:                // attribute -> "private"
+        case ATTRIBUTE_PROTECTED:              // attribute -> "protected"
+            return reduceAttribute(i);
+        case PARAMTER_LIST_PARAMTER_LIST_PARAMTER: // paramter_list -> paramter_list "," paramter
+            return reduceParamterList2Size();
+        case PARAMTER_LIST_PARAMTER:               // paramter_list -> paramter
+            return reduceParamterList1Size();
         case PARAMTER_TYPE_DESC_LETTER:        // paramter -> type_desc "{Letter}"
             return reduceParamterNamed();
         case PARAMTER_TYPE_DESC:               // paramter -> type_desc
@@ -85,8 +95,11 @@ namespace QLanguage
             return reduceItemList2Size();
         case ITEM_LIST_ITEM:                   // item_list -> item
             return reduceItemList1Size();
+        case ITEM_GLOBAL_FUNCTION_DESC:        // item -> global_function_desc
         case ITEM_DECLARE_DESC:                // item -> declare_desc ";"
-            return pop1Shifts();
+        case ITEM_INTERFACE_DESC:              // item -> interface_desc
+        case ITEM_CLASS_DESC:                  // item -> class_desc
+            return reduceItem(i);
         case STMT_LIST_STMT_LIST_STMT:         // stmt_list -> stmt_list stmt
         case STMT_LIST_STMT_LIST_BLOCK:        // stmt_list -> stmt
             return reduceStmtList2Size();

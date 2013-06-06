@@ -29,6 +29,7 @@ namespace QLanguage
         friend class SyntaxTree_MemberList;
         friend class SyntaxTree_StmtList;
         friend class SyntaxTree_ValueList;
+        friend class SyntaxTree_ParamterList;
     public:
         SyntaxTree_Base(uint size);
         virtual ~SyntaxTree_Base();
@@ -43,6 +44,7 @@ namespace QLanguage
         }
 
         virtual const bool operator==(const SyntaxTree_Base& x)const=0;
+        virtual const bool operator!=(const SyntaxTree_Base& x)const=0;
     protected:
         uint                     _size;
         vector<SyntaxTree_Base*> childs;
