@@ -28,9 +28,13 @@ namespace QLanguage
                   typename Compare = equal_to<T> >
         class hashset
         {
+        public:
+            typedef T        key_type;
+            typedef T        value_type;
+            typedef T*       pointer;
+            typedef T&       reference;
+            typedef const T& const_reference;
         protected:
-            typedef T key_type;
-            typedef T value_type;
             typedef hashtable<key_type, value_type, identity<key_type>, identity<value_type>, Max_Bucket_Length, Resize, Hash, Less, Greater, Compare> container_type;
             typedef hashset<T, Hash, Max_Bucket_Length, Resize, Compare> self;
 

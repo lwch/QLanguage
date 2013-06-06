@@ -22,9 +22,13 @@ namespace QLanguage
         template <typename T, typename LessCompare = less<T>, typename EqualCompare = equal_to<T> >
         class set
         {
+        public:
+            typedef T        key_type;
+            typedef T        value_type;
+            typedef T&       reference;
+            typedef T*       pointer;
+            typedef const T& const_reference;
         protected:
-            typedef T key_type;
-            typedef T value_type;
             typedef rbtree<key_type, value_type, identity<value_type>, LessCompare, EqualCompare> instance_type;
             typedef set<T, LessCompare, EqualCompare> self;
 

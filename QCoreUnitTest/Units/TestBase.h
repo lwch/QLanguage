@@ -243,6 +243,26 @@ namespace QLanguage
             }
         };
 
+        template <typename Container>
+        const bool checkMin(const Container& container, const typename __container_traits<Container>::value_type& minValue)
+        {
+            for (typename __container_traits<Container>::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
+            {
+                if (*i < minValue) return false;
+            }
+            return true;
+        }
+
+        template <typename Container>
+        const bool checkMax(const Container& container, const typename __container_traits<Container>::value_type& maxValue)
+        {
+            for (typename __container_traits<Container>::const_iterator i = container.begin(), m = container.end(); i != m; ++i)
+            {
+                if (*i > maxValue) return false;
+            }
+            return true;
+        }
+
         #define TEST_SPEED_INSERT_COUNT 10000
 
         #define PrintMessage(str) \
