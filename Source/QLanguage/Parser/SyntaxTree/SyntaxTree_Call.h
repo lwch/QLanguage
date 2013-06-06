@@ -37,6 +37,15 @@ namespace QLanguage
             return *pMemberList == *dynamic_cast<const SyntaxTree_Call*>(&x)->pMemberList &&
                    *pValueList == *dynamic_cast<const SyntaxTree_Call*>(&x)->pValueList;
         }
+
+        inline virtual const bool operator!=(const SyntaxTree_Base& x)const
+        {
+#ifdef _DEBUG
+            TRY_CAST(const SyntaxTree_Call*, &x);
+#endif
+            return *pMemberList != *dynamic_cast<const SyntaxTree_Call*>(&x)->pMemberList ||
+                   *pValueList != *dynamic_cast<const SyntaxTree_Call*>(&x)->pValueList;
+        }
     protected:
         SyntaxTree_MemberList* pMemberList;
         SyntaxTree_ValueList*  pValueList;

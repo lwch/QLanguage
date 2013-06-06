@@ -25,4 +25,33 @@ namespace QLanguage
     void SyntaxTree_ParamterList::print(ostream& stream, uint indent)const
     {
     }
+
+    // paramter_list -> paramter_list "," paramter
+    bool Parser::reduceParamterList2Size()
+    {
+        SyntaxTree_ParamterList* pParamterList = dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]);
+
+        pParamterList->pushChild(syntaxTreeStack.top());
+
+        syntaxTreeStack.pop();
+
+        shifts.pop();
+        return true;
+    }
+
+    // paramter_list -> paramter
+    bool Parser::reduceParamterList1Size()
+    {
+        SyntaxTree_ParamterList* pParamterList = allocator<SyntaxTree_ParamterList>::allocate();
+        construct(pParamterList);
+
+        context.data.insert(pParamterList);
+
+        pParamterList->pushChild(syntaxTreeStack.top());
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pParamterList);
+
+        return true;
+    }
 }

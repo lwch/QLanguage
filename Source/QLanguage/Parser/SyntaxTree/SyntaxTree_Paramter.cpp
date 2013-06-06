@@ -30,15 +30,32 @@ namespace QLanguage
     {
     }
 
+    // paramter -> type_desc "{Letter}"
     bool Parser::reduceParamterNamed()
     {
-        // TODO
+        SyntaxTree_Paramter* pParamter = allocator<SyntaxTree_Paramter>::allocate();
+        construct(pParamter, dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack.top()), shifts.top());
+
+        context.data.insert(pParamter);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pParamter);
+
+        shifts.pop();
         return true;
     }
 
+    // paramter -> type_desc
     bool Parser::reduceParamterNoName()
     {
-        // TODO
+        SyntaxTree_Paramter* pParamter = allocator<SyntaxTree_Paramter>::allocate();
+        construct(pParamter, dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack.top()));
+
+        context.data.insert(pParamter);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pParamter);
+
         return true;
     }
 }

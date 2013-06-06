@@ -18,6 +18,10 @@ namespace QLanguage
     {
     }
 
+    SyntaxTree_Value::SyntaxTree_Value(SyntaxTree_MemberList* pMemberList) : parent(sizeof(SyntaxTree_Value)), pMemberList(pMemberList), type(Member)
+    {
+    }
+
     SyntaxTree_Value::~SyntaxTree_Value()
     {
     }
@@ -56,6 +60,20 @@ namespace QLanguage
         syntaxTreeStack.push(pValue);
 
         shifts.pop();
+
+        return true;
+    }
+
+    // value_desc -> member_desc
+    bool Parser::reduceValueMember()
+    {
+        SyntaxTree_Value* pValue = allocator<SyntaxTree_Value>::allocate();
+        construct(pValue, dynamic_cast<SyntaxTree_MemberList*>(syntaxTreeStack.top()));
+
+        context.data.insert(pValue);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pValue);
 
         return true;
     }

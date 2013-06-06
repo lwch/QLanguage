@@ -38,14 +38,23 @@ namespace QLanguage
 #define VALUE_DESC_FALSE                             17  // value_desc -> "false"
 #define VALUE_DESC_REAL                              18  // value_desc -> "{Real}"
 #define VALUE_DESC_DIGIT                             19  // value_desc -> "{Digit}"
+#define VALUE_DESC_MEMBER_DESC                       20  // value_desc -> member_desc
 #define VALUE_DESC_STRING                            21  // value_desc -> "{String}"
 #define VALUE_LIST_VALUE_LIST_EXP                    27  // value_list -> value_list "," exp
 #define VALUE_LIST_EXP                               28  // value_list -> exp
+#define ATTRIBUTE_PUBLIC                             29  // attribute -> "public"
+#define ATTRIBUTE_PRIVATE                            30  // attribute -> "private"
+#define ATTRIBUTE_PROTECTED                          31  // attribute -> "protected"
+#define PARAMTER_LIST_PARAMTER_LIST_PARAMTER         37  // paramter_list -> paramter_list "," paramter
+#define PARAMTER_LIST_PARAMTER                       38  // paramter_list -> paramter
 #define PARAMTER_TYPE_DESC_LETTER                    40  // paramter -> type_desc "{Letter}"
 #define PARAMTER_TYPE_DESC                           41  // paramter -> type_desc
 #define ITEM_LIST_ITEM_LIST_ITEM                     42  // item_list -> item_list item
 #define ITEM_LIST_ITEM                               43  // item_list -> item
+#define ITEM_GLOBAL_FUNCTION_DESC                    44  // item -> global_function_desc
 #define ITEM_DECLARE_DESC                            45  // item -> declare_desc ";"
+#define ITEM_INTERFACE_DESC                          46  // item -> interface_desc
+#define ITEM_CLASS_DESC                              47  // item -> class_desc
 #define STMT_LIST_STMT_LIST_STMT                     48  // stmt_list -> stmt_list stmt
 #define STMT_LIST_STMT                               49  // stmt_list -> stmt
 #define STMT_LIST_STMT_LIST_BLOCK                    50  // stmt_list -> stmt_list block
@@ -77,12 +86,17 @@ namespace QLanguage
         bool reduceMember2Size();
         bool reduceMember1Size();
         bool reduceValueNormal(ushort i);
+        bool reduceValueMember();
         bool reduceValueList2Size();
         bool reduceValueList1Size();
+        bool reduceAttribute(ushort i);
+        bool reduceParamterList2Size();
+        bool reduceParamterList1Size();
         bool reduceParamterNamed();
         bool reduceParamterNoName();
         bool reduceItemList2Size();
         bool reduceItemList1Size();
+        bool reduceItem(ushort i);
         bool reduceStmtList2Size();
         bool reduceStmtList1Size();
         bool reduceBlockStmts();
