@@ -130,24 +130,24 @@ namespace QLanguage
                     break;
                 }
             }
-            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", s.minimum());
-            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", s.maximum());
+            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", *s.minimum());
+            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", *s.maximum());
             TEST_ASSERT(s.size() != 10, "invalid tree size!");
             s.erase(s.begin());
-            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", s.minimum());
-            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", s.maximum());
+            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", *s.minimum());
+            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", *s.maximum());
             TEST_ASSERT(s.size() != 9, "invalid tree size!");
             s.erase(1);
-            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", s.minimum());
-            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", s.maximum());
+            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", *s.minimum());
+            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", *s.maximum());
             TEST_ASSERT(s.size() != 8, "invalid tree size!");
             s.erase(s.begin(), ++++++s.begin());
-            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", s.minimum());
-            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", s.maximum());
+            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", *s.minimum());
+            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", *s.maximum());
             TEST_ASSERT(s.size() != 5, "invalid tree size!");
             s.erase(s.begin(), s.end());
-            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", s.minimum());
-            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", s.maximum());
+            TEST_ASSERT(!checkMin(s, *s.minimum()), "invalid minimum of tree: %d", *s.minimum());
+            TEST_ASSERT(!checkMax(s, *s.maximum()), "invalid maximum of tree: %d", *s.maximum());
             TEST_ASSERT(s.size(), "tree is not empty!");
             TEST_ASSERT(!s.empty(), "tree is not empty!");
         }
