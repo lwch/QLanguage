@@ -130,24 +130,24 @@ namespace QLanguage
                     break;
                 }
             }
-            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", set.minimum());
-            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", set.maximum());
+            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", *set.minimum());
+            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", *set.maximum());
             TEST_ASSERT(set.size() != 10, "invalid hashset size!");
             set.erase(set.begin());
-            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", set.minimum());
-            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", set.maximum());
+            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", *set.minimum());
+            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", *set.maximum());
             TEST_ASSERT(set.size() != 9, "invalid hashset size!");
             set.erase(1);
-            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", set.minimum());
-            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", set.maximum());
+            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", *set.minimum());
+            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", *set.maximum());
             TEST_ASSERT(set.size() != 8, "invalid hashset size!");
             set.erase(set.begin(), ++++++set.begin());
-            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", set.minimum());
-            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", set.maximum());
+            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", *set.minimum());
+            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", *set.maximum());
             TEST_ASSERT(set.size() != 5, "invalid hashset size!");
             set.erase(set.begin(), set.end());
-            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", set.minimum());
-            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", set.maximum());
+            TEST_ASSERT(!checkMin(set, *set.minimum()), "invalid minimum of hashset: %d", *set.minimum());
+            TEST_ASSERT(!checkMax(set, *set.maximum()), "invalid maximum of hashset: %d", *set.maximum());
             TEST_ASSERT(set.size(), "hashset is not empty!");
             TEST_ASSERT(!set.empty(), "hashset is not empty!");
         }
