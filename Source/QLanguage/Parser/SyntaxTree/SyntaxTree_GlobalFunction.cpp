@@ -34,6 +34,25 @@ namespace QLanguage
     {
     }
 
+    // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
+    bool Parser::reduceGlobalFunction2()
+    {
+        shifts.pop();
+        shifts.pop();
+        SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
+        construct(pGlobalFunction, shifts.top(), dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack[2]), dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]), dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
+
+        context.data.insert(pGlobalFunction);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pGlobalFunction);
+
+        shifts.pop();
+        return true;
+    }
+
     // global_function_desc -> type_desc "{Letter}" "(" ")" block
     bool Parser::reduceGlobalFunction4()
     {

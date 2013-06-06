@@ -57,6 +57,12 @@ namespace QLanguage
             new (p) T1(v1, v2, v3);
         }
 
+        template <typename T1, typename T2, typename T3, typename T4>
+        inline void construct(T1* p, const T2& v1, T3& v2, T4 v3)
+        {
+            new (p) T1(v1, v2, v3);
+        }
+
         template <typename T1, typename T2, typename T3, typename T4, typename T5>
         inline void construct(T1* p, T2& v1, T3& v2, T4& v3, T5& v4)
         {
