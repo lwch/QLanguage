@@ -208,7 +208,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         {
             CHECK_FILE_OPEN;
 
-            int where;
+            int where = 0;
 
             switch (type)
             {

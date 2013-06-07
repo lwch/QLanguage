@@ -99,7 +99,7 @@ namespace QLanguage
         stack<ushort> status;
         status.push(iStart);
         list<Lexer::Token> tokens = l;
-        long idx = vts.size() - 1;
+        long idx = (long)vts.size() - 1;
         while (!tokens.empty())
         {
             Lexer::Token& tk = tokens.front();
@@ -120,7 +120,7 @@ namespace QLanguage
                 }
                 status.push(act.second);
                 tokens.pop_front();
-                idx = vts.size() - 1;
+                idx = (long)vts.size() - 1;
                 break;
             case 'R':
                 {
@@ -141,7 +141,7 @@ namespace QLanguage
                         status.pop();
                     }
                     status.push((ushort)j);
-                    idx = vts.size() - 1;
+                    idx = (long)vts.size() - 1;
                 }
                 break;
             case 'A':
