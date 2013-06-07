@@ -49,6 +49,11 @@ protected:
     enum { maxBufferLength = 4096 };
     char szBuffer[maxBufferLength];
     HANDLE hProcess;
+
+    enum { iMax = 4096 };
+    HMODULE hModule[iMax];
+    TCHAR szModuleName[iMax];
+    TCHAR szImageName[iMax];
 };
 
 NAMESPACE_QLANGUAGE_LIBRARY_END

@@ -51,7 +51,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         template <typename Number>
         bool getInteger(const value_type* p, size_type size, Number& n, size_type& step_size)
         {
-            uchar _base;
+            uchar _base = 10;
             const value_type* first = p;
             switch (this->radix)
             {

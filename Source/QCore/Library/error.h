@@ -83,11 +83,7 @@ namespace QLanguage
                 printf("\033[1m\033[31m");
 #endif
                 printf("error: %s in file\n", description);
-#ifdef WIN32
-                printf("%s on line %d\n", fileName, line);
-#else
-                printf("%s on line %lu\n", fileName, line);
-#endif
+                printf("%s on line %lu\n", fileName, (ulong)line);
 #if defined(_DEBUG) && DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
                 for (DWORD j = 0; j < dwCallStackDepth; ++j)
                 {

@@ -16,16 +16,16 @@
 #include "typedef.h"
 #include "string.h"
 
-#define HASH_KEY_TYPE ulong
+#define HASH_KEY_TYPE size_t
 
 inline HASH_KEY_TYPE hash_seq(const uchar* first, size_t size)
 {
 #ifdef X86
-    ulong offset_basis = 2166136261U;
-    ulong prime        = 16777619U;
+    size_t offset_basis = 2166136261U;
+    size_t prime        = 16777619U;
 #else
-    ulong offset_basis = 14695981039346656037U;
-    ulong prime        = 1099511628211U;
+    size_t offset_basis = 14695981039346656037ULL;
+    size_t prime        = 1099511628211ULL;
 #endif
 
     size_t value = offset_basis;

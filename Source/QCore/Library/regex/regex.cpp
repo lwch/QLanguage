@@ -752,7 +752,7 @@ namespace regex
 #endif
         const char* b = first;
 
-        char*  output;
+        char*  output = NULL;
         size_t size;
 
         for (const char* i = first + pos; i != last; ++i)

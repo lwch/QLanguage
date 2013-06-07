@@ -85,7 +85,7 @@ protected:
     void* refill(int i, void(*h)(size_type));
 
 #ifdef _DEBUG
-    void addUseInfo(obj* ptr);
+    void addUseInfo(obj* ptr, void(*h)(size_type));
 
     enum { headerSize = sizeof(obj) - sizeof(obj*) };
 #else

@@ -30,6 +30,8 @@ namespace QLanguage
         friend class SyntaxTree_StmtList;
         friend class SyntaxTree_ValueList;
         friend class SyntaxTree_ParamterList;
+        friend class SyntaxTree_InterfaceContentList;
+        friend class SyntaxTree_ClassContentList;
     public:
         SyntaxTree_Base(uint size);
         virtual ~SyntaxTree_Base();

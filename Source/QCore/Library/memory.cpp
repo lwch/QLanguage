@@ -220,7 +220,7 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
 
     obj* current = (obj*)p;
 #ifdef _DEBUG
-    addUseInfo(current);
+    addUseInfo(current, h);
 #if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     memset(current->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
     current->dwCallStackDepth = CallStack::getInstance().stackTrace(current->callStack, CALLSTACK_MAX_DEPTH);
@@ -231,7 +231,7 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
     for(int j = 0; j < count - 1; ++j)
     {
 #ifdef _DEBUG
-        addUseInfo(current);
+        addUseInfo(current, h);
         current->released = true;
 #endif
         current->next = chunk_list[i];
@@ -242,9 +242,14 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
 }
 
 #ifdef _DEBUG
-inline void MemoryPool::addUseInfo(obj* ptr)
+inline void MemoryPool::addUseInfo(obj* ptr, void(*h)(size_type))
 {
     use* p = (use*)malloc(sizeof(use));
+    while (p == 0)
+    {
+        h(sizeof(use));
+        p = (use*)malloc(sizeof(use));
+    }
     p->data = ptr;
     p->next = use_list;
     use_list = p;
