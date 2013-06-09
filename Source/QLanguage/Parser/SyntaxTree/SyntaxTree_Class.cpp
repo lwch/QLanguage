@@ -60,30 +60,68 @@ namespace QLanguage
     // class_desc -> class_desc1 class_desc2 "{" class_content "}"
     bool Parser::reduceClass2()
     {
-        // TODO
         SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
-        construct(pClass, dynamic_cast<SyntaxTree_ClassName&>(*syntaxTreeStack[2]), dynamic_cast<SyntaxTree_ClassInherit*>(syntaxTreeStack[1]), syntaxTreeStack.top());
+        construct(pClass, dynamic_cast<SyntaxTree_ClassName&>(*syntaxTreeStack[2]), dynamic_cast<SyntaxTree_ClassInherit*>(syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack.top()));
+
+        context.data.insert(pClass);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pClass);
+
+        shifts.pop();
+        shifts.pop();
         return true;
     }
 
     // class_desc -> class_desc1 "{" class_content "}"
     bool Parser::reduceClass4()
     {
-        // TODO
+        SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
+        construct(pClass, dynamic_cast<SyntaxTree_ClassName&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack.top()));
+
+        context.data.insert(pClass);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pClass);
+
+        shifts.pop();
+        shifts.pop();
         return true;
     }
 
     // class_desc -> class_desc1 class_desc2 "{" "}"
     bool Parser::reduceClass6()
     {
-        // TODO
+        SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
+        construct(pClass, dynamic_cast<SyntaxTree_ClassName&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassInherit*>(syntaxTreeStack.top()));
+
+        context.data.insert(pClass);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pClass);
+
+        shifts.pop();
+        shifts.pop();
         return true;
     }
 
     // class_desc -> class_desc1 "{" "}"
     bool Parser::reduceClass8()
     {
-        // TODO
+        SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
+        construct(pClass, dynamic_cast<SyntaxTree_ClassName&>(*syntaxTreeStack.top()));
+
+        context.data.insert(pClass);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pClass);
+
+        shifts.pop();
+        shifts.pop();
         return true;
     }
 }
