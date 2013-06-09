@@ -87,6 +87,15 @@ namespace QLanguage
 #define CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC                     95  // class_content -> attribute declare_desc ";"
 #define CLASS_CONTENT_CLASS_CONTENT_DECLARE_DESC                 96  // class_content -> class_content declare_desc ";"
 #define CLASS_CONTENT_DECLARE_DESC                               97  // class_content -> declare_desc ";"
+// TODO
+#define FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_PARAM_LIST_BLOCK       99  // function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block
+#define FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK                 101 // function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
+#define FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_NOPARAM_BLOCK          103 // function_desc -> attribute type_desc "{Letter}" "(" ")" block
+#define FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK                    105 // function_desc -> type_desc "{Letter}" "(" ")" block
+#define FUNCTION_DESC_ATTRIBUTE_VOID_PARAM_LIST_BLOCK            107 // function_desc -> attribute "void" "{Letter}" "(" paramter_list ")" block
+#define FUNCTION_DESC_VOID_PARAM_LIST_BLOCK                      109 // function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+#define FUNCTION_DESC_ATTRIBUTE_VOID_NOPARAM_BLOCK               111 // function_desc -> attribute "void" "{Letter}" "(" ")" block
+#define FUNCTION_DESC_VOID_NOPARAM_BLOCK                         113 // function_desc -> "void" "{Letter}" "(" ")" block
 #define STMT_CALL                                                115 // stmt -> call_desc ";"
 #define STMT_DECLARE                                             116 // stmt -> declare_desc ";"
 #define DECLARE_DESC_DECLARE_DESC_LETTER                         125 // declare_desc -> declare_desc "," "{Letter}"
@@ -146,9 +155,18 @@ namespace QLanguage
         bool reduceClassExtend();
         bool reduceClassContent2Size(ushort i);
         bool reduceClassContent1Size(ushort i);
-        bool reduceDeclare48(ushort i);
+        // TODO
+        bool reduceFunction2();
+        bool reduceFunction4();
+        bool reduceFunction6();
+        bool reduceFunction8();
+        bool reduceFunction10();
+        bool reduceFunction12();
+        bool reduceFunction14();
+        bool reduceFunction16();
         bool reduceCall1();
         bool reduceCall2();
+        bool reduceDeclare48(ushort i);
         bool reduceReturnExp();
 
         inline bool pop1Shifts()
