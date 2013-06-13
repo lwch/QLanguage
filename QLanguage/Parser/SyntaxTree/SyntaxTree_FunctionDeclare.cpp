@@ -39,7 +39,7 @@ namespace QLanguage
     {
     }
 
-    // function_desc -> type_desc "{Letter}" "(" paramter_list ")" ";"
+    // function_declare -> type_desc "{Letter}" "(" paramter_list ")" ";"
     bool Parser::reduceFunctionDeclare2()
     {
         shifts.pop();
@@ -59,7 +59,7 @@ namespace QLanguage
         return true;
     }
 
-    // function_desc -> type_desc "{Letter}" "(" ")" ";"
+    // function_declare -> type_desc "{Letter}" "(" ")" ";"
     bool Parser::reduceFunctionDeclare4()
     {
         shifts.pop();
@@ -78,7 +78,7 @@ namespace QLanguage
         return true;
     }
 
-    // function_desc -> "void" "{Letter}" "(" paramter_list ")" ";"
+    // function_declare -> "void" "{Letter}" "(" paramter_list ")" ";"
     bool Parser::reduceFunctionDeclare6()
     {
         shifts.pop();
@@ -103,7 +103,7 @@ namespace QLanguage
         return true;
     }
 
-    // function_desc -> "void" "{Letter}" "(" ")" ";"
+    // function_declare -> "void" "{Letter}" "(" ")" ";"
     bool Parser::reduceFunctionDeclare8()
     {
         shifts.pop();

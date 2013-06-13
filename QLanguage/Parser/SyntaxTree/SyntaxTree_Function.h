@@ -25,6 +25,8 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
+        static SyntaxTree_Attribute::Type defaultAttribute;
+    public:
         SyntaxTree_Function(SyntaxTree_Attribute& attribute, const string& name, SyntaxTree_Type& returnType, SyntaxTree_Block& block);
         SyntaxTree_Function(SyntaxTree_Attribute& attribute, const string& name, SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList, SyntaxTree_Block& block);
         virtual ~SyntaxTree_Function();

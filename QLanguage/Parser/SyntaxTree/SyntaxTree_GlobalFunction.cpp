@@ -40,7 +40,11 @@ namespace QLanguage
         shifts.pop();
         shifts.pop();
         SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
-        construct(pGlobalFunction, shifts.top(), dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack[2]), dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]), dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
+        construct(pGlobalFunction,
+                  shifts.top(),
+                  dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack[2]),
+                  dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
+                  dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pGlobalFunction);
 
@@ -59,7 +63,10 @@ namespace QLanguage
         shifts.pop();
         shifts.pop();
         SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
-        construct(pGlobalFunction, shifts.top(), dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
+        construct(pGlobalFunction,
+                  dynamic_cast<const string&>(shifts.top()),
+                  dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack[1]),
+                  dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pGlobalFunction);
 
@@ -83,7 +90,11 @@ namespace QLanguage
         context.data.insert(pReturnType);
 
         SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
-        construct(pGlobalFunction, shifts.top(), *pReturnType, dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]), dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
+        construct(pGlobalFunction,
+                  shifts.top(),
+                  *pReturnType,
+                  dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
+                  dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pGlobalFunction);
 
@@ -108,7 +119,10 @@ namespace QLanguage
         context.data.insert(pReturnType);
 
         SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
-        construct(pGlobalFunction, shifts.top(), *pReturnType, dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
+        construct(pGlobalFunction,
+                  dynamic_cast<const string&>(shifts.top()),
+                  *pReturnType,
+                  dynamic_cast<SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pGlobalFunction);
 
