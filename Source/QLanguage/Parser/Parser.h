@@ -65,10 +65,10 @@ namespace QLanguage
 #define GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK             63  // global_function_desc -> type_desc "{Letter}" "(" ")" block
 #define GLOBAL_FUNCTION_DESC_VOID_PARAM_LIST_BLOCK               65  // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
 #define GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK                  67  // global_function_desc -> "void" "{Letter}" "(" ")" block
-#define FUNCTION_DESC_TYPE_DESC_PARAM_LIST                       69  // function_desc -> type_desc "{Letter}" "(" paramter_list ")" ";"
-#define FUNCTION_DESC_TYPE_DESC_NOPARAM                          71  // function_desc -> type_desc "{Letter}" "(" ")" ";"
-#define FUNCTION_DESC_VOID_PARAM_LIST                            73  // function_desc -> "void" "{Letter}" "(" paramter_list ")" ";"
-#define FUNCTION_DESC_VOID_NOPARAM                               75  // function_desc -> "void" "{Letter}" "(" ")" ";"
+#define FUNCTION_DECLARE_TYPE_DESC_PARAM_LIST                    69  // function_declare -> type_desc "{Letter}" "(" paramter_list ")" ";"
+#define FUNCTION_DECLARE_TYPE_DESC_NOPARAM                       71  // function_declare -> type_desc "{Letter}" "(" ")" ";"
+#define FUNCTION_DECLARE_VOID_PARAM_LIST                         73  // function_declare -> "void" "{Letter}" "(" paramter_list ")" ";"
+#define FUNCTION_DECLARE_VOID_NOPARAM                            75  // function_declare -> "void" "{Letter}" "(" ")" ";"
 #define INTERFACE_DESC_INTERFACE_CONTENT_LIST                    76  // interface_desc -> "interface" "{Letter}" "{" interface_content "}"
 #define INTERFACE_DESC_NO_INTERFACE_CONTENT_LIST                 77  // interface_desc -> "interface" "{Letter}" "{" "}"
 #define INTERFACE_CONTENT_INTERFACE_CONTENT_FUNCTION_DECLARE     78  // interface_content -> interface_content function_declare
@@ -87,7 +87,6 @@ namespace QLanguage
 #define CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC                     95  // class_content -> attribute declare_desc ";"
 #define CLASS_CONTENT_CLASS_CONTENT_DECLARE_DESC                 96  // class_content -> class_content declare_desc ";"
 #define CLASS_CONTENT_DECLARE_DESC                               97  // class_content -> declare_desc ";"
-// TODO
 #define FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_PARAM_LIST_BLOCK       99  // function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block
 #define FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK                 101 // function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
 #define FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_NOPARAM_BLOCK          103 // function_desc -> attribute type_desc "{Letter}" "(" ")" block
@@ -96,10 +95,24 @@ namespace QLanguage
 #define FUNCTION_DESC_VOID_PARAM_LIST_BLOCK                      109 // function_desc -> "void" "{Letter}" "(" paramter_list ")" block
 #define FUNCTION_DESC_ATTRIBUTE_VOID_NOPARAM_BLOCK               111 // function_desc -> attribute "void" "{Letter}" "(" ")" block
 #define FUNCTION_DESC_VOID_NOPARAM_BLOCK                         113 // function_desc -> "void" "{Letter}" "(" ")" block
-#define STMT_CALL                                                115 // stmt -> call_desc ";"
-#define STMT_DECLARE                                             116 // stmt -> declare_desc ";"
+#define STMT_ASSIGN_DESC                                         114 // stmt -> assign_desc ";"
+#define STMT_CALL_DESC                                           115 // stmt -> call_desc ";"
+#define STMT_DECLARE_DESC                                        116 // stmt -> declare_desc ";"
+#define STMT_IF_DESC                                             117 // stmt -> if_desc
+#define STMT_FOR_DESC                                            118 // stmt -> for_desc
+#define STMT_WHILE_DESC                                          119 // stmt -> while_desc
+#define STMT_DO_DESC                                             120 // stmt -> do_desc ";"
+#define STMT_RETURN_DESC                                         121 // stmt -> return_desc
 #define DECLARE_DESC_DECLARE_DESC_LETTER                         125 // declare_desc -> declare_desc "," "{Letter}"
 #define DECLARE_DESC_LETTER                                      129 // declare_desc -> type_desc "{Letter}"
+#define ASSIGN_DESC_MEMBER_DESC_ADD_EQUAL_EXP                    130 // assign_desc -> member_desc "+" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_SUB_EQUAL_EXP                    131 // assign_desc -> member_desc "-" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_AND_EQUAL_EXP                    132 // assign_desc -> member_desc "&" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_OR_EQUAL_EXP                     133 // assign_desc -> member_desc "|" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_XOR_EQUAL_EXP                    134 // assign_desc -> member_desc "^" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_LEFT_MOVE_EQUAL_EXP              135 // assign_desc -> member_desc "<" "<" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_RIGHT_MOVE_EQUAL_EXP             136 // assign_desc -> member_desc ">" ">" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_EQUAL_EXP                        137 // assign_desc -> member_desc "=" exp
 #define CALL_DESC_VALUE_LIST                                     138 // call_desc -> member_desc "(" value_list ")"
 #define CALL_DESC_NOPARAM                                        139 // call_desc -> member_desc "(" ")"
 #define RETURN_DESC_EXP                                          150 // return_desc -> "return" exp ";"
@@ -155,7 +168,6 @@ namespace QLanguage
         bool reduceClassExtend();
         bool reduceClassContent2Size(ushort i);
         bool reduceClassContent1Size(ushort i);
-        // TODO
         bool reduceFunction2();
         bool reduceFunction4();
         bool reduceFunction6();
@@ -164,9 +176,17 @@ namespace QLanguage
         bool reduceFunction12();
         bool reduceFunction14();
         bool reduceFunction16();
+        bool reduceDeclare48(ushort i);
+        bool reduceAssignAddEqual();
+        bool reduceAssignSubEqual();
+        bool reduceAssignAndEqual();
+        bool reduceAssignOrEqual();
+        bool reduceAssignXorEqual();
+        bool reduceAssignLeftMoveEqual();
+        bool reduceAssignRightMoveEqual();
+        bool reduceAssignEqual();
         bool reduceCall1();
         bool reduceCall2();
-        bool reduceDeclare48(ushort i);
         bool reduceReturnExp();
 
         inline bool pop1Shifts()

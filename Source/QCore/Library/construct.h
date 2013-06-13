@@ -76,15 +76,33 @@ namespace QLanguage
         }
 
         template <typename T1, typename T2, typename T3, typename T4, typename T5>
-        inline void construct(T1* p, T2& v1, T3& v2, T4& v3, T5& v4)
+        inline void construct(T1* p, const T2& v1, const T3& v2, const T4& v3, const T5& v4)
         {
             new (p) T1(v1, v2, v3, v4);
         }
 
         template <typename T1, typename T2, typename T3, typename T4, typename T5>
-        inline void construct(T1* p, T2 v1, T3 v2, T4 v3, T5 v4)
+        inline void construct(T1* p, const T2& v1, T3& v2, T4* v3, T5& v4)
         {
             new (p) T1(v1, v2, v3, v4);
+        }
+
+        template <typename T1, typename T2, typename T3, typename T4, typename T5>
+        inline void construct(T1* p, T2& v1, const T3& v2, T4& v3, T5& v4)
+        {
+            new (p) T1(v1, v2, v3, v4);
+        }
+
+        template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+        inline void construct(T1* p, const T2& v1, const T3& v2, const T4& v3, const T5& v4, const T6& v5)
+        {
+            new (p) T1(v1, v2, v3, v4, v5);
+        }
+
+        template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+        inline void construct(T1* p, T2& v1, const T3& v2, T4& v3, T5* v4, T6& v5)
+        {
+            new (p) T1(v1, v2, v3, v4, v5);
         }
 
         template <typename T>

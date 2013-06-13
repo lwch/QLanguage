@@ -40,6 +40,8 @@ namespace QLanguage
 
     bool Parser::reduce(ushort i)
     {
+        int* p = allocator<int>::allocate();
+        construct(p, 100);
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
         result << "reduce by rule: " << i << endl;
 #endif
@@ -118,13 +120,13 @@ namespace QLanguage
             return reduceGlobalFunction6();
         case GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK:                  // global_function_desc -> "void" "{Letter}" "(" ")" block
             return reduceGlobalFunction8();
-        case FUNCTION_DESC_TYPE_DESC_PARAM_LIST:                       // function_desc -> type_desc "{Letter}" "(" paramter_list ")" ";"
-            return reduceGlobalFunction2();
-        case FUNCTION_DESC_TYPE_DESC_NOPARAM:                          // function_desc -> type_desc "{Letter}" "(" ")" ";"
-            return reduceGlobalFunction4();
-        case FUNCTION_DESC_VOID_PARAM_LIST:                            // function_desc -> "void" "{Letter}" "(" paramter_list ")" ";"
+        case FUNCTION_DECLARE_TYPE_DESC_PARAM_LIST:                    // function_desc -> type_desc "{Letter}" "(" paramter_list ")" ";"
+            return reduceFunctionDeclare2();
+        case FUNCTION_DECLARE_TYPE_DESC_NOPARAM:                       // function_desc -> type_desc "{Letter}" "(" ")" ";"
+            return reduceFunctionDeclare4();
+        case FUNCTION_DECLARE_VOID_PARAM_LIST:                         // function_desc -> "void" "{Letter}" "(" paramter_list ")" ";"
             return reduceFunctionDeclare6();
-        case FUNCTION_DESC_VOID_NOPARAM:                               // function_desc -> "void" "{Letter}" "(" ")" ";"
+        case FUNCTION_DECLARE_VOID_NOPARAM:                            // function_desc -> "void" "{Letter}" "(" ")" ";"
             return reduceFunctionDeclare8();
         case INTERFACE_DESC_INTERFACE_CONTENT_LIST:                    // interface_desc -> "interface" "{Letter}" "{" interface_content "}"
             return reduceInterfaceWidthContent();
@@ -158,12 +160,51 @@ namespace QLanguage
         case CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC:   // class_content -> attribute declare_desc ";"
         case CLASS_CONTENT_DECLARE_DESC:             // class_content -> declare_desc ";"
             return reduceClassContent1Size(i);
-        case STMT_CALL:                              // stmt -> call_desc ";"
-        case STMT_DECLARE:                           // stmt -> declare_desc ";"
+        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_PARAM_LIST_BLOCK: // function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block
+            return reduceFunction2();
+        case FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK:           // function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
+            return reduceFunction4();
+        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_NOPARAM_BLOCK:    // function_desc -> attribute type_desc "{Letter}" "(" ")" block
+            return reduceFunction6();
+        case FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:              // function_desc -> type_desc "{Letter}" "(" ")" block
+            return reduceFunction8();
+        case FUNCTION_DESC_ATTRIBUTE_VOID_PARAM_LIST_BLOCK:      // function_desc -> attribute "void" "{Letter}" "(" paramter_list ")" block
+            return reduceFunction10();
+        case FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:                // function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+            return reduceFunction12();
+        case FUNCTION_DESC_ATTRIBUTE_VOID_NOPARAM_BLOCK:         // function_desc -> attribute "void" "{Letter}" "(" ")" block
+            return reduceFunction14();
+        case FUNCTION_DESC_VOID_NOPARAM_BLOCK:                   // function_desc -> "void" "{Letter}" "(" ")" block
+            return reduceFunction16();
+        case STMT_ASSIGN_DESC:                       // stmt -> assign_desc ";"
+        case STMT_CALL_DESC:                         // stmt -> call_desc ";"
+        case STMT_DECLARE_DESC:                      // stmt -> declare_desc ";"
+        case STMT_DO_DESC:                           // stmt -> do_desc ";"
             return pop1Shifts();
+        case STMT_IF_DESC:                           // stmt -> if_desc
+        case STMT_FOR_DESC:                          // stmt -> for_desc
+        case STMT_WHILE_DESC:                        // stmt -> while_desc
+        case STMT_RETURN_DESC:                       // stmt -> return_desc
+            break;
         case DECLARE_DESC_DECLARE_DESC_LETTER:       // declare_desc -> declare_desc "," "{Letter}"
         case DECLARE_DESC_LETTER:                    // declare_desc -> type_desc "{Letter}"
             return reduceDeclare48(i);
+        case ASSIGN_DESC_MEMBER_DESC_ADD_EQUAL_EXP:        // assign_desc -> member_desc "+" "=" exp
+            return reduceAssignAddEqual();
+        case ASSIGN_DESC_MEMBER_DESC_SUB_EQUAL_EXP:        // assign_desc -> member_desc "-" "=" exp
+            return reduceAssignSubEqual();
+        case ASSIGN_DESC_MEMBER_DESC_AND_EQUAL_EXP:        // assign_desc -> member_desc "&" "=" exp
+            return reduceAssignAndEqual();
+        case ASSIGN_DESC_MEMBER_DESC_OR_EQUAL_EXP:         // assign_desc -> member_desc "|" "=" exp
+            return reduceAssignOrEqual();
+        case ASSIGN_DESC_MEMBER_DESC_XOR_EQUAL_EXP:        // assign_desc -> member_desc "^" "=" exp
+            return reduceAssignXorEqual();
+        case ASSIGN_DESC_MEMBER_DESC_LEFT_MOVE_EQUAL_EXP:  // assign_desc -> member_desc "<" "<" "=" exp
+            return reduceAssignLeftMoveEqual();
+        case ASSIGN_DESC_MEMBER_DESC_RIGHT_MOVE_EQUAL_EXP: // assign_desc -> member_desc ">" ">" "=" exp
+            return reduceAssignRightMoveEqual();
+        case ASSIGN_DESC_MEMBER_DESC_EQUAL_EXP:            // assign_desc -> member_desc "=" exp
+            return reduceAssignEqual();
         case CALL_DESC_VALUE_LIST:                   // call_desc -> member_desc "(" value_list ")"
             return reduceCall1();
         case CALL_DESC_NOPARAM:                      // call_desc -> member_desc "(" ")"
