@@ -16,7 +16,6 @@
 
 #include "definition.h"
 #include "string.h"
-#include "almighty_container.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
     template <typename T>

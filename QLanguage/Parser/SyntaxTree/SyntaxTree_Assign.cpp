@@ -14,7 +14,7 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Assign::SyntaxTree_Assign(SyntaxTree_MemberList& memberList, SyntaxTree_Base& exp, Type type)
+    SyntaxTree_Assign::SyntaxTree_Assign(const SyntaxTree_MemberList& memberList, const SyntaxTree_Base& exp, Type type)
         : parent(sizeof(SyntaxTree_Assign))
         , memberList(memberList)
         , exp(exp)
@@ -35,8 +35,8 @@ namespace QLanguage
     // assign_desc -> member_desc "+" "=" exp
     bool Parser::reduceAssignAddEqual()
     {
-//         SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
-//         construct(pAssign, dynamic_cast<SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::AddEqual);
+        SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
+        construct(pAssign, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::AddEqual);
         return true;
     }
 

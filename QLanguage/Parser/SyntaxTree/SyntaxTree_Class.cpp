@@ -17,7 +17,7 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Class::SyntaxTree_Class(SyntaxTree_ClassName& name, SyntaxTree_ClassInherit* pInherit, SyntaxTree_ClassContentList* pContentList)
+    SyntaxTree_Class::SyntaxTree_Class(const SyntaxTree_ClassName& name, SyntaxTree_ClassInherit* pInherit, SyntaxTree_ClassContentList* pContentList)
         : parent(sizeof(SyntaxTree_Class))
         , name(name)
         , pInherit(pInherit)
@@ -25,7 +25,7 @@ namespace QLanguage
     {
     }
 
-    SyntaxTree_Class::SyntaxTree_Class(SyntaxTree_ClassName& name, SyntaxTree_ClassContentList* pContentList)
+    SyntaxTree_Class::SyntaxTree_Class(const SyntaxTree_ClassName& name, SyntaxTree_ClassContentList* pContentList)
         : parent(sizeof(SyntaxTree_Class))
         , name(name)
         , pInherit(NULL)
@@ -33,7 +33,7 @@ namespace QLanguage
     {
     }
 
-    SyntaxTree_Class::SyntaxTree_Class(SyntaxTree_ClassName& name, SyntaxTree_ClassInherit* pInherit)
+    SyntaxTree_Class::SyntaxTree_Class(const SyntaxTree_ClassName& name, SyntaxTree_ClassInherit* pInherit)
         : parent(sizeof(SyntaxTree_Class))
         , name(name)
         , pInherit(pInherit)
@@ -41,7 +41,7 @@ namespace QLanguage
     {
     }
 
-    SyntaxTree_Class::SyntaxTree_Class(SyntaxTree_ClassName& name)
+    SyntaxTree_Class::SyntaxTree_Class(const SyntaxTree_ClassName& name)
         : parent(sizeof(SyntaxTree_Class))
         , name(name)
         , pInherit(NULL)
@@ -61,7 +61,7 @@ namespace QLanguage
     bool Parser::reduceClass2()
     {
         SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
-        construct(pClass, dynamic_cast<SyntaxTree_ClassName&>(*syntaxTreeStack[2]), dynamic_cast<SyntaxTree_ClassInherit*>(syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack.top()));
+        construct(pClass, dynamic_cast<const SyntaxTree_ClassName&>(*syntaxTreeStack[2]), dynamic_cast<SyntaxTree_ClassInherit*>(syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack.top()));
 
         context.data.insert(pClass);
 
@@ -79,7 +79,7 @@ namespace QLanguage
     bool Parser::reduceClass4()
     {
         SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
-        construct(pClass, dynamic_cast<SyntaxTree_ClassName&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack.top()));
+        construct(pClass, dynamic_cast<const SyntaxTree_ClassName&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack.top()));
 
         context.data.insert(pClass);
 
@@ -96,7 +96,7 @@ namespace QLanguage
     bool Parser::reduceClass6()
     {
         SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
-        construct(pClass, dynamic_cast<SyntaxTree_ClassName&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassInherit*>(syntaxTreeStack.top()));
+        construct(pClass, dynamic_cast<const SyntaxTree_ClassName&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassInherit*>(syntaxTreeStack.top()));
 
         context.data.insert(pClass);
 
@@ -113,7 +113,7 @@ namespace QLanguage
     bool Parser::reduceClass8()
     {
         SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
-        construct(pClass, dynamic_cast<SyntaxTree_ClassName&>(*syntaxTreeStack.top()));
+        construct(pClass, dynamic_cast<const SyntaxTree_ClassName&>(*syntaxTreeStack.top()));
 
         context.data.insert(pClass);
 

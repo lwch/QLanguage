@@ -22,8 +22,8 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_Paramter(SyntaxTree_Type& type, const string& name);
-        SyntaxTree_Paramter(SyntaxTree_Type& type);
+        SyntaxTree_Paramter(const SyntaxTree_Type& type, const string& name);
+        SyntaxTree_Paramter(const SyntaxTree_Type& type);
         virtual ~SyntaxTree_Paramter();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -44,8 +44,8 @@ namespace QLanguage
             return type != dynamic_cast<const SyntaxTree_Paramter*>(&x)->type;
         }
     protected:
-        SyntaxTree_Type& type;
-        string           name;
+        const SyntaxTree_Type& type;
+        string                 name;
     };
 }
 

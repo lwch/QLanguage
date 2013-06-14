@@ -27,8 +27,8 @@ namespace QLanguage
     public:
         static SyntaxTree_Attribute::Type defaultAttribute;
     public:
-        SyntaxTree_Function(SyntaxTree_Attribute& attribute, const string& name, SyntaxTree_Type& returnType, SyntaxTree_Block& block);
-        SyntaxTree_Function(SyntaxTree_Attribute& attribute, const string& name, SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList, SyntaxTree_Block& block);
+        SyntaxTree_Function(const SyntaxTree_Attribute& attribute, const string& name, const SyntaxTree_Type& returnType, const SyntaxTree_Block& block);
+        SyntaxTree_Function(const SyntaxTree_Attribute& attribute, const string& name, const SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList, const SyntaxTree_Block& block);
         virtual ~SyntaxTree_Function();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -55,11 +55,11 @@ namespace QLanguage
                    returnType != dynamic_cast<const SyntaxTree_Function*>(&x)->returnType;
         }
     protected:
-        SyntaxTree_Attribute& attribute;
+        const SyntaxTree_Attribute& attribute;
         string name;
-        SyntaxTree_Type& returnType;
+        const SyntaxTree_Type&   returnType;
         SyntaxTree_ParamterList* pParamterList;
-        SyntaxTree_Block& block;
+        const SyntaxTree_Block&  block;
     };
 }
 
