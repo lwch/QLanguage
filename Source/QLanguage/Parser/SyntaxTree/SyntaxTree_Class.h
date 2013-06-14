@@ -24,10 +24,10 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_Class(SyntaxTree_ClassName& name, SyntaxTree_ClassInherit* pInherit, SyntaxTree_ClassContentList* pContentList);
-        SyntaxTree_Class(SyntaxTree_ClassName& name, SyntaxTree_ClassContentList* pContentList);
-        SyntaxTree_Class(SyntaxTree_ClassName& name, SyntaxTree_ClassInherit* pInherit);
-        SyntaxTree_Class(SyntaxTree_ClassName& name);
+        SyntaxTree_Class(const SyntaxTree_ClassName& name, SyntaxTree_ClassInherit* pInherit, SyntaxTree_ClassContentList* pContentList);
+        SyntaxTree_Class(const SyntaxTree_ClassName& name, SyntaxTree_ClassContentList* pContentList);
+        SyntaxTree_Class(const SyntaxTree_ClassName& name, SyntaxTree_ClassInherit* pInherit);
+        SyntaxTree_Class(const SyntaxTree_ClassName& name);
         virtual ~SyntaxTree_Class();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -48,7 +48,7 @@ namespace QLanguage
             return *pContentList != *dynamic_cast<const SyntaxTree_Class*>(&x)->pContentList;
         }
     protected:
-        SyntaxTree_ClassName&        name;
+        const SyntaxTree_ClassName&  name;
         SyntaxTree_ClassInherit*     pInherit;
         SyntaxTree_ClassContentList* pContentList;
     };

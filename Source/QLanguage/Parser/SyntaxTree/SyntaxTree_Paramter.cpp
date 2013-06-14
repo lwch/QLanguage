@@ -14,11 +14,11 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Paramter::SyntaxTree_Paramter(SyntaxTree_Type& type, const string& name) : parent(sizeof(SyntaxTree_Paramter)), type(type), name(name)
+    SyntaxTree_Paramter::SyntaxTree_Paramter(const SyntaxTree_Type& type, const string& name) : parent(sizeof(SyntaxTree_Paramter)), type(type), name(name)
     {
     }
 
-    SyntaxTree_Paramter::SyntaxTree_Paramter(SyntaxTree_Type& type) : parent(sizeof(SyntaxTree_Paramter)), type(type)
+    SyntaxTree_Paramter::SyntaxTree_Paramter(const SyntaxTree_Type& type) : parent(sizeof(SyntaxTree_Paramter)), type(type)
     {
     }
 
@@ -34,7 +34,7 @@ namespace QLanguage
     bool Parser::reduceParamterNamed()
     {
         SyntaxTree_Paramter* pParamter = allocator<SyntaxTree_Paramter>::allocate();
-        construct(pParamter, dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack.top()), shifts.top());
+        construct(pParamter, dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack.top()), shifts.top());
 
         context.data.insert(pParamter);
 
@@ -49,7 +49,7 @@ namespace QLanguage
     bool Parser::reduceParamterNoName()
     {
         SyntaxTree_Paramter* pParamter = allocator<SyntaxTree_Paramter>::allocate();
-        construct(pParamter, dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack.top()));
+        construct(pParamter, dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack.top()));
 
         context.data.insert(pParamter);
 

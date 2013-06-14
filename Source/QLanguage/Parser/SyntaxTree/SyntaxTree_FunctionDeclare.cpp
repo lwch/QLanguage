@@ -16,14 +16,14 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Function_Declare::SyntaxTree_Function_Declare(const string& name, SyntaxTree_Type& returnType)
+    SyntaxTree_Function_Declare::SyntaxTree_Function_Declare(const string& name, const SyntaxTree_Type& returnType)
         : parent(sizeof(SyntaxTree_Function_Declare))
         , name(name)
         , returnType(returnType)
     {
     }
 
-    SyntaxTree_Function_Declare::SyntaxTree_Function_Declare(const string& name, SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList)
+    SyntaxTree_Function_Declare::SyntaxTree_Function_Declare(const string& name, const SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList)
         : parent(sizeof(SyntaxTree_Function_Declare))
         , name(name)
         , returnType(returnType)
@@ -47,7 +47,7 @@ namespace QLanguage
         shifts.pop();
 
         SyntaxTree_Function_Declare* pFunctionDeclare = allocator<SyntaxTree_Function_Declare>::allocate();
-        construct(pFunctionDeclare, shifts.top(), dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack.top()));
+        construct(pFunctionDeclare, shifts.top(), dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack.top()));
 
         context.data.insert(pFunctionDeclare);
 
@@ -67,7 +67,7 @@ namespace QLanguage
         shifts.pop();
 
         SyntaxTree_Function_Declare* pFunctionDeclare = allocator<SyntaxTree_Function_Declare>::allocate();
-        construct(pFunctionDeclare, shifts.top(), dynamic_cast<SyntaxTree_Type&>(*syntaxTreeStack.top()));
+        construct(pFunctionDeclare, shifts.top(), dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack.top()));
 
         context.data.insert(pFunctionDeclare);
 

@@ -32,16 +32,46 @@ namespace QLanguage
         }
     }
 
+#include "../../QCore/Library/almighty_container.h"
+
+    enum AA
+    {
+        A, B
+    };
+
+    template <typename T>
+    inline void t(const T& p)
+    {
+        t(QLanguage::Library::almighty_container<const T&>(p));
+    }
+
+    template <typename T>
+    inline void t(T& p)
+    {
+        t(QLanguage::Library::almighty_container<T&>(p));
+    }
+
+    template <typename T>
+    inline void t(T* p)
+    {
+        t(QLanguage::Library::almighty_container<T*>(p));
+    }
+
+    template <typename T>
+    inline void t(const QLanguage::Library::almighty_container<T>& p)
+    {
+        printf("");
+    }
+
     bool Parser::shift(const string& s)
     {
+        t(const_cast<string&>(s));
         shifts.push(s);
         return true;
     }
 
     bool Parser::reduce(ushort i)
     {
-        int* p = allocator<int>::allocate();
-        construct(p, 100);
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
         result << "reduce by rule: " << i << endl;
 #endif

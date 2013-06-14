@@ -33,7 +33,7 @@ namespace QLanguage
             Equal
         };
     public:
-        SyntaxTree_Assign(SyntaxTree_MemberList& memberList, SyntaxTree_Base& exp, Type type);
+        SyntaxTree_Assign(const SyntaxTree_MemberList& memberList, const SyntaxTree_Base& exp, Type type);
         virtual ~SyntaxTree_Assign();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -56,9 +56,9 @@ namespace QLanguage
                    memberList != dynamic_cast<const SyntaxTree_Assign*>(&x)->memberList;
         }
     protected:
-        Type                   type;
-        SyntaxTree_MemberList& memberList;
-        SyntaxTree_Base&       exp;
+        Type                         type;
+        const SyntaxTree_MemberList& memberList;
+        const SyntaxTree_Base&       exp;
     };
 }
 

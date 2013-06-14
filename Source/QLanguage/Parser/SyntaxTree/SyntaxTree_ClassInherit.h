@@ -27,7 +27,7 @@ namespace QLanguage
             Extend
         };
     public:
-        SyntaxTree_ClassInherit(SyntaxTree_Attribute& attribute, Type type, const string& name);
+        SyntaxTree_ClassInherit(const SyntaxTree_Attribute& attribute, Type type, const string& name);
         virtual ~SyntaxTree_ClassInherit();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -52,9 +52,9 @@ namespace QLanguage
                    name != dynamic_cast<const SyntaxTree_ClassInherit*>(&x)->name;
         }
     protected:
-        SyntaxTree_Attribute& attribute;
-        Type                  type;
-        string                name;
+        const SyntaxTree_Attribute& attribute;
+        Type                        type;
+        string                      name;
     };
 }
 
