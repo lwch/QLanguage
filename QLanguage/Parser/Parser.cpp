@@ -32,40 +32,8 @@ namespace QLanguage
         }
     }
 
-#include "../../QCore/Library/almighty_container.h"
-
-    enum AA
-    {
-        A, B
-    };
-
-    template <typename T>
-    inline void t(const T& p)
-    {
-        t(QLanguage::Library::almighty_container<const T&>(p));
-    }
-
-    template <typename T>
-    inline void t(T& p)
-    {
-        t(QLanguage::Library::almighty_container<T&>(p));
-    }
-
-    template <typename T>
-    inline void t(T* p)
-    {
-        t(QLanguage::Library::almighty_container<T*>(p));
-    }
-
-    template <typename T>
-    inline void t(const QLanguage::Library::almighty_container<T>& p)
-    {
-        printf("");
-    }
-
     bool Parser::shift(const string& s)
     {
-        t(const_cast<string&>(s));
         shifts.push(s);
         return true;
     }
@@ -239,8 +207,48 @@ namespace QLanguage
             return reduceCall1();
         case CALL_DESC_NOPARAM:                      // call_desc -> member_desc "(" ")"
             return reduceCall2();
+        case IF_DESC_IF_EXP_STMT_ELSE_DESC:          // if_desc -> "if" "(" exp ")" stmt else_desc
+            return reduceIfWithStmtElse();
+        case IF_DESC_IF_EXP_STMT:                    // if_desc -> "if" "(" exp ")" stmt
+            return reduceIfWithStmt();
+        case IF_DESC_IF_EXP_BLOCK_ELSE_DESC:         // if_desc -> "if" "(" exp ")" block else_desc
+            return reduceIfWithBlockElse();
+        case IF_DESC_IF_EXP_BLOCK:                   // if_desc -> "if" "(" exp ")" block
+            return reduceIfWithBlock();
+        case ELSE_DESC_ELSE_STMT:
+        case ELSE_DESC_ELSE_BLOCK:
+            return pop1Shifts();
         case RETURN_DESC_EXP:                        // return_desc -> "return" exp ";"
             return reduceReturnExp();
+        case EXP_GREATER_EQUAL:                      // exp -> exp ">" "=" exp1
+        case EXP_LESS_EQUAL:                         // exp -> exp "<" "=" exp1
+        case EXP_EQUAL:                              // exp -> exp "=" "=" exp1
+        case EXP_LOGIC_AND:                          // exp -> exp "&" "&" exp1
+        case EXP_LOGIC_OR:                           // exp -> exp "|" "|" exp1
+            return reduceExp2Size(i);
+        case EXP_GREATER:                            // exp -> exp ">" exp1
+        case EXP_LESS:                               // exp -> exp "<" exp1
+        case EXP_ASSIGN:                             // exp -> exp "=" exp1
+        case EXP_BIT_AND:                            // exp -> exp "&" exp1
+        case EXP_BIT_OR:                             // exp -> exp "|" exp1
+        case EXP_BIT_XOR:                            // exp -> exp "^" exp1
+        case EXP_NOT:                                // exp1 -> "!" exp2
+        case EXP_POSITIVE:                           // exp1 -> "+" exp2
+        case EXP_NEGATIVE:                           // exp1 -> "-" exp2
+        case EXP_ADD:                                // exp2 -> exp2 "+" exp3
+        case EXP_SUB:                                // exp2 -> exp2 "-" exp3
+        case EXP_MUL:                                // exp3 -> exp3 "*" exp4
+        case EXP_DIV:                                // exp3 -> exp3 "/" exp4
+        case EXP_MOD:                                // exp3 -> exp3 "%" exp4
+            return reduceExp1Size(i);
+        case EXP_BRACKETS:                           // exp4 -> "(" exp ")"
+            return pop2Shifts();
+        case EXP_CALL_DESC:                          // exp4 -> call_desc
+            return reduceExpCall();
+        case EXP_VALUE_DESC_AS_TYPE_DESC:            // exp4 -> value_desc "as" type_desc
+            return reduceExpValueAsType();
+        case EXP_VALUE_DESC:                         // exp4 -> value_desc
+            return reduceExpValue();
         }
         return true;
     }
