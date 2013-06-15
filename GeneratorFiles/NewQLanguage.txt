@@ -159,13 +159,13 @@ assign_desc -> member_desc "+" "=" exp
 call_desc -> member_desc "(" [value_list] ")"
           ;
 
-if_desc -> "if" "(" exp ")" stmt [if_desc2]
-        |  "if" "(" exp ")" block [if_desc2]
+if_desc -> "if" "(" exp ")" stmt [else_desc]
+        |  "if" "(" exp ")" block [else_desc]
         ;
 
-if_desc2 -> "else" stmt
-         |  "else" block
-         ;
+else_desc -> "else" stmt
+          |  "else" block
+          ;
 
 for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
          ;
@@ -213,5 +213,5 @@ exp3 -> exp3 "*" exp4
 
 exp4 -> "(" exp ")"
      |  call_desc
-     |  value_desc ["as" "{Letter}"]
+     |  value_desc ["as" type_desc]
      ;

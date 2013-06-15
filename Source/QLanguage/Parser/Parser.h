@@ -115,7 +115,36 @@ namespace QLanguage
 #define ASSIGN_DESC_MEMBER_DESC_EQUAL_EXP                        137 // assign_desc -> member_desc "=" exp
 #define CALL_DESC_VALUE_LIST                                     138 // call_desc -> member_desc "(" value_list ")"
 #define CALL_DESC_NOPARAM                                        139 // call_desc -> member_desc "(" ")"
+#define IF_DESC_IF_EXP_STMT_ELSE_DESC                            140 // if_desc -> "if" "(" exp ")" stmt else_desc
+#define IF_DESC_IF_EXP_STMT                                      141 // if_desc -> "if" "(" exp ")" stmt
+#define IF_DESC_IF_EXP_BLOCK_ELSE_DESC                           142 // if_desc -> "if" "(" exp ")" block else_desc
+#define IF_DESC_IF_EXP_BLOCK                                     143 // if_desc -> "if" "(" exp ")" block
+#define ELSE_DESC_ELSE_STMT                                      144 // else_desc -> "else" stmt
+#define ELSE_DESC_ELSE_BLOCK                                     145 // else_desc -> "else" block
 #define RETURN_DESC_EXP                                          150 // return_desc -> "return" exp ";"
+#define EXP_GREATER_EQUAL                                        151 // exp -> exp ">" "=" exp1
+#define EXP_LESS_EQUAL                                           152 // exp -> exp "<" "=" exp1
+#define EXP_EQUAL                                                153 // exp -> exp "=" "=" exp1
+#define EXP_GREATER                                              154 // exp -> exp ">" exp1
+#define EXP_LESS                                                 155 // exp -> exp "<" exp1
+#define EXP_ASSIGN                                               156 // exp -> exp "=" exp1
+#define EXP_LOGIC_AND                                            157 // exp -> exp "&" "&" exp1
+#define EXP_LOGIC_OR                                             158 // exp -> exp "|" "|" exp1
+#define EXP_BIT_AND                                              159 // exp -> exp "&" exp1
+#define EXP_BIT_OR                                               160 // exp -> exp "|" exp1
+#define EXP_BIT_XOR                                              161 // exp -> exp "^" exp1
+#define EXP_NOT                                                  163 // exp1 -> "!" exp2
+#define EXP_POSITIVE                                             164 // exp1 -> "+" exp2
+#define EXP_NEGATIVE                                             165 // exp1 -> "-" exp2
+#define EXP_ADD                                                  167 // exp2 -> exp2 "+" exp3
+#define EXP_SUB                                                  168 // exp2 -> exp2 "-" exp3
+#define EXP_MUL                                                  170 // exp3 -> exp3 "*" exp4
+#define EXP_DIV                                                  171 // exp3 -> exp3 "/" exp4
+#define EXP_MOD                                                  172 // exp3 -> exp3 "%" exp4
+#define EXP_BRACKETS                                             174 // exp4 -> "(" exp ")"
+#define EXP_CALL_DESC                                            175 // exp4 -> call_desc
+#define EXP_VALUE_DESC_AS_TYPE_DESC                              176 // exp4 -> value_desc "as" type_desc
+#define EXP_VALUE_DESC                                           177 // exp4 -> value_desc
 
     class Parser : public BasicParser
     {
@@ -187,7 +216,16 @@ namespace QLanguage
         bool reduceAssignEqual();
         bool reduceCall1();
         bool reduceCall2();
+        bool reduceIfWithStmtElse();
+        bool reduceIfWithStmt();
+        bool reduceIfWithBlockElse();
+        bool reduceIfWithBlock();
         bool reduceReturnExp();
+        bool reduceExp2Size(ushort i);
+        bool reduceExp1Size(ushort i);
+        bool reduceExpCall();
+        bool reduceExpValueAsType();
+        bool reduceExpValue();
 
         inline bool pop1Shifts()
         {

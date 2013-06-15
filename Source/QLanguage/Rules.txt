@@ -138,12 +138,12 @@
 137 : assign_desc -> member_desc "=" exp
 138 : call_desc -> member_desc "(" value_list ")"
 139 : call_desc -> member_desc "(" ")"
-140 : if_desc -> "if" "(" exp ")" stmt if_desc2
+140 : if_desc -> "if" "(" exp ")" stmt else_desc
 141 : if_desc -> "if" "(" exp ")" stmt
-142 : if_desc -> "if" "(" exp ")" block if_desc2
+142 : if_desc -> "if" "(" exp ")" block else_desc
 143 : if_desc -> "if" "(" exp ")" block
-144 : if_desc2 -> "else" stmt
-145 : if_desc2 -> "else" block
+144 : else_desc -> "else" stmt
+145 : else_desc -> "else" block
 146 : for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
 147 : while_desc -> "while" "(" exp ")" block
 148 : do_desc -> "do" block "while" "(" exp ")"
@@ -174,5 +174,5 @@
 173 : exp3 -> exp4
 174 : exp4 -> "(" exp ")"
 175 : exp4 -> call_desc
-176 : exp4 -> value_desc "as" "{Letter}"
+176 : exp4 -> value_desc "as" type_desc
 177 : exp4 -> value_desc

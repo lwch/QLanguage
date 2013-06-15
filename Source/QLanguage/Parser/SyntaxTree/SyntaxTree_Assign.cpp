@@ -30,55 +30,140 @@ namespace QLanguage
     {
     }
 
-    // TODO
-
     // assign_desc -> member_desc "+" "=" exp
     bool Parser::reduceAssignAddEqual()
     {
+        shifts.pop();
+        shifts.pop();
+
         SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
         construct(pAssign, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::AddEqual);
+
+        context.data.insert(pAssign);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pAssign);
         return true;
     }
 
     // assign_desc -> member_desc "-" "=" exp
     bool Parser::reduceAssignSubEqual()
     {
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
+        construct(pAssign, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::SubEqual);
+
+        context.data.insert(pAssign);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pAssign);
         return true;
     }
 
     // assign_desc -> member_desc "&" "=" exp
     bool Parser::reduceAssignAndEqual()
     {
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
+        construct(pAssign, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::AndEqual);
+
+        context.data.insert(pAssign);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pAssign);
         return true;
     }
 
     // assign_desc -> member_desc "|" "=" exp
     bool Parser::reduceAssignOrEqual()
     {
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
+        construct(pAssign, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::OrEqual);
+
+        context.data.insert(pAssign);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pAssign);
         return true;
     }
 
     // assign_desc -> member_desc "^" "=" exp
     bool Parser::reduceAssignXorEqual()
     {
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
+        construct(pAssign, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::XorEqual);
+
+        context.data.insert(pAssign);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pAssign);
         return true;
     }
 
     // assign_desc -> member_desc "<" "<" "=" exp
     bool Parser::reduceAssignLeftMoveEqual()
     {
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
+        construct(pAssign, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::LeftMoveEqual);
+
+        context.data.insert(pAssign);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pAssign);
         return true;
     }
 
     // assign_desc -> member_desc ">" ">" "=" exp
     bool Parser::reduceAssignRightMoveEqual()
     {
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
+        construct(pAssign, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::RightMoveEqual);
+
+        context.data.insert(pAssign);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pAssign);
         return true;
     }
 
     // assign_desc -> member_desc "=" exp
     bool Parser::reduceAssignEqual()
     {
+        shifts.pop();
+
+        SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();
+        construct(pAssign, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), *syntaxTreeStack.top(), SyntaxTree_Assign::Equal);
+
+        context.data.insert(pAssign);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pAssign);
         return true;
     }
 }
