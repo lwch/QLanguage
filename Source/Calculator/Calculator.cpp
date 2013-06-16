@@ -24,7 +24,11 @@ using namespace QLanguage::Library;
 
 int main()
 {
-    fstream fs("Calculator.ParserTable", fstream::in | fstream::binary);
+#ifdef X86
+    fstream fs("Calculator.x86.ParserTable", fstream::in | fstream::binary);
+#else
+    fstream fs("Calculator.x64.ParserTable", fstream::in | fstream::binary);
+#endif
     string str(fs.size() + 1);
 
     fs.readAll(const_cast<char*>(str.c_str()), str.capacity());

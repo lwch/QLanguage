@@ -24,9 +24,7 @@ namespace QLanguage
         if (compareString(data, size, PARSER_TABLE)) data += strlen(PARSER_TABLE);
         //uchar version = *data;
         ++data;
-        uint timeSize = *reinterpret_cast<const uint*>(data);
-        data += sizeof(uint);
-        data += timeSize;
+        data += sizeof(time_t);
         size_t vtCount = *reinterpret_cast<const size_t*>(data);
         data += sizeof(size_t);
         size_t vnCount = *reinterpret_cast<const size_t*>(data);

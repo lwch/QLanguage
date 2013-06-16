@@ -50,7 +50,11 @@ int main(int argv, char* args[])
 #endif
     else path = args[1];
 
-    fstream fs("QLanguage.ParserTable", fstream::in | fstream::binary);
+#ifdef X86
+    fstream fs("QLanguage.x86.ParserTable", fstream::in | fstream::binary);
+#else
+    fstream fs("QLanguage.x64.ParserTable", fstream::in | fstream::binary);
+#endif
     string str(fs.size() + 1);
 
     fs.readAll(const_cast<char*>(str.c_str()), str.capacity());
