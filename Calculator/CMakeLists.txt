@@ -63,7 +63,14 @@ IF (NOT TARGET QCore)
 ENDIF()
 ADD_DEPENDENCIES(Calculator QCore)
 
-ADD_CUSTOM_COMMAND(TARGET Calculator POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				   "${CMAKE_CURRENT_SOURCE_DIR}/Calculator.ParserTable"
-				   "${CMAKE_CURRENT_BINARY_DIR}/Calculator.ParserTable")
+IF(X86)
+    ADD_CUSTOM_COMMAND(TARGET Calculator POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                       "${CMAKE_CURRENT_SOURCE_DIR}/Calculator.x86.ParserTable"
+                       "${CMAKE_CURRENT_BINARY_DIR}/Calculator.x86.ParserTable")
+ELSE(X86)
+    ADD_CUSTOM_COMMAND(TARGET Calculator POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                       "${CMAKE_CURRENT_SOURCE_DIR}/Calculator.x64.ParserTable"
+                       "${CMAKE_CURRENT_BINARY_DIR}/Calculator.x64.ParserTable")
+ENDIF(X86)
