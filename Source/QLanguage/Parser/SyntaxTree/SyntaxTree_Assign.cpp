@@ -16,9 +16,9 @@ namespace QLanguage
 {
     SyntaxTree_Assign::SyntaxTree_Assign(const SyntaxTree_MemberList& memberList, const SyntaxTree_Base& exp, Type type)
         : parent(sizeof(SyntaxTree_Assign))
+        , type(type)
         , memberList(memberList)
         , exp(exp)
-        , type(type)
     {
     }
 

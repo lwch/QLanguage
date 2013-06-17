@@ -16,17 +16,17 @@ namespace QLanguage
 {
     SyntaxTree_Exp::SyntaxTree_Exp(Type type, SyntaxTree_Base* pOP1, SyntaxTree_Base* pOP2)
         : parent(sizeof(SyntaxTree_Exp))
-        , type(type)
         , pOP1(pOP1)
         , pOP2(pOP2)
+        , type(type)
     {
     }
 
     SyntaxTree_Exp::SyntaxTree_Exp(Type type, SyntaxTree_Base* pOP)
         : parent(sizeof(SyntaxTree_Exp))
-        , type(type)
         , pOP1(pOP)
         , pOP2(NULL)
+        , type(type)
     {
     }
 
