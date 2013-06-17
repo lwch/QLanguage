@@ -13,6 +13,7 @@
 #ifndef _QLANGUAGE_LIBRARY_ERROR_H_
 #define _QLANGUAGE_LIBRARY_ERROR_H_
 
+#include "typedef.h"
 #include "callstack.h"
 
 #include <stdio.h>
