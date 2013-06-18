@@ -121,6 +121,9 @@ namespace QLanguage
 #define IF_DESC_IF_EXP_BLOCK                                     143 // if_desc -> "if" "(" exp ")" block
 #define ELSE_DESC_ELSE_STMT                                      144 // else_desc -> "else" stmt
 #define ELSE_DESC_ELSE_BLOCK                                     145 // else_desc -> "else" block
+#define FOR_DESC_FOR_STMT_EXP_STMT_BLOCK                         146 // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
+#define WHILE_DESC_WHILE_EXP_BLOCK                               147 // while_desc -> "while" "(" exp ")" block
+#define DO_DESC_DO_BLOCK_WHILE_EXP                               148 // do_desc -> "do" block "while" "(" exp ")"
 #define RETURN_DESC_EXP                                          150 // return_desc -> "return" exp ";"
 #define EXP_GREATER_EQUAL                                        151 // exp -> exp ">" "=" exp1
 #define EXP_LESS_EQUAL                                           152 // exp -> exp "<" "=" exp1
@@ -220,6 +223,9 @@ namespace QLanguage
         bool reduceIfWithStmt();
         bool reduceIfWithBlockElse();
         bool reduceIfWithBlock();
+        bool reduceFor();
+        bool reduceWhile();
+        bool reduceDo();
         bool reduceReturnExp();
         bool reduceExp2Size(ushort i);
         bool reduceExp1Size(ushort i);
