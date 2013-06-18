@@ -215,9 +215,15 @@ namespace QLanguage
             return reduceIfWithBlockElse();
         case IF_DESC_IF_EXP_BLOCK:                   // if_desc -> "if" "(" exp ")" block
             return reduceIfWithBlock();
-        case ELSE_DESC_ELSE_STMT:
-        case ELSE_DESC_ELSE_BLOCK:
+        case ELSE_DESC_ELSE_STMT:                    // else_desc -> "else" stmt
+        case ELSE_DESC_ELSE_BLOCK:                   // else_desc -> "else" block
             return pop1Shifts();
+	case FOR_DESC_FOR_STMT_EXP_STMT_BLOCK:       // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
+	    return reduceFor();
+        case WHILE_DESC_WHILE_EXP_BLOCK:             // while_desc -> "while" "(" exp ")" block
+            return reduceWhile();
+        case DO_DESC_DO_BLOCK_WHILE_EXP:             // do_desc -> "do" block "while" "(" exp ")"
+            return reduceDo();
         case RETURN_DESC_EXP:                        // return_desc -> "return" exp ";"
             return reduceReturnExp();
         case EXP_GREATER_EQUAL:                      // exp -> exp ">" "=" exp1
