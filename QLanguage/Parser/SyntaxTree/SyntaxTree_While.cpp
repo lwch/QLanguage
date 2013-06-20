@@ -1,3 +1,15 @@
+/********************************************************************
+	created:	2013/06/20
+	created:	20:6:2013   22:13
+	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_While.cpp
+	file path:	\QLanguage\Parser\SyntaxTree
+	file base:	SyntaxTree_While
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
+
 #include "../Parser.h"
 #include "SyntaxTree_While.h"
 

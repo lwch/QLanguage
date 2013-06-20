@@ -150,40 +150,41 @@ namespace QLanguage
             return reduceClassImplement();
         case CLASS_DESC2_ATTRIBUTE_EXTEND_LETTER:    // class_desc2 -> attribute "extend" "{Letter}"
             return reduceClassExtend();
-        case CLASS_CONTENT_CLASS_CONTENT_FUNCTION_DESC:          // class_content -> class_content function_desc
-        case CLASS_CONTENT_CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC: // class_content -> class_content attribute declare_desc ";"
-        case CLASS_CONTENT_CLASS_CONTENT_DECLARE_DESC:           // class_content -> class_content declare_desc ";"
-            return reduceClassContent2Size(i);
-        case CLASS_CONTENT_FUNCTION_DESC:            // class_content -> function_desc
-        case CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC:   // class_content -> attribute declare_desc ";"
-        case CLASS_CONTENT_DECLARE_DESC:             // class_content -> declare_desc ";"
-            return reduceClassContent1Size(i);
-        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_PARAM_LIST_BLOCK: // function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block
+        case CLASS_CONTENT_LIST_CLASS_CONTENT_LIST_CLASS_CONTENT: // class_content_list -> class_content_list class_content
+            return reduceClassContentList2Size();
+        case CLASS_CONTENT_LIST_CLASS_CONTENT:                    // class_content_list -> class_content
+            return reduceClassContentList1Size();
+        case CLASS_CONTENT_FUNCTION_DESC:                         // class_content -> function_desc
+            return reduceClassContentFunction();
+        case CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC:                // class_content -> attribute declare_desc ";"
+            return reduceClassContentDeclareWithAttribute();
+        case CLASS_CONTENT_DECLARE_DESC:                          // class_content -> declare_desc ";"
+            return reduceClassContentDeclareNoAttribute();
+        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_PARAM_LIST_BLOCK:  // function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block
             return reduceFunction2();
-        case FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK:           // function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
+        case FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK:            // function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
             return reduceFunction4();
-        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_NOPARAM_BLOCK:    // function_desc -> attribute type_desc "{Letter}" "(" ")" block
+        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_NOPARAM_BLOCK:     // function_desc -> attribute type_desc "{Letter}" "(" ")" block
             return reduceFunction6();
-        case FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:              // function_desc -> type_desc "{Letter}" "(" ")" block
+        case FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:               // function_desc -> type_desc "{Letter}" "(" ")" block
             return reduceFunction8();
-        case FUNCTION_DESC_ATTRIBUTE_VOID_PARAM_LIST_BLOCK:      // function_desc -> attribute "void" "{Letter}" "(" paramter_list ")" block
+        case FUNCTION_DESC_ATTRIBUTE_VOID_PARAM_LIST_BLOCK:       // function_desc -> attribute "void" "{Letter}" "(" paramter_list ")" block
             return reduceFunction10();
-        case FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:                // function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+        case FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:                 // function_desc -> "void" "{Letter}" "(" paramter_list ")" block
             return reduceFunction12();
-        case FUNCTION_DESC_ATTRIBUTE_VOID_NOPARAM_BLOCK:         // function_desc -> attribute "void" "{Letter}" "(" ")" block
+        case FUNCTION_DESC_ATTRIBUTE_VOID_NOPARAM_BLOCK:          // function_desc -> attribute "void" "{Letter}" "(" ")" block
             return reduceFunction14();
-        case FUNCTION_DESC_VOID_NOPARAM_BLOCK:                   // function_desc -> "void" "{Letter}" "(" ")" block
+        case FUNCTION_DESC_VOID_NOPARAM_BLOCK:                    // function_desc -> "void" "{Letter}" "(" ")" block
             return reduceFunction16();
         case STMT_ASSIGN_DESC:                       // stmt -> assign_desc ";"
         case STMT_CALL_DESC:                         // stmt -> call_desc ";"
         case STMT_DECLARE_DESC:                      // stmt -> declare_desc ";"
         case STMT_DO_DESC:                           // stmt -> do_desc ";"
-            return pop1Shifts();
         case STMT_IF_DESC:                           // stmt -> if_desc
         case STMT_FOR_DESC:                          // stmt -> for_desc
         case STMT_WHILE_DESC:                        // stmt -> while_desc
         case STMT_RETURN_DESC:                       // stmt -> return_desc
-            break;
+            return reduceStmt(i);
         case DECLARE_DESC_DECLARE_DESC_LETTER:       // declare_desc -> declare_desc "," "{Letter}"
         case DECLARE_DESC_LETTER:                    // declare_desc -> type_desc "{Letter}"
             return reduceDeclare48(i);

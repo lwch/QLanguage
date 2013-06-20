@@ -1,3 +1,14 @@
+/********************************************************************
+	created:	2013/06/20
+	created:	20:6:2013   22:10
+	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_ClassContent.h
+	file path:	\QLanguage\Parser\SyntaxTree
+	file base:	SyntaxTree_ClassContent
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
 #ifndef _QLANGUAGE_SYNTAX_TREE_CLASS_CONTENT_H_
 #define _QLANGUAGE_SYNTAX_TREE_CLASS_CONTENT_H_
 
