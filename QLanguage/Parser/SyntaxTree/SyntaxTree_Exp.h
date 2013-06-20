@@ -51,13 +51,15 @@ namespace QLanguage
         virtual ~SyntaxTree_Exp();
 
         virtual void print(ostream& stream, uint indent)const;
+        
+        inline virtual string type()const { return "SyntaxTree_Exp"; }
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Exp*, &x);
 #endif
-            return type == dynamic_cast<const SyntaxTree_Exp*>(&x)->type &&
+            return _type == dynamic_cast<const SyntaxTree_Exp*>(&x)->_type &&
                    *pOP1 == *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP1 &&
                    ((pOP2 && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2 && *pOP2 == *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2) ||
                    (pOP2 == NULL && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2 == NULL));
@@ -68,7 +70,7 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Exp*, &x);
 #endif
-            return type != dynamic_cast<const SyntaxTree_Exp*>(&x)->type ||
+            return _type != dynamic_cast<const SyntaxTree_Exp*>(&x)->_type ||
                    *pOP1 != *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP1 ||
                    ((pOP2 && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2 && *pOP2 != *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2) ||
                    (pOP2 == NULL && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2));
@@ -76,7 +78,7 @@ namespace QLanguage
     protected:
         SyntaxTree_Base* pOP1;
         SyntaxTree_Base* pOP2;
-        Type             type;
+        Type             _type;
     };
 }
 

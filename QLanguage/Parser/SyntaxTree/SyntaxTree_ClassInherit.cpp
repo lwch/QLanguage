@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 	created:	2013/06/07
 	created:	7:6:2013   14:44
 	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_ClassInherit.cpp
@@ -17,7 +17,7 @@ namespace QLanguage
     SyntaxTree_ClassInherit::SyntaxTree_ClassInherit(const SyntaxTree_Attribute& attribute, Type type, const string& name)
         : parent(sizeof(SyntaxTree_ClassInherit))
         , attribute(attribute)
-        , type(type)
+        , _type(type)
         , name(name)
     {
     }
@@ -28,6 +28,18 @@ namespace QLanguage
 
     void SyntaxTree_ClassInherit::print(ostream& stream, uint indent)const
     {
+        attribute.print(stream, indent);
+        stream << ' ';
+        switch (_type)
+        {
+        case Implement:
+            stream << "implement ";
+            break;
+        case Extend:
+            stream << "extend ";
+            break;
+        }
+        stream << name;
     }
 
     // class_desc2 -> attribute "implement" "{Letter}"

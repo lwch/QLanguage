@@ -24,6 +24,7 @@ namespace QLanguage
 
     void SyntaxTree_Item::print(ostream& stream, uint indent)const
     {
+        pItem->print(stream, indent);
     }
 
     // item -> global_function_desc

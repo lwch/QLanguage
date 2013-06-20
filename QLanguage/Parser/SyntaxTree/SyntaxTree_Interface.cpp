@@ -35,6 +35,10 @@ namespace QLanguage
 
     void SyntaxTree_Interface::print(ostream& stream, uint indent)const
     {
+        this->printIndent(stream, indent);
+        stream << "interface " << name << " {" << endl;
+        if (pContentList) pContentList->print(stream, indent);
+        stream << '}' << endl;
     }
 
     // interface_desc -> "interface" "{Letter}" "{" interface_content "}"

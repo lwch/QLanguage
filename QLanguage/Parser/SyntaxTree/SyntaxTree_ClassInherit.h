@@ -31,6 +31,8 @@ namespace QLanguage
         virtual ~SyntaxTree_ClassInherit();
 
         virtual void print(ostream& stream, uint indent)const;
+        
+        inline virtual string type()const { return "SyntaxTree_ClassInherit"; }
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
@@ -38,7 +40,7 @@ namespace QLanguage
             TRY_CAST(const SyntaxTree_ClassInherit*, &x);
 #endif
             return attribute == dynamic_cast<const SyntaxTree_ClassInherit*>(&x)->attribute &&
-                   type == dynamic_cast<const SyntaxTree_ClassInherit*>(&x)->type &&
+                   _type == dynamic_cast<const SyntaxTree_ClassInherit*>(&x)->_type &&
                    name == dynamic_cast<const SyntaxTree_ClassInherit*>(&x)->name;
         }
 
@@ -48,12 +50,12 @@ namespace QLanguage
             TRY_CAST(const SyntaxTree_ClassInherit*, &x);
 #endif
             return attribute != dynamic_cast<const SyntaxTree_ClassInherit*>(&x)->attribute ||
-                   type != dynamic_cast<const SyntaxTree_ClassInherit*>(&x)->type ||
+                   _type != dynamic_cast<const SyntaxTree_ClassInherit*>(&x)->_type ||
                    name != dynamic_cast<const SyntaxTree_ClassInherit*>(&x)->name;
         }
     protected:
         const SyntaxTree_Attribute& attribute;
-        Type                        type;
+        Type                        _type;
         string                      name;
     };
 }

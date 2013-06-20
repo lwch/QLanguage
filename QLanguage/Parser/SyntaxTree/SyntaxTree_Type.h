@@ -39,18 +39,19 @@ namespace QLanguage
         virtual ~SyntaxTree_Type();
 
         virtual void print(ostream& stream, uint indent)const;
-
-        inline const bool isUnsigned()const { return (type & Unsigned) != 0; }
-        inline const bool isChar()const     { return (type & Char)     != 0; }
-        inline const bool isShort()const    { return (type & Short)    != 0; }
-        inline const bool isInt()const      { return (type & Int)      != 0; }
-        inline const bool isLong()const     { return (type & Long)     != 0; }
-        inline const bool isFloat()const    { return (type & Float)    != 0; }
-        inline const bool isDouble()const   { return (type & Double)   != 0; }
-        inline const bool isString()const   { return (type & String)   != 0; }
-        inline const bool isAuto()const     { return (type & Auto)     != 0; }
-        inline const bool isCustom()const   { return (type & Custom)   != 0; }
-        inline const bool isVoid()const     { return (type & Void)     != 0; }
+        
+        inline virtual string type()const   { return "SyntaxTree_Type";      }
+        inline const bool isUnsigned()const { return (_type & Unsigned) != 0; }
+        inline const bool isChar()const     { return (_type & Char)     != 0; }
+        inline const bool isShort()const    { return (_type & Short)    != 0; }
+        inline const bool isInt()const      { return (_type & Int)      != 0; }
+        inline const bool isLong()const     { return (_type & Long)     != 0; }
+        inline const bool isFloat()const    { return (_type & Float)    != 0; }
+        inline const bool isDouble()const   { return (_type & Double)   != 0; }
+        inline const bool isString()const   { return (_type & String)   != 0; }
+        inline const bool isAuto()const     { return (_type & Auto)     != 0; }
+        inline const bool isCustom()const   { return (_type & Custom)   != 0; }
+        inline const bool isVoid()const     { return (_type & Void)     != 0; }
 
         const Type trueType()const;
 
@@ -78,7 +79,7 @@ namespace QLanguage
     protected:
         string name;
         uint   idx;
-        ushort type;
+        ushort _type;
     };
 }
 

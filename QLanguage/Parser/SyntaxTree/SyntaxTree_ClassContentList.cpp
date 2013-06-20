@@ -24,48 +24,39 @@ namespace QLanguage
 
     void SyntaxTree_ClassContentList::print(ostream& stream, uint indent)const
     {
+        for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+        {
+            this->printIndent(stream, indent + parent::indent);
+            (*i)->print(stream, indent + parent::indent);
+            stream << endl;
+        }
     }
 
-    // class_content -> class_content function_desc
-    // class_content -> class_content attribute declare_desc ";"
-    // class_content -> class_content declare_desc ";"
-    bool Parser::reduceClassContent2Size(ushort i)
+    // class_content_list -> class_content_list class_content
+    bool Parser::reduceClassContentList2Size()
     {
-        SyntaxTree_ClassContentList* pClassContentList = dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack[1]);
-
-        context.data.insert(pClassContentList);
-
-        if (i == CLASS_CONTENT_CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC) pClassContentList->pushChild(syntaxTreeStack[1]);
-        pClassContentList->pushChild(syntaxTreeStack.top());
-
+        SyntaxTree_ClassContentList* pContentList = dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack[1]);
+        
+        pContentList->pushChild(syntaxTreeStack.top());
+        
         syntaxTreeStack.pop();
-        if (i == CLASS_CONTENT_CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC) syntaxTreeStack.pop();
-
-        if (i == CLASS_CONTENT_CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC ||
-            i == CLASS_CONTENT_CLASS_CONTENT_DECLARE_DESC)
-            shifts.pop();
+        
         return true;
     }
 
-    // class_content -> function_desc
-    // class_content -> attribute declare_desc ";"
-    // class_content -> declare_desc ";"
-    bool Parser::reduceClassContent1Size(ushort i)
+    // class_content_list -> class_content
+    bool Parser::reduceClassContentList1Size()
     {
-        SyntaxTree_ClassContentList* pClassContentList = allocator<SyntaxTree_ClassContentList>::allocate();
-        construct(pClassContentList);
-
-        context.data.insert(pClassContentList);
-
-        if (i == CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC) pClassContentList->pushChild(syntaxTreeStack[1]);
-        pClassContentList->pushChild(syntaxTreeStack.top());
-
+        SyntaxTree_ClassContentList* pContentList = allocator<SyntaxTree_ClassContentList>::allocate();
+        construct(pContentList);
+        
+        context.data.insert(pContentList);
+        
+        pContentList->pushChild(syntaxTreeStack.top());
+        
         syntaxTreeStack.pop();
-        if (i == CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC) syntaxTreeStack.pop();
-
-        if (i == CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC ||
-            i == CLASS_CONTENT_ATTRIBUTE_DECLARE_DESC)
-            shifts.pop();
+        syntaxTreeStack.push(pContentList);
+        
         return true;
     }
 }

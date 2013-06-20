@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 	created:	2013/06/01
 	created:	1:6:2013   20:08
 	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_Value.cpp
@@ -14,11 +14,11 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Value::SyntaxTree_Value(const string& value, Type type) : parent(sizeof(SyntaxTree_Value)), value(value), type(type)
+    SyntaxTree_Value::SyntaxTree_Value(const string& value, Type type) : parent(sizeof(SyntaxTree_Value)), value(value), _type(type)
     {
     }
 
-    SyntaxTree_Value::SyntaxTree_Value(SyntaxTree_MemberList* pMemberList) : parent(sizeof(SyntaxTree_Value)), type(Member), pMemberList(pMemberList)
+    SyntaxTree_Value::SyntaxTree_Value(SyntaxTree_MemberList* pMemberList) : parent(sizeof(SyntaxTree_Value)), _type(Member), pMemberList(pMemberList)
     {
     }
 
@@ -28,6 +28,8 @@ namespace QLanguage
 
     void SyntaxTree_Value::print(ostream& stream, uint indent)const
     {
+        if (pMemberList) pMemberList->print(stream, indent);
+        else stream << value;
     }
 
     // value_desc -> "true"

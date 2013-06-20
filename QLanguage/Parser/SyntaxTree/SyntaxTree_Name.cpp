@@ -23,5 +23,6 @@ namespace QLanguage
 
     void SyntaxTree_Name::print(ostream& stream, uint indent)const
     {
+        stream << name;
     }
 }

@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 	created:	2013/06/15
 	created:	15:6:2013   17:29
 	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_Exp.cpp
@@ -18,7 +18,7 @@ namespace QLanguage
         : parent(sizeof(SyntaxTree_Exp))
         , pOP1(pOP1)
         , pOP2(pOP2)
-        , type(type)
+        , _type(type)
     {
     }
 
@@ -26,7 +26,7 @@ namespace QLanguage
         : parent(sizeof(SyntaxTree_Exp))
         , pOP1(pOP)
         , pOP2(NULL)
-        , type(type)
+        , _type(type)
     {
     }
 
@@ -36,6 +36,73 @@ namespace QLanguage
 
     void SyntaxTree_Exp::print(ostream& stream, uint indent)const
     {
+        pOP1->print(stream, indent);
+        switch (_type)
+        {
+        case GreaterEqual:
+            stream << " >= ";
+            break;
+        case LessEqual:
+            stream << " <= ";
+            break;
+        case Equal:
+            stream << " == ";
+            break;
+        case Greater:
+            stream << " > ";
+            break;
+        case Less:
+            stream << " < ";
+            break;
+        case Assign:
+            stream << " = ";
+            break;
+        case LogicAnd:
+            stream << " && ";
+            break;
+        case LogicOr:
+            stream << " || ";
+            break;
+        case BitAnd:
+            stream << " & ";
+            break;
+        case BitOr:
+            stream << " | ";
+            break;
+        case BitXor:
+            stream << " ^ ";
+            break;
+        case Not:
+            stream << "!";
+            break;
+        case Positive:
+            stream << "+";
+            break;
+        case Negative:
+            stream << "-";
+            break;
+        case Add:
+            stream << " + ";
+            break;
+        case Sub:
+            stream << " - ";
+            break;
+        case Mul:
+            stream << " * ";
+            break;
+        case Div:
+            stream << " / ";
+            break;
+        case Mod:
+            stream << " % ";
+            break;
+        case ValueAsType:
+            stream << " as ";
+            break;
+        default:
+            break;
+        }
+        if (pOP2) pOP2->print(stream, indent);
     }
 
     // exp -> exp ">" "=" exp1

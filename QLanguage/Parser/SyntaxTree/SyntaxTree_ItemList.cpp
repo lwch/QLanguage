@@ -24,6 +24,7 @@ namespace QLanguage
 
     void SyntaxTree_ItemList::print(ostream& stream, uint indent)const
     {
+        this->printChilds(stream, indent);
     }
 
     // item_list -> item_list item

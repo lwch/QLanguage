@@ -35,6 +35,7 @@ namespace QLanguage
 
         context.data.insert(pName);
 
+        cout << syntaxTreeStack[1]->type();
         SyntaxTree_MemberList* pMemberList = dynamic_cast<SyntaxTree_MemberList*>(syntaxTreeStack[1]);
         pMemberList->pushChild(pName);
 

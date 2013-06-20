@@ -32,6 +32,11 @@ namespace QLanguage
 
     void SyntaxTree_GlobalFunction::print(ostream& stream, uint indent)const
     {
+        returnType.print(stream, indent);
+        stream << ' ' << name << '(';
+        if (pParamterList) pParamterList->print(stream, indent);
+        stream << ") ";
+        block.print(stream, indent + parent::indent);
     }
 
     // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block

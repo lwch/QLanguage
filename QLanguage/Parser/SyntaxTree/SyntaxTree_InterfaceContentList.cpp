@@ -24,6 +24,11 @@ namespace QLanguage
 
     void SyntaxTree_InterfaceContentList::print(ostream& stream, uint indent)const
     {
+        for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+        {
+            (*i)->print(stream, indent + parent::indent);
+            stream << endl;
+        }
     }
 
     // interface_content -> interface_content function_declare

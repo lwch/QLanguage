@@ -24,6 +24,7 @@ namespace QLanguage
 
     void SyntaxTree_DeclareName::print(ostream& stream, uint indent)const
     {
+        stream << name;
     }
 
     // declare_desc -> declare_desc "," "{Letter}"

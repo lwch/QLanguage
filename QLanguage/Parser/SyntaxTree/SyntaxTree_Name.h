@@ -24,6 +24,8 @@ namespace QLanguage
         virtual ~SyntaxTree_Name();
 
         virtual void print(ostream& stream, uint indent)const;
+        
+        inline virtual string type()const { return "SyntaxTree_Name"; }
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {

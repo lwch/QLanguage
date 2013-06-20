@@ -42,6 +42,13 @@ namespace QLanguage
 
     void SyntaxTree_Function::print(ostream& stream, uint indent)const
     {
+        attribute.print(stream, indent);
+        stream << ' ';
+        returnType.print(stream, indent);
+        stream << " " << name << '(';
+        if (pParamterList) pParamterList->print(stream, indent);
+        stream << ") ";
+        block.print(stream, indent + parent::indent);
     }
 
     // function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block

@@ -23,7 +23,7 @@ namespace QLanguage
 
     class SyntaxTree_Base
     {
-        enum { indent = 2 };
+        enum { indent = 4 };
 
         friend class SyntaxTree_ItemList;
         friend class SyntaxTree_MemberList;
@@ -32,13 +32,33 @@ namespace QLanguage
         friend class SyntaxTree_ParamterList;
         friend class SyntaxTree_InterfaceContentList;
         friend class SyntaxTree_ClassContentList;
+        friend class SyntaxTree_Function;
+        friend class SyntaxTree_Block;
+        friend class SyntaxTree_GlobalFunction;
     public:
         SyntaxTree_Base(uint size);
         virtual ~SyntaxTree_Base();
 
         virtual void print(ostream&, uint)const=0;
+        virtual string type()const=0;
 
         inline const uint size()const { return _size; }
+        
+        inline void printIndent(ostream& stream, uint indent)const
+        {
+            for (uint i = 0; i < indent; ++i)
+            {
+                stream << ' ';
+            }
+        }
+        
+        inline void printChilds(ostream& stream, uint indent)const
+        {
+            for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+            {
+                (*i)->print(stream, indent);
+            }
+        }
 
         inline void pushChild(SyntaxTree_Base* child)
         {

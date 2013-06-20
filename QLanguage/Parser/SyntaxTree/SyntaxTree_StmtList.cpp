@@ -24,6 +24,11 @@ namespace QLanguage
 
     void SyntaxTree_StmtList::print(ostream& stream, uint indent)const
     {
+        for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+        {
+            (*i)->print(stream, indent);
+            stream << endl;
+        }
     }
 
     // stmt_list -> stmt_list stmt
@@ -33,8 +38,6 @@ namespace QLanguage
         SyntaxTree_StmtList* pStmtList = dynamic_cast<SyntaxTree_StmtList*>(syntaxTreeStack[1]);
 
         pStmtList->pushChild(syntaxTreeStack.top());
-
-        context.data.insert(pStmtList);
 
         syntaxTreeStack.pop();
         return true;
