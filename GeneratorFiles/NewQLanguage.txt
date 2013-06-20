@@ -114,7 +114,7 @@ interface_desc -> "interface" "{Letter}" "{" [interface_content] "}"
 interface_content -> [interface_content] function_declare
                   ;
 
-class_desc -> [template_desc] class_desc1 [class_desc2] "{" [class_content] "}"
+class_desc -> [template_desc] class_desc1 [class_desc2] "{" [class_content_list] "}"
            ;
 
 class_desc1 -> "class" ["{Letter}"]
@@ -124,8 +124,11 @@ class_desc2 -> attribute "implement" "{Letter}"
             |  attribute "extend" "{Letter}"
             ;
 
-class_content -> [class_content] function_desc
-              |  [class_content] [attribute] declare_desc ";"
+class_content_list -> [class_content_list] class_content
+                   ;
+
+class_content -> function_desc
+              |  [attribute] declare_desc ";"
               ;
 
 function_desc -> [template_desc] [attribute] type_desc "{Letter}" "(" [paramter_list] ")" block

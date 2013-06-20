@@ -27,13 +27,15 @@ namespace QLanguage
         virtual ~SyntaxTree_Paramter();
 
         virtual void print(ostream& stream, uint indent)const;
+        
+        inline virtual string type()const { return "SyntaxTree_Paramter"; }
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Paramter*, &x);
 #endif
-            return type == dynamic_cast<const SyntaxTree_Paramter*>(&x)->type;
+            return _type == dynamic_cast<const SyntaxTree_Paramter*>(&x)->_type;
         }
 
         inline virtual const bool operator!=(const SyntaxTree_Base& x)const
@@ -41,10 +43,10 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Paramter*, &x);
 #endif
-            return type != dynamic_cast<const SyntaxTree_Paramter*>(&x)->type;
+            return _type != dynamic_cast<const SyntaxTree_Paramter*>(&x)->_type;
         }
     protected:
-        const SyntaxTree_Type& type;
+        const SyntaxTree_Type& _type;
         string                 name;
     };
 }

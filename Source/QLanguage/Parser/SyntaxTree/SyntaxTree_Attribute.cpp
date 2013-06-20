@@ -14,7 +14,7 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Attribute::SyntaxTree_Attribute(Type type) : parent(sizeof(SyntaxTree_Attribute)), type(type)
+    SyntaxTree_Attribute::SyntaxTree_Attribute(Type type) : parent(sizeof(SyntaxTree_Attribute)), _type(type)
     {
     }
 
@@ -24,6 +24,18 @@ namespace QLanguage
 
     void SyntaxTree_Attribute::print(ostream& stream, uint indent)const
     {
+        switch (_type)
+        {
+        case Public:
+            stream << "public";
+            break;
+        case Private:
+            stream << "private";
+            break;
+        case Protected:
+            stream << "protected";
+            break;
+        }
     }
 
     // attribute -> "public"

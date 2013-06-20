@@ -55,6 +55,12 @@ namespace QLanguage
 
     void SyntaxTree_Class::print(ostream& stream, uint indent)const
     {
+        this->printIndent(stream, indent);
+        name.print(stream, indent);
+        if (pInherit) pInherit->print(stream, indent);
+        stream << " {" << endl;
+        if (pContentList) pContentList->print(stream, indent);
+        stream << '}' << endl;
     }
 
     // class_desc -> class_desc1 class_desc2 "{" class_content "}"

@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 	created:	2013/05/31
 	created:	31:5:2013   15:13
 	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_Type.cpp
@@ -15,7 +15,7 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Type::SyntaxTree_Type(const string& name, ushort type) : parent(sizeof(SyntaxTree_Type)), name(name), idx(inc()), type(type)
+    SyntaxTree_Type::SyntaxTree_Type(const string& name, ushort type) : parent(sizeof(SyntaxTree_Type)), name(name), idx(inc()), _type(type)
     {
     }
 
@@ -25,11 +25,18 @@ namespace QLanguage
 
     void SyntaxTree_Type::print(ostream& stream, uint indent)const
     {
+        stream << name;
+        for (size_t i = 0, m = childs.size(); i < m; ++i)
+        {
+            stream << ' ';
+            childs[i]->print(stream, indent);
+            if (i < m - 1) stream << ',';
+        }
     }
 
     const SyntaxTree_Type::Type SyntaxTree_Type::trueType()const
     {
-        switch (type & ~Unsigned)
+        switch (_type & ~Unsigned)
         {
         case Char:   return Char;
         case Short:  return Short;

@@ -35,14 +35,16 @@ namespace QLanguage
         virtual ~SyntaxTree_Value();
 
         virtual void print(ostream& stream, uint indent)const;
+        
+        inline virtual string type()const { return "SyntaxTree_Value"; }
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Value*, &x);
 #endif
-            if (type != dynamic_cast<const SyntaxTree_Value*>(&x)->type) return false;
-            if (type == Member) return *pMemberList == *dynamic_cast<const SyntaxTree_Value*>(&x)->pMemberList;
+            if (_type != dynamic_cast<const SyntaxTree_Value*>(&x)->_type) return false;
+            if (_type == Member) return *pMemberList == *dynamic_cast<const SyntaxTree_Value*>(&x)->pMemberList;
             else return value == dynamic_cast<const SyntaxTree_Value*>(&x)->value;
         }
 
@@ -51,13 +53,13 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Value*, &x);
 #endif
-            if (type != dynamic_cast<const SyntaxTree_Value*>(&x)->type) return true;
-            if (type == Member) return *pMemberList != *dynamic_cast<const SyntaxTree_Value*>(&x)->pMemberList;
+            if (_type != dynamic_cast<const SyntaxTree_Value*>(&x)->_type) return true;
+            if (_type == Member) return *pMemberList != *dynamic_cast<const SyntaxTree_Value*>(&x)->pMemberList;
             else return value != dynamic_cast<const SyntaxTree_Value*>(&x)->value;
         }
     protected:
         string           value;
-        Type             type;
+        Type             _type;
         SyntaxTree_MemberList* pMemberList;
     };
 }

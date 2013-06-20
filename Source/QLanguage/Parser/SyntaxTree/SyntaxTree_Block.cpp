@@ -28,6 +28,10 @@ namespace QLanguage
 
     void SyntaxTree_Block::print(ostream& stream, uint indent)const
     {
+        stream << '{' << endl;
+        if (pStmts) pStmts->print(stream, indent);
+        this->printIndent(stream, indent - parent::indent);
+        stream << '}' << endl;
     }
 
     // block -> "{" stmt_list "}"

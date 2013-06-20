@@ -24,6 +24,9 @@ namespace QLanguage
 
     void SyntaxTree_Return::print(ostream& stream, uint indent)const
     {
+        stream << "return ";
+        pExp->print(stream, indent);
+        stream << ';';
     }
 
     // return_desc -> "return" exp ";"
