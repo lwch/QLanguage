@@ -1,3 +1,14 @@
+/********************************************************************
+	created:	2013/06/20
+	created:	20:6:2013   22:11
+	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_For.cpp
+	file path:	\QLanguage\Parser\SyntaxTree
+	file base:	SyntaxTree_For
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
 #include "../Parser.h"
 #include "SyntaxTree_For.h"
 

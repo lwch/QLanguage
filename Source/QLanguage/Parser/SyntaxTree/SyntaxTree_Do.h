@@ -1,3 +1,14 @@
+/********************************************************************
+	created:	2013/06/20
+	created:	20:6:2013   22:11
+	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_Do.h
+	file path:	\QLanguage\Parser\SyntaxTree
+	file base:	SyntaxTree_Do
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
 #ifndef _QLANGUAGE_SYNTAX_TREE_H_
 #define _QLANGUAGE_SYNTAX_TREE_H_
 
