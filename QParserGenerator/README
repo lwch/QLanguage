@@ -1,0 +1,95 @@
+一、使用
+QParserGenerator GeneratorFile ParserTableFile
+
+二、生成的文件
+QLanguage.error文件 ---------- 冲突信息
+Rules.txt -------------------- 所有产生式的展开形式和它的索引
+ParserTableFile -------------- LALR(1)分析表
+
+三、GeneratorFile的BNF
+%token "%" "token" "start" "|" "-" ">" ";" "[" "]";
+
+%start start;
+
+strings             -> strings "{String}"
+                    |  "{String}"
+                    ;
+
+vs                  -> vs "{Letter}"
+                    |  vs "{String}"
+					|  "{Letter}"
+					|  "{String}"
+					;
+
+option              -> "[" vs "]"
+                    ;
+
+oneProductionRight  -> oneProductionRight option
+                    |  oneProductionRight vs
+                    |  option
+					|  vs
+                    ;
+
+someProductionRight -> someProductionRight "|" oneProductionRight
+                    |  oneProductionRight
+                    ;
+
+token               -> "%" "token" strings ";"
+                    ;
+
+someTokens          -> someTokens token
+                    |  token
+                    ;
+
+production          -> "{Letter}" "-" ">" someProductionRight ";"
+                    ;
+
+someProductions     -> someProductions production
+                    |  production
+                    ;
+
+start               -> someTokens "%" "start" "{Letter}" ";" someProductions
+                    |  "%" "start" "{Letter}" ";" someProductions
+                    ;
+
+四、ParserTable的文件格式
+<QPARSERGENERATOR PARSERTABLE><version><timestamp><vtcount><vncount><rulecount><itemcount><startindex><tabledata><vtdata><vndata><ruledata><itemindexs>
+1.QPARSERGENERATOR PARSERTABLE: 文件开头的固定字符串
+2.version:           1字节的版本号
+3.timestamp:         8字节的时间戳
+4.vtcount:           终结符数量
+5.vncount:           非终结符数量
+6.rulecount:         产生式数量
+7.itemcount:         状态数量
+8.startindex:        开始状态的索引
+9.tabledata:
+    9.1.表中的每一项占3字节
+    9.2.在Actions部分前1字节表示接下来的状态'S'表示移进、'R'表示归约、'A'表示成功，'S'的后2字节表示移进到下一个状态的索引、'R'的后2字节表示用第几条产生式归约、'A'的后2字节无意义
+    9.3.在GoTo部分前1字节无意义，后2字节表示通过这个非终结符转到下个状态的索引
+10.vtdata:         终结符的内容，其中每个终结符的文件结构如下
+<index><type><ruledata>
+    10.1.index:      4字节的索引
+    10.2.type:       1字节的类型，0为终结符，1为非终结符
+    10.3.ruledata: 正则表达式的内容，只有终结符才有正则表达式，它的文件结构如下
+    <dfaedgecount><edgedata><startindex><endcount><endindexs>
+        10.3.1.dfaedgecount: dfa边的数量
+        10.3.2.edgedata:     dfa边的内容，它的文件结构如下
+        <fromindex><endindex><valuedata>
+            10.3.2.1.fromindex: 这条边开始状态的索引，4字节
+            10.3.2.2.endindex:  这条边结束状态的索引，4字节
+            10.3.2.3.valuedata: 这条边的内容，它的文件结构如下
+            <type><data>
+            10.3.2.3.1.type: 1个字节的类型，2为从一个字符到另一个字符、4为一个字符、8为一个字符串，这几种状态可与1（Not）组合
+            10.3.2.3.2.data: data视type的不同而不同，当trueType为从一个字符到另一个字符时data占2个字节分别表示这2个字节，当trueType为一个字符时data占1个字节，当trueType为一个字符串时data占字符串的长度+sizeof(size_t)个字节，其中前sizeof(size_t)个字节为字符串的长度，后面的为字符串的内容
+        10.3.3.startindex:   4字节dfa开始状态的索引
+        10.3.4.endcount:     结束状态的数量
+        10.3.5.endindexs:    所有结束状态的索引，每个4字节
+11.vndata:           非终结符的内容，结构同终结符，不过不含有ruledata
+12.ruledata:         产生式的内容，其中每条产生式的文件结构如下
+<index><left><rightcount><rightdata>
+    12.1.index:      4字节的索引
+    12.2.left:       产生式左侧的终结符，文件结构同上
+    12.3.rightcount: 产生式右侧终结符与非终结符的数量
+    12.4.rightdata:  产生式右侧终结符与非终结符的内容，文件结构同上
+13.itemindexs:       所有状态的索引，每个索引占4字节
+其中所有数量采用size_t结构，其字节数视平台而定，在x86环境下是4字节，x64环境下是8字节
