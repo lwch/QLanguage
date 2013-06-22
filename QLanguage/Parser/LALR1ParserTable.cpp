@@ -174,7 +174,7 @@ namespace QLanguage
         uchar version = 1;
         fstream stream(path, fstream::out | fstream::binary);
         // Align time_t with 4 bytes to size 8 bytes
-        stream << PARSER_TABLE << version << (__int64)t << vts.size() << vns.size() << _rules.size() << items.size() << this->pStart->idx;
+        stream << PARSER_TABLE << version << (llong)t << vts.size() << vns.size() << _rules.size() << items.size() << this->pStart->idx;
         for (vector<pair<uchar, ushort> >::const_iterator i = table.begin(), m = table.end(); i != m; ++i)
         {
             stream << i->first << i->second;
