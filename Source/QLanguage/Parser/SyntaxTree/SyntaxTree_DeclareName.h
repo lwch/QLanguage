@@ -16,11 +16,14 @@
 
 namespace QLanguage
 {
+    class SyntaxTree_Exp;
+
     class SyntaxTree_DeclareName : public SyntaxTree_Base
     {
         typedef SyntaxTree_Base parent;
     public:
         SyntaxTree_DeclareName(const string& name, bool bArray);
+        SyntaxTree_DeclareName(const string& name, bool bArray, SyntaxTree_Exp* pExp);
         virtual ~SyntaxTree_DeclareName();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -45,15 +48,9 @@ namespace QLanguage
                    bArray != dynamic_cast<const SyntaxTree_DeclareName*>(&x)->bArray;
         }
     protected:
-        static inline uint inc()
-        {
-            static uint i = 0;
-            return i++;
-        }
-    protected:
-        string name;
-        uint   idx;
-        bool   bArray;
+        string          name;
+        bool            bArray;
+        SyntaxTree_Exp* pExp;
     };
 }
 

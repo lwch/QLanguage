@@ -28,7 +28,7 @@ namespace QLanguage
 
     void SyntaxTree_ClassName::print(ostream& stream, uint indent)const
     {
-        stream << "class " << name;
+        stream << "class " << name << ' ';
     }
 
     // class_desc1 -> "class" "{Letter}"

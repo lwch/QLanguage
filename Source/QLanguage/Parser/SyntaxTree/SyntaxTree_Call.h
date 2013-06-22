@@ -12,19 +12,19 @@
 #ifndef _QLANGUAGE_SYNTAX_TREE_CALL_H_
 #define _QLANGUAGE_SYNTAX_TREE_CALL_H_
 
+#include "SyntaxTree_MemberList.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
 {
-    class SyntaxTree_MemberList;
     class SyntaxTree_ValueList;
 
     class SyntaxTree_Call : public SyntaxTree_Base
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_Call(SyntaxTree_MemberList* pMemberList);
-        SyntaxTree_Call(SyntaxTree_MemberList* pMemberList, SyntaxTree_ValueList* pValueList);
+        SyntaxTree_Call(const SyntaxTree_MemberList& memberList);
+        SyntaxTree_Call(const SyntaxTree_MemberList& memberList, SyntaxTree_ValueList* pValueList);
         virtual ~SyntaxTree_Call();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -36,7 +36,7 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Call*, &x);
 #endif
-            return *pMemberList == *dynamic_cast<const SyntaxTree_Call*>(&x)->pMemberList &&
+            return memberList == dynamic_cast<const SyntaxTree_Call*>(&x)->memberList &&
                    *pValueList == *dynamic_cast<const SyntaxTree_Call*>(&x)->pValueList;
         }
 
@@ -45,12 +45,12 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Call*, &x);
 #endif
-            return *pMemberList != *dynamic_cast<const SyntaxTree_Call*>(&x)->pMemberList ||
+            return memberList != dynamic_cast<const SyntaxTree_Call*>(&x)->memberList ||
                    *pValueList != *dynamic_cast<const SyntaxTree_Call*>(&x)->pValueList;
         }
     protected:
-        SyntaxTree_MemberList* pMemberList;
-        SyntaxTree_ValueList*  pValueList;
+        const SyntaxTree_MemberList& memberList;
+        SyntaxTree_ValueList*        pValueList;
     };
 }
 
