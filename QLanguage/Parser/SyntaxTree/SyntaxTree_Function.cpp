@@ -22,6 +22,7 @@ namespace QLanguage
         , attribute(attribute)
         , name(name)
         , returnType(returnType)
+        , pParamterList(NULL)
         , block(block)
     {
     }

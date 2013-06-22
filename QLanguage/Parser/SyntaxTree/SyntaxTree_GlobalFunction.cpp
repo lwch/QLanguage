@@ -18,11 +18,21 @@
 
 namespace QLanguage
 {
-    SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(const string& name, const SyntaxTree_Type& returnType, const SyntaxTree_Block& block) : parent(sizeof(SyntaxTree_GlobalFunction)), name(name), returnType(returnType), block(block)
+    SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(const string& name, const SyntaxTree_Type& returnType, const SyntaxTree_Block& block)
+        : parent(sizeof(SyntaxTree_GlobalFunction))
+        , name(name)
+        , returnType(returnType)
+        , pParamterList(NULL)
+        , block(block)
     {
     }
 
-    SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(const string& name, const SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList, const SyntaxTree_Block& block) : parent(sizeof(SyntaxTree_GlobalFunction)), name(name), returnType(returnType), pParamterList(pParamterList), block(block)
+    SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(const string& name, const SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList, const SyntaxTree_Block& block)
+        : parent(sizeof(SyntaxTree_GlobalFunction))
+        , name(name)
+        , returnType(returnType)
+        , pParamterList(pParamterList)
+        , block(block)
     {
     }
 

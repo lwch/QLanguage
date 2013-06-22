@@ -25,6 +25,12 @@ namespace QLanguage
 
     void SyntaxTree_MemberList::print(ostream& stream, uint indent)const
     {
+        childs[0]->print(stream, indent);
+        for (size_t i = 1, m = childs.size(); i < m; ++i)
+        {
+            stream << '.';
+            childs[i]->print(stream, indent);
+        }
     }
 
     // member_desc -> member_desc "." "{Letter}"
@@ -35,8 +41,7 @@ namespace QLanguage
 
         context.data.insert(pName);
 
-        cout << syntaxTreeStack[1]->type();
-        SyntaxTree_MemberList* pMemberList = dynamic_cast<SyntaxTree_MemberList*>(syntaxTreeStack[1]);
+        SyntaxTree_MemberList* pMemberList = dynamic_cast<SyntaxTree_MemberList*>(syntaxTreeStack.top());
         pMemberList->pushChild(pName);
 
         shifts.pop();

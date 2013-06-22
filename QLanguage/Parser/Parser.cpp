@@ -185,9 +185,12 @@ namespace QLanguage
         case STMT_WHILE_DESC:                        // stmt -> while_desc
         case STMT_RETURN_DESC:                       // stmt -> return_desc
             return reduceStmt(i);
-        case DECLARE_DESC_DECLARE_DESC_LETTER:       // declare_desc -> declare_desc "," "{Letter}"
-        case DECLARE_DESC_LETTER:                    // declare_desc -> type_desc "{Letter}"
-            return reduceDeclare48(i);
+        case DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP: // declare_desc -> declare_desc "," "{Letter}" "=" exp
+        case DECLARE_DESC_LETTER_TYPE_DESC_LETTER_EQUAL_EXP:       // declare_desc -> type_desc "{Letter}" "=" exp
+            return reduceDeclareWithAssign(i);
+        case DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER:           // declare_desc -> declare_desc "," "{Letter}"
+        case DECLARE_DESC_TYPE_DESC_LETTER:                        // declare_desc -> type_desc "{Letter}"
+            return reduceDeclareWithoutAssign(i);
         case ASSIGN_DESC_MEMBER_DESC_ADD_EQUAL_EXP:        // assign_desc -> member_desc "+" "=" exp
             return reduceAssignAddEqual();
         case ASSIGN_DESC_MEMBER_DESC_SUB_EQUAL_EXP:        // assign_desc -> member_desc "-" "=" exp
@@ -258,5 +261,10 @@ namespace QLanguage
             return reduceExpValue();
         }
         return true;
+    }
+
+    void Parser::print(ostream& stream)
+    {
+        if (syntaxTreeStack.size() == 1) syntaxTreeStack.top()->print(stream, 0);
     }
 }

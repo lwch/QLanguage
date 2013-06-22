@@ -20,6 +20,7 @@ namespace QLanguage
         : parent(sizeof(SyntaxTree_Function_Declare))
         , name(name)
         , returnType(returnType)
+        , pParamterList(NULL)
     {
     }
 
@@ -121,7 +122,7 @@ namespace QLanguage
         context.data.insert(pReturnType);
 
         SyntaxTree_Function_Declare* pFunctionDeclare = allocator<SyntaxTree_Function_Declare>::allocate();
-        construct(pFunctionDeclare, shifts.top(), *pReturnType, dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack.top()));
+        construct(pFunctionDeclare, shifts.top(), *pReturnType);
 
         context.data.insert(pFunctionDeclare);
 

@@ -14,11 +14,18 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Value::SyntaxTree_Value(const string& value, Type type) : parent(sizeof(SyntaxTree_Value)), value(value), _type(type)
+    SyntaxTree_Value::SyntaxTree_Value(const string& value, Type type)
+        : parent(sizeof(SyntaxTree_Value))
+        , value(value)
+        , _type(type)
+        , pMemberList(NULL)
     {
     }
 
-    SyntaxTree_Value::SyntaxTree_Value(SyntaxTree_MemberList* pMemberList) : parent(sizeof(SyntaxTree_Value)), _type(Member), pMemberList(pMemberList)
+    SyntaxTree_Value::SyntaxTree_Value(SyntaxTree_MemberList* pMemberList)
+        : parent(sizeof(SyntaxTree_Value))
+        , _type(Member)
+        , pMemberList(pMemberList)
     {
     }
 

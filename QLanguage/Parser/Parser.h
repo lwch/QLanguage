@@ -102,8 +102,10 @@ namespace QLanguage
 #define STMT_WHILE_DESC                                          118 // stmt -> while_desc
 #define STMT_DO_DESC                                             119 // stmt -> do_desc ";"
 #define STMT_RETURN_DESC                                         120 // stmt -> return_desc
-#define DECLARE_DESC_DECLARE_DESC_LETTER                         124 // declare_desc -> declare_desc "," "{Letter}"
-#define DECLARE_DESC_LETTER                                      128 // declare_desc -> type_desc "{Letter}"
+#define DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP     122 // declare_desc -> declare_desc "," "{Letter}" "=" exp
+#define DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER               124 // declare_desc -> declare_desc "," "{Letter}"
+#define DECLARE_DESC_LETTER_TYPE_DESC_LETTER_EQUAL_EXP           126 // declare_desc -> ttype_desc "{Letter}" "=" exp
+#define DECLARE_DESC_TYPE_DESC_LETTER                            128 // declare_desc -> type_desc "{Letter}"
 #define ASSIGN_DESC_MEMBER_DESC_ADD_EQUAL_EXP                    129 // assign_desc -> member_desc "+" "=" exp
 #define ASSIGN_DESC_MEMBER_DESC_SUB_EQUAL_EXP                    130 // assign_desc -> member_desc "-" "=" exp
 #define ASSIGN_DESC_MEMBER_DESC_AND_EQUAL_EXP                    131 // assign_desc -> member_desc "&" "=" exp
@@ -156,6 +158,8 @@ namespace QLanguage
 
         virtual bool shift(const string& s);
         virtual bool reduce(ushort i);
+
+        void print(ostream& stream);
     protected:
         bool reduceType1Size(ushort i);
         bool reduceType2Size(ushort i);
@@ -211,7 +215,8 @@ namespace QLanguage
         bool reduceFunction14();
         bool reduceFunction16();
         bool reduceStmt(ushort i);
-        bool reduceDeclare48(ushort i);
+        bool reduceDeclareWithAssign(ushort i);
+        bool reduceDeclareWithoutAssign(ushort i);
         bool reduceAssignAddEqual();
         bool reduceAssignSubEqual();
         bool reduceAssignAndEqual();
