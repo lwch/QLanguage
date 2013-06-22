@@ -6,8 +6,8 @@
 	file base:	ParserTable
 	file ext:	cpp
 	author:		lwch
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 #include "ParserTable.h"
 
@@ -24,7 +24,7 @@ namespace QLanguage
         if (compareString(data, size, PARSER_TABLE)) data += strlen(PARSER_TABLE);
         //uchar version = *data;
         ++data;
-        data += sizeof(time_t);
+        data += 8; // timestamp align to 8 bytes
         size_t vtCount = *reinterpret_cast<const size_t*>(data);
         data += sizeof(size_t);
         size_t vnCount = *reinterpret_cast<const size_t*>(data);
