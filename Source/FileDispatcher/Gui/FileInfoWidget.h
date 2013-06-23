@@ -15,6 +15,8 @@
 #include <QtWidgets/QWidget>
 
 class QItemSelection;
+class QLabel;
+class QResizeEvent;
 
 class FileInfoWidget : public QWidget
 {
@@ -24,8 +26,16 @@ public:
     ~FileInfoWidget();
 protected:
     void setupUi();
-public slots:
+protected slots:
     void slotSelectionChanged(const QItemSelection&, const QItemSelection&);
+protected:
+    QLabel* mpImage;
+    QLabel* mpAbsolutePath;
+    QLabel* mpPermissions;
+    QLabel* mpSize;
+    QPixmap transparentImage;
+
+    static QSize imageSize;
 };
 
 #endif
