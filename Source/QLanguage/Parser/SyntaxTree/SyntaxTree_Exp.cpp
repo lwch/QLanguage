@@ -36,6 +36,20 @@ namespace QLanguage
 
     void SyntaxTree_Exp::print(ostream& stream, uint indent)const
     {
+        switch (_type)
+        {
+        case Not:
+            stream << "!";
+            break;
+        case Positive:
+            stream << "+";
+            break;
+        case Negative:
+            stream << "-";
+            break;
+        default:
+            break;
+        }
         pOP1->print(stream, indent);
         switch (_type)
         {
@@ -71,15 +85,6 @@ namespace QLanguage
             break;
         case BitXor:
             stream << " ^ ";
-            break;
-        case Not:
-            stream << "!";
-            break;
-        case Positive:
-            stream << "+";
-            break;
-        case Negative:
-            stream << "-";
             break;
         case Add:
             stream << " + ";

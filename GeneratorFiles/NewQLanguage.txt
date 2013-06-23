@@ -17,6 +17,10 @@
 
 %start start;
 
+member_desc -> member_desc "." "{Letter}"
+            |  "{Letter}"
+            ;
+
 type_desc -> ["unsigned"] "char"
           |  ["unsigned"] "short"
           |  ["unsigned"] "int"
@@ -27,10 +31,6 @@ type_desc -> ["unsigned"] "char"
           |  "auto"
           |  "{Letter}"
           ;
-
-member_desc -> member_desc "." "{Letter}"
-            |  "{Letter}"
-            ;
 
 value_desc -> "true"
            |  "false"

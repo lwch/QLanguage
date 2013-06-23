@@ -36,7 +36,12 @@ namespace QLanguage
                     {
                         ushort z = (ushort)index_of(_rules.begin(), _rules.end(), p);
                         if (ptr->first && (ptr->first != 'R' || ptr->second != z)) errStream << ptr->first << '(' << ptr->second << ") -> R(" << z << ')' << endl;
-                        if (ptr->first != 'S') // 移进归约冲突，默认移进
+                        if (ptr->first == 0)
+                        {
+                            ptr->first  = 'R';
+                            ptr->second = z;
+                        }
+                        else if (ptr->first == 'R' && z < ptr->second) // 移进归约冲突，默认移进
                         {
                             ptr->first = 'R';
                             ptr->second = z;
