@@ -25,8 +25,13 @@ namespace QLanguage
     {
     }
 
-    void SyntaxTree_Do::print(ostream& stream, uint indent) const
+    void SyntaxTree_Do::print(ostream& stream, uint indent)const
     {
+        stream << "do ";
+        block.print(stream, indent + parent::indent);
+        stream << " while (";
+        exp.print(stream, indent);
+        stream << ")";
     }
 
     // do_desc -> "do" block "while" "(" exp ")"

@@ -28,7 +28,7 @@ namespace QLanguage
     void SyntaxTree_Stmt::print(ostream& stream, uint indent) const
     {
         this->printIndent(stream, indent);
-        pStmt->print(stream, 0);
+        pStmt->print(stream, indent);
         switch (_type)
         {
         case Assign:

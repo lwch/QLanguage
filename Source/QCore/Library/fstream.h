@@ -15,6 +15,8 @@
 
 #ifdef MSVC
 #include <io.h>
+#else
+#include <unistd.h>
 #endif
 #include <fcntl.h>
 #include <sys/stat.h>

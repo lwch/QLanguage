@@ -36,6 +36,23 @@ namespace QLanguage
 
     void SyntaxTree_If::print(ostream& stream, uint indent)const
     {
+        stream << "if (";
+        exp.print(stream, indent);
+        stream << ") ";
+        if (op1.type() == "SyntaxTree_Stmt")
+        {
+            op1.print(stream, 0);
+            stream << endl;
+            this->printIndent(stream, indent);
+        }
+        else op1.print(stream, indent + parent::indent);
+        if (pOP2)
+        {
+            if (op1.type() == "SyntaxTree_Stmt") stream << "else ";
+            else stream << " else ";
+            if (pOP2->type() == "SyntaxTree_Stmt") pOP2->print(stream, 0);
+            else pOP2->print(stream, indent + parent::indent);
+        }
     }
 
     // if_desc -> "if" "(" exp ")" stmt else_desc

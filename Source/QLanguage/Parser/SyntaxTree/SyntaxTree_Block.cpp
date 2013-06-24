@@ -31,7 +31,7 @@ namespace QLanguage
         stream << '{' << endl;
         if (pStmts) pStmts->print(stream, indent);
         this->printIndent(stream, indent - parent::indent);
-        stream << '}' << endl;
+        stream << '}';
     }
 
     // block -> "{" stmt_list "}"

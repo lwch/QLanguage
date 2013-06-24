@@ -31,7 +31,14 @@ namespace QLanguage
 
     void SyntaxTree_For::print(ostream& stream, uint indent) const
     {
-
+        stream << "for (";
+        stmt1.print(stream, indent);
+        stream << "; ";
+        exp.print(stream, indent);
+        stream << "; ";
+        stmt2.print(stream, indent);
+        stream << ") ";
+        block.print(stream, indent + parent::indent);
     }
 
     // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
@@ -49,12 +56,15 @@ namespace QLanguage
 	          dynamic_cast<const SyntaxTree_Exp&>(*syntaxTreeStack[2]),
 		  *syntaxTreeStack[1],
 		  dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
+    
+    context.data.insert(pFor);
         
-        syntaxTreeStack.pop();
-        syntaxTreeStack.pop();
-        syntaxTreeStack.pop();
-        syntaxTreeStack.pop();
-        syntaxTreeStack.push(pFor);
+    syntaxTreeStack.pop();
+    syntaxTreeStack.pop();
+    syntaxTreeStack.pop();
+    syntaxTreeStack.pop();
+    syntaxTreeStack.push(pFor);
+    
 	return true;
     }
 }
