@@ -1,0 +1,7 @@
+Package: QParserGenerator
+Version: 1.0
+Section: Development/Tools
+Priority: optional
+Architecture: os
+Maintainer: lwch<lwch748@gmail.com>
+Description: QParserGenerator is a LALR(1) ParserGenerator
