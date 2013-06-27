@@ -28,6 +28,11 @@ namespace QLanguage
 
     void SyntaxTree_Paramter::print(ostream& stream, uint indent)const
     {
+        _type.print(stream, indent);
+        if (name != "")
+        {
+            stream << ' ' << name;
+        }
     }
 
     // paramter -> type_desc "{Letter}"

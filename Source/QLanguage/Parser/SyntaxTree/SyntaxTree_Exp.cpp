@@ -14,10 +14,21 @@
 
 namespace QLanguage
 {
+    SyntaxTree_Exp::SyntaxTree_Exp(SyntaxTree_Base* pOP1, SyntaxTree_Base* pOP2, SyntaxTree_Base* pOP3)
+        : parent(sizeof(SyntaxTree_Exp))
+        , pOP1(pOP1)
+        , pOP2(pOP2)
+        , pOP3(pOP3)
+        , _type(TrueFalse)
+    {
+
+    }
+    
     SyntaxTree_Exp::SyntaxTree_Exp(Type type, SyntaxTree_Base* pOP1, SyntaxTree_Base* pOP2)
         : parent(sizeof(SyntaxTree_Exp))
         , pOP1(pOP1)
         , pOP2(pOP2)
+        , pOP3(NULL)
         , _type(type)
     {
     }
@@ -26,6 +37,7 @@ namespace QLanguage
         : parent(sizeof(SyntaxTree_Exp))
         , pOP1(pOP)
         , pOP2(NULL)
+        , pOP3(NULL)
         , _type(type)
     {
     }
@@ -86,6 +98,9 @@ namespace QLanguage
         case BitXor:
             stream << " ^ ";
             break;
+        case TrueFalse:
+            stream << " ? ";
+            break;
         case Add:
             stream << " + ";
             break;
@@ -108,6 +123,30 @@ namespace QLanguage
             break;
         }
         if (pOP2) pOP2->print(stream, indent);
+        if (pOP3)
+        {
+            stream << " : ";
+            pOP3->print(stream, indent);
+        }
+    }
+    
+    // exp -> exp "?" exp ":" exp
+    bool Parser::reduceExp3Size()
+    {
+        shifts.pop();
+        shifts.pop();
+        
+        SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
+        construct(pExp, syntaxTreeStack[2], syntaxTreeStack[1], syntaxTreeStack.top());
+        
+        context.data.insert(pExp);
+        
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pExp);
+        
+        return true;
     }
 
     // exp -> exp ">" "=" exp1

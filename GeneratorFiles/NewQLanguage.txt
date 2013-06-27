@@ -7,7 +7,7 @@
 %token "implement" "extend";
 %token "return";
 %token "template" "typename";
-%token "(" ")" "{" "}" "[" "]" "<" ">" "," ";" ".";
+%token "(" ")" "{" "}" "[" "]" "<" ">" "," ";" "." "?" ":";
 %token "if" "else";
 %token "for";
 %token "while";
@@ -145,6 +145,15 @@ stmt -> assign_desc ";"
      |  return_desc
      ;
 
+stmt_no_semicolon -> assign_desc
+                  |  call_desc
+                  |  declare_desc
+                  |  if_desc
+                  |  for_desc
+                  |  while_desc
+                  |  do_desc
+                  ;
+
 declare_desc -> declare_desc "," "{Letter}" [array_lst] ["=" exp]
              |  type_desc "{Letter}" [array_lst] ["=" exp]
              ;
@@ -170,7 +179,7 @@ else_desc -> "else" stmt
           |  "else" block
           ;
 
-for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
+for_desc -> "for" "(" stmt_no_semicolon ";" exp ";" stmt_no_semicolon ")" block
          ;
 
 while_desc -> "while" "(" exp ")" block
@@ -194,6 +203,7 @@ exp -> exp ">" "=" exp1
     |  exp "&" exp1
     |  exp "|" exp1
     |  exp "^" exp1
+    |  exp "?" exp ":" exp
     |  exp1
     ;
 

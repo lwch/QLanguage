@@ -8,9 +8,9 @@ strings             -> strings "{String}"
 
 vs                  -> vs "{Letter}"
                     |  vs "{String}"
-					|  "{Letter}"
-					|  "{String}"
-					;
+                    |  "{Letter}"
+                    |  "{String}"
+                    ;
 
 option              -> "[" vs "]"
                     ;

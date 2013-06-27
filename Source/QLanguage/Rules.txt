@@ -119,59 +119,67 @@
 118 : stmt -> while_desc ";"
 119 : stmt -> do_desc ";"
 120 : stmt -> return_desc
-121 : declare_desc -> declare_desc "," "{Letter}" array_lst "=" exp
-122 : declare_desc -> declare_desc "," "{Letter}" "=" exp
-123 : declare_desc -> declare_desc "," "{Letter}" array_lst
-124 : declare_desc -> declare_desc "," "{Letter}"
-125 : declare_desc -> type_desc "{Letter}" array_lst "=" exp
-126 : declare_desc -> type_desc "{Letter}" "=" exp
-127 : declare_desc -> type_desc "{Letter}" array_lst
-128 : declare_desc -> type_desc "{Letter}"
-129 : assign_desc -> member_desc "+" "=" exp
-130 : assign_desc -> member_desc "-" "=" exp
-131 : assign_desc -> member_desc "&" "=" exp
-132 : assign_desc -> member_desc "|" "=" exp
-133 : assign_desc -> member_desc "^" "=" exp
-134 : assign_desc -> member_desc "<" "<" "=" exp
-135 : assign_desc -> member_desc ">" ">" "=" exp
-136 : assign_desc -> member_desc "=" exp
-137 : call_desc -> member_desc "(" value_list ")"
-138 : call_desc -> member_desc "(" ")"
-139 : if_desc -> "if" "(" exp ")" stmt else_desc
-140 : if_desc -> "if" "(" exp ")" stmt
-141 : if_desc -> "if" "(" exp ")" block else_desc
-142 : if_desc -> "if" "(" exp ")" block
-143 : else_desc -> "else" stmt
-144 : else_desc -> "else" block
-145 : for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
-146 : while_desc -> "while" "(" exp ")" block
-147 : do_desc -> "do" block "while" "(" exp ")"
-148 : return_desc -> "return" block
-149 : return_desc -> "return" exp ";"
-150 : exp -> exp ">" "=" exp1
-151 : exp -> exp "<" "=" exp1
-152 : exp -> exp "=" "=" exp1
-153 : exp -> exp ">" exp1
-154 : exp -> exp "<" exp1
-155 : exp -> exp "=" exp1
-156 : exp -> exp "&" "&" exp1
-157 : exp -> exp "|" "|" exp1
-158 : exp -> exp "&" exp1
-159 : exp -> exp "|" exp1
-160 : exp -> exp "^" exp1
-161 : exp -> exp1
-162 : exp1 -> "!" exp2
-163 : exp1 -> "+" exp2
-164 : exp1 -> "-" exp2
-165 : exp1 -> exp2
-166 : exp2 -> exp2 "+" exp3
-167 : exp2 -> exp2 "-" exp3
-168 : exp2 -> exp3
-169 : exp3 -> exp3 "*" exp4
-170 : exp3 -> exp3 "/" exp4
-171 : exp3 -> exp3 "%" exp4
-172 : exp3 -> exp4
-173 : exp4 -> "(" exp ")"
-174 : exp4 -> call_desc
-175 : exp4 -> value_desc "as" type_desc
-176 : exp4 -> value_desc
+121 : stmt_no_semicolon -> assign_desc
+122 : stmt_no_semicolon -> call_desc
+123 : stmt_no_semicolon -> declare_desc
+124 : stmt_no_semicolon -> if_desc
+125 : stmt_no_semicolon -> for_desc
+126 : stmt_no_semicolon -> while_desc
+127 : stmt_no_semicolon -> do_desc
+128 : declare_desc -> declare_desc "," "{Letter}" array_lst "=" exp
+129 : declare_desc -> declare_desc "," "{Letter}" "=" exp
+130 : declare_desc -> declare_desc "," "{Letter}" array_lst
+131 : declare_desc -> declare_desc "," "{Letter}"
+132 : declare_desc -> type_desc "{Letter}" array_lst "=" exp
+133 : declare_desc -> type_desc "{Letter}" "=" exp
+134 : declare_desc -> type_desc "{Letter}" array_lst
+135 : declare_desc -> type_desc "{Letter}"
+136 : assign_desc -> member_desc "+" "=" exp
+137 : assign_desc -> member_desc "-" "=" exp
+138 : assign_desc -> member_desc "&" "=" exp
+139 : assign_desc -> member_desc "|" "=" exp
+140 : assign_desc -> member_desc "^" "=" exp
+141 : assign_desc -> member_desc "<" "<" "=" exp
+142 : assign_desc -> member_desc ">" ">" "=" exp
+143 : assign_desc -> member_desc "=" exp
+144 : call_desc -> member_desc "(" value_list ")"
+145 : call_desc -> member_desc "(" ")"
+146 : if_desc -> "if" "(" exp ")" stmt else_desc
+147 : if_desc -> "if" "(" exp ")" stmt
+148 : if_desc -> "if" "(" exp ")" block else_desc
+149 : if_desc -> "if" "(" exp ")" block
+150 : else_desc -> "else" stmt
+151 : else_desc -> "else" block
+152 : for_desc -> "for" "(" stmt_no_semicolon ";" exp ";" stmt_no_semicolon ")" block
+153 : while_desc -> "while" "(" exp ")" block
+154 : do_desc -> "do" block "while" "(" exp ")"
+155 : return_desc -> "return" block
+156 : return_desc -> "return" exp ";"
+157 : exp -> exp ">" "=" exp1
+158 : exp -> exp "<" "=" exp1
+159 : exp -> exp "=" "=" exp1
+160 : exp -> exp ">" exp1
+161 : exp -> exp "<" exp1
+162 : exp -> exp "=" exp1
+163 : exp -> exp "&" "&" exp1
+164 : exp -> exp "|" "|" exp1
+165 : exp -> exp "&" exp1
+166 : exp -> exp "|" exp1
+167 : exp -> exp "^" exp1
+168 : exp -> exp "?" exp ":" exp
+169 : exp -> exp1
+170 : exp1 -> "!" exp2
+171 : exp1 -> "+" exp2
+172 : exp1 -> "-" exp2
+173 : exp1 -> exp2
+174 : exp2 -> exp2 "+" exp3
+175 : exp2 -> exp2 "-" exp3
+176 : exp2 -> exp3
+177 : exp3 -> exp3 "*" exp4
+178 : exp3 -> exp3 "/" exp4
+179 : exp3 -> exp3 "%" exp4
+180 : exp3 -> exp4
+181 : exp4 -> "(" exp ")"
+182 : exp4 -> call_desc
+183 : exp4 -> value_desc "as" type_desc
+184 : exp4 -> value_desc

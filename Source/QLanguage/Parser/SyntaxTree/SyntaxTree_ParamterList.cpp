@@ -24,6 +24,15 @@ namespace QLanguage
 
     void SyntaxTree_ParamterList::print(ostream& stream, uint indent)const
     {
+        if (childs.size())
+        {
+            childs[0]->print(stream, indent);
+            for (size_t i = 1, m = childs.size(); i < m; ++i)
+            {
+                stream << ", ";
+                childs[i]->print(stream, indent);
+            }
+        }
     }
 
     // paramter_list -> paramter_list "," paramter

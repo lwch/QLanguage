@@ -102,53 +102,61 @@ namespace QLanguage
 #define STMT_WHILE_DESC                                          118 // stmt -> while_desc
 #define STMT_DO_DESC                                             119 // stmt -> do_desc ";"
 #define STMT_RETURN_DESC                                         120 // stmt -> return_desc
-#define DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP     122 // declare_desc -> declare_desc "," "{Letter}" "=" exp
-#define DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER               124 // declare_desc -> declare_desc "," "{Letter}"
-#define DECLARE_DESC_LETTER_TYPE_DESC_LETTER_EQUAL_EXP           126 // declare_desc -> ttype_desc "{Letter}" "=" exp
-#define DECLARE_DESC_TYPE_DESC_LETTER                            128 // declare_desc -> type_desc "{Letter}"
-#define ASSIGN_DESC_MEMBER_DESC_ADD_EQUAL_EXP                    129 // assign_desc -> member_desc "+" "=" exp
-#define ASSIGN_DESC_MEMBER_DESC_SUB_EQUAL_EXP                    130 // assign_desc -> member_desc "-" "=" exp
-#define ASSIGN_DESC_MEMBER_DESC_AND_EQUAL_EXP                    131 // assign_desc -> member_desc "&" "=" exp
-#define ASSIGN_DESC_MEMBER_DESC_OR_EQUAL_EXP                     132 // assign_desc -> member_desc "|" "=" exp
-#define ASSIGN_DESC_MEMBER_DESC_XOR_EQUAL_EXP                    133 // assign_desc -> member_desc "^" "=" exp
-#define ASSIGN_DESC_MEMBER_DESC_LEFT_MOVE_EQUAL_EXP              134 // assign_desc -> member_desc "<" "<" "=" exp
-#define ASSIGN_DESC_MEMBER_DESC_RIGHT_MOVE_EQUAL_EXP             135 // assign_desc -> member_desc ">" ">" "=" exp
-#define ASSIGN_DESC_MEMBER_DESC_EQUAL_EXP                        136 // assign_desc -> member_desc "=" exp
-#define CALL_DESC_VALUE_LIST                                     137 // call_desc -> member_desc "(" value_list ")"
-#define CALL_DESC_NOPARAM                                        138 // call_desc -> member_desc "(" ")"
-#define IF_DESC_IF_EXP_STMT_ELSE_DESC                            139 // if_desc -> "if" "(" exp ")" stmt else_desc
-#define IF_DESC_IF_EXP_STMT                                      140 // if_desc -> "if" "(" exp ")" stmt
-#define IF_DESC_IF_EXP_BLOCK_ELSE_DESC                           141 // if_desc -> "if" "(" exp ")" block else_desc
-#define IF_DESC_IF_EXP_BLOCK                                     142 // if_desc -> "if" "(" exp ")" block
-#define ELSE_DESC_ELSE_STMT                                      143 // else_desc -> "else" stmt
-#define ELSE_DESC_ELSE_BLOCK                                     144 // else_desc -> "else" block
-#define FOR_DESC_FOR_STMT_EXP_STMT_BLOCK                         145 // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
-#define WHILE_DESC_WHILE_EXP_BLOCK                               146 // while_desc -> "while" "(" exp ")" block
-#define DO_DESC_DO_BLOCK_WHILE_EXP                               147 // do_desc -> "do" block "while" "(" exp ")"
-#define RETURN_DESC_EXP                                          149 // return_desc -> "return" exp ";"
-#define EXP_GREATER_EQUAL                                        150 // exp -> exp ">" "=" exp1
-#define EXP_LESS_EQUAL                                           151 // exp -> exp "<" "=" exp1
-#define EXP_EQUAL                                                152 // exp -> exp "=" "=" exp1
-#define EXP_GREATER                                              153 // exp -> exp ">" exp1
-#define EXP_LESS                                                 154 // exp -> exp "<" exp1
-#define EXP_ASSIGN                                               155 // exp -> exp "=" exp1
-#define EXP_LOGIC_AND                                            156 // exp -> exp "&" "&" exp1
-#define EXP_LOGIC_OR                                             157 // exp -> exp "|" "|" exp1
-#define EXP_BIT_AND                                              158 // exp -> exp "&" exp1
-#define EXP_BIT_OR                                               159 // exp -> exp "|" exp1
-#define EXP_BIT_XOR                                              160 // exp -> exp "^" exp1
-#define EXP_NOT                                                  162 // exp1 -> "!" exp2
-#define EXP_POSITIVE                                             163 // exp1 -> "+" exp2
-#define EXP_NEGATIVE                                             164 // exp1 -> "-" exp2
-#define EXP_ADD                                                  166 // exp2 -> exp2 "+" exp3
-#define EXP_SUB                                                  167 // exp2 -> exp2 "-" exp3
-#define EXP_MUL                                                  169 // exp3 -> exp3 "*" exp4
-#define EXP_DIV                                                  170 // exp3 -> exp3 "/" exp4
-#define EXP_MOD                                                  171 // exp3 -> exp3 "%" exp4
-#define EXP_BRACKETS                                             173 // exp4 -> "(" exp ")"
-#define EXP_CALL_DESC                                            174 // exp4 -> call_desc
-#define EXP_VALUE_DESC_AS_TYPE_DESC                              175 // exp4 -> value_desc "as" type_desc
-#define EXP_VALUE_DESC                                           176 // exp4 -> value_desc
+#define STMT_NO_SEMICOLON_ASSIGN_DESC                            121 // stmt_no_semicolon -> assign_desc
+#define STMT_NO_SEMICOLON_CALL_DESC                              122 // stmt_no_semicolon -> call_desc
+#define STMT_NO_SEMICOLON_DECLARE_DESC                           123 // stmt_no_semicolon -> declare_desc
+#define STMT_NO_SEMICOLON_IF_DESC                                124 // stmt_no_semicolon -> if_desc
+#define STMT_NO_SEMICOLON_FOR_DESC                               125 // stmt_no_semicolon -> for_desc
+#define STMT_NO_SEMICOLON_WHILE_DESC                             126 // stmt_no_semicolon -> while_desc
+#define STMT_NO_SEMICOLON_DO_DESC                                127 // stmt_no_semicolon -> do_desc
+#define DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP     129 // declare_desc -> declare_desc "," "{Letter}" "=" exp
+#define DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER               131 // declare_desc -> declare_desc "," "{Letter}"
+#define DECLARE_DESC_LETTER_TYPE_DESC_LETTER_EQUAL_EXP           133 // declare_desc -> ttype_desc "{Letter}" "=" exp
+#define DECLARE_DESC_TYPE_DESC_LETTER                            135 // declare_desc -> type_desc "{Letter}"
+#define ASSIGN_DESC_MEMBER_DESC_ADD_EQUAL_EXP                    136 // assign_desc -> member_desc "+" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_SUB_EQUAL_EXP                    137 // assign_desc -> member_desc "-" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_AND_EQUAL_EXP                    138 // assign_desc -> member_desc "&" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_OR_EQUAL_EXP                     139 // assign_desc -> member_desc "|" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_XOR_EQUAL_EXP                    140 // assign_desc -> member_desc "^" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_LEFT_MOVE_EQUAL_EXP              141 // assign_desc -> member_desc "<" "<" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_RIGHT_MOVE_EQUAL_EXP             142 // assign_desc -> member_desc ">" ">" "=" exp
+#define ASSIGN_DESC_MEMBER_DESC_EQUAL_EXP                        143 // assign_desc -> member_desc "=" exp
+#define CALL_DESC_VALUE_LIST                                     144 // call_desc -> member_desc "(" value_list ")"
+#define CALL_DESC_NOPARAM                                        145 // call_desc -> member_desc "(" ")"
+#define IF_DESC_IF_EXP_STMT_ELSE_DESC                            146 // if_desc -> "if" "(" exp ")" stmt else_desc
+#define IF_DESC_IF_EXP_STMT                                      147 // if_desc -> "if" "(" exp ")" stmt
+#define IF_DESC_IF_EXP_BLOCK_ELSE_DESC                           148 // if_desc -> "if" "(" exp ")" block else_desc
+#define IF_DESC_IF_EXP_BLOCK                                     149 // if_desc -> "if" "(" exp ")" block
+#define ELSE_DESC_ELSE_STMT                                      150 // else_desc -> "else" stmt
+#define ELSE_DESC_ELSE_BLOCK                                     151 // else_desc -> "else" block
+#define FOR_DESC_FOR_STMT_EXP_STMT_BLOCK                         152 // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
+#define WHILE_DESC_WHILE_EXP_BLOCK                               153 // while_desc -> "while" "(" exp ")" block
+#define DO_DESC_DO_BLOCK_WHILE_EXP                               154 // do_desc -> "do" block "while" "(" exp ")"
+#define RETURN_DESC_EXP                                          156 // return_desc -> "return" exp ";"
+#define EXP_GREATER_EQUAL                                        157 // exp -> exp ">" "=" exp1
+#define EXP_LESS_EQUAL                                           158 // exp -> exp "<" "=" exp1
+#define EXP_EQUAL                                                159 // exp -> exp "=" "=" exp1
+#define EXP_GREATER                                              160 // exp -> exp ">" exp1
+#define EXP_LESS                                                 161 // exp -> exp "<" exp1
+#define EXP_ASSIGN                                               162 // exp -> exp "=" exp1
+#define EXP_LOGIC_AND                                            163 // exp -> exp "&" "&" exp1
+#define EXP_LOGIC_OR                                             164 // exp -> exp "|" "|" exp1
+#define EXP_BIT_AND                                              165 // exp -> exp "&" exp1
+#define EXP_BIT_OR                                               166 // exp -> exp "|" exp1
+#define EXP_BIT_XOR                                              167 // exp -> exp "^" exp1
+#define EXP_EXP_STMT_STMT                                        168 // exp -> exp "?" exp ":" exp
+#define EXP_NOT                                                  170 // exp1 -> "!" exp2
+#define EXP_POSITIVE                                             171 // exp1 -> "+" exp2
+#define EXP_NEGATIVE                                             172 // exp1 -> "-" exp2
+#define EXP_ADD                                                  174 // exp2 -> exp2 "+" exp3
+#define EXP_SUB                                                  175 // exp2 -> exp2 "-" exp3
+#define EXP_MUL                                                  177 // exp3 -> exp3 "*" exp4
+#define EXP_DIV                                                  178 // exp3 -> exp3 "/" exp4
+#define EXP_MOD                                                  179 // exp3 -> exp3 "%" exp4
+#define EXP_BRACKETS                                             181 // exp4 -> "(" exp ")"
+#define EXP_CALL_DESC                                            182 // exp4 -> call_desc
+#define EXP_VALUE_DESC_AS_TYPE_DESC                              183 // exp4 -> value_desc "as" type_desc
+#define EXP_VALUE_DESC                                           184 // exp4 -> value_desc
 
     class Parser : public BasicParser
     {
@@ -215,6 +223,7 @@ namespace QLanguage
         bool reduceFunction14();
         bool reduceFunction16();
         bool reduceStmt(ushort i);
+        bool reduceStmtNoSemicolon(ushort i);
         bool reduceDeclareWithAssign(ushort i);
         bool reduceDeclareWithoutAssign(ushort i);
         bool reduceAssignAddEqual();
@@ -235,6 +244,7 @@ namespace QLanguage
         bool reduceWhile();
         bool reduceDo();
         bool reduceReturnExp();
+        bool reduceExp3Size();
         bool reduceExp2Size(ushort i);
         bool reduceExp1Size(ushort i);
         bool reduceExpCall();

@@ -24,7 +24,11 @@ namespace QLanguage
 
     void SyntaxTree_ItemList::print(ostream& stream, uint indent)const
     {
-        this->printChilds(stream, indent);
+        for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+        {
+            (*i)->print(stream, indent);
+            stream << endl;
+        }
     }
 
     // item_list -> item_list item

@@ -32,7 +32,7 @@ namespace QLanguage
             Return
         };
     public:
-        SyntaxTree_Stmt(SyntaxTree_Base* pStmt, Type type);
+        SyntaxTree_Stmt(bool bSemicolon, SyntaxTree_Base* pStmt, Type type);
         virtual ~SyntaxTree_Stmt();
         
         virtual void print(ostream& stream, uint indent)const;
@@ -55,6 +55,7 @@ namespace QLanguage
             return *pStmt != *dynamic_cast<const SyntaxTree_Stmt*>(&x)->pStmt;
         }
     protected:
+        bool             bSemicolon;
         SyntaxTree_Base* pStmt;
         Type             _type;
     };

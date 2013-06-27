@@ -185,6 +185,14 @@ namespace QLanguage
         case STMT_WHILE_DESC:                        // stmt -> while_desc
         case STMT_RETURN_DESC:                       // stmt -> return_desc
             return reduceStmt(i);
+        case STMT_NO_SEMICOLON_ASSIGN_DESC:          // stmt_no_semicolon -> assign_desc
+        case STMT_NO_SEMICOLON_CALL_DESC:            // stmt_no_semicolon -> call_desc
+        case STMT_NO_SEMICOLON_DECLARE_DESC:         // stmt_no_semicolon -> declare_desc
+        case STMT_NO_SEMICOLON_IF_DESC:              // stmt_no_semicolon -> if_desc
+        case STMT_NO_SEMICOLON_FOR_DESC:             // stmt_no_semicolon -> for_desc
+        case STMT_NO_SEMICOLON_WHILE_DESC:           // stmt_no_semicolon -> while_desc
+        case STMT_NO_SEMICOLON_DO_DESC:              // stmt_no_semicolon -> do_desc
+            return reduceStmtNoSemicolon(i);
         case DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP: // declare_desc -> declare_desc "," "{Letter}" "=" exp
         case DECLARE_DESC_LETTER_TYPE_DESC_LETTER_EQUAL_EXP:       // declare_desc -> type_desc "{Letter}" "=" exp
             return reduceDeclareWithAssign(i);
@@ -222,14 +230,16 @@ namespace QLanguage
         case ELSE_DESC_ELSE_STMT:                    // else_desc -> "else" stmt
         case ELSE_DESC_ELSE_BLOCK:                   // else_desc -> "else" block
             return pop1Shifts();
-	case FOR_DESC_FOR_STMT_EXP_STMT_BLOCK:       // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
-	    return reduceFor();
+	    case FOR_DESC_FOR_STMT_EXP_STMT_BLOCK:       // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
+	        return reduceFor();
         case WHILE_DESC_WHILE_EXP_BLOCK:             // while_desc -> "while" "(" exp ")" block
             return reduceWhile();
         case DO_DESC_DO_BLOCK_WHILE_EXP:             // do_desc -> "do" block "while" "(" exp ")"
             return reduceDo();
         case RETURN_DESC_EXP:                        // return_desc -> "return" exp ";"
             return reduceReturnExp();
+        case EXP_EXP_STMT_STMT:                      // exp -> exp "?" stmt ":" stmt
+            return reduceExp3Size();
         case EXP_GREATER_EQUAL:                      // exp -> exp ">" "=" exp1
         case EXP_LESS_EQUAL:                         // exp -> exp "<" "=" exp1
         case EXP_EQUAL:                              // exp -> exp "=" "=" exp1
