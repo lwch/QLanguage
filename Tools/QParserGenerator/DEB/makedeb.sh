@@ -2,7 +2,7 @@
 
 if [ x$1 != x ]; then
   if [ $1 = "i386" ] || [ $1 = "amd64" ]; then
-    DEB_PATH=~/QLanguage_Deb/
+    DEB_PATH=~/QParserGenerator_Deb/
     BINARY_PATH=~/QLanguage/QLanguage/trunk/Source/QParserGenerator/QParserGenerator
 
     # make debian path

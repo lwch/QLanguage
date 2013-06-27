@@ -1,8 +1,8 @@
 #!/bin/sh
 
-EXPORT_PATH=~/QLanguage/
-SOURCE_PATH="http://qlanguage.googlecode.com/svn/trunk/"
-CMAKE_PATH=$EXPORT_PATH/./Source
+EXPORT_PATH=~/QLanguage/QLanguage
+SOURCE_PATH="http://qlanguage.googlecode.com/svn/"
+CMAKE_PATH=$EXPORT_PATH/./trunk/Source
 
 if [ -d "$EXPORT_PATH" ]; then
   rm -fr $EXPORT_PATH
