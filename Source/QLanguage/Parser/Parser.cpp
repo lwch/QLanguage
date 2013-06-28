@@ -79,6 +79,12 @@ namespace QLanguage
             return reduceValueList2Size();
         case VALUE_LIST_EXP:                   // value_list -> exp
             return reduceValueList1Size();
+        case VALUES_VALUES:                    // values -> "{" values "}"
+            return reduceValuesTop();
+        case VALUES_VALUES_VALUE_DESC:         // values -> values "," value_desc
+            return reduceValues2Size();
+        case VALUES_VALUE_DESC:                // values -> value_desc
+            return reduceValues1Size();
         case ATTRIBUTE_PUBLIC:                 // attribute -> "public"
         case ATTRIBUTE_PRIVATE:                // attribute -> "private"
         case ATTRIBUTE_PROTECTED:              // attribute -> "protected"

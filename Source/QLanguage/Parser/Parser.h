@@ -40,6 +40,10 @@ namespace QLanguage
 #define VALUE_DESC_DIGIT                                         19  // value_desc -> "{Digit}"
 #define VALUE_DESC_MEMBER_DESC                                   20  // value_desc -> member_desc
 #define VALUE_DESC_STRING                                        21  // value_desc -> "{String}"
+#define VALUES_VALUES                                            23  // values -> "{" values "}"
+#define VALUES_VALUES_VALUE_DESC                                 24  // values -> values "," value_desc
+#define VALUES_VALUE_DESC                                        25  // values -> value_desc
+#define ARRAY_VALUE_DESC_VALUES                                  26  // array_value_desc -> "{" values "}"
 #define VALUE_LIST_VALUE_LIST_EXP                                27  // value_list -> value_list "," exp
 #define VALUE_LIST_EXP                                           28  // value_list -> exp
 #define ATTRIBUTE_PUBLIC                                         29  // attribute -> "public"
@@ -177,6 +181,9 @@ namespace QLanguage
         bool reduceValueMember();
         bool reduceValueList2Size();
         bool reduceValueList1Size();
+        bool reduceValuesTop();
+        bool reduceValues2Size();
+        bool reduceValues1Size();
         bool reduceAttribute(ushort i);
         bool reduceParamterList2Size();
         bool reduceParamterList1Size();
