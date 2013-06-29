@@ -55,12 +55,12 @@ ENDIF()
 ADD_DEPENDENCIES(QLanguage QCore)
 
 IF(X86)
-    ADD_CUSTOM_COMMAND(TARGET QLanguage POST_BUILD
+    ADD_CUSTOM_COMMAND(TARGET QLanguage PRE_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_if_different
                        "${CMAKE_CURRENT_SOURCE_DIR}/QLanguage.x86.ParserTable"
                        "${CMAKE_CURRENT_BINARY_DIR}/QLanguage.x86.ParserTable")
 ELSE(X86)
-    ADD_CUSTOM_COMMAND(TARGET QLanguage POST_BUILD
+    ADD_CUSTOM_COMMAND(TARGET QLanguage PRE_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_if_different
                        "${CMAKE_CURRENT_SOURCE_DIR}/QLanguage.x64.ParserTable"
                        "${CMAKE_CURRENT_BINARY_DIR}/QLanguage.x64.ParserTable")

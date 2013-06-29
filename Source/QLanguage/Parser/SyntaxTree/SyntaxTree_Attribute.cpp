@@ -62,6 +62,7 @@ namespace QLanguage
         syntaxTreeStack.push(pAttrivute);
 
         shifts.pop();
+
         return true;
     }
 }

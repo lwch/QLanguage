@@ -45,6 +45,7 @@ namespace QLanguage
         syntaxTreeStack.pop();
 
         shifts.pop();
+
         return true;
     }
 

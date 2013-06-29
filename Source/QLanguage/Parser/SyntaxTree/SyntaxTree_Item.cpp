@@ -42,6 +42,7 @@ namespace QLanguage
         syntaxTreeStack.push(pItem);
 
         if (i == ITEM_DECLARE_DESC) shifts.pop();
+
         return true;
     }
 }

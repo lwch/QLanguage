@@ -74,7 +74,7 @@ namespace QLanguage
         case VALUE_DESC_STRING:                // value_desc -> "{String}"
             return reduceValueNormal(i);
         case VALUE_DESC_MEMBER_DESC:           // value_desc -> member_desc
-            return reduceValueMember();
+            return reduceValueContent();
         case VALUE_LIST_VALUE_LIST_EXP:        // value_list -> value_list "," exp
             return reduceValueList2Size();
         case VALUE_LIST_EXP:                   // value_list -> exp
@@ -85,17 +85,27 @@ namespace QLanguage
             return reduceValues2Size();
         case VALUES_VALUE_DESC:                // values -> value_desc
             return reduceValues1Size();
+        case ARRAY_VALUE_DESC_VALUES:          // array_value_desc -> "{" values "}"
+            return reduceArrayValue();
         case ATTRIBUTE_PUBLIC:                 // attribute -> "public"
         case ATTRIBUTE_PRIVATE:                // attribute -> "private"
         case ATTRIBUTE_PROTECTED:              // attribute -> "protected"
             return reduceAttribute(i);
+        case ARRAY_LST_ARRAY_LST_EXP:          // array_lst -> array_lst "[" exp "]"
+        case ARRAY_LST_ARRAY_LST_NO_EXP:       // array_lst -> array_lst "[" "]"
+            return reduceArrayLst2Size(i);
+        case ARRAY_LST_EXP:                    // array_lst -> "[" exp "]"
+        case ARRAY_LST_NO_EXP:                 // array_lst -> "[" "]"
+            return reduceArrayLst1Size(i);
         case PARAMTER_LIST_PARAMTER_LIST_PARAMTER: // paramter_list -> paramter_list "," paramter
             return reduceParamterList2Size();
         case PARAMTER_LIST_PARAMTER:               // paramter_list -> paramter
             return reduceParamterList1Size();
-        case PARAMTER_TYPE_DESC_LETTER:        // paramter -> type_desc "{Letter}"
+        case PARAMTER_TYPE_DESC_LETTER_ARRAY_LST: // paramter -> type_desc "{Letter}" array_lst
+            return reduceParamterNamedArray();
+        case PARAMTER_TYPE_DESC_LETTER:           // paramter -> type_desc "{Letter}"
             return reduceParamterNamed();
-        case PARAMTER_TYPE_DESC:               // paramter -> type_desc
+        case PARAMTER_TYPE_DESC:                  // paramter -> type_desc
             return reduceParamterNoName();
         case ITEM_LIST_ITEM_LIST_ITEM:         // item_list -> item_list item
             return reduceItemList2Size();
@@ -199,10 +209,14 @@ namespace QLanguage
         case STMT_NO_SEMICOLON_WHILE_DESC:           // stmt_no_semicolon -> while_desc
         case STMT_NO_SEMICOLON_DO_DESC:              // stmt_no_semicolon -> do_desc
             return reduceStmtNoSemicolon(i);
-        case DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP: // declare_desc -> declare_desc "," "{Letter}" "=" exp
-        case DECLARE_DESC_LETTER_TYPE_DESC_LETTER_EQUAL_EXP:       // declare_desc -> type_desc "{Letter}" "=" exp
+        case DECLARE_DESC_DECLARE_DESC_LETTER_ARRAY_LST_EQUAL_EXP: // declare_desc -> declare_desc "," "{Letter}" array_lst "=" exp
+        case DECLARE_DESC_DECLARE_DESC_LETTER_EQUAL_EXP:           // declare_desc -> declare_desc "," "{Letter}" "=" exp
+        case DECLARE_DESC_TYPE_DESC_LETTER_ARRAY_LST_EQUAL_EXP:    // declare_desc -> type_desc "{Letter}" array_lst "=" exp
+        case DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP:              // declare_desc -> type_desc "{Letter}" "=" exp
             return reduceDeclareWithAssign(i);
-        case DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER:           // declare_desc -> declare_desc "," "{Letter}"
+        case DECLARE_DESC_DECLARE_DESC_LETTER_ARRAY_LST:           // declare_desc -> declare_desc "," "{Letter}" array_lst
+        case DECLARE_DESC_DECLARE_DESC_LETTER:                     // declare_desc -> declare_desc "," "{Letter}"
+        case DECLARE_DESC_TYPE_DESC_LETTER_ARRAY_LST:              // declare_desc -> type_desc "{Letter}" array_lst
         case DECLARE_DESC_TYPE_DESC_LETTER:                        // declare_desc -> type_desc "{Letter}"
             return reduceDeclareWithoutAssign(i);
         case ASSIGN_DESC_MEMBER_DESC_ADD_EQUAL_EXP:        // assign_desc -> member_desc "+" "=" exp
@@ -246,7 +260,7 @@ namespace QLanguage
             return reduceReturnExp();
         case EXP_EXP_STMT_STMT:                      // exp -> exp "?" stmt ":" stmt
             return reduceExp3Size();
-        case EXP_GREATER_EQUAL:                      // exp -> exp ">" "=" exp1
+        case EXP_GREATER_EQUAL_EXP1:                      // exp -> exp ">" "=" exp1
         case EXP_LESS_EQUAL:                         // exp -> exp "<" "=" exp1
         case EXP_EQUAL:                              // exp -> exp "=" "=" exp1
         case EXP_LOGIC_AND:                          // exp -> exp "&" "&" exp1
@@ -259,21 +273,21 @@ namespace QLanguage
         case EXP_BIT_OR:                             // exp -> exp "|" exp1
         case EXP_BIT_XOR:                            // exp -> exp "^" exp1
         case EXP_NOT:                                // exp1 -> "!" exp2
-        case EXP_POSITIVE:                           // exp1 -> "+" exp2
-        case EXP_NEGATIVE:                           // exp1 -> "-" exp2
-        case EXP_ADD:                                // exp2 -> exp2 "+" exp3
-        case EXP_SUB:                                // exp2 -> exp2 "-" exp3
-        case EXP_MUL:                                // exp3 -> exp3 "*" exp4
-        case EXP_DIV:                                // exp3 -> exp3 "/" exp4
-        case EXP_MOD:                                // exp3 -> exp3 "%" exp4
+        case EXP1_POSITIVE:                           // exp1 -> "+" exp2
+        case EXP1_NEGATIVE:                           // exp1 -> "-" exp2
+        case EXP2_ADD:                                // exp2 -> exp2 "+" exp3
+        case EXP2_SUB:                                // exp2 -> exp2 "-" exp3
+        case EXP3_MUL:                                // exp3 -> exp3 "*" exp4
+        case EXP3_DIV:                                // exp3 -> exp3 "/" exp4
+        case EXP3_MOD:                                // exp3 -> exp3 "%" exp4
             return reduceExp1Size(i);
-        case EXP_BRACKETS:                           // exp4 -> "(" exp ")"
+        case EXP4_BRACKETS:                           // exp4 -> "(" exp ")"
             return pop2Shifts();
-        case EXP_CALL_DESC:                          // exp4 -> call_desc
+        case EXP4_CALL_DESC:                          // exp4 -> call_desc
             return reduceExpCall();
-        case EXP_VALUE_DESC_AS_TYPE_DESC:            // exp4 -> value_desc "as" type_desc
+        case EXP4_VALUE_DESC_AS_TYPE_DESC:            // exp4 -> value_desc "as" type_desc
             return reduceExpValueAsType();
-        case EXP_VALUE_DESC:                         // exp4 -> value_desc
+        case EXP4_VALUE_DESC:                         // exp4 -> value_desc
             return reduceExpValue();
         }
         return true;

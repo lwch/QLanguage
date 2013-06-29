@@ -18,14 +18,14 @@ namespace QLanguage
         : parent(sizeof(SyntaxTree_Value))
         , value(value)
         , _type(type)
-        , pMemberList(NULL)
+        , pContent(NULL)
     {
     }
 
-    SyntaxTree_Value::SyntaxTree_Value(SyntaxTree_MemberList* pMemberList)
+    SyntaxTree_Value::SyntaxTree_Value(SyntaxTree_Base* pContent)
         : parent(sizeof(SyntaxTree_Value))
         , _type(Member)
-        , pMemberList(pMemberList)
+        , pContent(pContent)
     {
     }
 
@@ -35,7 +35,7 @@ namespace QLanguage
 
     void SyntaxTree_Value::print(ostream& stream, uint indent)const
     {
-        if (pMemberList) pMemberList->print(stream, indent);
+        if (pContent) pContent->print(stream, indent);
         else stream << value;
     }
 
@@ -74,10 +74,11 @@ namespace QLanguage
     }
 
     // value_desc -> member_desc
-    bool Parser::reduceValueMember()
+    // value_desc -> array_value_desc
+    bool Parser::reduceValueContent()
     {
         SyntaxTree_Value* pValue = allocator<SyntaxTree_Value>::allocate();
-        construct(pValue, dynamic_cast<SyntaxTree_MemberList*>(syntaxTreeStack.top()));
+        construct(pValue, syntaxTreeStack.top());
 
         context.data.insert(pValue);
 

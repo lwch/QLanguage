@@ -30,9 +30,9 @@
 29 : attribute -> "public"
 30 : attribute -> "private"
 31 : attribute -> "protected"
-32 : array_lst -> array_lst "[" "{Digit}" "]"
+32 : array_lst -> array_lst "[" exp "]"
 33 : array_lst -> array_lst "[" "]"
-34 : array_lst -> "[" "{Digit}" "]"
+34 : array_lst -> "[" exp "]"
 35 : array_lst -> "[" "]"
 36 : start -> item_list
 37 : paramter_list -> paramter_list "," paramter
@@ -116,7 +116,7 @@
 115 : stmt -> declare_desc ";"
 116 : stmt -> if_desc
 117 : stmt -> for_desc
-118 : stmt -> while_desc ";"
+118 : stmt -> while_desc
 119 : stmt -> do_desc ";"
 120 : stmt -> return_desc
 121 : stmt_no_semicolon -> assign_desc

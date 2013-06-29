@@ -20,13 +20,13 @@ namespace QLanguage
     class SyntaxTree_Type;
     class SyntaxTree_Block;
 
-    class SyntaxTree_Function_Declare : public SyntaxTree_Base
+    class SyntaxTree_FunctionDeclare : public SyntaxTree_Base
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_Function_Declare(const string& name, const SyntaxTree_Type& returnType);
-        SyntaxTree_Function_Declare(const string& name, const SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList);
-        virtual ~SyntaxTree_Function_Declare();
+        SyntaxTree_FunctionDeclare(const SyntaxTree_Type& returnType, const string& name);
+        SyntaxTree_FunctionDeclare(const SyntaxTree_Type& returnType, const string& name, SyntaxTree_ParamterList* pParamterList);
+        virtual ~SyntaxTree_FunctionDeclare();
 
         virtual void print(ostream& stream, uint indent)const;
         
@@ -35,25 +35,25 @@ namespace QLanguage
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG
-            TRY_CAST(const SyntaxTree_Function_Declare*, &x);
+            TRY_CAST(const SyntaxTree_FunctionDeclare*, &x);
 #endif
-            return name == dynamic_cast<const SyntaxTree_Function_Declare*>(&x)->name &&
-                  *pParamterList == *dynamic_cast<const SyntaxTree_Function_Declare*>(&x)->pParamterList &&
-                   returnType == dynamic_cast<const SyntaxTree_Function_Declare*>(&x)->returnType;
+            return name == dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->name &&
+                  *pParamterList == *dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pParamterList &&
+                   returnType == dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->returnType;
         }
 
         inline virtual const bool operator!=(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG
-            TRY_CAST(const SyntaxTree_Function_Declare*, &x);
+            TRY_CAST(const SyntaxTree_FunctionDeclare*, &x);
 #endif
-            return name != dynamic_cast<const SyntaxTree_Function_Declare*>(&x)->name ||
-                  *pParamterList != *dynamic_cast<const SyntaxTree_Function_Declare*>(&x)->pParamterList ||
-                   returnType != dynamic_cast<const SyntaxTree_Function_Declare*>(&x)->returnType;
+            return name != dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->name ||
+                  *pParamterList != *dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pParamterList ||
+                   returnType != dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->returnType;
         }
     protected:
-        string name;
         const SyntaxTree_Type&   returnType;
+        string                   name;
         SyntaxTree_ParamterList* pParamterList;
     };
 }

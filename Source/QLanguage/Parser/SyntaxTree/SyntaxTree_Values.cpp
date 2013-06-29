@@ -1,3 +1,14 @@
+/********************************************************************
+	created:	2013/06/29
+	created:	29:6:2013   11:28
+	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_Values.cpp
+	file path:	\QLanguage\Parser\SyntaxTree
+	file base:	SyntaxTree_Values
+	file ext:	cpp
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
 #include "../Parser.h"
 #include "SyntaxTree_Values.h"
 
@@ -15,6 +26,21 @@ namespace QLanguage
 
     void SyntaxTree_Values::print(ostream& stream, uint indent)const
     {
+        if (bTop)
+        {
+            stream << '{';
+            childs[0]->print(stream, indent);
+            stream << '}';
+        }
+        else if (childs.size())
+        {
+            childs[0]->print(stream, indent);
+            for (size_t i = 1, m = childs.size(); i < m; ++i)
+            {
+                stream << ", ";
+                childs[i]->print(stream, indent);
+            }
+        }
     }
 
     // values -> "{" values "}"

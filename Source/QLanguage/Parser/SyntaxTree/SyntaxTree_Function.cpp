@@ -17,21 +17,21 @@ namespace QLanguage
 {
     SyntaxTree_Attribute::Type SyntaxTree_Function::defaultAttribute = SyntaxTree_Attribute::Private;
 
-    SyntaxTree_Function::SyntaxTree_Function(const SyntaxTree_Attribute& attribute, const string& name, const SyntaxTree_Type& returnType, const SyntaxTree_Block& block)
+    SyntaxTree_Function::SyntaxTree_Function(const SyntaxTree_Attribute& attribute, const SyntaxTree_Type& returnType, const string& name, const SyntaxTree_Block& block)
         : parent(sizeof(SyntaxTree_Function))
         , attribute(attribute)
-        , name(name)
         , returnType(returnType)
+        , name(name)
         , pParamterList(NULL)
         , block(block)
     {
     }
 
-    SyntaxTree_Function::SyntaxTree_Function(const SyntaxTree_Attribute& attribute, const string& name, const SyntaxTree_Type& returnType, SyntaxTree_ParamterList* pParamterList, const SyntaxTree_Block& block)
+    SyntaxTree_Function::SyntaxTree_Function(const SyntaxTree_Attribute& attribute, const SyntaxTree_Type& returnType, const string& name, SyntaxTree_ParamterList* pParamterList, const SyntaxTree_Block& block)
         : parent(sizeof(SyntaxTree_Function))
         , attribute(attribute)
-        , name(name)
         , returnType(returnType)
+        , name(name)
         , pParamterList(pParamterList)
         , block(block)
     {
@@ -61,8 +61,8 @@ namespace QLanguage
         SyntaxTree_Function* pFunction = allocator<SyntaxTree_Function>::allocate();
         construct(pFunction,
                   dynamic_cast<const SyntaxTree_Attribute&>(*syntaxTreeStack[3]),
-                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[2]),
+                  shifts.top(),
                   dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
@@ -75,6 +75,7 @@ namespace QLanguage
         syntaxTreeStack.push(pFunction);
 
         shifts.pop();
+
         return true;
     }
 
@@ -92,8 +93,8 @@ namespace QLanguage
         SyntaxTree_Function* pFunction = allocator<SyntaxTree_Function>::allocate();
         construct(pFunction,
                   *pAttribute,
-                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[2]),
+                  shifts.top(),
                   dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
@@ -105,6 +106,7 @@ namespace QLanguage
         syntaxTreeStack.push(pFunction);
 
         shifts.pop();
+
         return true;
     }
 
@@ -117,8 +119,8 @@ namespace QLanguage
         SyntaxTree_Function* pFunction = allocator<SyntaxTree_Function>::allocate();
         construct(pFunction,
                   dynamic_cast<const SyntaxTree_Attribute&>(*syntaxTreeStack[2]),
-                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[1]),
+                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pFunction);
@@ -129,6 +131,7 @@ namespace QLanguage
         syntaxTreeStack.push(pFunction);
 
         shifts.pop();
+
         return true;
     }
     
@@ -146,8 +149,8 @@ namespace QLanguage
         SyntaxTree_Function* pFunction = allocator<SyntaxTree_Function>::allocate();
         construct(pFunction,
                   *pAttribute,
-                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[1]),
+                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pFunction);
@@ -157,6 +160,7 @@ namespace QLanguage
         syntaxTreeStack.push(pFunction);
 
         shifts.pop();
+
         return true;
     }
 
@@ -174,8 +178,8 @@ namespace QLanguage
         SyntaxTree_Function* pFunction = allocator<SyntaxTree_Function>::allocate();
         construct(pFunction,
                   dynamic_cast<const SyntaxTree_Attribute&>(*syntaxTreeStack[2]),
-                  shifts.top(),
                   *pType,
+                  shifts.top(),
                   dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
@@ -188,6 +192,7 @@ namespace QLanguage
 
         shifts.pop();
         shifts.pop();
+
         return true;
     }
 
@@ -210,8 +215,8 @@ namespace QLanguage
         SyntaxTree_Function* pFunction = allocator<SyntaxTree_Function>::allocate();
         construct(pFunction,
                   *pAttribute,
-                  shifts.top(),
                   *pType,
+                  shifts.top(),
                   dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
@@ -223,6 +228,7 @@ namespace QLanguage
 
         shifts.pop();
         shifts.pop();
+
         return true;
     }
 
@@ -240,8 +246,8 @@ namespace QLanguage
         SyntaxTree_Function* pFunction = allocator<SyntaxTree_Function>::allocate();
         construct(pFunction,
                   dynamic_cast<const SyntaxTree_Attribute&>(*syntaxTreeStack[1]),
-                  shifts.top(),
                   *pType,
+                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pFunction);
@@ -252,6 +258,7 @@ namespace QLanguage
 
         shifts.pop();
         shifts.pop();
+
         return true;
     }
 
@@ -274,8 +281,8 @@ namespace QLanguage
         SyntaxTree_Function* pFunction = allocator<SyntaxTree_Function>::allocate();
         construct(pFunction,
                   *pAttribute,
-                  shifts.top(),
                   *pType,
+                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pFunction);
@@ -285,6 +292,7 @@ namespace QLanguage
 
         shifts.pop();
         shifts.pop();
+
         return true;
     }
 }

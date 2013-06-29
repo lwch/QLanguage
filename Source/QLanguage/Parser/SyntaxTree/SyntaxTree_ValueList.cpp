@@ -45,6 +45,7 @@ namespace QLanguage
         syntaxTreeStack.pop();
 
         shifts.pop();
+
         return true;
     }
 
@@ -60,6 +61,7 @@ namespace QLanguage
 
         syntaxTreeStack.pop();
         syntaxTreeStack.push(pValueList);
+
         return true;
     }
 }

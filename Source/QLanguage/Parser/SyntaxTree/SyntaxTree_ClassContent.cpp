@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_DeclareList.h"
 #include "SyntaxTree_ClassContent.h"
 
 namespace QLanguage
@@ -24,7 +25,7 @@ namespace QLanguage
     {
     }
 
-    SyntaxTree_ClassContent::SyntaxTree_ClassContent(SyntaxTree_Attribute* pAttribute, const SyntaxTree_Type& content)
+    SyntaxTree_ClassContent::SyntaxTree_ClassContent(SyntaxTree_Attribute* pAttribute, const SyntaxTree_DeclareList& content)
         : parent(sizeof(SyntaxTree_ClassContent))
         , pAttribute(pAttribute)
         , content(content)
@@ -70,7 +71,7 @@ namespace QLanguage
         SyntaxTree_ClassContent* pContent = allocator<SyntaxTree_ClassContent>::allocate();
         construct(pContent,
                   dynamic_cast<SyntaxTree_Attribute*>(syntaxTreeStack[1]),
-                  dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack.top()));
+                  dynamic_cast<const SyntaxTree_DeclareList&>(*syntaxTreeStack.top()));
         
         context.data.insert(pContent);
         
@@ -94,7 +95,7 @@ namespace QLanguage
         SyntaxTree_ClassContent* pContent = allocator<SyntaxTree_ClassContent>::allocate();
         construct(pContent,
                   pAttribute,
-                  dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack.top()));
+                  dynamic_cast<const SyntaxTree_DeclareList&>(*syntaxTreeStack.top()));
         
         context.data.insert(pContent);
         

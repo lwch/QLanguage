@@ -12,6 +12,7 @@
 #ifndef _QLANGUAGE_SYNTAX_TREE_PARAMTER_H_
 #define _QLANGUAGE_SYNTAX_TREE_PARAMTER_H_
 
+#include "SyntaxTree_ArrayLst.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
@@ -22,6 +23,7 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
+        SyntaxTree_Paramter(const SyntaxTree_Type& type, const string& name, SyntaxTree_ArrayLst* pArrayLst);
         SyntaxTree_Paramter(const SyntaxTree_Type& type, const string& name);
         SyntaxTree_Paramter(const SyntaxTree_Type& type);
         virtual ~SyntaxTree_Paramter();
@@ -35,7 +37,9 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Paramter*, &x);
 #endif
-            return _type == dynamic_cast<const SyntaxTree_Paramter*>(&x)->_type;
+            return _type == dynamic_cast<const SyntaxTree_Paramter*>(&x)->_type &&
+                   ((pArrayLst && dynamic_cast<const SyntaxTree_Paramter*>(&x)->pArrayLst && *pArrayLst == *dynamic_cast<const SyntaxTree_Paramter*>(&x)->pArrayLst) ||
+                    (pArrayLst == NULL && dynamic_cast<const SyntaxTree_Paramter*>(&x)->pArrayLst == NULL));
         }
 
         inline virtual const bool operator!=(const SyntaxTree_Base& x)const
@@ -43,11 +47,14 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Paramter*, &x);
 #endif
-            return _type != dynamic_cast<const SyntaxTree_Paramter*>(&x)->_type;
+            return _type != dynamic_cast<const SyntaxTree_Paramter*>(&x)->_type &&
+                   ((pArrayLst && (dynamic_cast<const SyntaxTree_Paramter*>(&x)->pArrayLst == NULL || *pArrayLst != *dynamic_cast<const SyntaxTree_Paramter*>(&x)->pArrayLst)) ||
+                    (pArrayLst == NULL && dynamic_cast<const SyntaxTree_Paramter*>(&x)->pArrayLst));
         }
     protected:
         const SyntaxTree_Type& _type;
         string                 name;
+        SyntaxTree_ArrayLst*   pArrayLst;
     };
 }
 

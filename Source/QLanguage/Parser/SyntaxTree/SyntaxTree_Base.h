@@ -40,6 +40,8 @@ class SyntaxTree_Do;
         friend class SyntaxTree_Do;
         friend class SyntaxTree_For;
         friend class SyntaxTree_If;
+        friend class SyntaxTree_ArrayLst;
+        friend class SyntaxTree_DeclareList;
     public:
         SyntaxTree_Base(uint size);
         virtual ~SyntaxTree_Base();

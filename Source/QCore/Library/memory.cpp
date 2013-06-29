@@ -155,11 +155,11 @@ void MemoryPool::deallocate(void* p, size_type n)
 
 void* MemoryPool::reallocate(void* p, size_t old_size, size_t new_size, void(*h)(size_type))
 {
-    if(old_size > MAX_BYTES && new_size > MAX_BYTES)
+    if (old_size > MAX_BYTES && new_size > MAX_BYTES)
     {
         return realloc(p, new_size);
     }
-    if(ROUND_UP(old_size) == ROUND_UP(new_size)) return p;
+    if (ROUND_UP(old_size) == ROUND_UP(new_size)) return p;
     void* result = allocate(new_size, h);
     const size_t copy_size = new_size > old_size ? old_size : new_size;
     memcpy(result, p, copy_size);

@@ -1,3 +1,14 @@
+/********************************************************************
+	created:	2013/06/29
+	created:	29:6:2013   11:28
+	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_Values.h
+	file path:	\QLanguage\Parser\SyntaxTree
+	file base:	SyntaxTree_Values
+	file ext:	h
+	author:		lwch
+	
+	purpose:	
+*********************************************************************/
 #ifndef _QLANGUAGE_SYNTAX_TREE_VALUES_H_
 #define _QLANGUAGE_SYNTAX_TREE_VALUES_H_
 

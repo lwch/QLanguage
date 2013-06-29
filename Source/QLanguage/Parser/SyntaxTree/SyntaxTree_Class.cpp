@@ -78,6 +78,7 @@ namespace QLanguage
 
         shifts.pop();
         shifts.pop();
+
         return true;
     }
 
@@ -95,6 +96,7 @@ namespace QLanguage
 
         shifts.pop();
         shifts.pop();
+
         return true;
     }
 
@@ -112,6 +114,7 @@ namespace QLanguage
 
         shifts.pop();
         shifts.pop();
+
         return true;
     }
 
@@ -128,6 +131,7 @@ namespace QLanguage
 
         shifts.pop();
         shifts.pop();
+
         return true;
     }
 }

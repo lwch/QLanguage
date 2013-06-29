@@ -30,7 +30,7 @@ namespace QLanguage
         static SyntaxTree_Attribute::Type defaultAttribute;
     public:
         SyntaxTree_ClassContent(const SyntaxTree_Base& content);
-        SyntaxTree_ClassContent(SyntaxTree_Attribute* pAttribute, const SyntaxTree_Type& content);
+        SyntaxTree_ClassContent(SyntaxTree_Attribute* pAttribute, const SyntaxTree_DeclareList& content);
         virtual ~SyntaxTree_ClassContent();
         
         virtual void print(ostream& stream, uint indent)const;

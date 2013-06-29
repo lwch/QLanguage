@@ -12,7 +12,6 @@
 #ifndef _QLANGUAGE_SYNTAX_TREE_VALUE_H_
 #define _QLANGUAGE_SYNTAX_TREE_VALUE_H_
 
-#include "SyntaxTree_MemberList.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
@@ -31,7 +30,7 @@ namespace QLanguage
         };
     public:
         SyntaxTree_Value(const string& value, Type type);
-        SyntaxTree_Value(SyntaxTree_MemberList* pMemberList);
+        SyntaxTree_Value(SyntaxTree_Base* pContent);
         virtual ~SyntaxTree_Value();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -44,7 +43,7 @@ namespace QLanguage
             TRY_CAST(const SyntaxTree_Value*, &x);
 #endif
             if (_type != dynamic_cast<const SyntaxTree_Value*>(&x)->_type) return false;
-            if (_type == Member) return *pMemberList == *dynamic_cast<const SyntaxTree_Value*>(&x)->pMemberList;
+            if (_type == Member) return *pContent == *dynamic_cast<const SyntaxTree_Value*>(&x)->pContent;
             else return value == dynamic_cast<const SyntaxTree_Value*>(&x)->value;
         }
 
@@ -54,13 +53,13 @@ namespace QLanguage
             TRY_CAST(const SyntaxTree_Value*, &x);
 #endif
             if (_type != dynamic_cast<const SyntaxTree_Value*>(&x)->_type) return true;
-            if (_type == Member) return *pMemberList != *dynamic_cast<const SyntaxTree_Value*>(&x)->pMemberList;
+            if (_type == Member) return *pContent != *dynamic_cast<const SyntaxTree_Value*>(&x)->pContent;
             else return value != dynamic_cast<const SyntaxTree_Value*>(&x)->value;
         }
     protected:
         string           value;
         Type             _type;
-        SyntaxTree_MemberList* pMemberList;
+        SyntaxTree_Base* pContent;
     };
 }
 

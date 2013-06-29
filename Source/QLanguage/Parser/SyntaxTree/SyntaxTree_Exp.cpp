@@ -14,28 +14,27 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Exp::SyntaxTree_Exp(SyntaxTree_Base* pOP1, SyntaxTree_Base* pOP2, SyntaxTree_Base* pOP3)
+    SyntaxTree_Exp::SyntaxTree_Exp(const SyntaxTree_Base& OP1, SyntaxTree_Base* pOP2, SyntaxTree_Base* pOP3)
         : parent(sizeof(SyntaxTree_Exp))
-        , pOP1(pOP1)
+        , OP1(OP1)
         , pOP2(pOP2)
         , pOP3(pOP3)
         , _type(TrueFalse)
     {
-
     }
     
-    SyntaxTree_Exp::SyntaxTree_Exp(Type type, SyntaxTree_Base* pOP1, SyntaxTree_Base* pOP2)
+    SyntaxTree_Exp::SyntaxTree_Exp(Type type, const SyntaxTree_Base& OP1, SyntaxTree_Base* pOP2)
         : parent(sizeof(SyntaxTree_Exp))
-        , pOP1(pOP1)
+        , OP1(OP1)
         , pOP2(pOP2)
         , pOP3(NULL)
         , _type(type)
     {
     }
 
-    SyntaxTree_Exp::SyntaxTree_Exp(Type type, SyntaxTree_Base* pOP)
+    SyntaxTree_Exp::SyntaxTree_Exp(Type type, const SyntaxTree_Base& OP)
         : parent(sizeof(SyntaxTree_Exp))
-        , pOP1(pOP)
+        , OP1(OP)
         , pOP2(NULL)
         , pOP3(NULL)
         , _type(type)
@@ -62,7 +61,7 @@ namespace QLanguage
         default:
             break;
         }
-        pOP1->print(stream, indent);
+        OP1.print(stream, indent);
         switch (_type)
         {
         case GreaterEqual:
@@ -137,7 +136,7 @@ namespace QLanguage
         shifts.pop();
         
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
-        construct(pExp, syntaxTreeStack[2], syntaxTreeStack[1], syntaxTreeStack.top());
+        construct(pExp, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[2]), syntaxTreeStack[1], syntaxTreeStack.top());
         
         context.data.insert(pExp);
         
@@ -162,20 +161,20 @@ namespace QLanguage
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
         switch (i)
         {
-        case EXP_GREATER_EQUAL:
-            construct(pExp, SyntaxTree_Exp::GreaterEqual, syntaxTreeStack[1], syntaxTreeStack.top());
+        case EXP_GREATER_EQUAL_EXP1:
+            construct(pExp, SyntaxTree_Exp::GreaterEqual, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_LESS_EQUAL:
-            construct(pExp, SyntaxTree_Exp::LessEqual, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::LessEqual, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_EQUAL:
-            construct(pExp, SyntaxTree_Exp::Equal, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::Equal, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_LOGIC_AND:
-            construct(pExp, SyntaxTree_Exp::LogicAnd, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::LogicAnd, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_LOGIC_OR:
-            construct(pExp, SyntaxTree_Exp::LogicOr, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::LogicOr, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         }
 
@@ -210,46 +209,46 @@ namespace QLanguage
         switch (i)
         {
         case EXP_GREATER:
-            construct(pExp, SyntaxTree_Exp::Greater, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::Greater, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_LESS:
-            construct(pExp, SyntaxTree_Exp::Less, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::Less, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_ASSIGN:
-            construct(pExp, SyntaxTree_Exp::Assign, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::Assign, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_BIT_AND:
-            construct(pExp, SyntaxTree_Exp::BitAnd, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::BitAnd, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_BIT_OR:
-            construct(pExp, SyntaxTree_Exp::BitOr, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::BitOr, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_BIT_XOR:
-            construct(pExp, SyntaxTree_Exp::BitXor, syntaxTreeStack[1], syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::BitXor, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         case EXP_NOT:
-            construct(pExp, SyntaxTree_Exp::Not, syntaxTreeStack.top());
+            construct(pExp, SyntaxTree_Exp::Not, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack.top()));
             break;
-        case EXP_POSITIVE:
-            construct(pExp, SyntaxTree_Exp::Positive, syntaxTreeStack.top());
+        case EXP1_POSITIVE:
+            construct(pExp, SyntaxTree_Exp::Positive, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack.top()));
             break;
-        case EXP_NEGATIVE:
-            construct(pExp, SyntaxTree_Exp::Negative, syntaxTreeStack.top());
+        case EXP1_NEGATIVE:
+            construct(pExp, SyntaxTree_Exp::Negative, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack.top()));
             break;
-        case EXP_ADD:
-            construct(pExp, SyntaxTree_Exp::Add, syntaxTreeStack[1], syntaxTreeStack.top());
+        case EXP2_ADD:
+            construct(pExp, SyntaxTree_Exp::Add, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
-        case EXP_SUB:
-            construct(pExp, SyntaxTree_Exp::Sub, syntaxTreeStack[1], syntaxTreeStack.top());
+        case EXP2_SUB:
+            construct(pExp, SyntaxTree_Exp::Sub, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
-        case EXP_MUL:
-            construct(pExp, SyntaxTree_Exp::Mul, syntaxTreeStack[1], syntaxTreeStack.top());
+        case EXP3_MUL:
+            construct(pExp, SyntaxTree_Exp::Mul, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
-        case EXP_DIV:
-            construct(pExp, SyntaxTree_Exp::Div, syntaxTreeStack[1], syntaxTreeStack.top());
+        case EXP3_DIV:
+            construct(pExp, SyntaxTree_Exp::Div, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
-        case EXP_MOD:
-            construct(pExp, SyntaxTree_Exp::Mod, syntaxTreeStack[1], syntaxTreeStack.top());
+        case EXP3_MOD:
+            construct(pExp, SyntaxTree_Exp::Mod, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
             break;
         }
 
@@ -264,11 +263,11 @@ namespace QLanguage
         case EXP_BIT_AND:
         case EXP_BIT_OR:
         case EXP_BIT_XOR:
-        case EXP_ADD:
-        case EXP_SUB:
-        case EXP_MUL:
-        case EXP_DIV:
-        case EXP_MOD:
+        case EXP2_ADD:
+        case EXP2_SUB:
+        case EXP3_MUL:
+        case EXP3_DIV:
+        case EXP3_MOD:
             syntaxTreeStack.pop();
             break;
         }
@@ -281,7 +280,7 @@ namespace QLanguage
     bool Parser::reduceExpCall()
     {
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
-        construct(pExp, SyntaxTree_Exp::Call, syntaxTreeStack.top());
+        construct(pExp, SyntaxTree_Exp::Call, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack.top()));
 
         context.data.insert(pExp);
 
@@ -297,7 +296,7 @@ namespace QLanguage
         shifts.pop();
 
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
-        construct(pExp, SyntaxTree_Exp::ValueAsType, syntaxTreeStack[1], syntaxTreeStack.top());
+        construct(pExp, SyntaxTree_Exp::ValueAsType, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack[1]), syntaxTreeStack.top());
 
         context.data.insert(pExp);
 
@@ -312,7 +311,7 @@ namespace QLanguage
     bool Parser::reduceExpValue()
     {
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
-        construct(pExp, SyntaxTree_Exp::Value, syntaxTreeStack.top());
+        construct(pExp, SyntaxTree_Exp::Value, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack.top()));
 
         context.data.insert(pExp);
 

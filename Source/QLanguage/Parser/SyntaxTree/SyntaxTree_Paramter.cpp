@@ -14,11 +14,26 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Paramter::SyntaxTree_Paramter(const SyntaxTree_Type& type, const string& name) : parent(sizeof(SyntaxTree_Paramter)), _type(type), name(name)
+    SyntaxTree_Paramter::SyntaxTree_Paramter(const SyntaxTree_Type& type, const string& name, SyntaxTree_ArrayLst* pArrayLst)
+        : parent(sizeof(SyntaxTree_Paramter))
+        , _type(type)
+        , name(name)
+        , pArrayLst(pArrayLst)
     {
     }
 
-    SyntaxTree_Paramter::SyntaxTree_Paramter(const SyntaxTree_Type& type) : parent(sizeof(SyntaxTree_Paramter)), _type(type)
+    SyntaxTree_Paramter::SyntaxTree_Paramter(const SyntaxTree_Type& type, const string& name)
+        : parent(sizeof(SyntaxTree_Paramter))
+        , _type(type)
+        , name(name)
+        , pArrayLst(NULL)
+    {
+    }
+
+    SyntaxTree_Paramter::SyntaxTree_Paramter(const SyntaxTree_Type& type)
+        : parent(sizeof(SyntaxTree_Paramter))
+        , _type(type)
+        , pArrayLst(NULL)
     {
     }
 
@@ -32,7 +47,25 @@ namespace QLanguage
         if (name != "")
         {
             stream << ' ' << name;
+            if (pArrayLst) pArrayLst->print(stream, indent);
         }
+    }
+
+    // paramter -> type_desc "{Letter}" array_lst
+    bool Parser::reduceParamterNamedArray()
+    {
+        SyntaxTree_Paramter* pParamter = allocator<SyntaxTree_Paramter>::allocate();
+        construct(pParamter, dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[1]), shifts.top(), dynamic_cast<SyntaxTree_ArrayLst*>(syntaxTreeStack.top()));
+
+        context.data.insert(pParamter);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pParamter);
+
+        shifts.pop();
+
+        return true;
     }
 
     // paramter -> type_desc "{Letter}"
@@ -47,6 +80,7 @@ namespace QLanguage
         syntaxTreeStack.push(pParamter);
 
         shifts.pop();
+
         return true;
     }
 

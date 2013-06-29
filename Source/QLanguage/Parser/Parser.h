@@ -40,6 +40,7 @@ namespace QLanguage
 #define VALUE_DESC_DIGIT                                         19  // value_desc -> "{Digit}"
 #define VALUE_DESC_MEMBER_DESC                                   20  // value_desc -> member_desc
 #define VALUE_DESC_STRING                                        21  // value_desc -> "{String}"
+#define VALUE_DESC_ARRAY_VALUE_DESC                              22  // value_desc -> array_value_desc
 #define VALUES_VALUES                                            23  // values -> "{" values "}"
 #define VALUES_VALUES_VALUE_DESC                                 24  // values -> values "," value_desc
 #define VALUES_VALUE_DESC                                        25  // values -> value_desc
@@ -49,8 +50,14 @@ namespace QLanguage
 #define ATTRIBUTE_PUBLIC                                         29  // attribute -> "public"
 #define ATTRIBUTE_PRIVATE                                        30  // attribute -> "private"
 #define ATTRIBUTE_PROTECTED                                      31  // attribute -> "protected"
+#define ARRAY_LST_ARRAY_LST_EXP                                  32  // array_lst -> array_lst "[" exp "]"
+#define ARRAY_LST_ARRAY_LST_NO_EXP                               33  // array_lst -> array_lst "[" "]"
+#define ARRAY_LST_EXP                                            34  // array_lst -> "[" exp "]"
+#define ARRAY_LST_NO_EXP                                         35  // array_lst -> "[" "]"
+#define START_ITEM_LIST                                          36  // start -> item_list
 #define PARAMTER_LIST_PARAMTER_LIST_PARAMTER                     37  // paramter_list -> paramter_list "," paramter
 #define PARAMTER_LIST_PARAMTER                                   38  // paramter_list -> paramter
+#define PARAMTER_TYPE_DESC_LETTER_ARRAY_LST                      39  // paramter -> type_desc "{Letter}" array_lst
 #define PARAMTER_TYPE_DESC_LETTER                                40  // paramter -> type_desc "{Letter}"
 #define PARAMTER_TYPE_DESC                                       41  // paramter -> type_desc
 #define ITEM_LIST_ITEM_LIST_ITEM                                 42  // item_list -> item_list item
@@ -113,9 +120,13 @@ namespace QLanguage
 #define STMT_NO_SEMICOLON_FOR_DESC                               125 // stmt_no_semicolon -> for_desc
 #define STMT_NO_SEMICOLON_WHILE_DESC                             126 // stmt_no_semicolon -> while_desc
 #define STMT_NO_SEMICOLON_DO_DESC                                127 // stmt_no_semicolon -> do_desc
-#define DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP     129 // declare_desc -> declare_desc "," "{Letter}" "=" exp
-#define DECLARE_DESC_DECLARE_DESC_TYPE_DESC_LETTER               131 // declare_desc -> declare_desc "," "{Letter}"
-#define DECLARE_DESC_LETTER_TYPE_DESC_LETTER_EQUAL_EXP           133 // declare_desc -> ttype_desc "{Letter}" "=" exp
+#define DECLARE_DESC_DECLARE_DESC_LETTER_ARRAY_LST_EQUAL_EXP     128 // declare_desc -> declare_desc "," "{Letter}" array_lst "=" exp
+#define DECLARE_DESC_DECLARE_DESC_LETTER_EQUAL_EXP               129 // declare_desc -> declare_desc "," "{Letter}" "=" exp
+#define DECLARE_DESC_DECLARE_DESC_LETTER_ARRAY_LST               130 // declare_desc -> declare_desc "," "{Letter}" array_lst
+#define DECLARE_DESC_DECLARE_DESC_LETTER                         131 // declare_desc -> declare_desc "," "{Letter}"
+#define DECLARE_DESC_TYPE_DESC_LETTER_ARRAY_LST_EQUAL_EXP        132 // declare_desc -> type_desc "{Letter}" array_lst "=" exp
+#define DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP                  133 // declare_desc -> type_desc "{Letter}" "=" exp
+#define DECLARE_DESC_TYPE_DESC_LETTER_ARRAY_LST                  134 // declare_desc -> type_desc "{Letter}" array_lst
 #define DECLARE_DESC_TYPE_DESC_LETTER                            135 // declare_desc -> type_desc "{Letter}"
 #define ASSIGN_DESC_MEMBER_DESC_ADD_EQUAL_EXP                    136 // assign_desc -> member_desc "+" "=" exp
 #define ASSIGN_DESC_MEMBER_DESC_SUB_EQUAL_EXP                    137 // assign_desc -> member_desc "-" "=" exp
@@ -137,7 +148,7 @@ namespace QLanguage
 #define WHILE_DESC_WHILE_EXP_BLOCK                               153 // while_desc -> "while" "(" exp ")" block
 #define DO_DESC_DO_BLOCK_WHILE_EXP                               154 // do_desc -> "do" block "while" "(" exp ")"
 #define RETURN_DESC_EXP                                          156 // return_desc -> "return" exp ";"
-#define EXP_GREATER_EQUAL                                        157 // exp -> exp ">" "=" exp1
+#define EXP_GREATER_EQUAL_EXP1                                   157 // exp -> exp ">" "=" exp1
 #define EXP_LESS_EQUAL                                           158 // exp -> exp "<" "=" exp1
 #define EXP_EQUAL                                                159 // exp -> exp "=" "=" exp1
 #define EXP_GREATER                                              160 // exp -> exp ">" exp1
@@ -149,18 +160,22 @@ namespace QLanguage
 #define EXP_BIT_OR                                               166 // exp -> exp "|" exp1
 #define EXP_BIT_XOR                                              167 // exp -> exp "^" exp1
 #define EXP_EXP_STMT_STMT                                        168 // exp -> exp "?" exp ":" exp
+#define EXP_EXP1                                                 169 // exp -> exp1
 #define EXP_NOT                                                  170 // exp1 -> "!" exp2
-#define EXP_POSITIVE                                             171 // exp1 -> "+" exp2
-#define EXP_NEGATIVE                                             172 // exp1 -> "-" exp2
-#define EXP_ADD                                                  174 // exp2 -> exp2 "+" exp3
-#define EXP_SUB                                                  175 // exp2 -> exp2 "-" exp3
-#define EXP_MUL                                                  177 // exp3 -> exp3 "*" exp4
-#define EXP_DIV                                                  178 // exp3 -> exp3 "/" exp4
-#define EXP_MOD                                                  179 // exp3 -> exp3 "%" exp4
-#define EXP_BRACKETS                                             181 // exp4 -> "(" exp ")"
-#define EXP_CALL_DESC                                            182 // exp4 -> call_desc
-#define EXP_VALUE_DESC_AS_TYPE_DESC                              183 // exp4 -> value_desc "as" type_desc
-#define EXP_VALUE_DESC                                           184 // exp4 -> value_desc
+#define EXP1_POSITIVE                                            171 // exp1 -> "+" exp2
+#define EXP1_NEGATIVE                                            172 // exp1 -> "-" exp2
+#define EXP1_EXP2                                                173 // exp1 -> exp2
+#define EXP2_ADD                                                 174 // exp2 -> exp2 "+" exp3
+#define EXP2_SUB                                                 175 // exp2 -> exp2 "-" exp3
+#define EXP2_EXP3                                                176 // exp2 -> exp3
+#define EXP3_MUL                                                 177 // exp3 -> exp3 "*" exp4
+#define EXP3_DIV                                                 178 // exp3 -> exp3 "/" exp4
+#define EXP3_MOD                                                 179 // exp3 -> exp3 "%" exp4
+#define EXP3_EXP4                                                180 // exp3 -> exp4
+#define EXP4_BRACKETS                                            181 // exp4 -> "(" exp ")"
+#define EXP4_CALL_DESC                                           182 // exp4 -> call_desc
+#define EXP4_VALUE_DESC_AS_TYPE_DESC                             183 // exp4 -> value_desc "as" type_desc
+#define EXP4_VALUE_DESC                                          184 // exp4 -> value_desc
 
     class Parser : public BasicParser
     {
@@ -178,15 +193,19 @@ namespace QLanguage
         bool reduceMember2Size();
         bool reduceMember1Size();
         bool reduceValueNormal(ushort i);
-        bool reduceValueMember();
-        bool reduceValueList2Size();
-        bool reduceValueList1Size();
+        bool reduceValueContent();
         bool reduceValuesTop();
         bool reduceValues2Size();
         bool reduceValues1Size();
+        bool reduceArrayValue();
+        bool reduceValueList2Size();
+        bool reduceValueList1Size();
         bool reduceAttribute(ushort i);
+        bool reduceArrayLst2Size(ushort i);
+        bool reduceArrayLst1Size(ushort i);
         bool reduceParamterList2Size();
         bool reduceParamterList1Size();
+        bool reduceParamterNamedArray();
         bool reduceParamterNamed();
         bool reduceParamterNoName();
         bool reduceItemList2Size();

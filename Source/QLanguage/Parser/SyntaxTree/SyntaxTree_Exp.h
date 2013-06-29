@@ -47,9 +47,9 @@ namespace QLanguage
             Value
         };
     public:
-        SyntaxTree_Exp(SyntaxTree_Base* pOP1, SyntaxTree_Base* pOP2, SyntaxTree_Base* pOP3);
-        SyntaxTree_Exp(Type type, SyntaxTree_Base* pOP1, SyntaxTree_Base* pOP2);
-        SyntaxTree_Exp(Type type, SyntaxTree_Base* pOP);
+        SyntaxTree_Exp(const SyntaxTree_Base& OP1, SyntaxTree_Base* pOP2, SyntaxTree_Base* pOP3);
+        SyntaxTree_Exp(Type type, const SyntaxTree_Base& OP1, SyntaxTree_Base* pOP2);
+        SyntaxTree_Exp(Type type, const SyntaxTree_Base& OP);
         virtual ~SyntaxTree_Exp();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -62,7 +62,7 @@ namespace QLanguage
             TRY_CAST(const SyntaxTree_Exp*, &x);
 #endif
             return _type == dynamic_cast<const SyntaxTree_Exp*>(&x)->_type &&
-                   *pOP1 == *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP1 &&
+                   OP1 == dynamic_cast<const SyntaxTree_Exp*>(&x)->OP1 &&
                    ((pOP2 && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2 && *pOP2 == *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2) ||
                    (pOP2 == NULL && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2 == NULL)) &&
                    ((pOP3 && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP3 && *pOP3 == *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP3) ||
@@ -75,17 +75,17 @@ namespace QLanguage
             TRY_CAST(const SyntaxTree_Exp*, &x);
 #endif
             return _type != dynamic_cast<const SyntaxTree_Exp*>(&x)->_type ||
-                   *pOP1 != *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP1 ||
+                   OP1 != dynamic_cast<const SyntaxTree_Exp*>(&x)->OP1 ||
                    ((pOP2 && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2 && *pOP2 != *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2) ||
                    (pOP2 == NULL && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP2)) ||
                    ((pOP3 && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP3 && *pOP3 != *dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP3) ||
                    (pOP3 == NULL && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP3));
         }
     protected:
-        SyntaxTree_Base* pOP1;
-        SyntaxTree_Base* pOP2;
-        SyntaxTree_Base* pOP3;
-        Type             _type;
+        const SyntaxTree_Base& OP1;
+        SyntaxTree_Base*       pOP2;
+        SyntaxTree_Base*       pOP3;
+        Type                   _type;
     };
 }
 

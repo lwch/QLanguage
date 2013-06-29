@@ -58,8 +58,8 @@ attribute -> "public"
           |  "protected"
           ;
 
-array_lst -> array_lst "[" ["{Digit}"] "]"
-          |  "[" ["{Digit}"] "]"
+array_lst -> array_lst "[" [exp] "]"
+          |  "[" [exp] "]"
           ;
 
 start -> item_list
@@ -140,7 +140,7 @@ stmt -> assign_desc ";"
      |  declare_desc ";"
      |  if_desc
      |  for_desc
-     |  while_desc ";"
+     |  while_desc
      |  do_desc ";"
      |  return_desc
      ;
