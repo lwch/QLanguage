@@ -149,15 +149,15 @@
     </Expand>
   </Type>
 
-  <Type Name="QLanguage::SyntaxTree_ItemList">
+  <Type Name="QLanguage::SyntaxTree_ArrayLst">
+    <AlternativeType Name="QLanguage::SyntaxTree_ClassContentList" />
+    <AlternativeType Name="QLanguage::SyntaxTree_InterfaceContentList" />
+    <AlternativeType Name="QLanguage::SyntaxTree_ItemList" />
     <AlternativeType Name="QLanguage::SyntaxTree_MemberList" />
-    <AlternativeType Name="QLanguage::SyntaxTree_Values" />
-    <AlternativeType Name="QLanguage::SyntaxTree_ValueList" />
-    <AlternativeType Name="QLanguage::SyntaxTree_ArrayLst" />
     <AlternativeType Name="QLanguage::SyntaxTree_ParamterList" />
     <AlternativeType Name="QLanguage::SyntaxTree_StmtList" />
-    <AlternativeType Name="QLanguage::SyntaxTree_InterfaceContentList" />
-    <AlternativeType Name="QLanguage::SyntaxTree_ClassContentList" />
+    <AlternativeType Name="QLanguage::SyntaxTree_ValueList" />
+    <AlternativeType Name="QLanguage::SyntaxTree_Values" />
     <DisplayString>{{ size={childs.finish.node - childs.start.node} }}</DisplayString>
 	<Expand>
       <Item Name="[size]">childs.finish.node - childs.start.node</Item>
@@ -168,21 +168,6 @@
     </Expand>
   </Type>
   
-  <Type Name="QLanguage::SyntaxTree_Type">
-    <DisplayString>{{ name={name} }}</DisplayString>
-    <Expand>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_Value">
-    <DisplayString>{{ value={value} }}</DisplayString>
-    <Expand>
-      <Item Name="value">value</Item>
-      <Item Name="type">_type</Item>
-      <Item Condition="pContent != 0" Name="content">*pContent</Item>
-    </Expand>
-  </Type>
-  
   <Type Name="QLanguage::SyntaxTree_ArrayValue">
     <DisplayString>{{ contents={pValues-&gt;childs.start.node} }}</DisplayString>
     <Expand>
@@ -190,26 +175,18 @@
     </Expand>
   </Type>
   
+  <Type Name="QLanguage::SyntaxTree_Assign">
+    <DisplayString>{{ type={_type} }}</DisplayString>
+    <Expand>
+      <Item Name="type">_type</Item>
+      <Item Name="members">memberList</Item>
+      <Item Name="exp">exp</Item>
+    </Expand>
+  </Type>
+  
   <Type Name="QLanguage::SyntaxTree_Attribute">
     <DisplayString>{{ type={_type} }}</DisplayString>
     <Expand>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_Paramter">
-    <DisplayString>{{ name={name} }}</DisplayString>
-    <Expand>
-      <Item Name="type">_type</Item>
-      <Item Name="name">name</Item>
-      <Item Condition="pArrayLst != 0"  Name="array_lst">*pArrayLst</Item>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_Item">
-    <DisplayString Condition="pItem == 0"></DisplayString>
-    <DisplayString Condition="pItem != 0">{{ item={*pItem} }}</DisplayString>
-    <Expand>
-      <Item Condition="pItem != 0" Name="item">*pItem</Item>
     </Expand>
   </Type>
   
@@ -221,30 +198,11 @@
     </Expand>
   </Type>
   
-  <Type Name="QLanguage::SyntaxTree_GlobalFunction">
-    <DisplayString>{{ name={name} }}</DisplayString>
+  <Type Name="QLanguage::SyntaxTree_Call">
+    <DisplayString>{{ members={memberList} }}</DisplayString>
     <Expand>
-      <Item Name="return_type">returnType</Item>
-      <Item Name="name">name</Item>
-      <Item Condition="pParamterList != 0" Name="paramters">*pParamterList</Item>
-      <Item Name="block">block</Item>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_FunctionDeclare">
-    <DisplayString>{{ name={name} }}</DisplayString>
-    <Expand>
-      <Item Name="return_type">returnType</Item>
-      <Item Name="name">name</Item>
-      <Item Condition="pParamterList != 0" Name="paramters">*pParamterList</Item>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_Interface">
-    <DisplayString>{{ name={name} }}</DisplayString>
-    <Expand>
-      <Item Name="name">name</Item>
-      <Item Condition="pContentList != 0" Name="contents">*pContentList</Item>
+      <Item Name="members">memberList</Item>
+      <Item Condition="pValueList != 0" Name="values">*pValueList</Item>
     </Expand>
   </Type>
   
@@ -257,9 +215,12 @@
     </Expand>
   </Type>
   
-  <Type Name="QLanguage::SyntaxTree_ClassName">
-    <DisplayString>{{ name={name} }}</DisplayString>
+  <Type Name="QLanguage::SyntaxTree_ClassContent">
+    <DisplayString>{{ type={_type} }}</DisplayString>
     <Expand>
+      <Item Condition="pAttribute != 0" Name="attribute">*pAttribute</Item>
+      <Item Name="content">content</Item>
+      <Item Name="type">_type</Item>
     </Expand>
   </Type>
   
@@ -272,31 +233,9 @@
     </Expand>
   </Type>
   
-  <Type Name="QLanguage::SyntaxTree_ClassContent">
-    <DisplayString>{{ type={_type} }}</DisplayString>
-    <Expand>
-      <Item Condition="pAttribute != 0" Name="attribute">*pAttribute</Item>
-      <Item Name="content">content</Item>
-      <Item Name="type">_type</Item>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_Function">
+  <Type Name="QLanguage::SyntaxTree_ClassName">
     <DisplayString>{{ name={name} }}</DisplayString>
     <Expand>
-      <Item Name="attribute">attribute</Item>
-      <Item Name="return_type">returnType</Item>
-      <Item Name="name">name</Item>
-      <Item Condition="pParamterList != 0" Name="paramters">*pParamterList</Item>
-      <Item Name="block">block</Item>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_Stmt">
-    <DisplayString>{{ type={_type} }}</DisplayString>
-    <Expand>
-      <Item Condition="pStmt != 0" Name="stmt">*pStmt</Item>
-      <Item Name="type">_type</Item>
     </Expand>
   </Type>
   
@@ -320,29 +259,21 @@
     </Expand>
   </Type>
   
-  <Type Name="QLanguage::SyntaxTree_Assign">
-    <DisplayString>{{ type={_type} }}</DisplayString>
-    <Expand>
-      <Item Name="type">_type</Item>
-      <Item Name="members">memberList</Item>
-      <Item Name="exp">exp</Item>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_Call">
-    <DisplayString>{{ members={memberList} }}</DisplayString>
-    <Expand>
-      <Item Name="members">memberList</Item>
-      <Item Condition="pValueList != 0" Name="values">*pValueList</Item>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_If">
+  <Type Name="QLanguage::SyntaxTree_Do">
     <DisplayString>{{ exp={exp} }}</DisplayString>
     <Expand>
+      <Item Name="block">block</Item>
       <Item Name="exp">exp</Item>
-      <Item Name="op1">op1</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Exp">
+    <DisplayString>{{ type={_type} }}</DisplayString>
+    <Expand>
+      <Item Name="op1">OP1</Item>
       <Item Condition="pOP2 != 0" Name="op2">*pOP2</Item>
+      <Item Condition="pOP3 != 0" Name="op3">*pOP3</Item>
+      <Item Name="type">_type</Item>
     </Expand>
   </Type>
   
@@ -356,19 +287,73 @@
     </Expand>
   </Type>
   
-  <Type Name="QLanguage::SyntaxTree_While">
-    <DisplayString>{{ exp={exp} }}</DisplayString>
+  <Type Name="QLanguage::SyntaxTree_Function">
+    <DisplayString>{{ name={name} }}</DisplayString>
     <Expand>
-      <Item Name="exp">exp</Item>
+      <Item Name="attribute">attribute</Item>
+      <Item Name="return_type">returnType</Item>
+      <Item Name="name">name</Item>
+      <Item Condition="pParamterList != 0" Name="paramters">*pParamterList</Item>
       <Item Name="block">block</Item>
     </Expand>
   </Type>
   
-  <Type Name="QLanguage::SyntaxTree_Do">
+  <Type Name="QLanguage::SyntaxTree_FunctionDeclare">
+    <DisplayString>{{ name={name} }}</DisplayString>
+    <Expand>
+      <Item Name="return_type">returnType</Item>
+      <Item Name="name">name</Item>
+      <Item Condition="pParamterList != 0" Name="paramters">*pParamterList</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_GlobalFunction">
+    <DisplayString>{{ name={name} }}</DisplayString>
+    <Expand>
+      <Item Name="return_type">returnType</Item>
+      <Item Name="name">name</Item>
+      <Item Condition="pParamterList != 0" Name="paramters">*pParamterList</Item>
+      <Item Name="block">block</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_If">
     <DisplayString>{{ exp={exp} }}</DisplayString>
     <Expand>
-      <Item Name="block">block</Item>
       <Item Name="exp">exp</Item>
+      <Item Name="op1">op1</Item>
+      <Item Condition="pOP2 != 0" Name="op2">*pOP2</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Interface">
+    <DisplayString>{{ name={name} }}</DisplayString>
+    <Expand>
+      <Item Name="name">name</Item>
+      <Item Condition="pContentList != 0" Name="contents">*pContentList</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Item">
+    <DisplayString Condition="pItem == 0"></DisplayString>
+    <DisplayString Condition="pItem != 0">{{ item={*pItem} }}</DisplayString>
+    <Expand>
+      <Item Condition="pItem != 0" Name="item">*pItem</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Name">
+    <DisplayString>{{ name={name} }}</DisplayString>
+    <Expand>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Paramter">
+    <DisplayString>{{ name={name} }}</DisplayString>
+    <Expand>
+      <Item Name="type">_type</Item>
+      <Item Name="name">name</Item>
+      <Item Condition="pArrayLst != 0"  Name="array_lst">*pArrayLst</Item>
     </Expand>
   </Type>
   
@@ -380,13 +365,34 @@
     </Expand>
   </Type>
   
-  <Type Name="QLanguage::SyntaxTree_Exp">
+  <Type Name="QLanguage::SyntaxTree_Stmt">
     <DisplayString>{{ type={_type} }}</DisplayString>
     <Expand>
-      <Item Name="op1">OP1</Item>
-      <Item Condition="pOP2 != 0" Name="op2">*pOP2</Item>
-      <Item Condition="pOP3 != 0" Name="op3">*pOP3</Item>
+      <Item Condition="pStmt != 0" Name="stmt">*pStmt</Item>
       <Item Name="type">_type</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Type">
+    <DisplayString>{{ name={name} }}</DisplayString>
+    <Expand>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Value">
+    <DisplayString>{{ value={value} }}</DisplayString>
+    <Expand>
+      <Item Name="value">value</Item>
+      <Item Name="type">_type</Item>
+      <Item Condition="pContent != 0" Name="content">*pContent</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_While">
+    <DisplayString>{{ exp={exp} }}</DisplayString>
+    <Expand>
+      <Item Name="exp">exp</Item>
+      <Item Name="block">block</Item>
     </Expand>
   </Type>
 </AutoVisualizer>

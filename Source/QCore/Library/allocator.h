@@ -178,7 +178,7 @@ namespace QLanguage
             {
                 size_t size = n * sizeof(T);
                 MemoryPool* pool = getPool();
-                T* p = pool->reallocate(p, old_size, size, free_handler);
+                p = pool->reallocate(p, old_size, size, free_handler);
                 totalSize -= old_size;
                 totalSize += size;
                 return p;
