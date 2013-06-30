@@ -70,8 +70,16 @@ namespace QLanguage
             Item* pItem = q.front();
             vector<Production::Item> s;
             symbols(pItem, s);
-            select_into(s, vts, compare_production_item_is_vt, push_back_unique_vector<Production::Item>);
-            select_into(s, vns, compare_production_item_is_vn, push_back_unique_vector<Production::Item>);
+            select_into(s, vts, [](const Production::Item& i) {
+                return i.isTermainalSymbol();
+            }, [](vector<Production::Item>& v, const Production::Item& i) {
+                v.push_back_unique(i);
+            });
+            select_into(s, vns, [](const Production::Item& i) {
+                return i.isNoTerminalSymbol();
+            }, [](vector<Production::Item>& v, const Production::Item& i) {
+                v.push_back_unique(i);
+            });
             for (vector<Production::Item>::const_iterator i = s.begin(), m = s.end(); i != m; ++i)
             {
                 Item* pNewItem = NULL;
@@ -140,36 +148,33 @@ namespace QLanguage
         for (vector<LALR1Production>::const_iterator i = kernel.begin(), m = kernel.end(); i != m; ++i)
         {
             pItem->data.push_back(*i);
-            q.push(*i);
+            if (i->idx < i->right.size() && i->right[i->idx].isNoTerminalSymbol()) q.push(*i); // 待约项目
         }
 
         while (!q.empty())
         {
             const LALR1Production& p = q.front();
-            if (p.idx < p.right.size() && p.right[p.idx].isNoTerminalSymbol()) // 待约项目
+            vector<Production::Item> v;
+            firstX(p, v, p.idx + 1);
+            for (vector<LALR1Production>::iterator i = inputProductions[p.right[p.idx]].begin(), m = inputProductions[p.right[p.idx]].end(); i != m; ++i)
             {
-                vector<Production::Item> v;
-                firstX(p, v, p.idx + 1);
-                for (vector<LALR1Production>::iterator i = inputProductions[p.right[p.idx]].begin(), m = inputProductions[p.right[p.idx]].end(); i != m; ++i)
+                if (i->idx > 0) continue;
+                LALR1Production& item = *i;
+                if (v.empty()) item.wildCards.add_unique(p.wildCards);
+                else
                 {
-                    if (i->idx > 0) continue;
-                    LALR1Production& item = *i;
-                    if (v.empty()) item.wildCards.add_unique(p.wildCards);
-                    else
+                    for (vector<Production::Item>::const_iterator j = v.begin(), n = v.end(); j != n; ++j)
                     {
-                        for (vector<Production::Item>::const_iterator j = v.begin(), n = v.end(); j != n; ++j)
-                        {
-                            item.wildCards.push_back_unique(LALR1Production::Item(j->rule));
-                        }
+                        item.wildCards.push_back_unique(LALR1Production::Item(j->rule));
                     }
-                    vector<LALR1Production>::iterator j = find(pItem->data.begin(), pItem->data.end(), item);
-                    if (j == pItem->data.end())
-                    {
-                        q.push(item);
-                        pItem->data.push_back(item);
-                    }
-                    else j->wildCards.add_unique(item.wildCards);
                 }
+                vector<LALR1Production>::iterator j = find(pItem->data.begin(), pItem->data.end(), item);
+                if (j == pItem->data.end())
+                {
+                    q.push(item);
+                    pItem->data.push_back(item);
+                }
+                else j->wildCards.add_unique(item.wildCards);
             }
             q.pop();
         }
@@ -201,10 +206,11 @@ namespace QLanguage
 
         for (vector<LALR1Production>::const_iterator i = inputProductions[p.right[idx]].begin(), m = inputProductions[p.right[idx]].end(); i != m; ++i)
         {
-            if (i->left == i->right[0]) continue;
-            if (i->right[0].isTermainalSymbol())
+            const Production::Item& right0 = i->right[0];
+            if (i->left == right0) continue;
+            if (right0.isTermainalSymbol())
             {
-                v.push_back_unique(i->right[0]);
+                v.push_back_unique(right0);
                 continue;
             }
             else
@@ -243,15 +249,5 @@ namespace QLanguage
             if (items[i]->data == pItem->data) return (long)i;
         }
         return -1;
-    }
-
-    bool LALR1::compare_production_item_is_vt(const Production::Item& i)
-    {
-        return i.isTermainalSymbol();
-    }
-
-    bool LALR1::compare_production_item_is_vn(const Production::Item& i)
-    {
-        return i.isNoTerminalSymbol();
     }
 }

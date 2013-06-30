@@ -141,9 +141,6 @@ namespace QLanguage
         bool buildParserTable(ostream& errStream);
         long index_of_vt(const string& str, long idx = 0);
         long getGoTo(ushort s, const Production::Item& i);
-        static inline bool compare_production_item_is_vt(const Production::Item& i);
-        static inline bool compare_production_item_is_vn(const Production::Item& i);
-        static inline bool compare_edge_item_is(const Edge& e, const Production::Item& x);
     protected:
         Context context;
 

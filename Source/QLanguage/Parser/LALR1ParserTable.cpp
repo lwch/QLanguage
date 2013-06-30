@@ -47,7 +47,9 @@ namespace QLanguage
                             ptr->second = z;
                         }
                     }
-                    vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vts[j], compare_edge_item_is);
+                    vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vts[j], [](const Edge& e, const Production::Item& x) {
+                        return e.item == x;
+                    });
                     if (k != edges[*i].end())
                     {
                         if (ptr->first && (ptr->first != 'S' || ptr->second != k->pTo->idx)) errStream << ptr->first << '(' << ptr->second << ") -> S(" << k->pTo->idx << ')' << endl;
@@ -72,18 +74,15 @@ namespace QLanguage
                 {
                     if (ptr->second == 0)
                     {
-                        vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vns[j], compare_edge_item_is);
+                        vector<Edge>::const_iterator k = find(edges[*i].begin(), edges[*i].end(), vns[j], [](const Edge& e, const Production::Item& x) {
+                            return e.item == x;
+                        });
                         if (k != edges[*i].end()) ptr->second = k->pTo->idx;
                     }
                 }
             }
         }
         return true;
-    }
-
-    bool LALR1::compare_edge_item_is(const Edge& e, const Production::Item& x)
-    {
-        return e.item == x;
     }
 
     void LALR1::print(Library::ostream& stream)

@@ -47,7 +47,7 @@ int main(int argv, char* args[])
         //path = "C:\\QLanguage\\Source\\GeneratorFiles\\NewQLanguage.txt";
         //path = "C:\\QLanguage\\Source\\GeneratorFiles\\QLanguage.txt";
         //path = "E:\\QLanguage\\Source\\GeneratorFiles\\NewQLanguage.txt";
-        path = "E:\\QLanguage\\Source\\GeneratorFiles\\test.txt";
+        path = "E:\\QLanguage\\qlanguage\\trunk\\GeneratorFiles\\test.txt";
     }
     else
     {
