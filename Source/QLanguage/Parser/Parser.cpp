@@ -126,6 +126,18 @@ namespace QLanguage
             return reduceBlockStmts();
         case BLOCK_EMPTY:                      // block -> "{" "}"
             return reduceBlockEmpty();
+        case TEMPLATE_DESC_TEMPLATE_TEMPLATE_LIST:      // template_desc -> "template" "<" template_list ">"
+            return reduceTemplateWithParamters();
+        case TEMPLATE_DESC_TEMPLATE:                    // template_desc -> "template" "<" ">"
+            return reduceTemplateNoParamters();
+        case TEMPLATE_LIST_TEMPLATE_LIST_TEMPLATE_ITEM: // template_list -> template_list "," template_item
+            return reduceTemplateList2Size();
+        case TEMPLATE_LIST_TEMPLATE_ITEM:               // template_list -> template_item
+            return reduceTemplateList1Size();
+        case TEMPLATE_ITEM_TYPENAME_LETTER:             // template_item -> "typename" "{Letter}"
+            return reduceTemplateItemWithTypeName();
+        case TEMPLATE_ITEM_TYPE_DESC_LETTER:            // template_item -> type_desc "{Letter}"
+            return reduceTemplateItemWithType();
         case GLOBAL_FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK:          // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
             return reduceGlobalFunction2();
         case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:             // global_function_desc -> type_desc "{Letter}" "(" ")" block

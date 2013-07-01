@@ -72,6 +72,12 @@ namespace QLanguage
 #define STMT_LIST_BLOCK                                          51  // stmt_list -> block
 #define BLOCK_STMT_LIST                                          52  // block -> "{" stmt_list "}"
 #define BLOCK_EMPTY                                              53  // block -> "{" "}"
+#define TEMPLATE_DESC_TEMPLATE_TEMPLATE_LIST                     54  // template_desc -> "template" "<" template_list ">"
+#define TEMPLATE_DESC_TEMPLATE                                   55  // template_desc -> "template" "<" ">"
+#define TEMPLATE_LIST_TEMPLATE_LIST_TEMPLATE_ITEM                56  // template_list -> template_list "," template_item
+#define TEMPLATE_LIST_TEMPLATE_ITEM                              57  // template_list -> template_item
+#define TEMPLATE_ITEM_TYPENAME_LETTER                            58  // template_item -> "typename" "{Letter}"
+#define TEMPLATE_ITEM_TYPE_DESC_LETTER                           59  // template_item -> type_desc "{Letter}"
 #define GLOBAL_FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK          61  // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
 #define GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK             63  // global_function_desc -> type_desc "{Letter}" "(" ")" block
 #define GLOBAL_FUNCTION_DESC_VOID_PARAM_LIST_BLOCK               65  // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
@@ -215,6 +221,12 @@ namespace QLanguage
         bool reduceStmtList1Size();
         bool reduceBlockStmts();
         bool reduceBlockEmpty();
+        bool reduceTemplateWithParamters();
+        bool reduceTemplateNoParamters();
+        bool reduceTemplateList2Size();
+        bool reduceTemplateList1Size();
+        bool reduceTemplateItemWithTypeName();
+        bool reduceTemplateItemWithType();
         bool reduceGlobalFunction2();
         bool reduceGlobalFunction4();
         bool reduceGlobalFunction6();

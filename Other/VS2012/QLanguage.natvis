@@ -156,6 +156,7 @@
     <AlternativeType Name="QLanguage::SyntaxTree_MemberList" />
     <AlternativeType Name="QLanguage::SyntaxTree_ParamterList" />
     <AlternativeType Name="QLanguage::SyntaxTree_StmtList" />
+    <AlternativeType Name="QLanguage::SyntaxTree_TemplateList" />
     <AlternativeType Name="QLanguage::SyntaxTree_ValueList" />
     <AlternativeType Name="QLanguage::SyntaxTree_Values" />
     <DisplayString>{{ size={childs.finish.node - childs.start.node} }}</DisplayString>
@@ -362,6 +363,23 @@
     <DisplayString Condition="pExp != 0">{{ exp={*pExp} }}</DisplayString>
     <Expand>
       <Item Condition="pExp != 0" Name="exp">*pExp</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Template">
+    <DisplayString Condition="pTemplateList == 0"></DisplayString>
+    <DisplayString Condition="pTemplateList != 0">{{ template={*pTemplateList} }}</DisplayString>
+    <Expand>
+      <Item Condition="pTemplateList != 0" Name="template">*pTemplateList</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_TemplateItem">
+    <DisplayString>{{ type={_type} }}</DisplayString>
+    <Expand>
+      <Item Condition="pType != 0" Name="type_desc">*pType</Item>
+      <Item Name="type">_type</Item>
+      <Item Name="name">name</Item>
     </Expand>
   </Type>
   
