@@ -73,6 +73,18 @@ class SyntaxTree_Do;
             childs.push_back(child);
         }
 
+        inline static const bool checkEqual(SyntaxTree_Base* p1, SyntaxTree_Base* p2)
+        {
+            return (p1 && p2 && *p1 == *p2) ||
+                   (p1 == NULL && p2 == NULL);
+        }
+
+        inline static const bool checkNotEqual(SyntaxTree_Base* p1, SyntaxTree_Base* p2)
+        {
+            return (p1 && (p2 == NULL || *p1 != *p2)) ||
+                   (p1 == NULL && p2);
+        }
+
         virtual const bool operator==(const SyntaxTree_Base& x)const=0;
         virtual const bool operator!=(const SyntaxTree_Base& x)const=0;
     protected:

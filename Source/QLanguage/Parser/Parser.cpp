@@ -138,13 +138,21 @@ namespace QLanguage
             return reduceTemplateItemWithTypeName();
         case TEMPLATE_ITEM_TYPE_DESC_LETTER:            // template_item -> type_desc "{Letter}"
             return reduceTemplateItemWithType();
-        case GLOBAL_FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK:          // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
+        case GLOBAL_FUNCTION_DESC_TEMPLATE_DESC_TYPE_DESC_PARAM_LIST_BLOCK: // global_function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
+            return reduceGlobalFunction1();
+        case GLOBAL_FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK:               // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
             return reduceGlobalFunction2();
-        case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:             // global_function_desc -> type_desc "{Letter}" "(" ")" block
+        case GLOBAL_FUNCTION_DESC_TEMPLATE_DESC_TYPE_DESC_NOPARAM_BLOCK:    // global_function_desc -> template_desc type_desc "{Letter}" "(" ")" block
+            return reduceGlobalFunction3();
+        case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:                  // global_function_desc -> type_desc "{Letter}" "(" ")" block
             return reduceGlobalFunction4();
-        case GLOBAL_FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:               // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+        case GLOBAL_FUNCTION_DESC_TEMPLATE_DESC_VOID_PARAM_LIST_BLOCK:      // global_function_desc -> template_desc "void" "{Letter}" "(" paramter_list ")" block
+            return reduceGlobalFunction5();
+        case GLOBAL_FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:                    // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
             return reduceGlobalFunction6();
-        case GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK:                  // global_function_desc -> "void" "{Letter}" "(" ")" block
+        case GLOBAL_FUNCTION_DESC_TEMPLATE_DESC_VOID_NOPARAM_BLOCK:         // global_function_desc -> template_desc "void" "{Letter}" "(" ")" block
+            return reduceGlobalFunction7();
+        case GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK:                       // global_function_desc -> "void" "{Letter}" "(" ")" block
             return reduceGlobalFunction8();
         case FUNCTION_DECLARE_TYPE_DESC_PARAM_LIST:                    // function_desc -> type_desc "{Letter}" "(" paramter_list ")" ";"
             return reduceFunctionDeclare2();

@@ -11,6 +11,7 @@
 *********************************************************************/
 #include "../Parser.h"
 
+#include "SyntaxTree_Template.h"
 #include "SyntaxTree_Type.h"
 #include "SyntaxTree_ParamterList.h"
 #include "SyntaxTree_Block.h"
@@ -18,8 +19,29 @@
 
 namespace QLanguage
 {
+    SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(SyntaxTree_Template *pTemplate, const SyntaxTree_Type &returnType, const string &name, const SyntaxTree_Block &block)
+        : parent(sizeof(SyntaxTree_GlobalFunction))
+        , pTemplate(pTemplate)
+        , returnType(returnType)
+        , name(name)
+        , pParamterList(NULL)
+        , block(block)
+    {
+    }
+
+    SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(SyntaxTree_Template *pTemplate, const SyntaxTree_Type &returnType, const string &name, SyntaxTree_ParamterList *pParamterList, const SyntaxTree_Block &block)
+        : parent(sizeof(SyntaxTree_GlobalFunction))
+        , pTemplate(pTemplate)
+        , returnType(returnType)
+        , name(name)
+        , pParamterList(pParamterList)
+        , block(block)
+    {
+    }
+
     SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(const SyntaxTree_Type& returnType, const string& name, const SyntaxTree_Block& block)
         : parent(sizeof(SyntaxTree_GlobalFunction))
+        , pTemplate(NULL)
         , returnType(returnType)
         , name(name)
         , pParamterList(NULL)
@@ -29,6 +51,7 @@ namespace QLanguage
 
     SyntaxTree_GlobalFunction::SyntaxTree_GlobalFunction(const SyntaxTree_Type& returnType, const string& name, SyntaxTree_ParamterList* pParamterList, const SyntaxTree_Block& block)
         : parent(sizeof(SyntaxTree_GlobalFunction))
+        , pTemplate(NULL)
         , returnType(returnType)
         , name(name)
         , pParamterList(pParamterList)
@@ -49,16 +72,70 @@ namespace QLanguage
         block.print(stream, indent + parent::indent);
     }
 
+    // global_function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
+    bool Parser::reduceGlobalFunction1()
+    {
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
+        construct(pGlobalFunction,
+                  dynamic_cast<SyntaxTree_Template*>(syntaxTreeStack[3]),
+                  dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[2]),
+                  shifts.top(),
+                  dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
+                  dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
+
+        context.data.insert(pGlobalFunction);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pGlobalFunction);
+
+        shifts.pop();
+
+        return true;
+    }
+
     // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceGlobalFunction2()
     {
         shifts.pop();
         shifts.pop();
+
         SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
         construct(pGlobalFunction,
                   dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[2]),
                   shifts.top(),
                   dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
+                  dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
+
+        context.data.insert(pGlobalFunction);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pGlobalFunction);
+
+        shifts.pop();
+
+        return true;
+    }
+
+    // global_function_desc -> template_desc type_desc "{Letter}" "(" ")" block
+    bool Parser::reduceGlobalFunction3()
+    {
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
+        construct(pGlobalFunction,
+                  dynamic_cast<SyntaxTree_Template*>(syntaxTreeStack[2]),
+                  dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[1]),
+                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pGlobalFunction);
@@ -95,6 +172,38 @@ namespace QLanguage
         return true;
     }
 
+    // global_function_desc -> template_desc "void" "{Letter}" "(" paramter_list ")" block
+    bool Parser::reduceGlobalFunction5()
+    {
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Type* pReturnType = allocator<SyntaxTree_Type>::allocate();
+        construct(pReturnType, "void", SyntaxTree_Type::Void);
+
+        context.data.insert(pReturnType);
+
+        SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
+        construct(pGlobalFunction,
+                  dynamic_cast<SyntaxTree_Template*>(syntaxTreeStack[2]),
+                  *pReturnType,
+                  shifts.top(),
+                  dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
+                  dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
+
+        context.data.insert(pGlobalFunction);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pGlobalFunction);
+
+        shifts.pop();
+        shifts.pop();
+
+        return true;
+    }
+
     // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceGlobalFunction6()
     {
@@ -111,6 +220,36 @@ namespace QLanguage
                   *pReturnType,
                   shifts.top(),
                   dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]),
+                  dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
+
+        context.data.insert(pGlobalFunction);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pGlobalFunction);
+
+        shifts.pop();
+        shifts.pop();
+
+        return true;
+    }
+
+    // global_function_desc -> template_desc "void" "{Letter}" "(" ")" block
+    bool Parser::reduceGlobalFunction7()
+    {
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Type* pReturnType = allocator<SyntaxTree_Type>::allocate();
+        construct(pReturnType, "void", SyntaxTree_Type::Void);
+
+        context.data.insert(pReturnType);
+
+        SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
+        construct(pGlobalFunction,
+                  dynamic_cast<SyntaxTree_Template*>(syntaxTreeStack[1]),
+                  *pReturnType,
+                  shifts.top(),
                   dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
 
         context.data.insert(pGlobalFunction);
