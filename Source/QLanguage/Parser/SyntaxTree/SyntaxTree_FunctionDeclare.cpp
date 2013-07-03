@@ -16,8 +16,27 @@
 
 namespace QLanguage
 {
+    SyntaxTree_FunctionDeclare::SyntaxTree_FunctionDeclare(SyntaxTree_Template* pTemplate, const SyntaxTree_Type& returnType, const string& name)
+        : parent(sizeof(SyntaxTree_FunctionDeclare))
+        , pTemplate(pTemplate)
+        , returnType(returnType)
+        , name(name)
+        , pParamterList(NULL)
+    {
+    }
+
+    SyntaxTree_FunctionDeclare::SyntaxTree_FunctionDeclare(SyntaxTree_Template* pTemplate, const SyntaxTree_Type& returnType, const string& name, SyntaxTree_ParamterList* pParamterList)
+        : parent(sizeof(SyntaxTree_FunctionDeclare))
+        , pTemplate(pTemplate)
+        , returnType(returnType)
+        , name(name)
+        , pParamterList(pParamterList)
+    {
+    }
+
     SyntaxTree_FunctionDeclare::SyntaxTree_FunctionDeclare(const SyntaxTree_Type& returnType, const string& name)
         : parent(sizeof(SyntaxTree_FunctionDeclare))
+        , pTemplate(NULL)
         , returnType(returnType)
         , name(name)
         , pParamterList(NULL)
@@ -26,6 +45,7 @@ namespace QLanguage
 
     SyntaxTree_FunctionDeclare::SyntaxTree_FunctionDeclare(const SyntaxTree_Type& returnType, const string& name, SyntaxTree_ParamterList* pParamterList)
         : parent(sizeof(SyntaxTree_FunctionDeclare))
+        , pTemplate(NULL)
         , returnType(returnType)
         , name(name)
         , pParamterList(pParamterList)
@@ -38,15 +58,45 @@ namespace QLanguage
 
     void SyntaxTree_FunctionDeclare::print(ostream& stream, uint indent)const
     {
-        this->printIndent(stream, indent);
+        if (pTemplate)
+        {
+            pTemplate->print(stream, indent);
+            stream << ' ';
+        }
         returnType.print(stream, indent);
         stream << ' ' << name << '(';
         if (pParamterList) pParamterList->print(stream, indent);
         stream << ");";
     }
 
+    // function_declare -> template_desc type_desc "{Letter}" "(" paramter_list ")" ";"
+    bool Parser::reduceFunctionDeclareTemplateTypeParamters()
+    {
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_FunctionDeclare* pFunctionDeclare = allocator<SyntaxTree_FunctionDeclare>::allocate();
+        construct(pFunctionDeclare,
+                  dynamic_cast<SyntaxTree_Template*>(syntaxTreeStack[2]),
+                  dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[1]),
+                  shifts.top(),
+                  dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack.top()));
+
+        context.data.insert(pFunctionDeclare);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pFunctionDeclare);
+
+        shifts.pop();
+
+        return true;
+    }
+
     // function_declare -> type_desc "{Letter}" "(" paramter_list ")" ";"
-    bool Parser::reduceFunctionDeclare2()
+    bool Parser::reduceFunctionDeclareTypeParamters()
     {
         shifts.pop();
         shifts.pop();
@@ -69,8 +119,32 @@ namespace QLanguage
         return true;
     }
 
+    // function_declare -> template_desc type_desc "{Letter}" "(" ")" ";"
+    bool Parser::reduceFunctionDeclareTemplateType()
+    {
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_FunctionDeclare* pFunctionDeclare = allocator<SyntaxTree_FunctionDeclare>::allocate();
+        construct(pFunctionDeclare,
+                  dynamic_cast<SyntaxTree_Template*>(syntaxTreeStack[1]),
+                  dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack.top()),
+                  shifts.top());
+
+        context.data.insert(pFunctionDeclare);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pFunctionDeclare);
+
+        shifts.pop();
+
+        return true;
+    }
+
     // function_declare -> type_desc "{Letter}" "(" ")" ";"
-    bool Parser::reduceFunctionDeclare4()
+    bool Parser::reduceFunctionDeclareType()
     {
         shifts.pop();
         shifts.pop();
@@ -91,8 +165,35 @@ namespace QLanguage
         return true;
     }
 
+    // function_declare -> template_desc "void" "{Letter}" "(" paramter_list ")" ";"
+    bool Parser::reduceFunctionDeclareTemplateVoidParamters()
+    {
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Type* pReturnType = allocator<SyntaxTree_Type>::allocate();
+        construct(pReturnType, "void", SyntaxTree_Type::Void);
+
+        context.data.insert(pReturnType);
+
+        SyntaxTree_FunctionDeclare* pFunctionDeclare = allocator<SyntaxTree_FunctionDeclare>::allocate();
+        construct(pFunctionDeclare, dynamic_cast<SyntaxTree_Template*>(syntaxTreeStack[1]), *pReturnType, shifts.top());
+
+        context.data.insert(pFunctionDeclare);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pFunctionDeclare);
+
+        shifts.pop();
+        shifts.pop();
+
+        return true;
+    }
+
     // function_declare -> "void" "{Letter}" "(" paramter_list ")" ";"
-    bool Parser::reduceFunctionDeclare6()
+    bool Parser::reduceFunctionDeclareVoidParamters()
     {
         shifts.pop();
         shifts.pop();
@@ -117,8 +218,34 @@ namespace QLanguage
         return true;
     }
 
+    // function_declare -> template_desc "void" "{Letter}" "(" ")" ";"
+    bool Parser::reduceFunctionDeclareTemplateVoid()
+    {
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
+
+        SyntaxTree_Type* pReturnType = allocator<SyntaxTree_Type>::allocate();
+        construct(pReturnType, "void", SyntaxTree_Type::Void);
+
+        context.data.insert(pReturnType);
+
+        SyntaxTree_FunctionDeclare* pFunctionDeclare = allocator<SyntaxTree_FunctionDeclare>::allocate();
+        construct(pFunctionDeclare, dynamic_cast<SyntaxTree_Template*>(syntaxTreeStack[1]), *pReturnType, shifts.top());
+
+        context.data.insert(pFunctionDeclare);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pFunctionDeclare);
+
+        shifts.pop();
+        shifts.pop();
+
+        return true;
+    }
+
     // function_declare -> "void" "{Letter}" "(" ")" ";"
-    bool Parser::reduceFunctionDeclare8()
+    bool Parser::reduceFunctionDeclareVoid()
     {
         shifts.pop();
         shifts.pop();

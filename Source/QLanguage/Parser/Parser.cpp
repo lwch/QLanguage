@@ -139,29 +139,37 @@ namespace QLanguage
         case TEMPLATE_ITEM_TYPE_DESC_LETTER:            // template_item -> type_desc "{Letter}"
             return reduceTemplateItemWithType();
         case GLOBAL_FUNCTION_DESC_TEMPLATE_DESC_TYPE_DESC_PARAM_LIST_BLOCK: // global_function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
-            return reduceGlobalFunction1();
+            return reduceGlobalFunctionTemplateTypeParamters();
         case GLOBAL_FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK:               // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
-            return reduceGlobalFunction2();
+            return reduceGlobalFunctionTypeParamters();
         case GLOBAL_FUNCTION_DESC_TEMPLATE_DESC_TYPE_DESC_NOPARAM_BLOCK:    // global_function_desc -> template_desc type_desc "{Letter}" "(" ")" block
-            return reduceGlobalFunction3();
+            return reduceGlobalFunctionTemplateType();
         case GLOBAL_FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:                  // global_function_desc -> type_desc "{Letter}" "(" ")" block
-            return reduceGlobalFunction4();
+            return reduceGlobalFunctionType();
         case GLOBAL_FUNCTION_DESC_TEMPLATE_DESC_VOID_PARAM_LIST_BLOCK:      // global_function_desc -> template_desc "void" "{Letter}" "(" paramter_list ")" block
-            return reduceGlobalFunction5();
+            return reduceGlobalFunctionTemplateVoidParamters();
         case GLOBAL_FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:                    // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
-            return reduceGlobalFunction6();
+            return reduceGlobalFunctionVoidParamters();
         case GLOBAL_FUNCTION_DESC_TEMPLATE_DESC_VOID_NOPARAM_BLOCK:         // global_function_desc -> template_desc "void" "{Letter}" "(" ")" block
-            return reduceGlobalFunction7();
+            return reduceGlobalFunctionTemplateVoid();
         case GLOBAL_FUNCTION_DESC_VOID_NOPARAM_BLOCK:                       // global_function_desc -> "void" "{Letter}" "(" ")" block
-            return reduceGlobalFunction8();
-        case FUNCTION_DECLARE_TYPE_DESC_PARAM_LIST:                    // function_desc -> type_desc "{Letter}" "(" paramter_list ")" ";"
-            return reduceFunctionDeclare2();
-        case FUNCTION_DECLARE_TYPE_DESC_NOPARAM:                       // function_desc -> type_desc "{Letter}" "(" ")" ";"
-            return reduceFunctionDeclare4();
-        case FUNCTION_DECLARE_VOID_PARAM_LIST:                         // function_desc -> "void" "{Letter}" "(" paramter_list ")" ";"
-            return reduceFunctionDeclare6();
-        case FUNCTION_DECLARE_VOID_NOPARAM:                            // function_desc -> "void" "{Letter}" "(" ")" ";"
-            return reduceFunctionDeclare8();
+            return reduceGlobalFunctionVoid();
+        case FUNCTION_DECLARE_TEMPLATE_DESC_TYPE_DESC_PARAM_LIST:           // function_declare -> template_desc type_desc "{Letter}" "(" paramter_list ")" ";"
+            return reduceFunctionDeclareTemplateTypeParamters();
+        case FUNCTION_DECLARE_TYPE_DESC_PARAM_LIST:                         // function_declare -> type_desc "{Letter}" "(" paramter_list ")" ";"
+            return reduceFunctionDeclareTypeParamters();
+        case FUNCTION_DECLARE_TEMPLATE_DESC_TYPE_DESC:                      // function_declare -> template_desc type_desc "{Letter}" "(" ")" ";"
+            return reduceFunctionDeclareTemplateType();
+        case FUNCTION_DECLARE_TYPE_DESC:                                    // function_declare -> type_desc "{Letter}" "(" ")" ";"
+            return reduceFunctionDeclareType();
+        case FUNCTION_DECLARE_TEMPLATE_DESC_VOID_PARAM_LIST:                // function_declare -> template_desc "void" "{Letter}" "(" paramter_list ")" ";"
+            return reduceFunctionDeclareTemplateVoidParamters();
+        case FUNCTION_DECLARE_VOID_PARAM_LIST:                              // function_declare -> "void" "{Letter}" "(" paramter_list ")" ";"
+            return reduceFunctionDeclareVoidParamters();
+        case FUNCTION_DECLARE_TEMPLATE_DESC_VOID:                           // function_declare -> template_desc "void" "{Letter}" "(" ")" ";"
+            return reduceFunctionDeclareTemplateVoid();
+        case FUNCTION_DECLARE_VOID:                                         // function_declare -> "void" "{Letter}" "(" ")" ";"
+            return reduceFunctionDeclareVoid();
         case INTERFACE_DESC_INTERFACE_CONTENT_LIST:                    // interface_desc -> "interface" "{Letter}" "{" interface_content "}"
             return reduceInterfaceWidthContent();
         case INTERFACE_DESC_NO_INTERFACE_CONTENT_LIST:                 // interface_desc -> "interface" "{Letter}" "{" "}"
@@ -196,22 +204,38 @@ namespace QLanguage
             return reduceClassContentDeclareWithAttribute();
         case CLASS_CONTENT_DECLARE_DESC:                          // class_content -> declare_desc ";"
             return reduceClassContentDeclareNoAttribute();
-        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_PARAM_LIST_BLOCK:  // function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block
-            return reduceFunction2();
-        case FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK:            // function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
-            return reduceFunction4();
-        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_NOPARAM_BLOCK:     // function_desc -> attribute type_desc "{Letter}" "(" ")" block
-            return reduceFunction6();
-        case FUNCTION_DESC_TYPE_DESC_NOPARAM_BLOCK:               // function_desc -> type_desc "{Letter}" "(" ")" block
-            return reduceFunction8();
-        case FUNCTION_DESC_ATTRIBUTE_VOID_PARAM_LIST_BLOCK:       // function_desc -> attribute "void" "{Letter}" "(" paramter_list ")" block
-            return reduceFunction10();
-        case FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:                 // function_desc -> "void" "{Letter}" "(" paramter_list ")" block
-            return reduceFunction12();
-        case FUNCTION_DESC_ATTRIBUTE_VOID_NOPARAM_BLOCK:          // function_desc -> attribute "void" "{Letter}" "(" ")" block
-            return reduceFunction14();
-        case FUNCTION_DESC_VOID_NOPARAM_BLOCK:                    // function_desc -> "void" "{Letter}" "(" ")" block
-            return reduceFunction16();
+        case FUNCTION_DESC_TEMPLATE_DESC_ATTRIBUTE_TYPE_DESC_PARAM_LIST_BLOCK: // function_desc -> template_desc attribute type_desc "{Letter}" "(" paramter_list ")" block
+            return reduceFunctionTemplateAttributeTypeParamters();
+        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_PARAM_LIST_BLOCK:               // function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block
+            return reduceFunctionAttributeTypeParamters();
+        case FUNCTION_DESC_TEMPLATE_DESC_TYPE_DESC_PARAM_LIST_BLOCK:           // function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
+            return reduceFunctionTemplateTypeParamters();
+        case FUNCTION_DESC_TYPE_DESC_PARAM_LIST_BLOCK:                         // function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
+            return reduceFunctionTypeParamters();
+        case FUNCTION_DESC_TEMPLATE_DESC_ATTRIBUTE_TYPE_DESC_BLOCK:            // function_desc -> template_desc attribute type_desc "{Letter}" "(" ")" block
+            return reduceFunctionTemplateAttributeType();
+        case FUNCTION_DESC_ATTRIBUTE_TYPE_DESC_BLOCK:                          // function_desc -> attribute type_desc "{Letter}" "(" ")" block
+            return reduceFunctionAttributeType();
+        case FUNCTION_DESC_TEMPLATE_DESC_TYPE_DESC_BLOCK:                      // function_desc -> template_desc type_desc "{Letter}" "(" ")" block
+            return reduceFunctionTemplateType();
+        case FUNCTION_DESC_TYPE_DESC_BLOCK:                                    // function_desc -> type_desc "{Letter}" "(" ")" block
+            return reduceFunctionType();
+        case FUNCTION_DESC_TEMPLATE_DESC_ATTRIBUTE_VOID_PARAM_LIST_BLOCK:      // function_desc -> template_desc attribute "void" "{Letter}" "(" paramter_list ")" block
+            return reduceFunctionTemplateAttributeVoidParamters();
+        case FUNCTION_DESC_ATTRIBUTE_VOID_PARAM_LIST_BLOCK:                    // function_desc -> attribute "void" "{Letter}" "(" paramter_list ")" block
+            return reduceFunctionAttributeVoidParamters();
+        case FUNCTION_DESC_TEMPLATE_DESC_VOID_PARAM_LIST_BLOCK:                // function_desc -> tempalte_desc "void" "{Letter}" "(" paramter_list ")" block
+            return reduceFunctionTemplateVoidParamters();
+        case FUNCTION_DESC_VOID_PARAM_LIST_BLOCK:                              // function_desc -> "void" "{Letter}" "(" paramter_list ")" block
+            return reduceFunctionVoidParamters();
+        case FUNCTION_DESC_TEMPLATE_DESC_ATTRIBUTE_VOID_BLOCK:                 // function_desc -> template_desc attribute "void" "{Letter}" "(" ")" block
+            return reduceFunctionTemplateAttributeVoid();
+        case FUNCTION_DESC_ATTRIBUTE_VOID_BLOCK:                               // function_desc -> attribute "void" "{Letter}" "(" ")" block
+            return reduceFunctionAttributeVoid();
+        case FUNCTION_DESC_TEMPLATE_DESC_VOID_BLOCK:                           // function_desc -> template_desc "void" "{Letter}" "(" ")" block
+            return reduceFunctionTemplateVoid();
+        case FUNCTION_DESC_VOID_BLOCK:                                         // function_desc -> "void" "{Letter}" "(" ")" block
+            return reduceFunctionVoid();
         case STMT_ASSIGN_DESC:                       // stmt -> assign_desc ";"
         case STMT_CALL_DESC:                         // stmt -> call_desc ";"
         case STMT_DECLARE_DESC:                      // stmt -> declare_desc ";"

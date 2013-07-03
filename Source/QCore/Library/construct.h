@@ -63,6 +63,12 @@ namespace QLanguage
             new (p) T1(v1, v2, v3, v4, v5);
         }
 
+        template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+        inline void construct(T1* p, const T2& v1, const T3& v2, const T4& v3, const T5& v4, const T6& v5, const T7& v6)
+        {
+            new (p) T1(v1, v2, v3, v4, v5, v6);
+        }
+
         template <typename T>
         inline void destruct(T* p, __true_type*)
         {

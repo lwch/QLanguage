@@ -26,6 +26,7 @@ namespace QLanguage
     {
         for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(); i != m; ++i)
         {
+            this->printIndent(stream, indent + parent::indent);
             (*i)->print(stream, indent + parent::indent);
             stream << endl;
         }

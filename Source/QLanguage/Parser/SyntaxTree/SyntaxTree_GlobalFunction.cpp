@@ -65,6 +65,11 @@ namespace QLanguage
 
     void SyntaxTree_GlobalFunction::print(ostream& stream, uint indent)const
     {
+        if (pTemplate)
+        {
+            pTemplate->print(stream, indent);
+            stream << ' ';
+        }
         returnType.print(stream, indent);
         stream << ' ' << name << '(';
         if (pParamterList) pParamterList->print(stream, indent);
@@ -73,7 +78,7 @@ namespace QLanguage
     }
 
     // global_function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
-    bool Parser::reduceGlobalFunction1()
+    bool Parser::reduceGlobalFunctionTemplateTypeParamters()
     {
         shifts.pop();
         shifts.pop();
@@ -100,7 +105,7 @@ namespace QLanguage
     }
 
     // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
-    bool Parser::reduceGlobalFunction2()
+    bool Parser::reduceGlobalFunctionTypeParamters()
     {
         shifts.pop();
         shifts.pop();
@@ -125,7 +130,7 @@ namespace QLanguage
     }
 
     // global_function_desc -> template_desc type_desc "{Letter}" "(" ")" block
-    bool Parser::reduceGlobalFunction3()
+    bool Parser::reduceGlobalFunctionTemplateType()
     {
         shifts.pop();
         shifts.pop();
@@ -151,7 +156,7 @@ namespace QLanguage
     }
 
     // global_function_desc -> type_desc "{Letter}" "(" ")" block
-    bool Parser::reduceGlobalFunction4()
+    bool Parser::reduceGlobalFunctionType()
     {
         shifts.pop();
         shifts.pop();
@@ -173,7 +178,7 @@ namespace QLanguage
     }
 
     // global_function_desc -> template_desc "void" "{Letter}" "(" paramter_list ")" block
-    bool Parser::reduceGlobalFunction5()
+    bool Parser::reduceGlobalFunctionTemplateVoidParamters()
     {
         shifts.pop();
         shifts.pop();
@@ -205,7 +210,7 @@ namespace QLanguage
     }
 
     // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
-    bool Parser::reduceGlobalFunction6()
+    bool Parser::reduceGlobalFunctionVoidParamters()
     {
         shifts.pop();
         shifts.pop();
@@ -235,7 +240,7 @@ namespace QLanguage
     }
 
     // global_function_desc -> template_desc "void" "{Letter}" "(" ")" block
-    bool Parser::reduceGlobalFunction7()
+    bool Parser::reduceGlobalFunctionTemplateVoid()
     {
         shifts.pop();
         shifts.pop();
@@ -265,7 +270,7 @@ namespace QLanguage
     }
 
     // global_function_desc -> "void" "{Letter}" "(" ")" block
-    bool Parser::reduceGlobalFunction8()
+    bool Parser::reduceGlobalFunctionVoid()
     {
         shifts.pop();
         shifts.pop();

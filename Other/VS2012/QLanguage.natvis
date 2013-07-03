@@ -291,6 +291,7 @@
   <Type Name="QLanguage::SyntaxTree_Function">
     <DisplayString>{{ name={name} }}</DisplayString>
     <Expand>
+      <Item Condition="pTemplate != 0" Name="template">*pTemplate</Item>
       <Item Name="attribute">attribute</Item>
       <Item Name="return_type">returnType</Item>
       <Item Name="name">name</Item>
@@ -302,6 +303,7 @@
   <Type Name="QLanguage::SyntaxTree_FunctionDeclare">
     <DisplayString>{{ name={name} }}</DisplayString>
     <Expand>
+      <Item Condition="pTemplate != 0" Name="template">*pTemplate</Item>
       <Item Name="return_type">returnType</Item>
       <Item Name="name">name</Item>
       <Item Condition="pParamterList != 0" Name="paramters">*pParamterList</Item>
@@ -311,6 +313,7 @@
   <Type Name="QLanguage::SyntaxTree_GlobalFunction">
     <DisplayString>{{ name={name} }}</DisplayString>
     <Expand>
+      <Item Condition="pTemplate != 0" Name="template">*pTemplate</Item>
       <Item Name="return_type">returnType</Item>
       <Item Name="name">name</Item>
       <Item Condition="pParamterList != 0" Name="paramters">*pParamterList</Item>
