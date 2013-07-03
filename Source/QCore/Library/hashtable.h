@@ -136,7 +136,6 @@ protected:
             while (--idx >= 0 && reinterpret_cast<typename HashTable_Type::node_size_type*>(ht.buckets[idx])->data > 0)
             {
                 typedef typename HashTable_Type::link_type link_type;
-                typedef typename HashTable_Type::node_size_type node_size_type;
                 link_type current = ht.buckets[idx];
                 while (current) current = current->next;
                 node = current;
