@@ -25,11 +25,11 @@ FILE(GLOB Parser_SyntaxTree_Sources "Parser/SyntaxTree/*.cpp")
 SET (Parser_SyntaxTree ${Parser_SyntaxTree_Headers} ${Parser_SyntaxTree_Sources})
 SOURCE_GROUP(Parser\\SyntaxTree FILES ${Parser_SyntaxTree})
 
-LIST (APPEND FILES
-	${Lexer}
-	${Parser}
-	${Parser_SyntaxTree}
-	QLanguage.cpp
+SET (FILES
+     ${Lexer}
+     ${Parser}
+     ${Parser_SyntaxTree}
+     QLanguage.cpp
 )
 
 SET(CMAKE_CXX_FLAGS_DEBUG_INIT "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1 -D_DEBUG") 
@@ -42,7 +42,12 @@ SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 ADD_EXECUTABLE(QLanguage ${FILES})
 
 IF(NOT WIN32)
-	INSTALL(PROGRAMS QLanguage DESTINATION bin)
+    IF(X86)
+        INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/QLanguage.x86.ParserTable" DESTINATION bin)
+    ELSE(X86)
+        INSTALL(FILES QLanguage.x64.ParserTable DESTINATION bin)
+    ENDIF(X86)
+    INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/QLanguage DESTINATION bin)
 ENDIF(NOT WIN32)
 
 SET_TARGET_PROPERTIES(QLanguage PROPERTIES LINKER_LANGUAGE CXX)
