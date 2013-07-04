@@ -82,6 +82,13 @@ namespace QLanguage
     // function_desc -> template_desc attribute type_desc "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceFunctionTemplateAttributeTypeParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[4]);
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack[3]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -111,6 +118,12 @@ namespace QLanguage
     // function_desc -> attribute type_desc "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceFunctionAttributeTypeParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack[3]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -138,6 +151,12 @@ namespace QLanguage
     // function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceFunctionTemplateTypeParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[3]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -171,6 +190,11 @@ namespace QLanguage
     // function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceFunctionTypeParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -202,6 +226,12 @@ namespace QLanguage
     // function_desc -> template_desc attribute type_desc "{Letter}" "(" ")" block
     bool Parser::reduceFunctionTemplateAttributeType()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[3]);
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -229,6 +259,11 @@ namespace QLanguage
     // function_desc -> attribute type_desc "{Letter}" "(" ")" block
     bool Parser::reduceFunctionAttributeType()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -254,6 +289,11 @@ namespace QLanguage
     // function_desc -> template_desc type_desc "{Letter}" "(" ")" block
     bool Parser::reduceFunctionTemplateType()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -285,6 +325,10 @@ namespace QLanguage
     // function_desc -> type_desc "{Letter}" "(" ")" block
     bool Parser::reduceFunctionType()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -314,6 +358,12 @@ namespace QLanguage
     // function_desc -> template_desc attribute "void" "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceFunctionTemplateAttributeVoidParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[3]);
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -348,6 +398,11 @@ namespace QLanguage
     // function_desc -> attribute "void" "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceFunctionAttributeVoidParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -380,6 +435,11 @@ namespace QLanguage
     // function_desc -> template_desc "void" "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceFunctionTemplateVoidParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -418,6 +478,10 @@ namespace QLanguage
     // function_desc -> "void" "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceFunctionVoidParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -454,6 +518,11 @@ namespace QLanguage
     // function_desc -> template_desc attribute "void" "{Letter}" "(" ")" block
     bool Parser::reduceFunctionTemplateAttributeVoid()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -486,6 +555,10 @@ namespace QLanguage
     // function_desc -> attribute "void" "{Letter}" "(" ")" block
     bool Parser::reduceFunctionAttributeVoid()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -516,6 +589,10 @@ namespace QLanguage
     // function_desc -> template_desc "void" "{Letter}" "(" ")" block
     bool Parser::reduceFunctionTemplateVoid()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -552,6 +629,9 @@ namespace QLanguage
     // function_desc -> "void" "{Letter}" "(" ")" block
     bool Parser::reduceFunctionVoid()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 

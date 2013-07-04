@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_StmtList.h"
 #include "SyntaxTree_Block.h"
 
 namespace QLanguage
@@ -37,6 +38,9 @@ namespace QLanguage
     // block -> "{" stmt_list "}"
     bool Parser::reduceBlockStmts()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_StmtList*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Block* pBlock = allocator<SyntaxTree_Block>::allocate();
         construct(pBlock, syntaxTreeStack.top());
 

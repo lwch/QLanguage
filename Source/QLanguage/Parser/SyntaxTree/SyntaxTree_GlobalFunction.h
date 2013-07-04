@@ -12,13 +12,13 @@
 #ifndef _QLANGUAGE_SYNTAX_TREE_GLOBAL_FUNCTION_H_
 #define _QLANGUAGE_SYNTAX_TREE_GLOBAL_FUNCTION_H_
 
+#include "SyntaxTree_Template.h"
+#include "SyntaxTree_ParamterList.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
 {
-    class SyntaxTree_Template;
     class SyntaxTree_Type;
-    class SyntaxTree_ParamterList;
     class SyntaxTree_Block;
 
     class SyntaxTree_GlobalFunction : public SyntaxTree_Base

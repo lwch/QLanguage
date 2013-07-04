@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Exp.h"
 #include "SyntaxTree_Return.h"
 
 namespace QLanguage
@@ -32,6 +33,9 @@ namespace QLanguage
     // return_desc -> "return" exp ";"
     bool Parser::reduceReturnExp()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Return* pReturn = allocator<SyntaxTree_Return>::allocate();
         construct(pReturn, syntaxTreeStack.top());
 

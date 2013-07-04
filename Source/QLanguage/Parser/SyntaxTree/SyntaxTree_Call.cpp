@@ -44,6 +44,10 @@ namespace QLanguage
     // call_desc -> member_desc "(" value_list ")"
     bool Parser::reduceCall1()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_ValueList*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Call* pCall = allocator<SyntaxTree_Call>::allocate();
         construct(pCall, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ValueList*>(syntaxTreeStack.top()));
 
@@ -61,6 +65,9 @@ namespace QLanguage
     // call_desc -> member_desc "(" ")"
     bool Parser::reduceCall2()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Call* pCall = allocator<SyntaxTree_Call>::allocate();
         construct(pCall, dynamic_cast<const SyntaxTree_MemberList&>(*syntaxTreeStack.top()));
 

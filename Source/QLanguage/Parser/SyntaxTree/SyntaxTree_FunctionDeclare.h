@@ -40,10 +40,10 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_FunctionDeclare*, &x);
 #endif
-            return this->checkEqual(pTemplate, dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pTemplate) &&
+            return parent::checkEqual(pTemplate, dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pTemplate) &&
                    returnType == dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->returnType &&
                    name == dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->name &&
-                   this->checkEqual(pParamterList, dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pParamterList);
+                   parent::checkEqual(pParamterList, dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pParamterList);
         }
 
         inline virtual const bool operator!=(const SyntaxTree_Base& x)const
@@ -51,10 +51,10 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_FunctionDeclare*, &x);
 #endif
-            return this->checkNotEqual(pTemplate, dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pTemplate) ||
+            return parent::checkNotEqual(pTemplate, dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pTemplate) ||
                    returnType != dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->returnType ||
                    name != dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->name ||
-                   this->checkNotEqual(pParamterList, dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pParamterList);
+                   parent::checkNotEqual(pParamterList, dynamic_cast<const SyntaxTree_FunctionDeclare*>(&x)->pParamterList);
         }
     protected:
         SyntaxTree_Template*     pTemplate;

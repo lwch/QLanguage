@@ -10,6 +10,14 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Assign.h"
+#include "SyntaxTree_Call.h"
+#include "SyntaxTree_DeclareList.h"
+#include "SyntaxTree_Do.h"
+#include "SyntaxTree_If.h"
+#include "SyntaxTree_For.h"
+#include "SyntaxTree_While.h"
+#include "SyntaxTree_Return.h"
 #include "SyntaxTree_Stmt.h"
 
 namespace QLanguage
@@ -53,6 +61,35 @@ namespace QLanguage
     // stmt -> return_desc
     bool Parser::reduceStmt(ushort i)
     {
+#ifdef _DEBUG
+        switch (i)
+        {
+        case STMT_ASSIGN_DESC:
+            TRY_CAST(SyntaxTree_Assign*, syntaxTreeStack.top());
+            break;
+        case STMT_CALL_DESC:
+            TRY_CAST(SyntaxTree_Call*, syntaxTreeStack.top());
+            break;
+        case STMT_DECLARE_DESC:
+            TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack.top());
+            break;
+        case STMT_DO_DESC:
+            TRY_CAST(SyntaxTree_Do*, syntaxTreeStack.top());
+            break;
+        case STMT_IF_DESC:
+            TRY_CAST(SyntaxTree_If*, syntaxTreeStack.top());
+            break;
+        case STMT_FOR_DESC:
+            TRY_CAST(SyntaxTree_For*, syntaxTreeStack.top());
+            break;
+        case STMT_WHILE_DESC:
+            TRY_CAST(SyntaxTree_While*, syntaxTreeStack.top());
+            break;
+        case STMT_RETURN_DESC:
+            TRY_CAST(SyntaxTree_Return*, syntaxTreeStack.top());
+            break;
+        }
+#endif
         SyntaxTree_Stmt* pStmt = allocator<SyntaxTree_Stmt>::allocate();
         switch (i)
         {
@@ -103,6 +140,32 @@ namespace QLanguage
     // stmt_no_semicolon -> do_desc
     bool Parser::reduceStmtNoSemicolon(ushort i)
     {
+#ifdef _DEBUG
+        switch (i)
+        {
+        case STMT_NO_SEMICOLON_ASSIGN_DESC:
+            TRY_CAST(SyntaxTree_Assign*, syntaxTreeStack.top());
+            break;
+        case STMT_NO_SEMICOLON_CALL_DESC:
+            TRY_CAST(SyntaxTree_Call*, syntaxTreeStack.top());
+            break;
+        case STMT_NO_SEMICOLON_DECLARE_DESC:
+            TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack.top());
+            break;
+        case STMT_NO_SEMICOLON_DO_DESC:
+            TRY_CAST(SyntaxTree_Do*, syntaxTreeStack.top());
+            break;
+        case STMT_NO_SEMICOLON_IF_DESC:
+            TRY_CAST(SyntaxTree_If*, syntaxTreeStack.top());
+            break;
+        case STMT_NO_SEMICOLON_FOR_DESC:
+            TRY_CAST(SyntaxTree_For*, syntaxTreeStack.top());
+            break;
+        case STMT_NO_SEMICOLON_WHILE_DESC:
+            TRY_CAST(SyntaxTree_While*, syntaxTreeStack.top());
+            break;
+        }
+#endif
         SyntaxTree_Stmt* pStmt = allocator<SyntaxTree_Stmt>::allocate();
         switch (i)
         {

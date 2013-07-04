@@ -35,6 +35,9 @@ namespace QLanguage
     // array_value_desc -> "{" values "}"
     bool Parser::reduceArrayValue()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Values*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 

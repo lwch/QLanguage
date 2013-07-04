@@ -36,6 +36,9 @@ namespace QLanguage
     // member_desc -> member_desc "." "{Letter}"
     bool Parser::reduceMember2Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Name* pName = allocator<SyntaxTree_Name>::allocate();
         construct(pName, shifts.top());
 

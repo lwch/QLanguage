@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Exp.h"
 #include "SyntaxTree_Assign.h"
 
 namespace QLanguage
@@ -62,6 +63,10 @@ namespace QLanguage
     // assign_desc -> member_desc "+" "=" exp
     bool Parser::reduceAssignAddEqual()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList* , syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -79,6 +84,10 @@ namespace QLanguage
     // assign_desc -> member_desc "-" "=" exp
     bool Parser::reduceAssignSubEqual()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList* , syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -96,6 +105,10 @@ namespace QLanguage
     // assign_desc -> member_desc "&" "=" exp
     bool Parser::reduceAssignAndEqual()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList* , syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -113,6 +126,10 @@ namespace QLanguage
     // assign_desc -> member_desc "|" "=" exp
     bool Parser::reduceAssignOrEqual()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList* , syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -130,6 +147,10 @@ namespace QLanguage
     // assign_desc -> member_desc "^" "=" exp
     bool Parser::reduceAssignXorEqual()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList* , syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -147,6 +168,10 @@ namespace QLanguage
     // assign_desc -> member_desc "<" "<" "=" exp
     bool Parser::reduceAssignLeftMoveEqual()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList* , syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -165,6 +190,10 @@ namespace QLanguage
     // assign_desc -> member_desc ">" ">" "=" exp
     bool Parser::reduceAssignRightMoveEqual()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList* , syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -183,6 +212,10 @@ namespace QLanguage
     // assign_desc -> member_desc "=" exp
     bool Parser::reduceAssignEqual()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_MemberList* , syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
 
         SyntaxTree_Assign* pAssign = allocator<SyntaxTree_Assign>::allocate();

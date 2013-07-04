@@ -47,6 +47,30 @@ namespace QLanguage
     // declare_desc -> type_desc "{Letter}" "=" exp
     bool Parser::reduceDeclareWithAssign(ushort i)
     {
+#ifdef _DEBUG
+        switch (i)
+        {
+        case DECLARE_DESC_DECLARE_DESC_LETTER_ARRAY_LST_EQUAL_EXP:
+            TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack[2]);
+            TRY_CAST(SyntaxTree_ArrayLst*, syntaxTreeStack[1]);
+            TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+            break;
+        case DECLARE_DESC_DECLARE_DESC_LETTER_EQUAL_EXP:
+            TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack[1]);
+            TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+            break;
+        case DECLARE_DESC_TYPE_DESC_LETTER_ARRAY_LST_EQUAL_EXP:
+            TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[2]);
+            TRY_CAST(SyntaxTree_ArrayLst*, syntaxTreeStack[1]);
+            TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+            break;
+        case DECLARE_DESC_TYPE_DESC_LETTER_EQUAL_EXP:
+            TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+            TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+            break;
+        }
+
+#endif
         shifts.pop();
 
         switch (i)
@@ -132,6 +156,25 @@ namespace QLanguage
     // declare_desc -> type_desc "{Letter}"
     bool Parser::reduceDeclareWithoutAssign(ushort i)
     {
+#ifdef _DEBUG
+        switch (i)
+        {
+        case DECLARE_DESC_DECLARE_DESC_LETTER_ARRAY_LST:
+            TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack[1]);
+            TRY_CAST(SyntaxTree_ArrayLst*, syntaxTreeStack.top());
+            break;
+        case DECLARE_DESC_DECLARE_DESC_LETTER:
+            TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack.top());
+            break;
+        case DECLARE_DESC_TYPE_DESC_LETTER_ARRAY_LST:
+            TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+            TRY_CAST(SyntaxTree_ArrayLst*, syntaxTreeStack.top());
+            break;
+        case DECLARE_DESC_TYPE_DESC_LETTER:
+            TRY_CAST(SyntaxTree_Type*, syntaxTreeStack.top());
+            break;
+        }
+#endif
         switch (i)
         {
         case DECLARE_DESC_DECLARE_DESC_LETTER_ARRAY_LST:

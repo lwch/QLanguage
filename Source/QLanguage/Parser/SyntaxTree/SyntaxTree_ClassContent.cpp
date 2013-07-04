@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Function.h"
 #include "SyntaxTree_DeclareList.h"
 #include "SyntaxTree_ClassContent.h"
 
@@ -52,6 +53,9 @@ namespace QLanguage
     // class_content -> function_desc
     bool Parser::reduceClassContentFunction()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Function*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ClassContent* pContent = allocator<SyntaxTree_ClassContent>::allocate();
         construct(pContent, *syntaxTreeStack.top());
         
@@ -66,6 +70,10 @@ namespace QLanguage
     // class_content -> attribute declare_desc ";"
     bool Parser::reduceClassContentDeclareWithAttribute()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         
         SyntaxTree_ClassContent* pContent = allocator<SyntaxTree_ClassContent>::allocate();
@@ -85,6 +93,9 @@ namespace QLanguage
     // class_content -> declare_desc ";"
     bool Parser::reduceClassContentDeclareNoAttribute()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         
         SyntaxTree_Attribute* pAttribute = allocator<SyntaxTree_Attribute>::allocate();

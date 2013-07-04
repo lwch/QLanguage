@@ -58,6 +58,7 @@ namespace QLanguage
     // if_desc -> "if" "(" exp ")" stmt else_desc
     bool Parser::reduceIfWithStmtElse()
     {
+        // TODO: else node???
         shifts.pop();
         shifts.pop();
         shifts.pop();

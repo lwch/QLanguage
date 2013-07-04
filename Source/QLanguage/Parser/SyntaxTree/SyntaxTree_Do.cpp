@@ -37,6 +37,10 @@ namespace QLanguage
     // do_desc -> "do" block "while" "(" exp ")"
     bool Parser::reduceDo()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();

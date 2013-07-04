@@ -66,6 +66,11 @@ namespace QLanguage
     // class_desc -> class_desc1 class_desc2 "{" class_content "}"
     bool Parser::reduceClass2()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ClassName*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ClassInherit*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_ClassContentList*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
         construct(pClass, dynamic_cast<const SyntaxTree_ClassName&>(*syntaxTreeStack[2]), dynamic_cast<SyntaxTree_ClassInherit*>(syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack.top()));
 
@@ -85,6 +90,10 @@ namespace QLanguage
     // class_desc -> class_desc1 "{" class_content "}"
     bool Parser::reduceClass4()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ClassName*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_ClassContentList*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
         construct(pClass, dynamic_cast<const SyntaxTree_ClassName&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack.top()));
 
@@ -103,6 +112,10 @@ namespace QLanguage
     // class_desc -> class_desc1 class_desc2 "{" "}"
     bool Parser::reduceClass6()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ClassName*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_ClassInherit*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
         construct(pClass, dynamic_cast<const SyntaxTree_ClassName&>(*syntaxTreeStack[1]), dynamic_cast<SyntaxTree_ClassInherit*>(syntaxTreeStack.top()));
 
@@ -121,6 +134,9 @@ namespace QLanguage
     // class_desc -> class_desc1 "{" "}"
     bool Parser::reduceClass8()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ClassName*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Class* pClass = allocator<SyntaxTree_Class>::allocate();
         construct(pClass, dynamic_cast<const SyntaxTree_ClassName&>(*syntaxTreeStack.top()));
 

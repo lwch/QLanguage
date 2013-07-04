@@ -54,6 +54,10 @@ namespace QLanguage
     // paramter -> type_desc "{Letter}" array_lst
     bool Parser::reduceParamterNamedArray()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_ArrayLst*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Paramter* pParamter = allocator<SyntaxTree_Paramter>::allocate();
         construct(pParamter, dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack[1]), shifts.top(), dynamic_cast<SyntaxTree_ArrayLst*>(syntaxTreeStack.top()));
 
@@ -71,6 +75,9 @@ namespace QLanguage
     // paramter -> type_desc "{Letter}"
     bool Parser::reduceParamterNamed()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Paramter* pParamter = allocator<SyntaxTree_Paramter>::allocate();
         construct(pParamter, dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack.top()), shifts.top());
 
@@ -87,6 +94,9 @@ namespace QLanguage
     // paramter -> type_desc
     bool Parser::reduceParamterNoName()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Paramter* pParamter = allocator<SyntaxTree_Paramter>::allocate();
         construct(pParamter, dynamic_cast<const SyntaxTree_Type&>(*syntaxTreeStack.top()));
 

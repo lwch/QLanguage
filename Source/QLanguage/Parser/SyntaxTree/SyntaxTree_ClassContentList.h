@@ -9,8 +9,8 @@
 	
 	purpose:	
 *********************************************************************/
-#ifndef _QLANGUAGE_SYNTAX_TREE_CLASS_CONTENT_H_
-#define _QLANGUAGE_SYNTAX_TREE_CLASS_CONTENT_H_
+#ifndef _QLANGUAGE_SYNTAX_TREE_CLASS_CONTENT_LIST_H_
+#define _QLANGUAGE_SYNTAX_TREE_CLASS_CONTENT_LIST_H_
 
 #include "SyntaxTree_Base.h"
 

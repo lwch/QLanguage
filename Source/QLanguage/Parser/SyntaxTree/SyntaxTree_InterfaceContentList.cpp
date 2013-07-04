@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_FunctionDeclare.h"
 #include "SyntaxTree_InterfaceContentList.h"
 
 namespace QLanguage
@@ -35,6 +36,10 @@ namespace QLanguage
     // interface_content -> interface_content function_declare
     bool Parser::reduceInterfaceContent2Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_InterfaceContentList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_FunctionDeclare*, syntaxTreeStack.top());
+#endif
         SyntaxTree_InterfaceContentList* pInterfaceContentList = dynamic_cast<SyntaxTree_InterfaceContentList*>(syntaxTreeStack[1]);
 
         pInterfaceContentList->pushChild(syntaxTreeStack.top());
@@ -46,6 +51,9 @@ namespace QLanguage
     // interface_content -> function_declare
     bool Parser::reduceInterfaceContent1Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_FunctionDeclare*, syntaxTreeStack.top());
+#endif
         SyntaxTree_InterfaceContentList* pInterfaceContentList = allocator<SyntaxTree_InterfaceContentList>::allocate();
         construct(pInterfaceContentList);
 

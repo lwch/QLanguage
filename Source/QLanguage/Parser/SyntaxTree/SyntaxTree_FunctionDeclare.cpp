@@ -72,6 +72,11 @@ namespace QLanguage
     // function_declare -> template_desc type_desc "{Letter}" "(" paramter_list ")" ";"
     bool Parser::reduceFunctionDeclareTemplateTypeParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -98,6 +103,10 @@ namespace QLanguage
     // function_declare -> type_desc "{Letter}" "(" paramter_list ")" ";"
     bool Parser::reduceFunctionDeclareTypeParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -122,6 +131,10 @@ namespace QLanguage
     // function_declare -> template_desc type_desc "{Letter}" "(" ")" ";"
     bool Parser::reduceFunctionDeclareTemplateType()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -146,6 +159,9 @@ namespace QLanguage
     // function_declare -> type_desc "{Letter}" "(" ")" ";"
     bool Parser::reduceFunctionDeclareType()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -168,6 +184,10 @@ namespace QLanguage
     // function_declare -> template_desc "void" "{Letter}" "(" paramter_list ")" ";"
     bool Parser::reduceFunctionDeclareTemplateVoidParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -195,6 +215,9 @@ namespace QLanguage
     // function_declare -> "void" "{Letter}" "(" paramter_list ")" ";"
     bool Parser::reduceFunctionDeclareVoidParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -221,6 +244,9 @@ namespace QLanguage
     // function_declare -> template_desc "void" "{Letter}" "(" ")" ";"
     bool Parser::reduceFunctionDeclareTemplateVoid()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();

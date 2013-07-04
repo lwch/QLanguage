@@ -17,6 +17,8 @@
 
 namespace QLanguage
 {
+    class SyntaxTree_DeclareList;
+
     class SyntaxTree_ClassContent : public SyntaxTree_Base
     {
         typedef SyntaxTree_Base parent;

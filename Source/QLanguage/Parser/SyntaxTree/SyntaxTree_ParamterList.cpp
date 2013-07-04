@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Paramter.h"
 #include "SyntaxTree_ParamterList.h"
 
 namespace QLanguage
@@ -38,6 +39,10 @@ namespace QLanguage
     // paramter_list -> paramter_list "," paramter
     bool Parser::reduceParamterList2Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Paramter*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ParamterList* pParamterList = dynamic_cast<SyntaxTree_ParamterList*>(syntaxTreeStack[1]);
 
         pParamterList->pushChild(syntaxTreeStack.top());
@@ -52,6 +57,9 @@ namespace QLanguage
     // paramter_list -> paramter
     bool Parser::reduceParamterList1Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Paramter*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ParamterList* pParamterList = allocator<SyntaxTree_ParamterList>::allocate();
         construct(pParamterList);
 

@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Item.h"
 #include "SyntaxTree_ItemList.h"
 
 namespace QLanguage
@@ -34,6 +35,10 @@ namespace QLanguage
     // item_list -> item_list item
     bool Parser::reduceItemList2Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ItemList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Item*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ItemList* pStmtList = dynamic_cast<SyntaxTree_ItemList*>(syntaxTreeStack[1]);
 
         pStmtList->pushChild(syntaxTreeStack.top());
@@ -47,6 +52,9 @@ namespace QLanguage
     // item_list -> item
     bool Parser::reduceItemList1Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Item*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ItemList* pStmtList = allocator<SyntaxTree_ItemList>::allocate();
         construct(pStmtList);
 

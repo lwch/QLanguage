@@ -10,11 +10,13 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_ClassContent.h"
 #include "SyntaxTree_ClassContentList.h"
 
 namespace QLanguage
 {
-    SyntaxTree_ClassContentList::SyntaxTree_ClassContentList() : parent(sizeof(SyntaxTree_ClassContentList))
+    SyntaxTree_ClassContentList::SyntaxTree_ClassContentList()
+        : parent(sizeof(SyntaxTree_ClassContentList))
     {
     }
 
@@ -35,6 +37,10 @@ namespace QLanguage
     // class_content_list -> class_content_list class_content
     bool Parser::reduceClassContentList2Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ClassContentList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_ClassContent*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ClassContentList* pContentList = dynamic_cast<SyntaxTree_ClassContentList*>(syntaxTreeStack[1]);
         
         pContentList->pushChild(syntaxTreeStack.top());
@@ -47,6 +53,9 @@ namespace QLanguage
     // class_content_list -> class_content
     bool Parser::reduceClassContentList1Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ClassContent*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ClassContentList* pContentList = allocator<SyntaxTree_ClassContentList>::allocate();
         construct(pContentList);
         

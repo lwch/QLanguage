@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Stmt.h"
 #include "SyntaxTree_For.h"
 
 namespace QLanguage
@@ -41,30 +42,36 @@ namespace QLanguage
         block.print(stream, indent + parent::indent);
     }
 
-    // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
+    // for_desc -> "for" "(" stmt_no_semicolon ";" exp ";" stmt_no_semicolon ")" block
     bool Parser::reduceFor()
     {
-	shifts.pop();
-	shifts.pop();
-	shifts.pop();
-	shifts.pop();
-	shifts.pop();
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Stmt*, syntaxTreeStack[3]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Stmt*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
+        shifts.pop();
 	
-	SyntaxTree_For* pFor = allocator<SyntaxTree_For>::allocate();
-	construct(pFor,
-		  *syntaxTreeStack[3],
-	          dynamic_cast<const SyntaxTree_Exp&>(*syntaxTreeStack[2]),
-		  *syntaxTreeStack[1],
-		  dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
+        SyntaxTree_For* pFor = allocator<SyntaxTree_For>::allocate();
+        construct(pFor,
+                 *syntaxTreeStack[3],
+                  dynamic_cast<const SyntaxTree_Exp&>(*syntaxTreeStack[2]),
+                 *syntaxTreeStack[1],
+                  dynamic_cast<const SyntaxTree_Block&>(*syntaxTreeStack.top()));
     
-    context.data.insert(pFor);
+        context.data.insert(pFor);
         
-    syntaxTreeStack.pop();
-    syntaxTreeStack.pop();
-    syntaxTreeStack.pop();
-    syntaxTreeStack.pop();
-    syntaxTreeStack.push(pFor);
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pFor);
     
-	return true;
+        return true;
     }
 }

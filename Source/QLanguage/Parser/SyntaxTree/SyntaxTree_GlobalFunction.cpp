@@ -80,6 +80,12 @@ namespace QLanguage
     // global_function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceGlobalFunctionTemplateTypeParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[3]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -107,6 +113,11 @@ namespace QLanguage
     // global_function_desc -> type_desc "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceGlobalFunctionTypeParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -132,6 +143,11 @@ namespace QLanguage
     // global_function_desc -> template_desc type_desc "{Letter}" "(" ")" block
     bool Parser::reduceGlobalFunctionTemplateType()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -158,6 +174,10 @@ namespace QLanguage
     // global_function_desc -> type_desc "{Letter}" "(" ")" block
     bool Parser::reduceGlobalFunctionType()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         SyntaxTree_GlobalFunction* pGlobalFunction = allocator<SyntaxTree_GlobalFunction>::allocate();
@@ -180,6 +200,11 @@ namespace QLanguage
     // global_function_desc -> template_desc "void" "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceGlobalFunctionTemplateVoidParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -212,6 +237,10 @@ namespace QLanguage
     // global_function_desc -> "void" "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceGlobalFunctionVoidParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ParamterList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -242,6 +271,10 @@ namespace QLanguage
     // global_function_desc -> template_desc "void" "{Letter}" "(" ")" block
     bool Parser::reduceGlobalFunctionTemplateVoid()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Template*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -272,6 +305,9 @@ namespace QLanguage
     // global_function_desc -> "void" "{Letter}" "(" ")" block
     bool Parser::reduceGlobalFunctionVoid()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 

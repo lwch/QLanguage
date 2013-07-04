@@ -13,12 +13,11 @@
 #define _QLANGUAGE_SYNTAX_TREE_CALL_H_
 
 #include "SyntaxTree_MemberList.h"
+#include "SyntaxTree_ValueList.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
 {
-    class SyntaxTree_ValueList;
-
     class SyntaxTree_Call : public SyntaxTree_Base
     {
         typedef SyntaxTree_Base parent;
@@ -37,7 +36,7 @@ namespace QLanguage
             TRY_CAST(const SyntaxTree_Call*, &x);
 #endif
             return memberList == dynamic_cast<const SyntaxTree_Call*>(&x)->memberList &&
-                   *pValueList == *dynamic_cast<const SyntaxTree_Call*>(&x)->pValueList;
+                   parent::checkEqual(pValueList, dynamic_cast<const SyntaxTree_Call*>(&x)->pValueList);
         }
 
         inline virtual const bool operator!=(const SyntaxTree_Base& x)const
@@ -46,7 +45,7 @@ namespace QLanguage
             TRY_CAST(const SyntaxTree_Call*, &x);
 #endif
             return memberList != dynamic_cast<const SyntaxTree_Call*>(&x)->memberList ||
-                   *pValueList != *dynamic_cast<const SyntaxTree_Call*>(&x)->pValueList;
+                   parent::checkNotEqual(pValueList, dynamic_cast<const SyntaxTree_Call*>(&x)->pValueList);
         }
     protected:
         const SyntaxTree_MemberList& memberList;

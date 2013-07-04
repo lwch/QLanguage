@@ -10,6 +10,8 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Call.h"
+#include "SyntaxTree_Value.h"
 #include "SyntaxTree_Exp.h"
 
 namespace QLanguage
@@ -132,6 +134,11 @@ namespace QLanguage
     // exp -> exp "?" exp ":" exp
     bool Parser::reduceExp3Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         
@@ -155,6 +162,10 @@ namespace QLanguage
     // exp -> exp "|" "|" exp1
     bool Parser::reduceExp2Size(ushort i)
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
@@ -203,6 +214,30 @@ namespace QLanguage
     // exp3 -> exp3 "%" exp4
     bool Parser::reduceExp1Size(ushort i)
     {
+#ifdef _DEBUG
+        switch (i)
+        {
+        case EXP_GREATER:
+        case EXP_LESS:
+        case EXP_ASSIGN:
+        case EXP_BIT_AND:
+        case EXP_BIT_OR:
+        case EXP_BIT_XOR:
+        case EXP2_ADD:
+        case EXP2_SUB:
+        case EXP3_MUL:
+        case EXP3_DIV:
+        case EXP3_MOD:
+            TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[1]);
+            TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+            break;
+        case EXP_NOT:
+        case EXP1_POSITIVE:
+        case EXP1_NEGATIVE:
+            TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+            break;
+        }
+#endif
         shifts.pop();
 
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
@@ -279,6 +314,9 @@ namespace QLanguage
     // exp4 -> call_desc
     bool Parser::reduceExpCall()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Call*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
         construct(pExp, SyntaxTree_Exp::Call, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack.top()));
 
@@ -293,6 +331,10 @@ namespace QLanguage
     // exp4 -> value_desc "as" type_desc
     bool Parser::reduceExpValueAsType()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Value*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Type*, syntaxTreeStack.top());
+#endif
         shifts.pop();
 
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
@@ -310,6 +352,9 @@ namespace QLanguage
     // exp4 -> value_desc
     bool Parser::reduceExpValue()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Value*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
         construct(pExp, SyntaxTree_Exp::Value, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack.top()));
 

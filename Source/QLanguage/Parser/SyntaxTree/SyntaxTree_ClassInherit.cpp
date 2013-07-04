@@ -45,6 +45,9 @@ namespace QLanguage
     // class_desc2 -> attribute "implement" "{Letter}"
     bool Parser::reduceClassImplement()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ClassInherit* pClassInherit = allocator<SyntaxTree_ClassInherit>::allocate();
         construct(pClassInherit, dynamic_cast<const SyntaxTree_Attribute&>(*syntaxTreeStack.top()), SyntaxTree_ClassInherit::Implement, shifts.top());
 
@@ -61,6 +64,9 @@ namespace QLanguage
     // class_desc2 -> attribute "extend" "{Letter}"
     bool Parser::reduceClassExtend()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Attribute*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ClassInherit* pClassInherit = allocator<SyntaxTree_ClassInherit>::allocate();
         construct(pClassInherit, dynamic_cast<const SyntaxTree_Attribute&>(*syntaxTreeStack.top()), SyntaxTree_ClassInherit::Extend, shifts.top());
 

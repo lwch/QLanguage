@@ -10,6 +10,10 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_GlobalFunction.h"
+#include "SyntaxTree_DeclareList.h"
+#include "SyntaxTree_Interface.h"
+#include "SyntaxTree_Call.h"
 #include "SyntaxTree_Item.h"
 
 namespace QLanguage
@@ -33,6 +37,23 @@ namespace QLanguage
     // item -> class_desc
     bool Parser::reduceItem(ushort i)
     {
+#ifdef _DEBUG
+        switch (i)
+        {
+        case ITEM_GLOBAL_FUNCTION_DESC:
+            TRY_CAST(SyntaxTree_GlobalFunction*, syntaxTreeStack.top());
+            break;
+        case ITEM_DECLARE_DESC:
+            TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack.top());
+            break;
+        case ITEM_INTERFACE_DESC:
+            TRY_CAST(SyntaxTree_Interface*, syntaxTreeStack.top());
+            break;
+        case ITEM_CLASS_DESC:
+            TRY_CAST(SyntaxTree_Call*, syntaxTreeStack.top());
+            break;
+        }
+#endif
         SyntaxTree_Item* pItem = allocator<SyntaxTree_Item>::allocate();
         construct(pItem, syntaxTreeStack.top());
 

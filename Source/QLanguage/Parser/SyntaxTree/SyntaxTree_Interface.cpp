@@ -44,6 +44,9 @@ namespace QLanguage
     // interface_desc -> "interface" "{Letter}" "{" interface_content "}"
     bool Parser::reduceInterfaceWidthContent()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_InterfaceContentList*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 

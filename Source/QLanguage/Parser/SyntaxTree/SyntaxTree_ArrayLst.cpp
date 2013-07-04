@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Exp.h"
 #include "SyntaxTree_ArrayLst.h"
 
 namespace QLanguage
@@ -37,6 +38,20 @@ namespace QLanguage
     // array_lst -> array_lst "[" "]"
     bool Parser::reduceArrayLst2Size(ushort i)
     {
+        if (i == ARRAY_LST_ARRAY_LST_EXP)
+        {
+#ifdef _DEBUG
+            TRY_CAST(SyntaxTree_ArrayLst*, syntaxTreeStack[1]);
+            TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
+        }
+        else
+        {
+#ifdef _DEBUG
+            TRY_CAST(SyntaxTree_ArrayLst*, syntaxTreeStack.top());
+#endif
+        }
+
         shifts.pop();
         shifts.pop();
 
@@ -61,6 +76,13 @@ namespace QLanguage
     // array_lst -> "[" "]"
     bool Parser::reduceArrayLst1Size(ushort i)
     {
+        if (i == ARRAY_LST_EXP)
+        {
+#ifdef _DEBUG
+            TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
+        }
+
         shifts.pop();
         shifts.pop();
 
