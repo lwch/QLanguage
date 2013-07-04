@@ -36,6 +36,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 /usr/local/bin/QLanguage
+/usr/local/bin/QLanguage.os.ParserTable
 
 %changelog
 
