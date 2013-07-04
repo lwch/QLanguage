@@ -12,6 +12,7 @@
 #ifndef _QLANGUAGE_SYNTAX_TREE_VALUES_H_
 #define _QLANGUAGE_SYNTAX_TREE_VALUES_H_
 
+#include "SyntaxTree_ValuesList.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
@@ -20,7 +21,7 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_Values(bool bTop = false);
+        SyntaxTree_Values(const SyntaxTree_ValuesList& valuesList);
         virtual ~SyntaxTree_Values();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -32,7 +33,7 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Values*, &x);
 #endif
-            return bTop == dynamic_cast<const SyntaxTree_Values*>(&x)->bTop && childs.size() == dynamic_cast<const SyntaxTree_Values*>(&x)->childs.size();
+            return valuesList == dynamic_cast<const SyntaxTree_Values*>(&x)->valuesList;
         }
 
         inline virtual const bool operator!=(const SyntaxTree_Base& x)const
@@ -40,10 +41,10 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Values*, &x);
 #endif
-            return bTop != dynamic_cast<const SyntaxTree_Values*>(&x)->bTop || childs.size() != dynamic_cast<const SyntaxTree_Values*>(&x)->childs.size();
+            return valuesList != dynamic_cast<const SyntaxTree_Values*>(&x)->valuesList;
         }
     protected:
-        bool bTop;
+        const SyntaxTree_ValuesList& valuesList;
     };
 }
 

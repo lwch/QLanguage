@@ -41,6 +41,7 @@ namespace QLanguage
 
     SyntaxTree_Function::SyntaxTree_Function(const SyntaxTree_Attribute& attribute, const SyntaxTree_Type& returnType, const string& name, const SyntaxTree_Block& block)
         : parent(sizeof(SyntaxTree_Function))
+        , pTemplate(NULL)
         , attribute(attribute)
         , returnType(returnType)
         , name(name)
@@ -51,6 +52,7 @@ namespace QLanguage
 
     SyntaxTree_Function::SyntaxTree_Function(const SyntaxTree_Attribute& attribute, const SyntaxTree_Type& returnType, const string& name, SyntaxTree_ParamterList* pParamterList, const SyntaxTree_Block& block)
         : parent(sizeof(SyntaxTree_Function))
+        , pTemplate(NULL)
         , attribute(attribute)
         , returnType(returnType)
         , name(name)

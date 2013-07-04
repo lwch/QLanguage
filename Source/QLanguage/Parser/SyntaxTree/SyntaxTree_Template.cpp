@@ -40,6 +40,9 @@ namespace QLanguage
     // template_desc -> "template" "<" template_list ">"
     bool Parser::reduceTemplateWithParamters()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_TemplateList*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();

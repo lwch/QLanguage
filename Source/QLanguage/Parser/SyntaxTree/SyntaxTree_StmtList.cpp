@@ -10,6 +10,8 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Stmt.h"
+#include "SyntaxTree_Block.h"
 #include "SyntaxTree_StmtList.h"
 
 namespace QLanguage
@@ -33,8 +35,13 @@ namespace QLanguage
 
     // stmt_list -> stmt_list stmt
     // stmt_list -> stmt_list block
-    bool Parser::reduceStmtList2Size()
+    bool Parser::reduceStmtList2Size(ushort i)
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_StmtList*, syntaxTreeStack[1]);
+        if (i == STMT_LIST_STMT_LIST_STMT) TRY_CAST(SyntaxTree_Stmt*, syntaxTreeStack.top());
+        else TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         SyntaxTree_StmtList* pStmtList = dynamic_cast<SyntaxTree_StmtList*>(syntaxTreeStack[1]);
 
         pStmtList->pushChild(syntaxTreeStack.top());
@@ -45,8 +52,12 @@ namespace QLanguage
 
     // stmt_list -> stmt
     // stmt_list -> block
-    bool Parser::reduceStmtList1Size()
+    bool Parser::reduceStmtList1Size(ushort i)
     {
+#ifdef _DEBUG
+        if (i == STMT_LIST_STMT_LIST_STMT) TRY_CAST(SyntaxTree_Stmt*, syntaxTreeStack.top());
+        else TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         SyntaxTree_StmtList* pStmtList = allocator<SyntaxTree_StmtList>::allocate();
         construct(pStmtList);
 

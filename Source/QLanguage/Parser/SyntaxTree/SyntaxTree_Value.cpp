@@ -10,6 +10,8 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_MemberList.h"
+#include "SyntaxTree_ArrayValue.h"
 #include "SyntaxTree_Value.h"
 
 namespace QLanguage
@@ -74,9 +76,13 @@ namespace QLanguage
     }
 
     // value_desc -> member_desc
-    // value_desc -> array_value_desc
-    bool Parser::reduceValueContent()
+    // value_desc -> values
+    bool Parser::reduceValueContent(ushort i)
     {
+#ifdef _DEBUG
+        if (i == VALUE_DESC_MEMBER_DESC) TRY_CAST(SyntaxTree_MemberList*, syntaxTreeStack.top());
+        else TRY_CAST(SyntaxTree_ArrayValue*, syntaxTreeStack.top());
+#endif
         SyntaxTree_Value* pValue = allocator<SyntaxTree_Value>::allocate();
         construct(pValue, syntaxTreeStack.top());
 

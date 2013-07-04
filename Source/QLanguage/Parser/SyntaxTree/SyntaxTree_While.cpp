@@ -33,6 +33,10 @@ namespace QLanguage
     // while_desc -> "while" "(" exp ")" block
     bool Parser::reduceWhile()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();

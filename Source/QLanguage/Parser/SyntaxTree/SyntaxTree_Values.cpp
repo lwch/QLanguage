@@ -10,13 +10,14 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Value.h"
 #include "SyntaxTree_Values.h"
 
 namespace QLanguage
 {
-    SyntaxTree_Values::SyntaxTree_Values(bool bTop /* = false */)
+    SyntaxTree_Values::SyntaxTree_Values(const SyntaxTree_ValuesList& valuesList)
         : parent(sizeof(SyntaxTree_Values))
-        , bTop(bTop)
+        , valuesList(valuesList)
     {
     }
 
@@ -26,65 +27,24 @@ namespace QLanguage
 
     void SyntaxTree_Values::print(ostream& stream, uint indent)const
     {
-        if (bTop)
-        {
-            stream << '{';
-            childs[0]->print(stream, indent);
-            stream << '}';
-        }
-        else if (childs.size())
-        {
-            childs[0]->print(stream, indent);
-            for (size_t i = 1, m = childs.size(); i < m; ++i)
-            {
-                stream << ", ";
-                childs[i]->print(stream, indent);
-            }
-        }
+        stream << '{';
+        valuesList.print(stream, indent);
+        stream << '}';
     }
 
-    // values -> "{" values "}"
+    // values -> "{" values_list "}"
     bool Parser::reduceValuesTop()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ValuesList*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
 
         SyntaxTree_Values* pValues = allocator<SyntaxTree_Values>::allocate();
-        construct(pValues, true);
+        construct(pValues, dynamic_cast<const SyntaxTree_ValuesList&>(*syntaxTreeStack.top()));
 
         context.data.insert(pValues);
-
-        pValues->pushChild(syntaxTreeStack.top());
-
-        syntaxTreeStack.pop();
-        syntaxTreeStack.push(pValues);
-
-        return true;
-    }
-
-    // values -> values "," value_desc
-    bool Parser::reduceValues2Size()
-    {
-        shifts.pop();
-
-        SyntaxTree_Values* pValues = dynamic_cast<SyntaxTree_Values*>(syntaxTreeStack[1]);
-
-        pValues->pushChild(syntaxTreeStack.top());
-
-        syntaxTreeStack.pop();
-
-        return true;
-    }
-
-    // values -> value_desc
-    bool Parser::reduceValues1Size()
-    {
-        SyntaxTree_Values* pValues = allocator<SyntaxTree_Values>::allocate();
-        construct(pValues);
-
-        context.data.insert(pValues);
-
-        pValues->pushChild(syntaxTreeStack.top());
 
         syntaxTreeStack.pop();
         syntaxTreeStack.push(pValues);

@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Exp.h"
 #include "SyntaxTree_ValueList.h"
 
 namespace QLanguage
@@ -38,6 +39,10 @@ namespace QLanguage
     // value_list -> value_list "," exp
     bool Parser::reduceValueList2Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_ValueList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ValueList* pValueList = dynamic_cast<SyntaxTree_ValueList*>(syntaxTreeStack[1]);
 
         pValueList->pushChild(syntaxTreeStack.top());
@@ -52,6 +57,9 @@ namespace QLanguage
     // value_list -> exp
     bool Parser::reduceValueList1Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         SyntaxTree_ValueList* pValueList = allocator<SyntaxTree_ValueList>::allocate();
         construct(pValueList);
 

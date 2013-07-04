@@ -13,6 +13,7 @@
 #define _QLANGUAGE_SYNTAX_TREE_IF_H_
 
 #include "SyntaxTree_Exp.h"
+#include "SyntaxTree_Else.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
@@ -21,7 +22,7 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_If(const SyntaxTree_Exp& exp, const SyntaxTree_Base& op1, SyntaxTree_Base* pOP2);
+        SyntaxTree_If(const SyntaxTree_Exp& exp, const SyntaxTree_Base& op1, SyntaxTree_Else* pElse);
         SyntaxTree_If(const SyntaxTree_Exp& exp, const SyntaxTree_Base& op1);
         virtual ~SyntaxTree_If();
 
@@ -36,8 +37,7 @@ namespace QLanguage
 #endif
             return exp == dynamic_cast<const SyntaxTree_If*>(&x)->exp &&
                    op1 == dynamic_cast<const SyntaxTree_If*>(&x)->op1 &&
-                   ((pOP2 && dynamic_cast<const SyntaxTree_If*>(&x)->pOP2 && *pOP2 == *dynamic_cast<const SyntaxTree_If*>(&x)->pOP2) ||
-                   (pOP2 == NULL && dynamic_cast<const SyntaxTree_If*>(&x)->pOP2 == NULL));
+                   parent::checkEqual(pElse, dynamic_cast<const SyntaxTree_If*>(&x)->pElse);
         }
 
         inline virtual const bool operator!=(const SyntaxTree_Base& x)const
@@ -47,13 +47,12 @@ namespace QLanguage
 #endif
             return exp != dynamic_cast<const SyntaxTree_If*>(&x)->exp ||
                    op1 != dynamic_cast<const SyntaxTree_If*>(&x)->op1 ||
-                   ((pOP2 && dynamic_cast<const SyntaxTree_If*>(&x)->pOP2 && *pOP2 != *dynamic_cast<const SyntaxTree_If*>(&x)->pOP2) ||
-                   (pOP2 == NULL && dynamic_cast<const SyntaxTree_If*>(&x)->pOP2));
+                   parent::checkNotEqual(pElse, dynamic_cast<const SyntaxTree_If*>(&x)->pElse);
         }
     protected:
         const SyntaxTree_Exp&  exp;
         const SyntaxTree_Base& op1;
-        SyntaxTree_Base*       pOP2;
+        SyntaxTree_Else*       pElse;
     };
 }
 

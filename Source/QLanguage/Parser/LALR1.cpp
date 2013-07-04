@@ -148,33 +148,36 @@ namespace QLanguage
         for (vector<LALR1Production>::const_iterator i = kernel.begin(), m = kernel.end(); i != m; ++i)
         {
             pItem->data.push_back(*i);
-            if (i->idx < i->right.size() && i->right[i->idx].isNoTerminalSymbol()) q.push(*i); // 待约项目
+            q.push(*i);
         }
 
         while (!q.empty())
         {
             const LALR1Production& p = q.front();
-            vector<Production::Item> v;
-            firstX(p, v, p.idx + 1);
-            for (vector<LALR1Production>::iterator i = inputProductions[p.right[p.idx]].begin(), m = inputProductions[p.right[p.idx]].end(); i != m; ++i)
+            if (p.idx < p.right.size() && p.right[p.idx].isNoTerminalSymbol()) // 待约项目
             {
-                if (i->idx > 0) continue;
-                LALR1Production& item = *i;
-                if (v.empty()) item.wildCards.add_unique(p.wildCards);
-                else
+                vector<Production::Item> v;
+                firstX(p, v, p.idx + 1);
+                for (vector<LALR1Production>::iterator i = inputProductions[p.right[p.idx]].begin(), m = inputProductions[p.right[p.idx]].end(); i != m; ++i)
                 {
-                    for (vector<Production::Item>::const_iterator j = v.begin(), n = v.end(); j != n; ++j)
+                    if (i->idx > 0) continue;
+                    LALR1Production& item = *i;
+                    if (v.empty()) item.wildCards.add_unique(p.wildCards);
+                    else
                     {
-                        item.wildCards.push_back_unique(LALR1Production::Item(j->rule));
+                        for (vector<Production::Item>::const_iterator j = v.begin(), n = v.end(); j != n; ++j)
+                        {
+                            item.wildCards.push_back_unique(LALR1Production::Item(j->rule));
+                        }
                     }
+                    vector<LALR1Production>::iterator j = find(pItem->data.begin(), pItem->data.end(), item);
+                    if (j == pItem->data.end())
+                    {
+                        q.push(item);
+                        pItem->data.push_back(item);
+                    }
+                    else j->wildCards.add_unique(item.wildCards);
                 }
-                vector<LALR1Production>::iterator j = find(pItem->data.begin(), pItem->data.end(), item);
-                if (j == pItem->data.end())
-                {
-                    q.push(item);
-                    pItem->data.push_back(item);
-                }
-                else j->wildCards.add_unique(item.wildCards);
             }
             q.pop();
         }

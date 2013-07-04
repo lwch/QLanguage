@@ -74,19 +74,18 @@ namespace QLanguage
         case VALUE_DESC_STRING:                // value_desc -> "{String}"
             return reduceValueNormal(i);
         case VALUE_DESC_MEMBER_DESC:           // value_desc -> member_desc
-            return reduceValueContent();
+        case VALUE_DESC_VALUES:                // value_desc -> values
+            return reduceValueContent(i);
+        case VALUES_VALUES_LIST:                    // values -> "{" values_list "}"
+            return reduceValuesTop();
+        case VALUES_LIST_VALUES_LIST_VALUE_DESC:    // values_list -> values_list "," value_desc
+            return reduceValuesList2Size();
+        case VALUES_LIST_VALUE_DESC:                // values_list -> value_desc
+            return reduceValuesList1Size();
         case VALUE_LIST_VALUE_LIST_EXP:        // value_list -> value_list "," exp
             return reduceValueList2Size();
         case VALUE_LIST_EXP:                   // value_list -> exp
             return reduceValueList1Size();
-        case VALUES_VALUES:                    // values -> "{" values "}"
-            return reduceValuesTop();
-        case VALUES_VALUES_VALUE_DESC:         // values -> values "," value_desc
-            return reduceValues2Size();
-        case VALUES_VALUE_DESC:                // values -> value_desc
-            return reduceValues1Size();
-        case ARRAY_VALUE_DESC_VALUES:          // array_value_desc -> "{" values "}"
-            return reduceArrayValue();
         case ATTRIBUTE_PUBLIC:                 // attribute -> "public"
         case ATTRIBUTE_PRIVATE:                // attribute -> "private"
         case ATTRIBUTE_PROTECTED:              // attribute -> "protected"
@@ -118,10 +117,10 @@ namespace QLanguage
             return reduceItem(i);
         case STMT_LIST_STMT_LIST_STMT:         // stmt_list -> stmt_list stmt
         case STMT_LIST_STMT_LIST_BLOCK:        // stmt_list -> stmt
-            return reduceStmtList2Size();
+            return reduceStmtList2Size(i);
         case STMT_LIST_STMT:                   // stmt_list -> stmt_list block
         case STMT_LIST_BLOCK:                  // stmt_list -> block
-            return reduceStmtList1Size();
+            return reduceStmtList1Size(i);
         case BLOCK_STMT_LIST:                  // block -> "{" stmt_list "}"
             return reduceBlockStmts();
         case BLOCK_EMPTY:                      // block -> "{" "}"
@@ -293,7 +292,7 @@ namespace QLanguage
             return reduceIfWithBlock();
         case ELSE_DESC_ELSE_STMT:                    // else_desc -> "else" stmt
         case ELSE_DESC_ELSE_BLOCK:                   // else_desc -> "else" block
-            return pop1Shifts();
+            return reduceElse(i);
 	    case FOR_DESC_FOR_STMT_EXP_STMT_BLOCK:       // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
 	        return reduceFor();
         case WHILE_DESC_WHILE_EXP_BLOCK:             // while_desc -> "while" "(" exp ")" block

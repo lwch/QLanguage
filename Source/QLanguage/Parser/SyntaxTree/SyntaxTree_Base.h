@@ -32,6 +32,7 @@ class SyntaxTree_Do;
         friend class SyntaxTree_ClassContentList;
         friend class SyntaxTree_DeclareList;
         friend class SyntaxTree_Do;
+        friend class SyntaxTree_Else;
         friend class SyntaxTree_For;
         friend class SyntaxTree_Function;
         friend class SyntaxTree_GlobalFunction;
@@ -43,6 +44,7 @@ class SyntaxTree_Do;
         friend class SyntaxTree_StmtList;
         friend class SyntaxTree_TemplateList;
         friend class SyntaxTree_ValueList;
+        friend class SyntaxTree_ValuesList;
     public:
         SyntaxTree_Base(uint size);
         virtual ~SyntaxTree_Base();

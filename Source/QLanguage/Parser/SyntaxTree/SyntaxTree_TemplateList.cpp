@@ -10,6 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_TemplateItem.h"
 #include "SyntaxTree_TemplateList.h"
 
 namespace QLanguage
@@ -39,6 +40,10 @@ namespace QLanguage
     // template_list -> template_list "," template_item
     bool Parser::reduceTemplateList2Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_TemplateList*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_TemplateItem*, syntaxTreeStack.top());
+#endif
         shifts.pop();
 
         SyntaxTree_TemplateList* pTemplateList = dynamic_cast<SyntaxTree_TemplateList*>(syntaxTreeStack[1]);
@@ -53,6 +58,9 @@ namespace QLanguage
     // template_list -> template_item
     bool Parser::reduceTemplateList1Size()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_TemplateItem*, syntaxTreeStack.top());
+#endif
         SyntaxTree_TemplateList* pTemplateList = allocator<SyntaxTree_TemplateList>::allocate();
         construct(pTemplateList);
         

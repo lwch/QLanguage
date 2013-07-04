@@ -10,15 +10,17 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Stmt.h"
+#include "SyntaxTree_Block.h"
 #include "SyntaxTree_If.h"
 
 namespace QLanguage
 {
-    SyntaxTree_If::SyntaxTree_If(const SyntaxTree_Exp& exp, const SyntaxTree_Base& op1, SyntaxTree_Base* pOP2)
+    SyntaxTree_If::SyntaxTree_If(const SyntaxTree_Exp& exp, const SyntaxTree_Base& op1, SyntaxTree_Else* pElse)
         : parent(sizeof(SyntaxTree_If))
         , exp(exp)
         , op1(op1)
-        , pOP2(pOP2)
+        , pElse(pElse)
     {
     }
 
@@ -26,7 +28,7 @@ namespace QLanguage
         : parent(sizeof(SyntaxTree_If))
         , exp(exp)
         , op1(op1)
-        , pOP2(NULL)
+        , pElse(NULL)
     {
     }
 
@@ -45,26 +47,28 @@ namespace QLanguage
             stream << endl;
             this->printIndent(stream, indent);
         }
-        else op1.print(stream, indent + parent::indent);
-        if (pOP2)
+        else
         {
-            if (op1.type() == "SyntaxTree_Stmt") stream << "else ";
-            else stream << " else ";
-            if (pOP2->type() == "SyntaxTree_Stmt") pOP2->print(stream, 0);
-            else pOP2->print(stream, indent + parent::indent);
+            op1.print(stream, indent + parent::indent);
+            stream << ' ';
         }
+        if (pElse) pElse->print(stream, indent);
     }
 
     // if_desc -> "if" "(" exp ")" stmt else_desc
     bool Parser::reduceIfWithStmtElse()
     {
-        // TODO: else node???
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Stmt*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Else*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
 
         SyntaxTree_If* pIf = allocator<SyntaxTree_If>::allocate();
-        construct(pIf, dynamic_cast<const SyntaxTree_Exp&>(*syntaxTreeStack[2]), *syntaxTreeStack[1], syntaxTreeStack.top());
+        construct(pIf, dynamic_cast<const SyntaxTree_Exp&>(*syntaxTreeStack[2]), *syntaxTreeStack[1], dynamic_cast<SyntaxTree_Else*>(syntaxTreeStack.top()));
 
         context.data.insert(pIf);
 
@@ -79,6 +83,10 @@ namespace QLanguage
     // if_desc -> "if" "(" exp ")" stmt
     bool Parser::reduceIfWithStmt()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Stmt*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
@@ -98,12 +106,17 @@ namespace QLanguage
     // if_desc -> "if" "(" exp ")" block else_desc
     bool Parser::reduceIfWithBlockElse()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[2]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Else*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();
 
         SyntaxTree_If* pIf = allocator<SyntaxTree_If>::allocate();
-        construct(pIf, dynamic_cast<const SyntaxTree_Exp&>(*syntaxTreeStack[2]), *syntaxTreeStack[1], syntaxTreeStack.top());
+        construct(pIf, dynamic_cast<const SyntaxTree_Exp&>(*syntaxTreeStack[2]), *syntaxTreeStack[1], dynamic_cast<SyntaxTree_Else*>(syntaxTreeStack.top()));
 
         context.data.insert(pIf);
 
@@ -118,6 +131,10 @@ namespace QLanguage
     // if_desc -> "if" "(" exp ")" block
     bool Parser::reduceIfWithBlock()
     {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack[1]);
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
         shifts.pop();

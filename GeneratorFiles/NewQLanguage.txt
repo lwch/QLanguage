@@ -38,16 +38,15 @@ value_desc -> "true"
            |  "{Digit}"
            |  member_desc
            |  "{String}"
-           |  array_value_desc
+           |  values
            ;
 
-values -> "{" values "}"
-       |  values "," value_desc
-       |  value_desc
+values -> "{" values_list "}"
        ;
 
-array_value_desc -> "{" values "}"
-                 ;
+values_list -> values_list "," value_desc
+            |  value_desc
+            ;
 
 value_list -> value_list "," exp
            |  exp

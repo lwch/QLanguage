@@ -158,7 +158,7 @@
     <AlternativeType Name="QLanguage::SyntaxTree_StmtList" />
     <AlternativeType Name="QLanguage::SyntaxTree_TemplateList" />
     <AlternativeType Name="QLanguage::SyntaxTree_ValueList" />
-    <AlternativeType Name="QLanguage::SyntaxTree_Values" />
+    <AlternativeType Name="QLanguage::SyntaxTree_ValuesList" />
     <DisplayString>{{ size={childs.finish.node - childs.start.node} }}</DisplayString>
 	<Expand>
       <Item Name="[size]">childs.finish.node - childs.start.node</Item>
@@ -268,6 +268,13 @@
     </Expand>
   </Type>
   
+  <Type Name="QLanguage::SyntaxTree_Else">
+    <DisplayString>{{ content={content} }}</DisplayString>
+    <Expand>
+      <Item Name="content">content</Item>
+    </Expand>
+  </Type>
+  
   <Type Name="QLanguage::SyntaxTree_Exp">
     <DisplayString>{{ type={_type} }}</DisplayString>
     <Expand>
@@ -326,7 +333,7 @@
     <Expand>
       <Item Name="exp">exp</Item>
       <Item Name="op1">op1</Item>
-      <Item Condition="pOP2 != 0" Name="op2">*pOP2</Item>
+      <Item Condition="pElse != 0" Name="else">*pElse</Item>
     </Expand>
   </Type>
   
@@ -406,6 +413,13 @@
       <Item Name="value">value</Item>
       <Item Name="type">_type</Item>
       <Item Condition="pContent != 0" Name="content">*pContent</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Values">
+    <DisplayString>{{ valuesList={valuesList} }}</DisplayString>
+    <Expand>
+      <Item Name="valuesList">valuesList</Item>
     </Expand>
   </Type>
   
