@@ -29,6 +29,7 @@ class SyntaxTree_Do;
 
         friend class SyntaxTree_ArrayLst;
         friend class SyntaxTree_Block;
+        friend class SyntaxTree_CallList;
         friend class SyntaxTree_ClassContentList;
         friend class SyntaxTree_DeclareList;
         friend class SyntaxTree_Do;
@@ -41,6 +42,7 @@ class SyntaxTree_Do;
         friend class SyntaxTree_ItemList;
         friend class SyntaxTree_MemberList;
         friend class SyntaxTree_ParamterList;
+        friend class SyntaxTree_Return;
         friend class SyntaxTree_StmtList;
         friend class SyntaxTree_TemplateList;
         friend class SyntaxTree_ValueList;

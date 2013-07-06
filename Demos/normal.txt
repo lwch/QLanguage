@@ -83,6 +83,13 @@ int template_function(T m)
 {
 }
 
+auto closure(auto x)
+{
+    return {
+        return x;
+    }
+}
+
 int main()
 {
     Rect r = {1, 2, 3, 4};
@@ -94,5 +101,6 @@ int main()
     width -= 100;
     width = height = 100;
     width = -100;
+    int width = closure(width)();
     return 0;
 }

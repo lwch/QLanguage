@@ -150,6 +150,7 @@
   </Type>
 
   <Type Name="QLanguage::SyntaxTree_ArrayLst">
+    <AlternativeType Name="QLanguage::SyntaxTree_CallList" />
     <AlternativeType Name="QLanguage::SyntaxTree_ClassContentList" />
     <AlternativeType Name="QLanguage::SyntaxTree_InterfaceContentList" />
     <AlternativeType Name="QLanguage::SyntaxTree_ItemList" />
@@ -210,6 +211,7 @@
   <Type Name="QLanguage::SyntaxTree_Class">
     <DisplayString>{{ name={name} }}</DisplayString>
     <Expand>
+      <Item Condition="pTemplate != 0" Name="template">*pTemplate</Item>
       <Item Name="name">name</Item>
       <Item Condition="pInherit != 0" Name="inherit">*pInherit</Item>
       <Item Condition="pContentList != 0" Name="contents">*pContentList</Item>
@@ -369,10 +371,10 @@
   </Type>
   
   <Type Name="QLanguage::SyntaxTree_Return">
-    <DisplayString Condition="pExp == 0"></DisplayString>
-    <DisplayString Condition="pExp != 0">{{ exp={*pExp} }}</DisplayString>
+    <DisplayString Condition="pContent == 0"></DisplayString>
+    <DisplayString Condition="pContent != 0">{{ content={*pContent} }}</DisplayString>
     <Expand>
-      <Item Condition="pExp != 0" Name="exp">*pExp</Item>
+      <Item Condition="pContent != 0" Name="content">*pContent</Item>
     </Expand>
   </Type>
   

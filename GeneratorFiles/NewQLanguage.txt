@@ -135,7 +135,7 @@ function_desc -> [template_desc] [attribute] type_desc "{Letter}" "(" [paramter_
               ;
 
 stmt -> assign_desc ";"
-     |  call_desc ";"
+     |  call_list ";"
      |  declare_desc ";"
      |  if_desc
      |  for_desc
@@ -145,7 +145,7 @@ stmt -> assign_desc ";"
      ;
 
 stmt_no_semicolon -> assign_desc
-                  |  call_desc
+                  |  call_list
                   |  declare_desc
                   |  if_desc
                   |  for_desc
@@ -166,6 +166,10 @@ assign_desc -> member_desc "+" "=" exp
             |  member_desc ">" ">" "=" exp
             |  member_desc "=" exp
             ;
+
+call_list -> call_list "(" [value_list] ")"
+          |  call_desc
+          ;
 
 call_desc -> member_desc "(" [value_list] ")"
           ;
@@ -224,6 +228,6 @@ exp3 -> exp3 "*" exp4
      ;
 
 exp4 -> "(" exp ")"
-     |  call_desc
+     |  call_list
      |  value_desc ["as" type_desc]
      ;

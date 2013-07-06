@@ -10,12 +10,15 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+#include "SyntaxTree_Block.h"
 #include "SyntaxTree_Exp.h"
 #include "SyntaxTree_Return.h"
 
 namespace QLanguage
 {
-    SyntaxTree_Return::SyntaxTree_Return(SyntaxTree_Base* pExp) : parent(sizeof(SyntaxTree_Return)), pExp(pExp)
+    SyntaxTree_Return::SyntaxTree_Return(SyntaxTree_Base* pContent)
+        : parent(sizeof(SyntaxTree_Return))
+        , pContent(pContent)
     {
     }
 
@@ -26,16 +29,18 @@ namespace QLanguage
     void SyntaxTree_Return::print(ostream& stream, uint indent)const
     {
         stream << "return ";
-        pExp->print(stream, indent);
-        stream << ';';
+        pContent->print(stream, indent + parent::indent);
+        if (pContent->type() == "SyntaxTree_Exp") stream << ';';
     }
 
-    // return_desc -> "return" exp ";"
-    bool Parser::reduceReturnExp()
+    // return_desc -> "return" block
+    bool Parser::reduceReturnBlock()
     {
 #ifdef _DEBUG
-        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+        TRY_CAST(SyntaxTree_Block*, syntaxTreeStack.top());
 #endif
+        shifts.pop();
+
         SyntaxTree_Return* pReturn = allocator<SyntaxTree_Return>::allocate();
         construct(pReturn, syntaxTreeStack.top());
 
@@ -44,8 +49,26 @@ namespace QLanguage
         syntaxTreeStack.pop();
         syntaxTreeStack.push(pReturn);
 
+        return true;
+    }
+
+    // return_desc -> "return" exp ";"
+    bool Parser::reduceReturnExp()
+    {
+#ifdef _DEBUG
+        TRY_CAST(SyntaxTree_Exp*, syntaxTreeStack.top());
+#endif
         shifts.pop();
         shifts.pop();
+
+        SyntaxTree_Return* pReturn = allocator<SyntaxTree_Return>::allocate();
+        construct(pReturn, syntaxTreeStack.top());
+
+        context.data.insert(pReturn);
+
+        syntaxTreeStack.pop();
+        syntaxTreeStack.push(pReturn);
+
         return true;
     }
 }

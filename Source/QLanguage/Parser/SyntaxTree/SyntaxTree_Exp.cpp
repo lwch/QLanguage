@@ -10,7 +10,7 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
-#include "SyntaxTree_Call.h"
+#include "SyntaxTree_CallList.h"
 #include "SyntaxTree_Value.h"
 #include "SyntaxTree_Exp.h"
 
@@ -311,11 +311,11 @@ namespace QLanguage
         return true;
     }
 
-    // exp4 -> call_desc
+    // exp4 -> call_list
     bool Parser::reduceExpCall()
     {
 #ifdef _DEBUG
-        TRY_CAST(SyntaxTree_Call*, syntaxTreeStack.top());
+        TRY_CAST(SyntaxTree_CallList*, syntaxTreeStack.top());
 #endif
         SyntaxTree_Exp* pExp = allocator<SyntaxTree_Exp>::allocate();
         construct(pExp, SyntaxTree_Exp::Call, dynamic_cast<const SyntaxTree_Base&>(*syntaxTreeStack.top()));

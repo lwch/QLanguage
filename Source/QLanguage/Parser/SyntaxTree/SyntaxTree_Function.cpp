@@ -23,7 +23,7 @@ namespace QLanguage
         , attribute(attribute)
         , returnType(returnType)
         , name(name)
-        , pParamterList(NULL)
+        , pParamterList(pParamterList)
         , block(block)
     {
     }
@@ -34,7 +34,7 @@ namespace QLanguage
         , attribute(attribute)
         , returnType(returnType)
         , name(name)
-        , pParamterList(pParamterList)
+        , pParamterList(NULL)
         , block(block)
     {
     }

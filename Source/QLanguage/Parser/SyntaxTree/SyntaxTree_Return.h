@@ -20,7 +20,7 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_Return(SyntaxTree_Base* pExp);
+        SyntaxTree_Return(SyntaxTree_Base* pContent);
         virtual ~SyntaxTree_Return();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -32,7 +32,7 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Return*, &x);
 #endif
-            return *pExp == *dynamic_cast<const SyntaxTree_Return*>(&x)->pExp;
+            return parent::checkEqual(pContent, dynamic_cast<const SyntaxTree_Return*>(&x)->pContent);
         }
 
         inline virtual const bool operator !=(const SyntaxTree_Base& x)const
@@ -40,10 +40,10 @@ namespace QLanguage
 #ifdef _DEBUG
             TRY_CAST(const SyntaxTree_Return*, &x);
 #endif
-            return *pExp != *dynamic_cast<const SyntaxTree_Return*>(&x)->pExp;
+            return parent::checkNotEqual(pContent, dynamic_cast<const SyntaxTree_Return*>(&x)->pContent);
         }
     protected:
-        SyntaxTree_Base* pExp;
+        SyntaxTree_Base* pContent;
     };
 }
 

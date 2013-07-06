@@ -177,13 +177,21 @@ namespace QLanguage
             return reduceInterfaceContent2Size();
         case INTERFACE_CONTENT_FUNCTION_DECLARE:                       // interface_content -> function_declare
             return reduceInterfaceContent1Size();
-        case CLASS_DESC_CLASS_DESC1_CLASS_DESC2_CLASS_CONTENT_LIST:    // class_desc -> class_desc1 class_desc2 "{" class_content "}"
+        case CLASS_DESC_TEMPLATE_DESC_CLASS_DESC1_CLASS_DESC2_CLASS_CONTENT_LIST: // class_desc -> template_desc class_desc1 class_desc2 "{" class_content_list "}"
+            return reduceClass1();
+        case CLASS_DESC_CLASS_DESC1_CLASS_DESC2_CLASS_CONTENT_LIST:               // class_desc -> class_desc1 class_desc2 "{" class_content_list "}"
             return reduceClass2();
-        case CLASS_DESC_CLASS_DESC1_CLASS_CONTENT_LIST:                // class_desc -> class_desc1 "{" class_content "}"
+        case CLASS_DESC_TEMPLATE_DESC_CLASS_DESC1_CLASS_CONTENT_LIST:             // class_desc -> template_desc class_desc1 "{" class_content_list "}"
+            return reduceClass3();
+        case CLASS_DESC_CLASS_DESC1_CLASS_CONTENT_LIST:                           // class_desc -> class_desc1 "{" class_content_list "}"
             return reduceClass4();
-        case CLASS_DESC_CLASS_DESC1_CLASS_DESC2_NO_CLASS_CONTENT_LIST: // class_desc -> class_desc1 class_desc2 "{" "}"
+        case CLASS_DESC_TEMPLATE_DESC_CLASS_DESC1_CLASS_DESC2:                    // class_desc -> template_desc class_desc1 class_desc2 "{" "}"
+            return reduceClass5();
+        case CLASS_DESC_CLASS_DESC1_CLASS_DESC2:                                  // class_desc -> class_desc1 class_desc2 "{" "}"
             return reduceClass6();
-        case CLASS_DESC_CLASS_DESC1_NO_CLASS_CONTENT_LIST:             // class_desc -> class_desc1 "{" "}"
+        case CLASS_DESC_TEMPLATE_DESC_CLASS_DESC1:                                // class_desc -> template_desc class_desc1
+            return reduceClass7();
+        case CLASS_DESC_CLASS_DESC1:                                              // class_desc -> class_desc1 "{" "}"
             return reduceClass8();
         case CLASS_DESC1_CLASS_LETTER:               // class_desc1 -> "class" "{Letter}"
             return reduceClassWithName();
@@ -236,7 +244,7 @@ namespace QLanguage
         case FUNCTION_DESC_VOID_BLOCK:                                         // function_desc -> "void" "{Letter}" "(" ")" block
             return reduceFunctionVoid();
         case STMT_ASSIGN_DESC:                       // stmt -> assign_desc ";"
-        case STMT_CALL_DESC:                         // stmt -> call_desc ";"
+        case STMT_CALL_LIST:                         // stmt -> call_list ";"
         case STMT_DECLARE_DESC:                      // stmt -> declare_desc ";"
         case STMT_DO_DESC:                           // stmt -> do_desc ";"
         case STMT_IF_DESC:                           // stmt -> if_desc
@@ -245,7 +253,7 @@ namespace QLanguage
         case STMT_RETURN_DESC:                       // stmt -> return_desc
             return reduceStmt(i);
         case STMT_NO_SEMICOLON_ASSIGN_DESC:          // stmt_no_semicolon -> assign_desc
-        case STMT_NO_SEMICOLON_CALL_DESC:            // stmt_no_semicolon -> call_desc
+        case STMT_NO_SEMICOLON_CALL_LIST:            // stmt_no_semicolon -> call_list
         case STMT_NO_SEMICOLON_DECLARE_DESC:         // stmt_no_semicolon -> declare_desc
         case STMT_NO_SEMICOLON_IF_DESC:              // stmt_no_semicolon -> if_desc
         case STMT_NO_SEMICOLON_FOR_DESC:             // stmt_no_semicolon -> for_desc
@@ -278,9 +286,15 @@ namespace QLanguage
             return reduceAssignRightMoveEqual();
         case ASSIGN_DESC_MEMBER_DESC_EQUAL_EXP:            // assign_desc -> member_desc "=" exp
             return reduceAssignEqual();
-        case CALL_DESC_VALUE_LIST:                   // call_desc -> member_desc "(" value_list ")"
+        case CALL_LIST_CALL_LIST_VALUE_LIST:               // call_list -> call_list "(" value_list ")"
+            return reduceCallListValueList();
+        case CALL_LIST_CALL_LIST:                          // call_list -> call_list "(" ")"
+            return reduceCallList();
+        case CALL_LIST_CALL_DESC:                          // call_list -> call_desc
+            return reduceCallListCall();
+        case CALL_DESC_MEMBER_DESC_VALUE_LIST:             // call_desc -> member_desc "(" value_list ")"
             return reduceCall1();
-        case CALL_DESC_NOPARAM:                      // call_desc -> member_desc "(" ")"
+        case CALL_DESC_MEMBER_DESC:                        // call_desc -> member_desc "(" ")"
             return reduceCall2();
         case IF_DESC_IF_EXP_STMT_ELSE_DESC:          // if_desc -> "if" "(" exp ")" stmt else_desc
             return reduceIfWithStmtElse();
@@ -299,6 +313,8 @@ namespace QLanguage
             return reduceWhile();
         case DO_DESC_DO_BLOCK_WHILE_EXP:             // do_desc -> "do" block "while" "(" exp ")"
             return reduceDo();
+        case RETURN_DESC_BLOCK:                      // return_desc -> "return" block
+            return reduceReturnBlock();
         case RETURN_DESC_EXP:                        // return_desc -> "return" exp ";"
             return reduceReturnExp();
         case EXP_EXP_STMT_STMT:                      // exp -> exp "?" stmt ":" stmt
@@ -326,7 +342,7 @@ namespace QLanguage
             return reduceExp1Size(i);
         case EXP4_BRACKETS:                          // exp4 -> "(" exp ")"
             return pop2Shifts();
-        case EXP4_CALL_DESC:                         // exp4 -> call_desc
+        case EXP4_CALL_LIST:                         // exp4 -> call_list
             return reduceExpCall();
         case EXP4_VALUE_DESC_AS_TYPE_DESC:           // exp4 -> value_desc "as" type_desc
             return reduceExpValueAsType();

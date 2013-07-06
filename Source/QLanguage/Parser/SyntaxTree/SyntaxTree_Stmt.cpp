@@ -11,7 +11,7 @@
 *********************************************************************/
 #include "../Parser.h"
 #include "SyntaxTree_Assign.h"
-#include "SyntaxTree_Call.h"
+#include "SyntaxTree_CallList.h"
 #include "SyntaxTree_DeclareList.h"
 #include "SyntaxTree_Do.h"
 #include "SyntaxTree_If.h"
@@ -52,7 +52,7 @@ namespace QLanguage
     }
 
     // stmt -> assign_desc ";"
-    // stmt -> call_desc ";"
+    // stmt -> call_list ";"
     // stmt -> declare_desc ";"
     // stmt -> do_desc ";"
     // stmt -> if_desc
@@ -67,8 +67,8 @@ namespace QLanguage
         case STMT_ASSIGN_DESC:
             TRY_CAST(SyntaxTree_Assign*, syntaxTreeStack.top());
             break;
-        case STMT_CALL_DESC:
-            TRY_CAST(SyntaxTree_Call*, syntaxTreeStack.top());
+        case STMT_CALL_LIST:
+            TRY_CAST(SyntaxTree_CallList*, syntaxTreeStack.top());
             break;
         case STMT_DECLARE_DESC:
             TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack.top());
@@ -97,7 +97,7 @@ namespace QLanguage
             shifts.pop();
             construct(pStmt, true, syntaxTreeStack.top(), SyntaxTree_Stmt::Assign);
             break;
-        case STMT_CALL_DESC:                         // stmt -> call_desc ";"
+        case STMT_CALL_LIST:                         // stmt -> call_desc ";"
             shifts.pop();
             construct(pStmt, true, syntaxTreeStack.top(), SyntaxTree_Stmt::Call);
             break;
@@ -146,8 +146,8 @@ namespace QLanguage
         case STMT_NO_SEMICOLON_ASSIGN_DESC:
             TRY_CAST(SyntaxTree_Assign*, syntaxTreeStack.top());
             break;
-        case STMT_NO_SEMICOLON_CALL_DESC:
-            TRY_CAST(SyntaxTree_Call*, syntaxTreeStack.top());
+        case STMT_NO_SEMICOLON_CALL_LIST:
+            TRY_CAST(SyntaxTree_CallList*, syntaxTreeStack.top());
             break;
         case STMT_NO_SEMICOLON_DECLARE_DESC:
             TRY_CAST(SyntaxTree_DeclareList*, syntaxTreeStack.top());
@@ -172,7 +172,7 @@ namespace QLanguage
         case STMT_NO_SEMICOLON_ASSIGN_DESC:                       // stmt_no_semicolon -> assign_desc
             construct(pStmt, false, syntaxTreeStack.top(), SyntaxTree_Stmt::Assign);
             break;
-        case STMT_NO_SEMICOLON_CALL_DESC:                         // stmt_no_semicolon -> call_desc
+        case STMT_NO_SEMICOLON_CALL_LIST:                         // stmt_no_semicolon -> call_desc
             construct(pStmt, false, syntaxTreeStack.top(), SyntaxTree_Stmt::Call);
             break;
         case STMT_NO_SEMICOLON_DECLARE_DESC:                      // stmt_no_semicolon -> declare_desc
