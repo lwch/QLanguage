@@ -21,7 +21,11 @@ namespace QLanguage
 class SyntaxTree_Do;
     using namespace Library;
 
-#define TRY_CAST(type, value) if (static_cast<type>(value) == NULL) throw error<string>(string::format("can't cast to type: %s", #type), __FILE__, __LINE__)
+#define TRY_CAST(type, value) \
+    do \
+    { \
+        if (static_cast<type>(value) == NULL) throw error<string>(string::format("can't cast to type: %s", #type), __FILE__, __LINE__);  \
+    } while (0)
 
     class SyntaxTree_Base
     {
