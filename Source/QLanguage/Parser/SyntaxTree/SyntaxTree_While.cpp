@@ -28,6 +28,10 @@ namespace QLanguage
     
     void SyntaxTree_While::print(ostream& stream, uint indent)const
     {
+        stream << "while (";
+        exp.print(stream, indent);
+        stream << ')' << endl;
+        block.print(stream, indent + parent::indent);
     }
     
     // while_desc -> "while" "(" exp ")" block

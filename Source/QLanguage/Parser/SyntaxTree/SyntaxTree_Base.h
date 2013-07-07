@@ -48,9 +48,12 @@ class SyntaxTree_Do;
         friend class SyntaxTree_ParamterList;
         friend class SyntaxTree_Return;
         friend class SyntaxTree_StmtList;
+        friend class SyntaxTree_SwitchContent;
+        friend class SyntaxTree_SwitchContentList;
         friend class SyntaxTree_TemplateList;
         friend class SyntaxTree_ValueList;
         friend class SyntaxTree_ValuesList;
+        friend class SyntaxTree_While;
     public:
         SyntaxTree_Base(uint size);
         virtual ~SyntaxTree_Base();
@@ -81,13 +84,15 @@ class SyntaxTree_Do;
             childs.push_back(child);
         }
 
-        inline static const bool checkEqual(SyntaxTree_Base* p1, SyntaxTree_Base* p2)
+        template <typename T1, typename T2>
+        inline static const bool checkEqual(T1* p1, T2* p2)
         {
             return (p1 && p2 && *p1 == *p2) ||
                    (p1 == NULL && p2 == NULL);
         }
 
-        inline static const bool checkNotEqual(SyntaxTree_Base* p1, SyntaxTree_Base* p2)
+        template <typename T1, typename T2>
+        inline static const bool checkNotEqual(T1* p1, T2* p2)
         {
             return (p1 && (p2 == NULL || *p1 != *p2)) ||
                    (p1 == NULL && p2);

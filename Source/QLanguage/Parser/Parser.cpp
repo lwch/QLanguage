@@ -250,6 +250,9 @@ namespace QLanguage
         case STMT_IF_DESC:                           // stmt -> if_desc
         case STMT_FOR_DESC:                          // stmt -> for_desc
         case STMT_WHILE_DESC:                        // stmt -> while_desc
+        case STMT_SWITCH_DESC:                       // stmt -> switch_desc
+        case STMT_BREAK_DESC:                        // stmt -> break_desc ";"
+        case STMT_CONTINUE_DESC:                     // stmt -> continue_desc ";"
         case STMT_RETURN_DESC:                       // stmt -> return_desc
             return reduceStmt(i);
         case STMT_NO_SEMICOLON_ASSIGN_DESC:          // stmt_no_semicolon -> assign_desc
@@ -259,6 +262,7 @@ namespace QLanguage
         case STMT_NO_SEMICOLON_FOR_DESC:             // stmt_no_semicolon -> for_desc
         case STMT_NO_SEMICOLON_WHILE_DESC:           // stmt_no_semicolon -> while_desc
         case STMT_NO_SEMICOLON_DO_DESC:              // stmt_no_semicolon -> do_desc
+        case STMT_NO_SEMICOLON_SWITCH_DESC:          // stmt_no_semicolon -> switch_desc
             return reduceStmtNoSemicolon(i);
         case DECLARE_DESC_DECLARE_DESC_LETTER_ARRAY_LST_EQUAL_EXP: // declare_desc -> declare_desc "," "{Letter}" array_lst "=" exp
         case DECLARE_DESC_DECLARE_DESC_LETTER_EQUAL_EXP:           // declare_desc -> declare_desc "," "{Letter}" "=" exp
@@ -313,6 +317,20 @@ namespace QLanguage
             return reduceWhile();
         case DO_DESC_DO_BLOCK_WHILE_EXP:             // do_desc -> "do" block "while" "(" exp ")"
             return reduceDo();
+        case SWITCH_DESC_SWITCH_EXP_SWITCH_CONTENT_LIST:             // switch_desc -> "switch" "(" exp ")" "{" switch_content_list "}"
+            return reduceSwitch();
+        case SWITCH_CONTENT_LIST_SWITCH_CONTENT_LIST_SWITCH_CONTENT: // switch_content_list -> switch_content_list switch_content
+            return reduceSwitchContentList2Size();
+        case SWITCH_CONTENT_LIST_SWITCH_CONTENT:                     // switch_content_list -> switch_content
+            return reduceSwitchContentList1Size();
+        case SWITCH_CONTENT_CASE_EXP_STMT_LIST:                      // switch_content -> "case" exp ":" stmt_list
+            return reduceSwitchContentCase();
+        case SWITCH_CONTENT_DEFAULT_STMT_LIST:                       // switch_content -> "default" ":" stmt_list
+            return reduceSwitchContentDefault();
+        case BREAK_DESC_BREAK:                       // break_desc -> "break"
+            return reduceBreak();
+        case CONTINUE_DESC_CONTINUE:                 // continue_desc -> "continue"
+            return reduceContinue();
         case RETURN_DESC_BLOCK:                      // return_desc -> "return" block
             return reduceReturnBlock();
         case RETURN_DESC_EXP:                        // return_desc -> "return" exp ";"

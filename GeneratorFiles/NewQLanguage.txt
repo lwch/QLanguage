@@ -12,6 +12,8 @@
 %token "for";
 %token "while";
 %token "do";
+%token "switch" "case" "default";
+%token "break" "continue";
 %token ">" "<" "=" "!" "&" "|" "^";
 %token "+" "-" "*" "/" "%";
 
@@ -141,6 +143,9 @@ stmt -> assign_desc ";"
      |  for_desc
      |  while_desc
      |  do_desc ";"
+     |  switch_desc
+     |  break_desc ";"
+     |  continue_desc ";"
      |  return_desc
      ;
 
@@ -151,6 +156,7 @@ stmt_no_semicolon -> assign_desc
                   |  for_desc
                   |  while_desc
                   |  do_desc
+                  |  switch_desc
                   ;
 
 declare_desc -> declare_desc "," "{Letter}" [array_lst] ["=" exp]
@@ -190,6 +196,23 @@ while_desc -> "while" "(" exp ")" block
 
 do_desc -> "do" block "while" "(" exp ")"
         ;
+
+switch_desc -> "switch" "(" exp ")" "{" switch_content_list "}"
+            ;
+
+switch_content_list -> switch_content_list switch_content
+                    |  switch_content
+                    ;
+
+switch_content -> "case" exp ":" stmt_list
+               |  "default" ":" stmt_list
+               ;
+
+break_desc -> "break"
+           ;
+
+continue_desc -> "continue"
+              ;
 
 return_desc -> "return" block
             |  "return" exp ";"

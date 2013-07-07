@@ -38,7 +38,7 @@ namespace QLanguage
         exp.print(stream, indent);
         stream << "; ";
         stmt2.print(stream, indent);
-        stream << ") ";
+        stream << ")" << endl;
         block.print(stream, indent + parent::indent);
     }
 

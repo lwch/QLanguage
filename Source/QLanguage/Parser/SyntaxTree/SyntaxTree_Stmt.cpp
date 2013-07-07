@@ -17,6 +17,9 @@
 #include "SyntaxTree_If.h"
 #include "SyntaxTree_For.h"
 #include "SyntaxTree_While.h"
+#include "SyntaxTree_Switch.h"
+#include "SyntaxTree_Break.h"
+#include "SyntaxTree_Continue.h"
 #include "SyntaxTree_Return.h"
 #include "SyntaxTree_Stmt.h"
 
@@ -44,6 +47,8 @@ namespace QLanguage
         case Call:
         case Declare:
         case Do:
+        case Break:
+        case Continue:
             if (bSemicolon) stream << ';';
             break;
         default:
@@ -85,6 +90,15 @@ namespace QLanguage
         case STMT_WHILE_DESC:
             TRY_CAST(SyntaxTree_While*, syntaxTreeStack.top());
             break;
+        case STMT_SWITCH_DESC:
+            TRY_CAST(SyntaxTree_Switch*, syntaxTreeStack.top());
+            break;
+        case STMT_BREAK_DESC:
+            TRY_CAST(SyntaxTree_Break*, syntaxTreeStack.top());
+            break;
+        case STMT_CONTINUE_DESC:
+            TRY_CAST(SyntaxTree_Continue*, syntaxTreeStack.top());
+            break;
         case STMT_RETURN_DESC:
             TRY_CAST(SyntaxTree_Return*, syntaxTreeStack.top());
             break;
@@ -117,6 +131,17 @@ namespace QLanguage
             break;
         case STMT_WHILE_DESC:                        // stmt -> while_desc
             construct(pStmt, true, syntaxTreeStack.top(), SyntaxTree_Stmt::While);
+            break;
+        case STMT_SWITCH_DESC:                       // stmt -> switch_desc
+            construct(pStmt, true, syntaxTreeStack.top(), SyntaxTree_Stmt::Switch);
+            break;
+        case STMT_BREAK_DESC:                        // stmt -> break_desc ";"
+            shifts.pop();
+            construct(pStmt, true, syntaxTreeStack.top(), SyntaxTree_Stmt::Break);
+            break;
+        case STMT_CONTINUE_DESC:                     // stmt -> continue_desc ";"
+            shifts.pop();
+            construct(pStmt, true, syntaxTreeStack.top(), SyntaxTree_Stmt::Continue);
             break;
         case STMT_RETURN_DESC:                       // stmt -> return_desc
             construct(pStmt, true, syntaxTreeStack.top(), SyntaxTree_Stmt::Return);
@@ -164,6 +189,9 @@ namespace QLanguage
         case STMT_NO_SEMICOLON_WHILE_DESC:
             TRY_CAST(SyntaxTree_While*, syntaxTreeStack.top());
             break;
+        case STMT_NO_SEMICOLON_SWITCH_DESC:
+            TRY_CAST(SyntaxTree_Switch*, syntaxTreeStack.top());
+            break;
         }
 #endif
         SyntaxTree_Stmt* pStmt = allocator<SyntaxTree_Stmt>::allocate();
@@ -189,6 +217,9 @@ namespace QLanguage
             break;
         case STMT_NO_SEMICOLON_WHILE_DESC:                        // stmt_no_semicolon -> while_desc
             construct(pStmt, false, syntaxTreeStack.top(), SyntaxTree_Stmt::While);
+            break;
+        case STMT_NO_SEMICOLON_SWITCH_DESC:                       // stmt_no_semicolon -> switch_desc
+            construct(pStmt, false, syntaxTreeStack.top(), SyntaxTree_Stmt::Switch);
             break;
         }
         

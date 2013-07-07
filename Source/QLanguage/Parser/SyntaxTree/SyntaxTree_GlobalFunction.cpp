@@ -75,6 +75,7 @@ namespace QLanguage
         if (pParamterList) pParamterList->print(stream, indent);
         stream << ") ";
         block.print(stream, indent + parent::indent);
+        stream << endl;
     }
 
     // global_function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block

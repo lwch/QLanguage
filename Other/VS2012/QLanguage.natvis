@@ -157,6 +157,7 @@
     <AlternativeType Name="QLanguage::SyntaxTree_MemberList" />
     <AlternativeType Name="QLanguage::SyntaxTree_ParamterList" />
     <AlternativeType Name="QLanguage::SyntaxTree_StmtList" />
+    <AlternativeType Name="QLanguage::SyntaxTree_SwitchContentList" />
     <AlternativeType Name="QLanguage::SyntaxTree_TemplateList" />
     <AlternativeType Name="QLanguage::SyntaxTree_ValueList" />
     <AlternativeType Name="QLanguage::SyntaxTree_ValuesList" />
@@ -200,6 +201,12 @@
     </Expand>
   </Type>
   
+  <Type Name="QLanguage::SyntaxTree_Break">
+    <DisplayString>{{ type=break }}</DisplayString>
+    <Expand>
+    </Expand>
+  </Type>
+  
   <Type Name="QLanguage::SyntaxTree_Call">
     <DisplayString>{{ members={memberList} }}</DisplayString>
     <Expand>
@@ -238,6 +245,12 @@
   
   <Type Name="QLanguage::SyntaxTree_ClassName">
     <DisplayString>{{ name={name} }}</DisplayString>
+    <Expand>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Continue">
+    <DisplayString>{{ type=continue }}</DisplayString>
     <Expand>
     </Expand>
   </Type>
@@ -378,6 +391,31 @@
     </Expand>
   </Type>
   
+  <Type Name="QLanguage::SyntaxTree_Stmt">
+    <DisplayString>{{ type={_type} }}</DisplayString>
+    <Expand>
+      <Item Condition="pStmt != 0" Name="stmt">*pStmt</Item>
+      <Item Name="type">_type</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_Switch">
+    <DisplayString>{{ exp={exp} }}</DisplayString>
+    <Expand>
+      <Item Name="exp">exp</Item>
+      <Item Name="contentList">contentList</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="QLanguage::SyntaxTree_SwitchContent">
+    <DisplayString Condition="pExp == 0">{{ type=default }}</DisplayString>
+    <DisplayString Condition="pExp != 0">{{ exp={*pExp} }}</DisplayString>
+    <Expand>
+      <Item Condition="pExp != 0" Name="exp">*pExp</Item>
+      <Item Name="stmtList">stmtList</Item>
+    </Expand>
+  </Type>
+  
   <Type Name="QLanguage::SyntaxTree_Template">
     <DisplayString Condition="pTemplateList == 0"></DisplayString>
     <DisplayString Condition="pTemplateList != 0">{{ template={*pTemplateList} }}</DisplayString>
@@ -392,14 +430,6 @@
       <Item Condition="pType != 0" Name="type_desc">*pType</Item>
       <Item Name="type">_type</Item>
       <Item Name="name">name</Item>
-    </Expand>
-  </Type>
-  
-  <Type Name="QLanguage::SyntaxTree_Stmt">
-    <DisplayString>{{ type={_type} }}</DisplayString>
-    <Expand>
-      <Item Condition="pStmt != 0" Name="stmt">*pStmt</Item>
-      <Item Name="type">_type</Item>
     </Expand>
   </Type>
   

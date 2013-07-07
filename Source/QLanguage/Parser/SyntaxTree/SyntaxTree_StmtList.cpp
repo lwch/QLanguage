@@ -28,7 +28,8 @@ namespace QLanguage
     {
         for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(); i != m; ++i)
         {
-            (*i)->print(stream, indent);
+            if ((*i)->type() == "SyntaxTree_Block") (*i)->print(stream, indent + parent::indent);
+            else (*i)->print(stream, indent);
             stream << endl;
         }
     }

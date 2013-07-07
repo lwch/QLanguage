@@ -40,15 +40,17 @@ namespace QLanguage
     {
         stream << "if (";
         exp.print(stream, indent);
-        stream << ") ";
+        stream << ")";
         if (op1.type() == "SyntaxTree_Stmt")
         {
+            stream << ' ';
             op1.print(stream, 0);
             stream << endl;
             this->printIndent(stream, indent);
         }
         else
         {
+            stream << endl;
             op1.print(stream, indent + parent::indent);
             stream << ' ';
         }

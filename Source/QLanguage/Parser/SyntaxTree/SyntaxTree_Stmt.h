@@ -29,6 +29,9 @@ namespace QLanguage
             If,
             For,
             While,
+            Switch,
+            Break,
+            Continue,
             Return
         };
     public:

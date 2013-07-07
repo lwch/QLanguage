@@ -77,8 +77,9 @@ namespace QLanguage
         returnType.print(stream, indent);
         stream << " " << name << '(';
         if (pParamterList) pParamterList->print(stream, indent);
-        stream << ") ";
+        stream << ")" << endl;
         block.print(stream, indent + parent::indent);
+        stream << endl;
     }
 
     // function_desc -> template_desc attribute type_desc "{Letter}" "(" paramter_list ")" block
