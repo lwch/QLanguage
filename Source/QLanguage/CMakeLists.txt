@@ -25,10 +25,16 @@ FILE(GLOB Parser_SyntaxTree_Sources "Parser/SyntaxTree/*.cpp")
 SET (Parser_SyntaxTree ${Parser_SyntaxTree_Headers} ${Parser_SyntaxTree_Sources})
 SOURCE_GROUP(Parser\\SyntaxTree FILES ${Parser_SyntaxTree})
 
+FILE(GLOB VirtualMachine_Headers "VirtualMachine/*.h")
+FILE(GLOB VirtualMachine_Sources "VirtualMachine/*.cpp")
+SET (VirtualMachine ${VirtualMachine_Headers} ${VirtualMachine_Sources})
+SOURCE_GROUP(VirtualMachine FILES ${VirtualMachine})
+
 SET (FILES
      ${Lexer}
      ${Parser}
      ${Parser_SyntaxTree}
+     ${VirtualMachine}
      QLanguage.cpp
 )
 
