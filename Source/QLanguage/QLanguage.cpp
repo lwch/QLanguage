@@ -12,6 +12,7 @@
 #include "Lexer/Lexer.h"
 #include "Parser/ParserTable.h"
 #include "Parser/Parser.h"
+#include "VirtualMachine/opcodes.h"
 
 #include <time.h>
 #include <stdio.h>
@@ -24,6 +25,7 @@
 #endif
 
 using namespace QLanguage;
+using namespace QLanguage::VM;
 
 int main(int argv, char* args[])
 {
