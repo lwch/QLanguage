@@ -41,7 +41,7 @@ namespace QLanguage
             Neg       = 14, // R[a] = -R[a] || R[a] = -k
             Jmp       = 15, // jmp k
             Call      = 16, // call k1, k2
-            Ret       = 17, // ret ([a] || [k])
+            Ret       = 17  // ret ([a] || [k])
         };
 
         // 每条指令有6字节
@@ -59,14 +59,9 @@ namespace QLanguage
                 }Normal;
                 struct
                 {
-                    uchar unused; // 未使用
-                    int   addr;   // 跳转位置
-                }Jmp;
-                struct
-                {
-                    int   addr;   // 函数位置
-                    uchar params; // 参数个数
-                }Call;
+                    int   addr; // 跳转或函数位置
+                    uchar ext;  // 未使用或参数个数
+                }JmpCall;
             };
         };
 #pragma pack()
