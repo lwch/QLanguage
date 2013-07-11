@@ -37,6 +37,16 @@ namespace QLanguage
         }
     }
 
+    const HASH_KEY_TYPE SyntaxTree_TemplateList::hash()const
+    {
+        HASH_KEY_TYPE result = 0;
+        for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+        {
+            result += (*i)->hash();
+        }
+        return result;
+    }
+
     // template_list -> template_list "," template_item
     bool Parser::reduceTemplateList2Size()
     {

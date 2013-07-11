@@ -61,4 +61,9 @@ namespace QLanguage
             pExp->print(stream, indent);
         }
     }
+
+    const HASH_KEY_TYPE SyntaxTree_DeclareName::hash()const
+    {
+        return ::hash<string>()(name);
+    }
 }

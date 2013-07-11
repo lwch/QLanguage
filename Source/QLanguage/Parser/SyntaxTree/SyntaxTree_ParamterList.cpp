@@ -36,6 +36,16 @@ namespace QLanguage
         }
     }
 
+    const HASH_KEY_TYPE SyntaxTree_ParamterList::hash()const
+    {
+        HASH_KEY_TYPE result = 0;
+        for (size_t i = 0, m = childs.size(); i < m; ++i)
+        {
+            result += childs[i]->hash() << (m - i);
+        }
+        return result;
+    }
+
     // paramter_list -> paramter_list "," paramter
     bool Parser::reduceParamterList2Size()
     {

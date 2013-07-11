@@ -37,6 +37,13 @@ namespace QLanguage
         stream << '>';
     }
 
+    const HASH_KEY_TYPE SyntaxTree_Template::hash()const
+    {
+        HASH_KEY_TYPE result = 0;
+        if (pTemplateList) result += pTemplateList->hash();
+        return result;
+    }
+
     // template_desc -> "template" "<" template_list ">"
     bool Parser::reduceTemplateWithParamters()
     {

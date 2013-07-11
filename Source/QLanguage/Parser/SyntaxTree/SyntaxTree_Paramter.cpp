@@ -51,6 +51,13 @@ namespace QLanguage
         }
     }
 
+    const HASH_KEY_TYPE SyntaxTree_Paramter::hash()const
+    {
+        HASH_KEY_TYPE result = _type.hash();
+        if (pArrayLst) result += pArrayLst->size();
+        return result;
+    }
+
     // paramter -> type_desc "{Letter}" array_lst
     bool Parser::reduceParamterNamedArray()
     {

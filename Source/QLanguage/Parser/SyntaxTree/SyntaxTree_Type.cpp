@@ -51,6 +51,13 @@ namespace QLanguage
         }
     }
 
+    const HASH_KEY_TYPE SyntaxTree_Type::hash()const
+    {
+        HASH_KEY_TYPE result = ::hash<string>()(name);
+        if (isUnsigned()) result += ::hash<string>()("unsigned");
+        return result;
+    }
+
     // type_desc -> "unsigned" "char"
     // type_desc -> "unsigned" "short"
     // type_desc -> "unsigned" "int"

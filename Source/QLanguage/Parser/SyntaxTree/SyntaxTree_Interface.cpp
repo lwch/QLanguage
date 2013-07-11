@@ -41,6 +41,11 @@ namespace QLanguage
         stream << '}' << endl;
     }
 
+    const HASH_KEY_TYPE SyntaxTree_Interface::hash()const
+    {
+        return ::hash<string>()(name);
+    }
+
     // interface_desc -> "interface" "{Letter}" "{" interface_content "}"
     bool Parser::reduceInterfaceWidthContent()
     {

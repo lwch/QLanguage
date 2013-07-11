@@ -10,7 +10,7 @@
 	purpose:	
 *********************************************************************/
 #ifndef _QLANGUAGE_SYNTAX_TREE_DECLARE_NAME_H_
-#define _QLANGUAGE_SYNTAX_TREE_DECALRE_NAME_H_
+#define _QLANGUAGE_SYNTAX_TREE_DECLARE_NAME_H_
 
 #include "SyntaxTree_ArrayLst.h"
 #include "SyntaxTree_Base.h"
@@ -32,6 +32,8 @@ namespace QLanguage
         virtual void print(ostream& stream, uint indent)const;
 
         inline virtual string type()const { return "SyntaxTree_DeclareName"; }
+
+        virtual const HASH_KEY_TYPE hash()const;
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {

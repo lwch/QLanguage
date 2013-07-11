@@ -14,6 +14,7 @@
 
 #include "../../../QCore/Library/ostream.h"
 #include "../../../QCore/Library/vector.h"
+#include "../../../QCore/Library/hash.h"
 
 namespace QLanguage
 {
@@ -23,9 +24,11 @@ class SyntaxTree_Do;
 
 #define TRY_CAST(type, value) \
     do \
-    { \
+    {  \
         if (static_cast<type>(value) == NULL) throw error<string>(string::format("can't cast to type: %s", #type), __FILE__, __LINE__);  \
     } while (0)
+
+    class Parser;
 
     class SyntaxTree_Base
     {
@@ -97,6 +100,13 @@ class SyntaxTree_Do;
             return (p1 && (p2 == NULL || *p1 != *p2)) ||
                    (p1 == NULL && p2);
         }
+
+        virtual bool make(Parser* pParser)
+        {
+            return true;
+        }
+
+        inline virtual const HASH_KEY_TYPE hash()const { return 0; }
 
         virtual const bool operator==(const SyntaxTree_Base& x)const=0;
         virtual const bool operator!=(const SyntaxTree_Base& x)const=0;

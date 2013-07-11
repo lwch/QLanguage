@@ -107,6 +107,11 @@ namespace QLanguage
         stream << '}' << endl;
     }
 
+    const HASH_KEY_TYPE SyntaxTree_Class::hash()const
+    {
+        return name.hash();
+    }
+
     // class_desc -> template_desc class_desc1 class_desc2 "{" class_content_list "}"
     bool Parser::reduceClass1()
     {

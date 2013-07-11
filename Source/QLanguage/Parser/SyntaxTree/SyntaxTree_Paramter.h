@@ -12,13 +12,12 @@
 #ifndef _QLANGUAGE_SYNTAX_TREE_PARAMTER_H_
 #define _QLANGUAGE_SYNTAX_TREE_PARAMTER_H_
 
+#include "SyntaxTree_Type.h"
 #include "SyntaxTree_ArrayLst.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
 {
-    class SyntaxTree_Type;
-
     class SyntaxTree_Paramter : public SyntaxTree_Base
     {
         typedef SyntaxTree_Base parent;
@@ -31,6 +30,9 @@ namespace QLanguage
         virtual void print(ostream& stream, uint indent)const;
         
         inline virtual string type()const { return "SyntaxTree_Paramter"; }
+
+        // hash = hash(type) + arrayLst.size()
+        virtual const HASH_KEY_TYPE hash()const;
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {

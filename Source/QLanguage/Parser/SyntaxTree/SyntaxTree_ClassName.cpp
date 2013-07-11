@@ -31,6 +31,11 @@ namespace QLanguage
         stream << "class " << name << ' ';
     }
 
+    const HASH_KEY_TYPE SyntaxTree_ClassName::hash()const
+    {
+        return ::hash<string>()(name);
+    }
+
     // class_desc1 -> "class" "{Letter}"
     bool Parser::reduceClassWithName()
     {

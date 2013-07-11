@@ -38,6 +38,11 @@ namespace QLanguage
         }
     }
 
+    const HASH_KEY_TYPE SyntaxTree_Attribute::hash()const
+    {
+        return ::hash<string>()(_type == Public ? "public" : _type == Private ? "private" : "protected");
+    }
+
     // attribute -> "public"
     // attribute -> "private"
     // attribute -> "protected"

@@ -13,6 +13,7 @@
 #define _QLANGUAGE_SYNTAX_TREE_DECLARE_LIST_H_
 
 #include "SyntaxTree_ArrayLst.h"
+#include "SyntaxTree_Type.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage

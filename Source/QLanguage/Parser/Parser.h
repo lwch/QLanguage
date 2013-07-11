@@ -14,7 +14,7 @@
 
 #include "../../QCore/Library/hashset.h"
 
-#include "SyntaxTree/SyntaxTree_Type.h"
+#include "SyntaxTree/SyntaxTree_Base.h"
 #include "BasicParser.h"
 
 namespace QLanguage

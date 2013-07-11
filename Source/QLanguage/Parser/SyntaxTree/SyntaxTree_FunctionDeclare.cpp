@@ -69,6 +69,16 @@ namespace QLanguage
         stream << ");";
     }
 
+    const HASH_KEY_TYPE SyntaxTree_FunctionDeclare::hash()const
+    {
+        HASH_KEY_TYPE result = 0;
+        if (pTemplate) result += pTemplate->hash();
+        result += returnType.hash() << 1;
+        result += ::hash<string>()(name);
+        if (pParamterList) result += pParamterList->hash() << 1;
+        return result;
+    }
+
     // function_declare -> template_desc type_desc "{Letter}" "(" paramter_list ")" ";"
     bool Parser::reduceFunctionDeclareTemplateTypeParamters()
     {

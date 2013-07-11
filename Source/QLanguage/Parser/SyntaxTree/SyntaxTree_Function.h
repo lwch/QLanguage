@@ -14,12 +14,12 @@
 
 #include "SyntaxTree_Template.h"
 #include "SyntaxTree_Attribute.h"
+#include "SyntaxTree_Type.h"
 #include "SyntaxTree_ParamterList.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
 {
-    class SyntaxTree_Type;
     class SyntaxTree_Block;
 
     class SyntaxTree_Function : public SyntaxTree_Base
@@ -37,6 +37,9 @@ namespace QLanguage
         virtual void print(ostream& stream, uint indent)const;
         
         inline virtual string type()const { return "SyntaxTree_Function"; }
+
+        // hash = hash(template) + hash(attribute) * 2 + hash(returnType) * 2 + hash(name) + hash(paramters) * 2
+        virtual const HASH_KEY_TYPE hash()const;
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {

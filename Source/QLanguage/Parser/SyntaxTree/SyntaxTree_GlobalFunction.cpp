@@ -78,6 +78,16 @@ namespace QLanguage
         stream << endl;
     }
 
+    const HASH_KEY_TYPE SyntaxTree_GlobalFunction::hash()const
+    {
+        HASH_KEY_TYPE result = 0;
+        if (pTemplate) result += pTemplate->hash();
+        result += returnType.hash() << 1;
+        result += ::hash<string>()(name);
+        if (pParamterList) result += pParamterList->hash() << 1;
+        return result;
+    }
+
     // global_function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block
     bool Parser::reduceGlobalFunctionTemplateTypeParamters()
     {

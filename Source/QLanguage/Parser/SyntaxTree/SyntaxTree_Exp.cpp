@@ -12,6 +12,7 @@
 #include "../Parser.h"
 #include "SyntaxTree_CallList.h"
 #include "SyntaxTree_Value.h"
+#include "SyntaxTree_Type.h"
 #include "SyntaxTree_Exp.h"
 
 namespace QLanguage

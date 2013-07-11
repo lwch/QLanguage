@@ -41,6 +41,11 @@ namespace QLanguage
         else stream << value;
     }
 
+    const HASH_KEY_TYPE SyntaxTree_Value::hash()const
+    {
+        return ::hash<string>()(value);
+    }
+
     // value_desc -> "true"
     // value_desc -> "false"
     // value_desc -> "{Real}"

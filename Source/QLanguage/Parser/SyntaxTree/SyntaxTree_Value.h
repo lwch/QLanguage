@@ -37,6 +37,8 @@ namespace QLanguage
         
         inline virtual string type()const { return "SyntaxTree_Value"; }
 
+        virtual const HASH_KEY_TYPE hash()const;
+
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG
