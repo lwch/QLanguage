@@ -1,0 +1,25 @@
+一、有hash函数的结构
+1.SyntaxTree_Attribute
+    hash = hash("public" | "private" | "protected")
+2.SyntaxTree_Class
+    hash = hash(name)
+3.SyntaxTree_ClassName
+    hash = hash(name)
+4.SyntaxTree_DeclareName
+    hash = hash(name)
+5.SyntaxTree_Function
+    hash = hash(template) + hash(attribute) * 2 + hash(returnType) * 2 + hash(name) + hash(parameters) * 2
+6.SyntaxTree_FunctionDeclare
+    hash = hash(template) + hash(returnType) * 2 + hash(name) + hash(parameters) * 2
+7.SyntaxTree_GlobalFunction
+    hash = hash(template) + hash(return) * 2 + hash(name) + hash(parameters) * 2
+8.SyntaxTree_Interface
+    hash = hash(name)
+9.SyntaxTree_Paramter
+    hash = hash(type) + arrayLst.size()
+10.SyntaxTree_ParamterList
+    hash = Σhash(childs[i]) << (childs.size() - i)
+11.SyntaxTree_Type
+    hash = hash(name) + isUnsigned() ? hash("unsigned") : 0
+12.SyntaxTree_Value
+    hash = hash(value)

@@ -55,6 +55,7 @@ namespace QLanguage
 
         const Type trueType()const;
 
+        // hash = hash(name) + isUnsigned() ? hash("unsigned") : 0
         virtual const HASH_KEY_TYPE hash()const;
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
