@@ -56,6 +56,14 @@ namespace QLanguage
         
         inline virtual string type()const { return "SyntaxTree_Exp"; }
 
+        virtual const HASH_KEY_TYPE hash()const;
+
+        virtual bool make(Parser *pParser);
+
+        inline virtual const bool isValue()const { return _type == Value; }
+
+        virtual const short getRegister(Parser* pParser)const;
+
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG

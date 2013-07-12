@@ -13,8 +13,10 @@
 #define _QLANGUAGE_PARSER_H_
 
 #include "../../QCore/Library/hashset.h"
+#include "../../QCore/Library/hashmap.h"
 
 #include "SyntaxTree/SyntaxTree_Base.h"
+#include "../VirtualMachine/opcodes.h"
 #include "BasicParser.h"
 
 namespace QLanguage
@@ -219,6 +221,32 @@ namespace QLanguage
 
     class Parser : public BasicParser
     {
+        enum { maxRegisterCount = std::numeric_limits<uchar>::max() + 1};
+    public:
+        // 每个语句块或函数都有0-255个寄存器
+        // used && hash的索引
+        // 若是一个临时对象则hash为-1
+        struct RegisterInfo
+        {
+            pair<bool, HASH_KEY_TYPE> reg[256];
+
+            RegisterInfo();
+
+            const short getFree()const;
+        };
+
+        struct ContextInfo
+        {
+            enum
+            {
+                GlobalFunction,
+                FunctionDeclare,
+                Function
+            }type;
+
+            HASH_KEY_TYPE hash;
+        };
+
     public:
         Parser(const vector<Production>& productions);
         virtual ~Parser();
@@ -372,8 +400,11 @@ namespace QLanguage
         {
             hashset<SyntaxTree_Base*> data;
         }context;
-        stack<SyntaxTree_Base*>  syntaxTreeStack;
-        stack<string>            shifts;
+        stack<SyntaxTree_Base*>              syntaxTreeStack;
+        stack<string>                        shifts;
+        list<VM::Instruction>                instructions;
+        hashmap<HASH_KEY_TYPE, RegisterInfo> registers;
+        stack<ContextInfo>                   runTimeContext;
 #if defined(_DEBUG ) && DEBUG_LEVEL == 3
         fstream                  result;
 #endif

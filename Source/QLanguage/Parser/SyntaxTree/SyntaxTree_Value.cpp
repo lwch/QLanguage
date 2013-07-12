@@ -43,7 +43,8 @@ namespace QLanguage
 
     const HASH_KEY_TYPE SyntaxTree_Value::hash()const
     {
-        return ::hash<string>()(value);
+        if (_type != Member) return ::hash<string>()(value);
+        return 0; // TODO: hash for call function
     }
 
     // value_desc -> "true"

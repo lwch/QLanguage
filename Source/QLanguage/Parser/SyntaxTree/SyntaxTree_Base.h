@@ -101,12 +101,13 @@ class SyntaxTree_Do;
                    (p1 == NULL && p2);
         }
 
-        virtual bool make(Parser* pParser)
-        {
-            return true;
-        }
+        inline virtual bool make(Parser* pParser) { return true; }
 
         inline virtual const HASH_KEY_TYPE hash()const { return 0; }
+
+        inline virtual const short getRegister(Parser* pParser)const { return -1; }
+
+        inline virtual const bool isValue()const { return false; }
 
         virtual const bool operator==(const SyntaxTree_Base& x)const=0;
         virtual const bool operator!=(const SyntaxTree_Base& x)const=0;

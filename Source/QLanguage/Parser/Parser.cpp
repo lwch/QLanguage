@@ -15,6 +15,24 @@
 
 namespace QLanguage
 {
+    Parser::RegisterInfo::RegisterInfo()
+    {
+        for (size_t i = 0; i < maxRegisterCount; ++i)
+        {
+            reg[i].first  = false;
+            reg[i].second = -1;
+        }
+    }
+
+    const short Parser::RegisterInfo::getFree()const
+    {
+        for (size_t i = 0; i < maxRegisterCount; ++i)
+        {
+            if (!reg[i].first) return i;
+        }
+        return -1;
+    }
+
     Parser::Parser(const vector<Production>& productions)
         : BasicParser(productions)
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
