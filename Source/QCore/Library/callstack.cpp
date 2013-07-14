@@ -47,12 +47,12 @@ CallStack::~CallStack()
 {
 }
 
-DWORD CallStack::stackTrace(UINT_PTR* pCallStack, DWORD dwMaxDepth)
+DWORD CallStack::stackTrace(LPVOID* pCallStack, DWORD dwMaxDepth)
 {
 #ifdef WIN32
-    return CaptureStackBackTrace(0, dwMaxDepth, (PVOID*)pCallStack, NULL);
+    return CaptureStackBackTrace(0, dwMaxDepth, pCallStack, NULL);
 #else
-    return backtrace((PVOID*)pCallStack, dwMaxDepth);
+    return backtrace(pCallStack, dwMaxDepth);
 #endif
 }
 
@@ -82,7 +82,7 @@ bool CallStack::loadAllModules()
     return true;
 }
 
-void CallStack::getFuncInfo(UINT_PTR dwFunc, FuncInfo& info)
+void CallStack::getFuncInfo(LPVOID dwFunc, FuncInfo& info)
 {
     memset(szBuffer, 0, sizeof(szBuffer));
 #ifdef WIN32

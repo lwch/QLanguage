@@ -227,7 +227,7 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename Key, typename Value, typename KeyOfValue, typename ValueOfValue,
-    size_t Max_Bucket_Length = 191,
+    size_t Max_Bucket_Length = 11,
     bool Resize = true,
     typename Hash = hash<Key>,
     typename Less = less<Key>,

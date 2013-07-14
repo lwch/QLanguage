@@ -27,7 +27,7 @@ namespace QLanguage
 #ifdef unix
         typedef unsigned long DWORD;
         typedef unsigned int  UINT_PTR;
-        typedef void*         PVOID;
+        typedef void         *PVOID, *LPVOID;
 #endif
 
         template <typename T>

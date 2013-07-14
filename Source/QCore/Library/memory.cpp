@@ -21,6 +21,7 @@
 NAMESPACE_QLANGUAGE_LIBRARY_START
 MemoryPool::Map::Map()
     : buckets_count(11) // 默认吊桶长度为11
+    , bRehash(false)
 {
     size_type count = sizeof(bucket_node_type*) * buckets_count;
 
@@ -51,7 +52,7 @@ MemoryPool::Map::~Map()
 
 MemoryPool::Map::value_type& MemoryPool::Map::operator[](const key_type& key)
 {
-    if (willRehash()) rehash();
+    if (bRehash) rehash();
 
     const size_type idx = hash(key, buckets_count);
 
@@ -80,7 +81,7 @@ MemoryPool::Map::value_type& MemoryPool::Map::operator[](const key_type& key)
 #endif
         ptr->next = buckets[idx];
         buckets[idx] = ptr;
-        ++buckets_length[idx];
+        if (++buckets_length[idx] >= maxBucketLength) bRehash = true;
     }
     return ptr->value;
 }
@@ -119,6 +120,8 @@ void MemoryPool::Map::rehash()
 
     buckets = newBuckets;
     buckets_count = newCount;
+
+    bRehash = false;
 }
 
 inline const MemoryPool::size_type MemoryPool::Map::hash(const key_type& key, const size_type& size)const

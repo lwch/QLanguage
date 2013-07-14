@@ -36,8 +36,8 @@ namespace QLanguage
         {
             enum { CALLSTACK_MAX_DEPTH = 30 };
 #if defined(_DEBUG) && DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-            UINT_PTR  callStack[CALLSTACK_MAX_DEPTH];
-            DWORD     dwCallStackDepth; // Real depth
+            LPVOID callStack[CALLSTACK_MAX_DEPTH];
+            DWORD  dwCallStackDepth; // Real depth
 #endif
         public:
             error(T description, const char* fileName, size_t line)

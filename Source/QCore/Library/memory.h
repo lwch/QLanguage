@@ -27,7 +27,7 @@ class MemoryPool
 
     class Map
     {
-        enum { maxBucketLength = 191 };
+        enum { maxBucketLength = 11 };
     public:
         typedef void* key_type;
 
@@ -35,7 +35,7 @@ class MemoryPool
         {
             bool        released;
 #if DEBUG_LEVEL == 3 // Only windows can get callstack
-            UINT_PTR    callStack[CALLSTACK_MAX_DEPTH];
+            LPVOID      callStack[CALLSTACK_MAX_DEPTH];
             DWORD       dwCallStackDepth; // Real depth
 #endif
         };
@@ -67,15 +67,6 @@ class MemoryPool
     protected:
         inline const size_type hash(const key_type& key, const size_type& size)const;
 
-        inline const bool willRehash()const
-        {
-            for (size_type i = 0; i < buckets_count; ++i)
-            {
-                if (buckets_length[i] >= maxBucketLength) return true;
-            }
-            return false;
-        }
-
         void rehash();
     public:
         Map();
@@ -84,6 +75,7 @@ class MemoryPool
         bucket_node_type** buckets;
         size_type          buckets_count;
         size_type*         buckets_length;
+        bool               bRehash;
     };
 public:
     MemoryPool();
@@ -117,7 +109,7 @@ protected:
 #ifdef _DEBUG
         size_type size;
 #if DEBUG_LEVEL == 3 && defined(WIN32)
-        UINT_PTR  callStack[CALLSTACK_MAX_DEPTH];
+        LPVOID    callStack[CALLSTACK_MAX_DEPTH];
         DWORD     dwCallStackDepth;
 #endif
 

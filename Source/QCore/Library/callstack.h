@@ -39,8 +39,8 @@ public:
         DWORD dwLineNumber;
     };
 
-    DWORD stackTrace(UINT_PTR* pCallStack, DWORD dwMaxDepth);
-    void getFuncInfo(UINT_PTR dwFunc, FuncInfo& info);
+    DWORD stackTrace(LPVOID* pCallStack, DWORD dwMaxDepth);
+    void getFuncInfo(LPVOID dwFunc, FuncInfo& info);
 
     static CallStack& getInstance();
 protected:
