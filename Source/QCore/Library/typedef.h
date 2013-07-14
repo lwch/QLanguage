@@ -24,6 +24,12 @@ namespace QLanguage
         typedef long long          llong;
         typedef unsigned long long ullong;
 
+#ifdef unix
+        typedef unsigned long DWORD;
+        typedef unsigned int  UINT_PTR;
+        typedef void*         PVOID;
+#endif
+
         template <typename T>
         struct remove_const
         {

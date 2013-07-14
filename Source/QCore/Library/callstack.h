@@ -15,10 +15,12 @@
 
 #ifdef _DEBUG
 
+#ifdef WIN32
 #include <windows.h>
 #include <WinDNS.h>
 #include <DbgHelp.h>
 #include <Psapi.h>
+#endif
 
 #include "definition.h"
 
