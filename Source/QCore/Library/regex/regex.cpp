@@ -64,7 +64,7 @@ namespace regex
     {
         if (isString() && data.String.value)
         {
-            destruct(data.String.value, data.String.value + data.String.size + 1);
+            destruct_range(data.String.value, data.String.value + data.String.size + 1);
             allocator<char>::deallocate(data.String.value, data.String.size + 1);
         }
     }
@@ -137,7 +137,7 @@ namespace regex
         {
             if (x.isString() && isString())
             {
-                destruct(data.String.value, data.String.value + data.String.size + 1);
+                destruct_range(data.String.value, data.String.value + data.String.size + 1);
                 allocator<char>::deallocate(data.String.value, data.String.size + 1);
             }
             type = x.type;
@@ -183,7 +183,7 @@ namespace regex
     {
         if (isString() && data.String.value)
         {
-            destruct(data.String.value, data.String.value + data.String.size + 1);
+            destruct_range(data.String.value, data.String.value + data.String.size + 1);
             allocator<char>::deallocate(data.String.value, data.String.size + 1);
         }
         type = *buffer;
@@ -217,7 +217,7 @@ namespace regex
     {
         if (isString() && data.String.value)
         {
-            destruct(data.String.value, data.String.value + data.String.size + 1);
+            destruct_range(data.String.value, data.String.value + data.String.size + 1);
             allocator<char>::deallocate(data.String.value, data.String.size + 1);
         }
         stream >> type;

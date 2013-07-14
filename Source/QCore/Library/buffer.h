@@ -21,7 +21,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
     {
     public:
         typedef char               value_type;
-        typedef vector<value_type> container_type;
+        typedef vector<value_type, allocator_min<value_type> > container_type;
 #ifdef MSVC
         typedef container_type::size_type  size_type;
 #else

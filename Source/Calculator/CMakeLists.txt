@@ -6,6 +6,10 @@ PROJECT(Calculator)
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../check_bits.cmake)
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../warning2error.cmake)
 
+IF(GNUC)
+    SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wl,-Map=Calculator.map")
+ENDIF(GNUC)
+
 SET(DEBUG_LEVEL "3" CACHE STRING "1;2;3")
 SET_PROPERTY(CACHE DEBUG_LEVEL PROPERTY STRINGS "1" "2" "3")
 
@@ -30,10 +34,10 @@ SET (Generator_Parser ${Generator_Parser_Headers} ${Generator_Parser_Sources})
 SOURCE_GROUP(Parser FILES ${Generator_Parser})
 
 LIST (APPEND FILES
-	${Lexer}
-	${Parser}
-	${Generator_Parser}
-	Calculator.cpp
+    ${Lexer}
+    ${Parser}
+    ${Generator_Parser}
+    Calculator.cpp
 )
 
 SET(CMAKE_CXX_FLAGS_DEBUG_INIT "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1 -D_DEBUG") 
@@ -48,6 +52,10 @@ ADD_EXECUTABLE(Calculator ${FILES})
 SET_TARGET_PROPERTIES(Calculator PROPERTIES LINKER_LANGUAGE CXX)
 
 TARGET_LINK_LIBRARIES(Calculator QCore)
+
+IF(WIN32)
+    TARGET_LINK_LIBRARIES(Calculator dbghelp psapi)
+ENDIF(WIN32)
 
 IF (NOT TARGET QCore)
 	SUBDIRS(../QCore)

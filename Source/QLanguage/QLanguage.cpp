@@ -100,6 +100,12 @@ int main(int argv, char* args[])
 
                 fstream fs("Source.txt", fstream::out | fstream::text);
                 parser.print(fs);
+
+                parser.make();
+
+                Variant v("test");
+                string s = v.toString();
+                cout << s;
             }
             else cerr << "parser error" << endl;
         }

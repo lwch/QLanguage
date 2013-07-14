@@ -27,14 +27,18 @@ namespace QLanguage
             new (p) T();
         }
 
-        template <typename T1, typename T2>
-        inline void construct(T1* p, const T2& value)
+        template <typename Iterator>
+        inline void construct_range(Iterator first, Iterator last)
         {
-            new (p) T1(value);
+            while (first != last)
+            {
+                new (&*first) typename iterator_traits<Iterator>::value_type();
+                ++first;
+            }
         }
 
         template <typename T1, typename T2>
-        inline void construct(T1* p, T2& value)
+        inline void construct(T1* p, const T2& value)
         {
             new (p) T1(value);
         }
@@ -80,8 +84,8 @@ namespace QLanguage
         {
         }
 
-        template <typename ForwardIterator>
-        inline void destruct(ForwardIterator first, ForwardIterator last)
+        template <typename Iterator>
+        inline void destruct_range(Iterator first, Iterator last)
         {
             while (first != last)
             {

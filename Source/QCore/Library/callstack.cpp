@@ -6,25 +6,29 @@
 	file base:	callstack
 	file ext:	cpp
 	author:		lwch
-	
-	purpose:	
-*********************************************************************/
 
+	purpose:
+*********************************************************************/
+#include <string.h>
+
+#ifdef unix
+#include <execinfo.h>
+#endif
+
+#include "algo.h"
 #include "error.h"
 #include "system.h"
 #include "callstack.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
 
-#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-
-#pragma comment( lib, "Dbghelp.lib" )
-#pragma comment( lib, "Psapi.lib" )
+#ifdef _DEBUG
 
 bool CallStack::loaded = false;
 
 CallStack::CallStack()
 {
+#ifdef WIN32
     hProcess = GetCurrentProcess();
     DWORD dwOptions = SymGetOptions();
     dwOptions |= SYMOPT_LOAD_LINES;
@@ -36,6 +40,7 @@ CallStack::CallStack()
         if (!loadAllModules()) throw error<const char*>("loadAllModules failed", __FILE__, __LINE__);
         loaded = true;
     }
+#endif
 }
 
 CallStack::~CallStack()
@@ -44,18 +49,16 @@ CallStack::~CallStack()
 
 DWORD CallStack::stackTrace(UINT_PTR* pCallStack, DWORD dwMaxDepth)
 {
-    CaptureStackBackTrace(0, dwMaxDepth, (PVOID*)pCallStack, NULL);
-    DWORD dwCount = 0;
-    while (dwCount < dwMaxDepth)
-    {
-        if (pCallStack[dwCount] == 0) break;
-        ++dwCount;
-    }
-    return dwCount;
+#ifdef WIN32
+    return CaptureStackBackTrace(0, dwMaxDepth, (PVOID*)pCallStack, NULL);
+#else
+    return backtrace((PVOID*)pCallStack, dwMaxDepth);
+#endif
 }
 
 bool CallStack::loadAllModules()
 {
+#ifdef WIN32
     DWORD dwNeeded = 0;
     if (!EnumProcessModules(hProcess, hModule, sizeof(hModule), &dwNeeded)) return false;
 
@@ -75,12 +78,14 @@ bool CallStack::loadAllModules()
         SymLoadModule(hProcess, hModule[i], szImageName, szModuleName, (DWORD)info.lpBaseOfDll, info.SizeOfImage);
 #endif
     }
+#endif
     return true;
 }
 
 void CallStack::getFuncInfo(UINT_PTR dwFunc, FuncInfo& info)
 {
     memset(szBuffer, 0, sizeof(szBuffer));
+#ifdef WIN32
 #ifdef X64
     PIMAGEHLP_SYMBOL64 symbol = (PIMAGEHLP_SYMBOL64)szBuffer;
     symbol->SizeOfStruct  = sizeof(szBuffer);
@@ -125,6 +130,7 @@ void CallStack::getFuncInfo(UINT_PTR dwFunc, FuncInfo& info)
         info.szFilePath[min(sizeof(info.szFilePath) - 1, strlen(imageHelpLine.FileName))] = 0;
         info.dwLineNumber = imageHelpLine.LineNumber;
     }
+#endif
 #endif
 }
 

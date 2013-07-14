@@ -234,7 +234,7 @@ public:
     }
 };
 
-template <typename T>
+template <typename T, typename Alloc = allocator<T> >
 class vector
 {
 public:
@@ -250,7 +250,6 @@ public:
     typedef __reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
 protected:
     typedef vector<T>    self;
-    typedef allocator<T> Alloc;
 
     iterator start;
     iterator finish;
@@ -289,13 +288,13 @@ public:
 
     ~vector()
     {
-        destruct(start, finish);
+        destruct_range(start, finish);
         if (start != iterator::null()) Alloc::deallocate(start, end_of_element - start);
     }
 
     void initialize(size_type count, const value_type& x = value_type())
     {
-        destruct(start, finish);
+        destruct_range(start, finish);
         if (start != iterator::null()) Alloc::deallocate(start, end_of_element - start);
         if(count <= 0) THROW_OUT_OF_RANGE;
         start = Alloc::allocate(count);
@@ -316,7 +315,7 @@ public:
             const size_type old_size = size();
             iterator tmp = Alloc::allocate(count);
             uninitialized_copy(begin(), end(), tmp);
-            destruct(start, finish);
+            destruct_range(start, finish);
             Alloc::deallocate(start, old_capacity);
             start = tmp;
             finish = tmp + old_size;
@@ -492,7 +491,7 @@ public:
     void erase(iterator first, iterator last)
     {
         iterator i = copy(last, end(), first);
-        destruct(i, finish);
+        destruct_range(i, finish);
         finish = finish - (last - first);
     }
 
@@ -544,7 +543,7 @@ public:
         if (&x != this)
         {
             size_type const other_size = x.size();
-            destruct(start, finish);
+            destruct_range(start, finish);
             if (other_size > capacity())
             {
                 Alloc::deallocate(start, capacity());
@@ -629,7 +628,7 @@ protected:
             iterator new_position = tmp + (position - begin());
             construct(&*new_position, x);
             uninitialized_copy(position, end(), new_position + 1);
-            destruct(begin(), end());
+            destruct_range(begin(), end());
             Alloc::deallocate(begin(), old_size);
             end_of_element = tmp + new_size;
             finish = tmp + old_size + 1;
@@ -645,7 +644,7 @@ protected:
         uninitialized_copy(begin(), end(), tmp);
         iterator new_position = tmp + size();
         construct(&*new_position, x);
-        destruct(begin(), end());
+        destruct_range(begin(), end());
         Alloc::deallocate(begin(), old_size);
         end_of_element = tmp + new_size;
         finish = tmp + old_size + 1;

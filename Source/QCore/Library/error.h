@@ -34,8 +34,8 @@ namespace QLanguage
         template <typename T>
         class error
         {
+            enum { CALLSTACK_MAX_DEPTH = 30 };
 #if defined(_DEBUG) && DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-#define CALLSTACK_MAX_DEPTH 30
             UINT_PTR  callStack[CALLSTACK_MAX_DEPTH];
             DWORD     dwCallStackDepth; // Real depth
 #endif

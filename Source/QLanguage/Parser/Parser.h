@@ -12,11 +12,15 @@
 #ifndef _QLANGUAGE_PARSER_H_
 #define _QLANGUAGE_PARSER_H_
 
+#include <climits>
+
 #include "../../QCore/Library/hashset.h"
 #include "../../QCore/Library/hashmap.h"
 
-#include "SyntaxTree/SyntaxTree_Base.h"
 #include "../VirtualMachine/opcodes.h"
+#include "../VirtualMachine/Variant.h"
+
+#include "SyntaxTree/SyntaxTree_Base.h"
 #include "BasicParser.h"
 
 namespace QLanguage
@@ -221,30 +225,30 @@ namespace QLanguage
 
     class Parser : public BasicParser
     {
-        enum { maxRegisterCount = std::numeric_limits<uchar>::max() + 1};
-    public:
-        // 每个语句块或函数都有0-255个寄存器
-        // used && hash的索引
-        // 若是一个临时对象则hash为-1
-        struct RegisterInfo
+        enum
         {
-            pair<bool, HASH_KEY_TYPE> reg[256];
-
-            RegisterInfo();
-
-            const short getFree()const;
+            maxRegisterCount = UCHAR_MAX + 1,
+            maxConstantCount = USHRT_MAX + 1
         };
-
+    public:
         struct ContextInfo
         {
-            enum
+            enum Type
             {
                 GlobalFunction,
                 FunctionDeclare,
-                Function
+                Function,
+                Block
             }type;
 
             HASH_KEY_TYPE hash;
+
+            // 每个语句块或函数都有0-255个寄存器
+            // used && hash的索引
+            // 若是一个临时对象则hash为-1
+            pair<bool, HASH_KEY_TYPE> reg[maxRegisterCount];
+
+            ContextInfo(Type type, const HASH_KEY_TYPE& hash);
         };
 
     public:
@@ -255,6 +259,12 @@ namespace QLanguage
         virtual bool reduce(ushort i);
 
         void print(ostream& stream);
+
+        inline bool make()
+        {
+            if (syntaxTreeStack.size() == 1) return syntaxTreeStack.top()->make(this);
+            return false;
+        }
     protected:
         bool reduceType1Size(ushort i);
         bool reduceType2Size(ushort i);
@@ -400,11 +410,14 @@ namespace QLanguage
         {
             hashset<SyntaxTree_Base*> data;
         }context;
-        stack<SyntaxTree_Base*>              syntaxTreeStack;
-        stack<string>                        shifts;
-        list<VM::Instruction>                instructions;
-        hashmap<HASH_KEY_TYPE, RegisterInfo> registers;
-        stack<ContextInfo>                   runTimeContext;
+        stack<SyntaxTree_Base*> syntaxTreeStack;
+        stack<string>           shifts;
+
+        list<VM::Instruction>   instructions;
+        stack<ContextInfo>      makeContext;
+
+        VM::Variant*            pConstantTable;
+        size_t                  constantCount;
 #if defined(_DEBUG ) && DEBUG_LEVEL == 3
         fstream                  result;
 #endif

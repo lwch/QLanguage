@@ -6,14 +6,14 @@
 	file base:	callstack
 	file ext:	h
 	author:		lwch
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #ifndef _QLANGUAGE_LIBRARY_CALLSTACK_H_
 #define _QLANGUAGE_LIBRARY_CALLSTACK_H_
 
-#if defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#ifdef _DEBUG
 
 #include <windows.h>
 #include <WinDNS.h>
@@ -48,12 +48,15 @@ protected:
 
     enum { maxBufferLength = 4096 };
     char szBuffer[maxBufferLength];
+#ifdef WIN32
     HANDLE hProcess;
-
+#endif
     enum { iMax = 4096 };
+#ifdef WIN32
     HMODULE hModule[iMax];
-    TCHAR szModuleName[iMax];
-    TCHAR szImageName[iMax];
+#endif
+    char szModuleName[iMax];
+    char szImageName[iMax];
 };
 
 NAMESPACE_QLANGUAGE_LIBRARY_END

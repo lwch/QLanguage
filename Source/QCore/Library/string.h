@@ -373,7 +373,7 @@ public:
 
     void clear()
     {
-        destruct(start, finish);
+        destruct_range(start, finish);
         finish = start;
     }
 

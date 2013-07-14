@@ -27,16 +27,15 @@ namespace QLanguage
 {
     namespace Library
     {
-#if 0
         template <typename T>
-        class allocator
+        class allocator_min
         {
         public:
-            allocator()
+            allocator_min()
             {
             }
 
-            allocator(const allocator<T>&)
+            allocator_min(const allocator_min<T>&)
             {
             }
 
@@ -103,7 +102,7 @@ namespace QLanguage
                 return result;
             }
 
-            inline static size_t usedMemory()
+            inline static const size_t usedMemory()
             {
                 return totalSize;
             }
@@ -118,11 +117,11 @@ namespace QLanguage
         };
 
         template <typename T>
-        void (*allocator<T>::free_handler)(size_t) = 0;
+        void (*allocator_min<T>::free_handler)(size_t) = 0;
 
         template <typename T>
-        size_t allocator<T>::totalSize = 0;
-#else
+        size_t allocator_min<T>::totalSize = 0;
+
         template <typename T>
         class allocator
         {
@@ -137,79 +136,57 @@ namespace QLanguage
 
             inline static T* allocate()
             {
-                MemoryPool* pool = getPool();
+                MemoryPool* pool = MemoryPool::getInstance();
                 T* p = reinterpret_cast<T*>(pool->allocate(sizeof(T), free_handler));
-                totalSize += sizeof(T);
                 return p;
             }
 
             static T* allocate(size_t n)
             {
-                size_t size = n * sizeof(T);
-                MemoryPool* pool = getPool();
-                T* p = reinterpret_cast<T*>(pool->allocate(size, free_handler));
-                totalSize += size;
-                return p;
+                MemoryPool* pool = MemoryPool::getInstance();
+                return reinterpret_cast<T*>(pool->allocate(n * sizeof(T), free_handler));
             }
 
             inline static void deallocate(T* p)
             {
-                MemoryPool* pool = getPool();
+                MemoryPool* pool = MemoryPool::getInstance();
                 pool->deallocate(p, sizeof(T));
-                totalSize -= sizeof(T);
             }
 
             inline static void deallocate(T* p, size_t n)
             {
-                size_t size = n * sizeof(T);
-                MemoryPool* pool = getPool();
+                MemoryPool* pool = MemoryPool::getInstance();
                 pool->deallocate(p, n * sizeof(T));
-                totalSize -= size;
             }
 
             inline static void deallocateWithSize(T* p, size_t n)
             {
-                MemoryPool* pool = getPool();
+                MemoryPool* pool = MemoryPool::getInstance();
                 pool->deallocate(p, n);
-                totalSize -= n;
             }
 
             static T* reallocate(T* p, size_t old_size, size_t n)
             {
-                size_t size = n * sizeof(T);
-                MemoryPool* pool = getPool();
-                p = pool->reallocate(p, old_size, size, free_handler);
-                totalSize -= old_size;
-                totalSize += size;
+                MemoryPool* pool = MemoryPool::getInstance();
+                p = pool->reallocate(p, old_size, n * sizeof(T), free_handler);
                 return p;
             }
 
-            inline static size_t usedMemory()
+            inline static const size_t usedMemory()
             {
-                return totalSize;
+                return MemoryPool::getInstance()->usedMemory();
             }
         public:
             static void(*free_handler)(size_t);
-            static size_t totalSize;
 
             static void set_handler(void(*h)(size_t))
             {
                 free_handler = h;
             }
-        protected:
-            inline static MemoryPool* getPool()
-            {
-                static MemoryPool pool;
-                return &pool;
-            }
         };
 
         template <typename T>
         void (*allocator<T>::free_handler)(size_t) = 0;
-
-        template <typename T>
-        size_t allocator<T>::totalSize = 0;
-#endif
     }
 }
 

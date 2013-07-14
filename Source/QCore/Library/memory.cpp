@@ -6,51 +6,154 @@
 	file base:	memory
 	file ext:	cpp
 	author:		lwch
-	
-	purpose:	
+
+	purpose:
 *********************************************************************/
 
 #include <string.h>
 #include <stdlib.h>
 
+#include "hash.h"
 #include "iostream.h"
 #include "typedef.h"
 #include "memory.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
-///////////////////////////////////////////////////////////////////////////////////////////////////
-MemoryPool::MemoryPool() : free_list(NULL)
+MemoryPool::Map::Map()
+    : buckets_count(11) // 默认吊桶长度为11
 {
-    for(uint i = 0; i < MAX_COUNT; ++i) chunk_list[i] = 0;
+    size_type count = sizeof(bucket_node_type*) * buckets_count;
 
-#ifdef _DEBUG
-    use_list = NULL;
+    buckets = (bucket_node_type**)malloc(count);
+    memset(buckets, 0, count);
+
+    count = sizeof(size_type) * buckets_count;
+    buckets_length = (size_type*)malloc(count);
+    memset(buckets_length, 0, count);
+}
+
+MemoryPool::Map::~Map()
+{
+    for (size_type i = 0; i < buckets_count; ++i)
+    {
+        bucket_node_type *current = buckets[i];
+        while (current)
+        {
+            bucket_node_type* next = current->next;
+            destruct(current, has_destruct(*current));
+            free(current);
+            current = next;
+        }
+    }
+    destruct_range(buckets_length, buckets_length + buckets_count);
+    free(buckets_length);
+}
+
+MemoryPool::Map::value_type& MemoryPool::Map::operator[](const key_type& key)
+{
+    if (willRehash()) rehash();
+
+    const size_type idx = hash(key, buckets_count);
+
+    bucket_node_type* ptr = NULL;
+    bucket_node_type* current = buckets[idx];
+
+    while (current)
+    {
+        if (current->key == key)
+        {
+            ptr = current;
+            break;
+        }
+        current = current->next;
+    }
+
+    if (ptr == NULL)
+    {
+        ptr = (bucket_node_type*)malloc(sizeof(bucket_node_type));
+
+        ptr->key = key;
+        ptr->value.released = true;
+#if DEBUG_LEVEL == 3 && defined(_DEBUG)
+        memset(ptr->value.callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
+        ptr->value.dwCallStackDepth = CallStack::getInstance().stackTrace(ptr->value.callStack, CALLSTACK_MAX_DEPTH);
 #endif
+        ptr->next = buckets[idx];
+        buckets[idx] = ptr;
+        ++buckets_length[idx];
+    }
+    return ptr->value;
+}
+
+void MemoryPool::Map::rehash()
+{
+    size_type newCount = buckets_count << 1;
+
+    size_type count = sizeof(bucket_node_type*) * newCount;
+    bucket_node_type** newBuckets = (bucket_node_type**)malloc(count);
+    memset(newBuckets, 0, count);
+
+    count = sizeof(size_type) * newCount;
+    buckets_length = (size_type*)realloc(buckets_length, count);
+    memset(buckets_length, 0, count);
+
+    for (size_type i = 0; i < buckets_count; ++i)
+    {
+        bucket_node_type* current = buckets[i];
+        while (current)
+        {
+            bucket_node_type* next = current->next;
+
+            const size_type idx = hash(current->key, newCount);
+            current->next = newBuckets[idx];
+            newBuckets[idx] = current;
+
+            ++buckets_length[idx];
+
+            current = next;
+        }
+    }
+
+    destruct_range(buckets, buckets + buckets_count);
+    free(buckets);
+
+    buckets = newBuckets;
+    buckets_count = newCount;
+}
+
+inline const MemoryPool::size_type MemoryPool::Map::hash(const key_type& key, const size_type& size)const
+{
+    return hash_seq((const uchar*)&key, sizeof(key_type)) % size;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+MemoryPool::MemoryPool()
+    : free_list(NULL)
+    , totalSize(0)
+{
+    for (uint i = 0; i < MAX_COUNT; ++i) chunk_list[i] = 0;
 }
 
 MemoryPool::~MemoryPool()
 {
 #ifdef _DEBUG
-    while (use_list)
+    use_map.for_each(
+    [](void* k, const Map::value_type& v) -> bool
     {
-        use *ptr = use_list, *next = use_list->next;
-        if (!ptr->data->released)
+        if (!v.released)
         {
-#if DEBUG_LEVEL == 3 && defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-            obj* pObj = ptr->data;
-            for (DWORD j = 0; j < pObj->dwCallStackDepth; ++j)
+#if DEBUG_LEVEL == 3
+            for (DWORD i = 0; i < v.dwCallStackDepth; ++i)
             {
                 CallStack::FuncInfo funcInfo;
-                CallStack::getInstance().getFuncInfo(pObj->callStack[j], funcInfo);
+                CallStack::getInstance().getFuncInfo(v.callStack[i], funcInfo);
                 cerr << string::format("MemoryLeaked: %s", funcInfo.szFuncName) << endl;
                 cerr << string::format("File: %s on line %d", funcInfo.szFilePath, funcInfo.dwLineNumber) << endl;
             }
 #endif
             throw error<const char*>("chunk leaked", __FILE__, __LINE__);
         }
-        free(ptr);
-        use_list = next;
-    }
+        return v.released;
+    });
 #endif
     clear();
 }
@@ -61,24 +164,8 @@ void MemoryPool::clear()
     while(current)
     {
         block* next = current->next;
-        // why add try catch is ok?
-        try
-        {
-            free(current->data);
-            free(current);
-        }
-        catch (...)
-        {
-#if DEBUG_LEVEL == 3 && defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-            for (DWORD i = 0; i < current->dwCallStackDepth; ++i)
-            {
-                CallStack::FuncInfo info;
-                CallStack::getInstance().getFuncInfo(current->callStack[i], info);
-                cerr << string::format("ERROR: %s", info.szFuncName) << endl;
-                cerr << string::format("%s on line %d", info.szFilePath, info.dwLineNumber);
-            }
-#endif
-        }
+        free(current->data);
+        free(current);
         current = next;
     }
     free_list = NULL;
@@ -86,49 +173,52 @@ void MemoryPool::clear()
 
 void* MemoryPool::allocate(size_type n, void(*h)(size_type))
 {
-    if(n == 0) return 0;
-    if(n > MAX_BYTES)
+    if (n == 0) return 0;
+    if (n > MAX_BYTES)
     {
         void* p = malloc(n);
-        while(p == 0)
+        while (p == 0)
         {
             h(n);
             p = malloc(n);
         }
+#ifdef _DEBUG
+        use_map[p].released = false;
+#endif
+        totalSize += n;
         return p;
     }
     const size_t size = ROUND_UP(n);
     const int i = INDEX(size);
     obj* p = chunk_list[i];
-    if(p == 0)
+    if (p == 0)
     {
-#ifdef NDEBUG
-        for(int j = i + 1; j < MAX_COUNT; ++j)
+        for (int j = i + 1; j < MAX_COUNT; ++j)
         {
             p = chunk_list[j];
-            if(p != 0)
+            if (p != NULL)
             {
                 chunk_list[j] = chunk_list[j]->next;
                 const int l = INDEX((j + 1) * ALIGN - size);
-                obj* q = (obj*)((char*)p + size + headerSize);
+                obj* q = (obj*)((char*)p + size);
                 q->next = chunk_list[l];
                 chunk_list[l] = q;
-                return (char*)p + headerSize;
+#ifdef _DEBUG
+                use_map[q].released = true;
+                use_map[p].released = false;
+#endif
+                totalSize += n;
+                return (char*)p;
             }
         }
-#endif
         return refill(i, h);
     }
-#ifdef _DEBUG
-
-#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-    memset(chunk_list[i]->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
-    chunk_list[i]->dwCallStackDepth = CallStack::getInstance().stackTrace(chunk_list[i]->callStack, CALLSTACK_MAX_DEPTH);
-#endif
-    chunk_list[i]->released = false;
-#endif
     chunk_list[i] = p->next;
-    return (char*)p + headerSize;
+#ifdef _DEBUG
+    use_map[p].released = false;
+#endif
+    totalSize += n;
+    return (char*)p;
 }
 
 void MemoryPool::deallocate(void* p, size_type n)
@@ -137,20 +227,19 @@ void MemoryPool::deallocate(void* p, size_type n)
     if (n > MAX_BYTES)
     {
         free(p);
+#ifdef _DEBUG
+        use_map[p].released = true;
+#endif
+        totalSize -= n;
         return;
     }
     const int i = INDEX(ROUND_UP(n));
-#ifdef _DEBUG
-    p = (char*)p - (int)headerSize;
-    obj* ptr = reinterpret_cast<obj*>(p);
-#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-    memset(ptr->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
-#endif
-    if (ptr->released) throw error<const char*>("chunk has already released", __FILE__, __LINE__);
-    ptr->released = true;
-#endif
     reinterpret_cast<obj*>(p)->next = chunk_list[i];
     chunk_list[i] = reinterpret_cast<obj*>(p);
+#ifdef _DEBUG
+    use_map[p].released = true;
+#endif
+    totalSize -= n;
 }
 
 void* MemoryPool::reallocate(void* p, size_t old_size, size_t new_size, void(*h)(size_type))
@@ -165,6 +254,19 @@ void* MemoryPool::reallocate(void* p, size_t old_size, size_t new_size, void(*h)
     memcpy(result, p, copy_size);
     deallocate(p, old_size);
     return result;
+}
+
+const bool MemoryPool::hashLeaked()const
+{
+#ifdef _DEBUG
+    return use_map.for_each(
+           [](void* k, const Map::value_type& v) -> bool
+           {
+               return v.released;
+           });
+#else
+    return false;
+#endif
 }
 
 inline const size_t MemoryPool::ROUND_UP(size_type bytes)const
@@ -186,7 +288,7 @@ const size_t MemoryPool::obj_count(int i)const
 {
     size_t result = 0;
     obj* current = chunk_list[i];
-    while(current)
+    while (current)
     {
         ++result;
         current = current->next;
@@ -197,20 +299,20 @@ const size_t MemoryPool::obj_count(int i)const
 void* MemoryPool::refill(int i, void(*h)(size_type))
 {
     const int count = 20;
-    const int preSize = (i + 1) * ALIGN + headerSize;
+    const int preSize = (i + 1) * ALIGN;
     char* p = (char*)malloc(preSize * count);
-    while(p == 0)
+    while (p == 0)
     {
         h(preSize * count);
         p = (char*)malloc(preSize * count);
     }
     block* pBlock = (block*)malloc(sizeof(block));
-    while(pBlock == 0)
+    while (pBlock == 0)
     {
         h(sizeof(block));
         pBlock = (block*)malloc(sizeof(block));
     }
-#if DEBUG_LEVEL == 3 && defined(_DEBUG) && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(_DEBUG) && defined(WIN32)
     memset(pBlock->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
     pBlock->dwCallStackDepth = CallStack::getInstance().stackTrace(pBlock->callStack, CALLSTACK_MAX_DEPTH);
 #endif
@@ -220,40 +322,19 @@ void* MemoryPool::refill(int i, void(*h)(size_type))
 
     obj* current = (obj*)p;
 #ifdef _DEBUG
-    addUseInfo(current, h);
-#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-    memset(current->callStack, 0, CALLSTACK_MAX_DEPTH * sizeof(UINT_PTR));
-    current->dwCallStackDepth = CallStack::getInstance().stackTrace(current->callStack, CALLSTACK_MAX_DEPTH);
-#endif
-    current->released = false;
+    use_map[p].released = false;
 #endif
     current = (obj*)((char*)current + preSize);
-    for(int j = 0; j < count - 1; ++j)
+    for (int j = 0; j < count - 1; ++j)
     {
 #ifdef _DEBUG
-        addUseInfo(current, h);
-        current->released = true;
+        use_map[current].released = true;
 #endif
         current->next = chunk_list[i];
         chunk_list[i] = current;
         current = (obj*)((char*)current + preSize);
     }
-    return (char*)p + headerSize;
+    return p;
 }
-
-#ifdef _DEBUG
-inline void MemoryPool::addUseInfo(obj* ptr, void(*h)(size_type))
-{
-    use* p = (use*)malloc(sizeof(use));
-    while (p == 0)
-    {
-        h(sizeof(use));
-        p = (use*)malloc(sizeof(use));
-    }
-    p->data = ptr;
-    p->next = use_list;
-    use_list = p;
-}
-#endif
 
 NAMESPACE_QLANGUAGE_LIBRARY_END

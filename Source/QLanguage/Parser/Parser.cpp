@@ -15,7 +15,9 @@
 
 namespace QLanguage
 {
-    Parser::RegisterInfo::RegisterInfo()
+    Parser::ContextInfo::ContextInfo(Type type, const HASH_KEY_TYPE& hash)
+        : type(type)
+        , hash(hash)
     {
         for (size_t i = 0; i < maxRegisterCount; ++i)
         {
@@ -24,21 +26,15 @@ namespace QLanguage
         }
     }
 
-    const short Parser::RegisterInfo::getFree()const
-    {
-        for (size_t i = 0; i < maxRegisterCount; ++i)
-        {
-            if (!reg[i].first) return i;
-        }
-        return -1;
-    }
-
     Parser::Parser(const vector<Production>& productions)
         : BasicParser(productions)
+        , constantCount(0)
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
         , result("Result.txt", fstream::out | fstream::text)
 #endif
     {
+        pConstantTable = allocator<VM::Variant>::allocate(maxConstantCount);
+        construct_range(pConstantTable, pConstantTable + maxConstantCount);
     }
 
     Parser::~Parser()
@@ -48,6 +44,8 @@ namespace QLanguage
             destruct(*i, has_destruct(**i));
             allocator<SyntaxTree_Base>::deallocateWithSize(*i, (*i)->size());
         }
+        destruct_range(pConstantTable, pConstantTable + maxConstantCount);
+        allocator<VM::Variant>::deallocate(pConstantTable, maxConstantCount);
     }
 
     bool Parser::shift(const string& s)

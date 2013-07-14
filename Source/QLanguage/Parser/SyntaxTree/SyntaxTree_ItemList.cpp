@@ -15,7 +15,8 @@
 
 namespace QLanguage
 {
-    SyntaxTree_ItemList::SyntaxTree_ItemList() : parent(sizeof(SyntaxTree_ItemList))
+    SyntaxTree_ItemList::SyntaxTree_ItemList()
+        : parent(sizeof(SyntaxTree_ItemList))
     {
     }
 

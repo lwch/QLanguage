@@ -17,14 +17,74 @@
 #include "definition.h"
 
 NAMESPACE_QLANGUAGE_LIBRARY_START
-
 #pragma pack(1)
 class MemoryPool
 {
-protected:
-    enum { ALIGN = sizeof(void*), MAX_BYTES = 128, MAX_COUNT = MAX_BYTES / ALIGN};
+    enum { ALIGN = sizeof(void*), MAX_BYTES = 512, MAX_COUNT = MAX_BYTES / ALIGN};
+    enum { CALLSTACK_MAX_DEPTH = 30 };
 
     typedef size_t size_type;
+
+    class Map
+    {
+        enum { maxBucketLength = 191 };
+    public:
+        typedef void* key_type;
+
+        struct value_type
+        {
+            bool        released;
+#if DEBUG_LEVEL == 3 // Only windows can get callstack
+            UINT_PTR    callStack[CALLSTACK_MAX_DEPTH];
+            DWORD       dwCallStackDepth; // Real depth
+#endif
+        };
+
+        struct bucket_node_type
+        {
+            key_type          key;
+            value_type        value;
+            bucket_node_type* next;
+        };
+
+        value_type& operator[](const key_type& key);
+
+        template <typename Func>
+        const bool for_each(Func func)const
+        {
+            for (size_type i = 0; i < buckets_count; ++i)
+            {
+                bucket_node_type* current = buckets[i];
+                while (current)
+                {
+                    bucket_node_type* next = current->next;
+                    if (!func(current->key, current->value)) return false;
+                    current = next;
+                }
+            }
+            return true;
+        }
+    protected:
+        inline const size_type hash(const key_type& key, const size_type& size)const;
+
+        inline const bool willRehash()const
+        {
+            for (size_type i = 0; i < buckets_count; ++i)
+            {
+                if (buckets_length[i] >= maxBucketLength) return true;
+            }
+            return false;
+        }
+
+        void rehash();
+    public:
+        Map();
+        ~Map();
+    public:
+        bucket_node_type** buckets;
+        size_type          buckets_count;
+        size_type*         buckets_length;
+    };
 public:
     MemoryPool();
     ~MemoryPool();
@@ -34,19 +94,19 @@ public:
     void* allocate(size_type n, void(*h)(size_type));
     void deallocate(void* p, size_type n);
     void* reallocate(void* p, size_t old_size, size_t new_size, void(*h)(size_type));
+
+    inline const size_type usedMemory()const { return totalSize; }
+
+    inline static MemoryPool* getInstance()
+    {
+        static MemoryPool pool;
+        return &pool;
+    }
+
+    const bool hashLeaked()const;
 protected:
     struct obj
     {
-#ifdef _DEBUG
-        bool      released;
-
-#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__) // Only windows can get callstack
-#define CALLSTACK_MAX_DEPTH 30
-        UINT_PTR  callStack[CALLSTACK_MAX_DEPTH];
-        DWORD     dwCallStackDepth; // Real depth
-#endif
-
-#endif
         obj*      next;
     };
 
@@ -56,25 +116,19 @@ protected:
         void*     data;
 #ifdef _DEBUG
         size_type size;
-#if DEBUG_LEVEL == 3 && defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if DEBUG_LEVEL == 3 && defined(WIN32)
         UINT_PTR  callStack[CALLSTACK_MAX_DEPTH];
         DWORD     dwCallStackDepth;
 #endif
-#endif
-    };
 
-#ifdef _DEBUG
-    struct use
-    {
-        obj* data;
-        use* next;
-    };
 #endif
+    };
 
     obj*      chunk_list[MAX_COUNT];
     block*    free_list;
+    size_type totalSize;
 #ifdef _DEBUG
-    use*      use_list;
+    Map       use_map;
 #endif
 
     const size_type ROUND_UP(size_type bytes)const;
@@ -83,14 +137,6 @@ protected:
     const size_type obj_count(int i)const;
 
     void* refill(int i, void(*h)(size_type));
-
-#ifdef _DEBUG
-    void addUseInfo(obj* ptr, void(*h)(size_type));
-
-    enum { headerSize = sizeof(obj) - sizeof(obj*) };
-#else
-    enum { headerSize = 0 };
-#endif
 };
 #pragma pack()
 

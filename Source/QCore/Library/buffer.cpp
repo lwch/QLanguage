@@ -77,7 +77,7 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         if (size > container.size()) throw error<const char*>("step size too big", __FILE__, __LINE__);
 
         copy(container.begin() + size, container.end(), container.begin());
-        destruct(container.end() - size, container.end());
+        destruct_range(container.end() - size, container.end());
         container.setsize(container.size() - size);
     }
 NAMESPACE_QLANGUAGE_LIBRARY_END
