@@ -93,7 +93,7 @@ void CallStack::getFuncInfo(LPVOID dwFunc, FuncInfo& info)
 
     DWORD64 dwDisplacement = 0;
 
-    if (SymGetSymFromAddr64(hProcess, dwFunc, &dwDisplacement, symbol))
+    if (SymGetSymFromAddr64(hProcess, (DWORD)dwFunc, &dwDisplacement, symbol))
     {
         strncpy(info.szFuncName, symbol->Name, min(sizeof(info.szFuncName) - 1, strlen(symbol->Name)));
         info.szFuncName[min(sizeof(info.szFuncName) - 1, strlen(symbol->Name))] = 0;
@@ -102,7 +102,7 @@ void CallStack::getFuncInfo(LPVOID dwFunc, FuncInfo& info)
     IMAGEHLP_LINE64 imageHelpLine;
     imageHelpLine.SizeOfStruct = sizeof(imageHelpLine);
 
-    if (SymGetLineFromAddr64(hProcess, dwFunc, (PDWORD)&dwDisplacement, &imageHelpLine))
+    if (SymGetLineFromAddr64(hProcess, (DWORD)dwFunc, (PDWORD)&dwDisplacement, &imageHelpLine))
     {
         strncpy(info.szFilePath, imageHelpLine.FileName, min(sizeof(info.szFilePath) - 1, strlen(imageHelpLine.FileName)));
         info.szFilePath[min(sizeof(info.szFilePath) - 1, strlen(imageHelpLine.FileName))] = 0;
