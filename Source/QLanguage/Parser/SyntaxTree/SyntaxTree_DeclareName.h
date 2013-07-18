@@ -35,6 +35,8 @@ namespace QLanguage
 
         virtual const HASH_KEY_TYPE hash()const;
 
+        virtual bool make(Parser* pParser);
+
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG

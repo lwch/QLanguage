@@ -41,6 +41,15 @@ namespace QLanguage
         }
     }
 
+    bool SyntaxTree_DeclareList::make(Parser* pParser)
+    {
+        for (vector<SyntaxTree_Base*>::iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+        {
+            if (!(*i)->make(pParser)) return false;
+        }
+        return true;
+    }
+
     // declare_desc -> declare_desc "," "{Letter}" array_lst "=" exp
     // declare_desc -> declare_desc "," "{Letter}" "=" exp
     // declare_desc -> type_desc "{Letter}" array_lst "=" exp

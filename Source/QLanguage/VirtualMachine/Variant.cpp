@@ -142,5 +142,39 @@ namespace QLanguage
             memcpy(stringValue.value, x + start, stringValue.length);
             stringValue.value[stringValue.length] = 0;
         }
+
+        const bool Variant::operator==(const Variant& v)const
+        {
+            if (_type != v._type) return false;
+            switch (_type)
+            {
+            case Char:
+            case UChar:
+            case Short:
+            case UShort:
+            case Int:
+            case UInt:
+            case Long:
+            case ULong:
+            case LLong:
+            case ULLong:
+                return toLLong() == v.toLLong();
+            case String:
+                return compareString(v.stringValue.value, v.stringValue.length);
+            case Undefined:
+                return false;
+            }
+            return false;
+        }
+
+        const bool Variant::compareString(const char* data, size_t len)const
+        {
+            if (stringValue.length != len) return false;
+            for (size_t i = 0; i < stringValue.length; ++i)
+            {
+                if (stringValue.value[i] != data[i]) return false;
+            }
+            return true;
+        }
     }
 }

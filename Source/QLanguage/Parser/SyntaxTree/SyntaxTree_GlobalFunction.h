@@ -38,6 +38,8 @@ namespace QLanguage
         // hash = hash(template) + hash(return) * 2 + hash(name) + hash(parameters) * 2
         virtual const HASH_KEY_TYPE hash()const;
 
+        virtual bool make(Parser* pParser);
+
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG

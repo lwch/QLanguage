@@ -102,10 +102,6 @@ int main(int argv, char* args[])
                 parser.print(fs);
 
                 parser.make();
-
-                Variant v("test");
-                string s = v.toString();
-                cout << s;
             }
             else cerr << "parser error" << endl;
         }

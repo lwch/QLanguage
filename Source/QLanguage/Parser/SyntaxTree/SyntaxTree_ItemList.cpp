@@ -33,6 +33,15 @@ namespace QLanguage
         }
     }
 
+    bool SyntaxTree_ItemList::make(Parser* pParser)
+    {
+        for (vector<SyntaxTree_Base*>::iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+        {
+            if (!(*i)->make(pParser)) return false;
+        }
+        return true;
+    }
+
     // item_list -> item_list item
     bool Parser::reduceItemList2Size()
     {

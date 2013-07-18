@@ -28,6 +28,8 @@ namespace QLanguage
         
         inline virtual string type()const { return "SyntaxTree_Block"; }
 
+        inline virtual bool make(Parser* pParser) { return pStmts->make(pParser); }
+
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG

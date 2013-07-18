@@ -62,8 +62,6 @@ namespace QLanguage
 
         inline virtual const bool isValue()const { return _type == Value; }
 
-        virtual const short getRegister(Parser* pParser)const;
-
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG

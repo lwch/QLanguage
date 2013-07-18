@@ -34,6 +34,15 @@ namespace QLanguage
         }
     }
 
+    bool SyntaxTree_StmtList::make(Parser* pParser)
+    {
+        for (vector<SyntaxTree_Base*>::iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+        {
+            if (!(*i)->make(pParser)) return false;
+        }
+        return true;
+    }
+
     // stmt_list -> stmt_list stmt
     // stmt_list -> stmt_list block
     bool Parser::reduceStmtList2Size(ushort i)

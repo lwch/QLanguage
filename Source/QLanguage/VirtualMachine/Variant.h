@@ -112,6 +112,10 @@ namespace QLanguage
 
             const char* toCharPointer()const;
             const string toString()const;
+
+            const bool operator==(const Variant& v)const;
+        protected:
+            const bool compareString(const char* data, size_t len)const;
         protected:
             template <typename T>
             const T number2Type()const
@@ -143,6 +147,7 @@ namespace QLanguage
                 case Undefined:
                     throw error<const char*>("Variant has no value", __FILE__, __LINE__);
                 }
+                return T();
             }
 
             void initString(const char* x, size_t size, size_t start, size_t count = -1);

@@ -27,6 +27,8 @@ namespace QLanguage
         
         inline virtual string type()const { return "SyntaxTree_Item"; }
 
+        inline virtual bool make(Parser* pParser) { return pItem->make(pParser); }
+
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG

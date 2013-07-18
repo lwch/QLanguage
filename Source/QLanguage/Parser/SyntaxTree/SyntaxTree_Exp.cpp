@@ -138,23 +138,11 @@ namespace QLanguage
         return 0;
     }
 
-    const short SyntaxTree_Exp::getRegister(Parser *pParser)const
-    {
-        short result = -1;
-        return result;
-    }
-
     bool SyntaxTree_Exp::make(Parser* pParser)
     {
+        // TODO
         if (OP1.isValue() && pOP2 && pOP2->isValue())
         {
-            short i = OP1.getRegister(pParser);
-            short j = pOP2->getRegister(pParser);
-            if (i == -1 || j ==-1) return false; // no register
-//            switch (_type)
-//            {
-//            case
-//            }
         }
         return true;
     }

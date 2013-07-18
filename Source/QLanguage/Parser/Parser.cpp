@@ -15,6 +15,22 @@
 
 namespace QLanguage
 {
+    const int Parser::ConstantTable::indexOf(const VM::Variant& v)const
+    {
+        for (size_t i = 0, m = constants.size(); i < m; ++i)
+        {
+            if (constants[i] == v) return i;
+        }
+        return -1;
+    }
+
+    bool Parser::ConstantTable::push(const VM::Variant& v)
+    {
+        if (constants.size() >= maxConstantCount) return false;
+        constants.push_back(v);
+        return true;
+    }
+
     Parser::ContextInfo::ContextInfo(Type type, const HASH_KEY_TYPE& hash)
         : type(type)
         , hash(hash)
@@ -28,13 +44,10 @@ namespace QLanguage
 
     Parser::Parser(const vector<Production>& productions)
         : BasicParser(productions)
-        , constantCount(0)
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
         , result("Result.txt", fstream::out | fstream::text)
 #endif
     {
-        pConstantTable = allocator<VM::Variant>::allocate(maxConstantCount);
-        construct_range(pConstantTable, pConstantTable + maxConstantCount);
     }
 
     Parser::~Parser()
@@ -44,8 +57,6 @@ namespace QLanguage
             destruct(*i, has_destruct(**i));
             allocator<SyntaxTree_Base>::deallocateWithSize(*i, (*i)->size());
         }
-        destruct_range(pConstantTable, pConstantTable + maxConstantCount);
-        allocator<VM::Variant>::deallocate(pConstantTable, maxConstantCount);
     }
 
     bool Parser::shift(const string& s)

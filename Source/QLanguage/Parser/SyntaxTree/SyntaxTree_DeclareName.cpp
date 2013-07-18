@@ -66,4 +66,12 @@ namespace QLanguage
     {
         return ::hash<string>()(name);
     }
+
+    bool SyntaxTree_DeclareName::make(Parser* pParser)
+    {
+        bool bResult = true;
+        // TODO: 分配寄存器
+        if (pExp) bResult = pExp->make(pParser);
+        return bResult;
+    }
 }

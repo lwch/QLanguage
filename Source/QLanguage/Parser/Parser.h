@@ -230,7 +230,19 @@ namespace QLanguage
             maxRegisterCount = UCHAR_MAX + 1,
             maxConstantCount = USHRT_MAX + 1
         };
+
+        friend SyntaxTree_GlobalFunction;
     public:
+        // 每个常量表有0-65535个常量
+        class ConstantTable
+        {
+        public:
+            const int indexOf(const VM::Variant& v)const;
+            bool push(const VM::Variant& v);
+        protected:
+            vector<VM::Variant> constants;
+        };
+
         struct ContextInfo
         {
             enum Type
@@ -247,6 +259,8 @@ namespace QLanguage
             // used && hash的索引
             // 若是一个临时对象则hash为-1
             pair<bool, HASH_KEY_TYPE> reg[maxRegisterCount];
+
+            ConstantTable constantTable;
 
             ContextInfo(Type type, const HASH_KEY_TYPE& hash);
         };
@@ -416,8 +430,7 @@ namespace QLanguage
         list<VM::Instruction>   instructions;
         stack<ContextInfo>      makeContext;
 
-        VM::Variant*            pConstantTable;
-        size_t                  constantCount;
+        ConstantTable           constantTable;
 #if defined(_DEBUG ) && DEBUG_LEVEL == 3
         fstream                  result;
 #endif
