@@ -231,7 +231,7 @@ namespace QLanguage
             maxConstantCount = USHRT_MAX + 1
         };
 
-        friend SyntaxTree_GlobalFunction;
+        friend class SyntaxTree_GlobalFunction;
     public:
         // 每个常量表有0-65535个常量
         class ConstantTable
