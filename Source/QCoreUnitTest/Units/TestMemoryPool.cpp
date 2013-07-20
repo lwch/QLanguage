@@ -23,17 +23,33 @@ namespace QLanguage
             MemoryPool pool;
 
             const size_t size = 1000;
-            typedef struct { long a; long b; long c; long d;
-                             long e; long f; long g; long h;
-                             long i; long j; long k; long l;
-                             long m; long n; long o; long p; } type1;
+            struct type1
+            {
+                long a; long b; long c; long d;
+                long e; long f; long g; long h;
+                long i; long j; long k; long l;
+                long m; long n; long o; long p;
 
-            typedef struct { type1 a; type1 b; type1 c; type1 d;
-                             type1 e; type1 f; type1 g; type1 h;
-                             type1 i; type1 j; type1 k; type1 l;
-                             type1 m; type1 n; type1 o; type1 p; } type2;
+                type1() {}
+            };
 
-            typedef struct { type2 a; type2 b; } type;
+            struct type2
+            {
+                type1 a; type1 b; type1 c; type1 d;
+                type1 e; type1 f; type1 g; type1 h;
+                type1 i; type1 j; type1 k; type1 l;
+                type1 m; type1 n; type1 o; type1 p;
+
+                type2() {}
+            };
+
+            struct type
+            {
+                type2 a;
+                type2 b;
+
+                type() {}
+            };
 
             for (size_t j = 0; j < 10; ++j)
             {
