@@ -143,8 +143,73 @@ namespace QLanguage
         // TODO
         if (OP1.isValue() && pOP2 && pOP2->isValue())
         {
+            bool bConstValue1 = OP1.isConstValue();
+            bool bConstValue2 = pOP2->isConstValue();
+
+            if (bConstValue1 && bConstValue2) // 两个常量可提前计算出结果
+            {
+                VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1),
+                                     dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1),
+                                     _type);
+            }
         }
         return true;
+    }
+
+    const VM::Variant SyntaxTree_Exp::eval(const SyntaxTree_Value& v1, const SyntaxTree_Value& v2, Type type)
+    {
+        switch (type)
+        {
+        case GreaterEqual:
+            return v1.greaterEqual(v2);
+        case LessEqual:
+            return v1.lessEqual(v2);
+        case Equal:
+            return v1.equal(v2);
+        case Greater:
+            return v1.greater(v2);
+        case Less:
+            return v1.less(v2);
+        case QLanguage::SyntaxTree_Exp::Assign:
+            break;
+        case QLanguage::SyntaxTree_Exp::LogicAnd:
+            break;
+        case QLanguage::SyntaxTree_Exp::LogicOr:
+            break;
+        case QLanguage::SyntaxTree_Exp::BitAnd:
+            break;
+        case QLanguage::SyntaxTree_Exp::BitOr:
+            break;
+        case QLanguage::SyntaxTree_Exp::BitXor:
+            break;
+        case QLanguage::SyntaxTree_Exp::TrueFalse:
+            break;
+        case QLanguage::SyntaxTree_Exp::Not:
+            break;
+        case QLanguage::SyntaxTree_Exp::Positive:
+            break;
+        case QLanguage::SyntaxTree_Exp::Negative:
+            break;
+        case QLanguage::SyntaxTree_Exp::Add:
+            break;
+        case QLanguage::SyntaxTree_Exp::Sub:
+            break;
+        case QLanguage::SyntaxTree_Exp::Mul:
+            break;
+        case QLanguage::SyntaxTree_Exp::Div:
+            break;
+        case QLanguage::SyntaxTree_Exp::Mod:
+            break;
+        case QLanguage::SyntaxTree_Exp::Call:
+            break;
+        case QLanguage::SyntaxTree_Exp::ValueAsType:
+            break;
+        case QLanguage::SyntaxTree_Exp::Value:
+            break;
+        default:
+            break;
+        }
+        return false;
     }
     
     // exp -> exp "?" exp ":" exp

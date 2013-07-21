@@ -39,6 +39,14 @@ namespace QLanguage
 
         virtual const HASH_KEY_TYPE hash()const;
 
+        inline virtual const bool isConstValue()const { return _type != Member; }
+
+        const bool greaterEqual(const SyntaxTree_Value& x)const;
+        const bool lessEqual(const SyntaxTree_Value& x)const;
+        const bool equal(const SyntaxTree_Value& x)const;
+        const bool greater(const SyntaxTree_Value& x)const;
+        const bool less(const SyntaxTree_Value& x)const;
+
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG

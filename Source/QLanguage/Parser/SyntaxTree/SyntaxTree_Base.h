@@ -108,6 +108,7 @@ class SyntaxTree_Do;
         inline virtual const short getRegister(Parser* pParser)const { return -1; }
 
         inline virtual const bool isValue()const { return false; }
+        inline virtual const bool isConstValue()const { return false; }
 
         virtual const bool operator==(const SyntaxTree_Base& x)const=0;
         virtual const bool operator!=(const SyntaxTree_Base& x)const=0;
