@@ -80,6 +80,18 @@ namespace QLanguage
         {
         }
 
+        Variant::Variant(float x)
+            : floatValue(x)
+            , _type(Float)
+        {
+        }
+
+        Variant::Variant(double x)
+            : doubleValue(x)
+            , _type(Double)
+        {
+        }
+
         Variant::Variant(const char* x)
             : _type(String)
         {
@@ -159,6 +171,9 @@ namespace QLanguage
             case LLong:
             case ULLong:
                 return toLLong() == v.toLLong();
+            case Float:
+            case Double:
+                return toDouble() == v.toDouble();
             case String:
                 return compareString(v.stringValue.value, v.stringValue.length);
             case Undefined:

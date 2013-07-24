@@ -37,6 +37,8 @@ namespace QLanguage
                 ULong,
                 LLong,
                 ULLong,
+                Float,
+                Double,
                 String,
                 Undefined
             };
@@ -52,6 +54,8 @@ namespace QLanguage
             Variant(ulong  x);
             Variant(llong  x);
             Variant(ullong x);
+            Variant(float  x);
+            Variant(double x);
             Variant(const char* x);
             Variant(const char* x, size_t start, size_t count = -1);
             Variant(const string& x);
@@ -110,6 +114,16 @@ namespace QLanguage
                 return number2Type<ullong>();
             }
 
+            inline const float toFloat()const
+            {
+                return number2Type<float>();
+            }
+
+            inline const double toDouble()const
+            {
+                return number2Type<double>();
+            }
+
             const char* toCharPointer()const;
             const string toString()const;
 
@@ -142,6 +156,10 @@ namespace QLanguage
                     return static_cast<T>(llongValue);
                 case ULLong:
                     return static_cast<T>(ullongValue);
+                case Float:
+                    return static_cast<T>(floatValue);
+                case Double:
+                    return static_cast<T>(doubleValue);
                 case String:
                     throw error<const char*>("Can't cast from string to number", __FILE__, __LINE__);
                 case Undefined:
@@ -164,6 +182,8 @@ namespace QLanguage
                 ulong  ulongValue;
                 llong  llongValue;
                 ullong ullongValue;
+                float  floatValue;
+                double doubleValue;
 
                 struct 
                 {

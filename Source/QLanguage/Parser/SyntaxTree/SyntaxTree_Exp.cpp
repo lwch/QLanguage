@@ -151,6 +151,7 @@ namespace QLanguage
                 VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1),
                                      dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1),
                                      _type);
+                cout << v.toInt();
             }
         }
         return true;
@@ -190,16 +191,16 @@ namespace QLanguage
             break;
         case QLanguage::SyntaxTree_Exp::Negative:
             break;
-        case QLanguage::SyntaxTree_Exp::Add:
-            break;
-        case QLanguage::SyntaxTree_Exp::Sub:
-            break;
-        case QLanguage::SyntaxTree_Exp::Mul:
-            break;
-        case QLanguage::SyntaxTree_Exp::Div:
-            break;
-        case QLanguage::SyntaxTree_Exp::Mod:
-            break;
+        case Add:
+            return v1 + v2;
+        case Sub:
+            return v1 - v2;
+        case Mul:
+            return v1 * v2;
+        case Div:
+            return v1 / v2;
+        case Mod:
+            return v1 % v2;
         case QLanguage::SyntaxTree_Exp::Call:
             break;
         case QLanguage::SyntaxTree_Exp::ValueAsType:

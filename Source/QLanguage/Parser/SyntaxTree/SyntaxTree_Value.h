@@ -12,6 +12,7 @@
 #ifndef _QLANGUAGE_SYNTAX_TREE_VALUE_H_
 #define _QLANGUAGE_SYNTAX_TREE_VALUE_H_
 
+#include "../../VirtualMachine/Variant.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
@@ -66,6 +67,12 @@ namespace QLanguage
             if (_type == Member) return *pContent != *dynamic_cast<const SyntaxTree_Value*>(&x)->pContent;
             else return value != dynamic_cast<const SyntaxTree_Value*>(&x)->value;
         }
+
+        VM::Variant operator+(const SyntaxTree_Value& x)const;
+        VM::Variant operator-(const SyntaxTree_Value& x)const;
+        VM::Variant operator*(const SyntaxTree_Value& x)const;
+        VM::Variant operator/(const SyntaxTree_Value& x)const;
+        VM::Variant operator%(const SyntaxTree_Value& x)const;
     protected:
         string           value;
         Type             _type;

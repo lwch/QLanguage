@@ -668,21 +668,21 @@ public:
         return result;
     }
 
-    inline self operator+(const self& s)
+    inline self operator+(const self& s)const
     {
         self tmp(*this);
         tmp += s;
         return tmp;
     }
 
-    inline self operator+(const T* s)
+    inline self operator+(const T* s)const
     {
         self tmp(*this);
         tmp += s;
         return tmp;
     }
 
-    inline self operator+(const T& c)
+    inline self operator+(const T& c)const
     {
         self tmp(*this);
         tmp += c;

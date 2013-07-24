@@ -412,6 +412,421 @@ namespace QLanguage
         }
     }
 
+    VM::Variant SyntaxTree_Value::operator+(const SyntaxTree_Value& x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(value == "true" ? 1 + (x.value == "true" ? 1 : 0) : x.value == "true" ? 1 : 0);
+            case Real:
+                return VM::Variant(value == "true" ? 1 + atof(x.value.c_str()) : atof(x.value.c_str()));
+            case Digit:
+                return VM::Variant(value == "true" ? 1 + atol(x.value.c_str()) : atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't add from value typed bool to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Real:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(atof(value.c_str()) + (x.value == "true" ? 1 : 0));
+            case Real:
+                return VM::Variant(atof(value.c_str()) + atof(value.c_str()));
+            case Digit:
+                return VM::Variant(atof(value.c_str()) + atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't add from value typed real to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(atol(value.c_str()) + (x.value == "true" ? 1 : 0));
+            case Real:
+                return VM::Variant(atol(value.c_str()) + atof(x.value.c_str()));
+            case Digit:
+                return VM::Variant(atol(value.c_str()) + atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't add from value typed digit to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case String:
+            if (x._type == String) return VM::Variant(value + x.value);
+            else
+            {
+                throw error<const char*>("Can't add from value typed string to number", __FILE__, __LINE__);
+                return VM::Variant();
+            }
+            break;
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::operator-(const SyntaxTree_Value& x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(value == "true" ? 1 - (x.value == "true" ? 1 : 0) : x.value == "true" ? -1 : 0);
+            case Real:
+                return VM::Variant(value == "true" ? 1 - atof(x.value.c_str()) : -atof(x.value.c_str()));
+            case Digit:
+                return VM::Variant(value == "true" ? 1 - atol(x.value.c_str()) : -atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't sub from value typed bool to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Real:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(atof(value.c_str()) - (x.value == "true" ? 1 : 0));
+            case Real:
+                return VM::Variant(atof(value.c_str()) - atof(value.c_str()));
+            case Digit:
+                return VM::Variant(atof(value.c_str()) - atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't sub from value typed real to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(atol(value.c_str()) - (x.value == "true" ? 1 : 0));
+            case Real:
+                return VM::Variant(atol(value.c_str()) - atof(x.value.c_str()));
+            case Digit:
+                return VM::Variant(atol(value.c_str()) - atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't sub from value typed digit to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case String:
+            throw error<const char*>("Can't sub from value typed string to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::operator*(const SyntaxTree_Value& x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(value == "true" && x.value == "true" ? 1 : 0);
+            case Real:
+                return VM::Variant(value == "true" ? atof(x.value.c_str()) : 0);
+            case Digit:
+                return VM::Variant(value == "true" ? atol(x.value.c_str()) : 0);
+            case String:
+                throw error<const char*>("Can't mul from value typed bool to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Real:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(x.value == "true" ? atof(value.c_str()) : 0);
+            case Real:
+                return VM::Variant(atof(value.c_str()) * atof(value.c_str()));
+            case Digit:
+                return VM::Variant(atof(value.c_str()) * atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't mul from value typed real to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(x.value == "true" ? atol(value.c_str()) : 0);
+            case Real:
+                return VM::Variant(atol(value.c_str()) * atof(x.value.c_str()));
+            case Digit:
+                return VM::Variant(atol(value.c_str()) * atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't mul from value typed digit to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case String:
+            throw error<const char*>("Can't mul from value typed string to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::operator/(const SyntaxTree_Value& x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                if (x.value == "false")
+                {
+                    throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(value == "true" ? 1 : 0);
+            case Real:
+                if (atof(x.value.c_str()) == 0)
+                {
+                    throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(value == "true" ? 1 / atof(x.value.c_str()) : 0);
+            case Digit:
+                if (atol(x.value.c_str()) == 0)
+                {
+                    throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(value == "true" ? 1 / atol(x.value.c_str()) : 0);
+            case String:
+                throw error<const char*>("Can't div from value typed bool to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Real:
+            switch (x._type)
+            {
+            case Boolean:
+                if (x.value == "false")
+                {
+                    throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(atof(value.c_str()));
+            case Real:
+                if (atof(x.value.c_str()) == 0)
+                {
+                    throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(atof(value.c_str()) / atof(value.c_str()));
+            case Digit:
+                if (atol(x.value.c_str()) == 0)
+                {
+                    throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(atof(value.c_str()) / atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't div from value typed real to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                if (x.value == "false")
+                {
+                    throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(atol(value.c_str()));
+            case Real:
+                if (atof(x.value.c_str()) == 0)
+                {
+                    throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(atol(value.c_str()) / atof(x.value.c_str()));
+            case Digit:
+                if (atol(x.value.c_str()) == 0)
+                {
+                    throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(atol(value.c_str()) / atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't div from value typed digit to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case String:
+            throw error<const char*>("Can't div from value typed string to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::operator%(const SyntaxTree_Value& x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                if (x.value == "false")
+                {
+                    throw error<const char*>("Can't modulo into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(value == "true" ? 1 : 0);
+            case Real:
+                throw error<const char*>("Can't mod from value typed bool to real", __FILE__, __LINE__);
+                return VM::Variant();
+            case Digit:
+                if (atol(x.value.c_str()) == 0)
+                {
+                    throw error<const char*>("Can't modulo into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(value == "true" ? 1 % atol(x.value.c_str()) : 0);
+            case String:
+                throw error<const char*>("Can't mod from value typed bool to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Real:
+            switch (x._type)
+            {
+            case Boolean:
+            case Real:
+            case Digit:
+                throw error<const char*>("Can't mod from value typed real to number", __FILE__, __LINE__);
+                return VM::Variant();
+            case String:
+                throw error<const char*>("Can't mod from value typed real to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                if (x.value == "false")
+                {
+                    throw error<const char*>("Can't modulo into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(atol(value.c_str()) % 1);
+            case Real:
+                if (atof(x.value.c_str()) == 0)
+                {
+                    throw error<const char*>("Can't modulo into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(atol(value.c_str()) / atof(x.value.c_str()));
+            case Digit:
+                if (atol(x.value.c_str()) == 0)
+                {
+                    throw error<const char*>("Can't modulo into 0", __FILE__, __LINE__);
+                    return VM::Variant();
+                }
+                return VM::Variant(atol(value.c_str()) / atol(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't mod from value typed digit to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case String:
+            throw error<const char*>("Can't mod from value typed string to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
     // value_desc -> "true"
     // value_desc -> "false"
     // value_desc -> "{Real}"
