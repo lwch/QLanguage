@@ -401,4 +401,16 @@ namespace QLanguage
     {
         if (syntaxTreeStack.size() == 1) syntaxTreeStack.top()->print(stream, 0);
     }
+
+    const pair<int, ushort> Parser::indexOfConstant(const VM::Variant& v)
+    {
+        int idx = constantTable.indexOf(v);
+        if (idx != -1) return pair<int, ushort>(0, idx);
+        for (size_t i = 0, m = makeContext.size(); i < m; ++i)
+        {
+            idx = makeContext[i].constantTable.indexOf(v);
+            if (idx != -1) return pair<int, ushort>(i + 1, idx);
+        }
+        return pair<int, ushort>(-1, 0);
+    }
 }

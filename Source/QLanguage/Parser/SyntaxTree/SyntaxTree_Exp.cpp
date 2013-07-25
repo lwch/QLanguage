@@ -161,6 +161,10 @@ namespace QLanguage
                 }
             }
         }
+        else if (OP1.isValue() && pOP2 == NULL)
+        {
+            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1), dynamic_cast<const SyntaxTree_Exp&>(OP1)._type);
+        }
         else if (OP1.isValue() && pOP2 && pOP2->isValue())
         {
             bool bConstValue1 = OP1.isConstValue();

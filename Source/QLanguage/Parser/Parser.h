@@ -279,6 +279,10 @@ namespace QLanguage
             if (syntaxTreeStack.size() == 1) return syntaxTreeStack.top()->make(this);
             return false;
         }
+
+        // block -> index
+        // block: -1不存在，0为全局的，1为当前块的，2为上一级的...
+        const pair<int, ushort> indexOfConstant(const VM::Variant& v);
     protected:
         bool reduceType1Size(ushort i);
         bool reduceType2Size(ushort i);
