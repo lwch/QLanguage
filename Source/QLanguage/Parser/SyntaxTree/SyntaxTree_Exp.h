@@ -65,6 +65,7 @@ namespace QLanguage
         inline virtual const bool isValue()const { return _type == Value; }
         inline virtual const bool isConstValue()const { return OP1.isConstValue(); }
 
+        static const VM::Variant eval(const SyntaxTree_Value& v, Type type);
         static const VM::Variant eval(const SyntaxTree_Value& v1, const SyntaxTree_Value& v2, Type type);
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const

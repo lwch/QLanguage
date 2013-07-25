@@ -42,11 +42,11 @@ namespace QLanguage
 
         inline virtual const bool isConstValue()const { return _type != Member; }
 
-        const bool greaterEqual(const SyntaxTree_Value& x)const;
-        const bool lessEqual(const SyntaxTree_Value& x)const;
         const bool equal(const SyntaxTree_Value& x)const;
-        const bool greater(const SyntaxTree_Value& x)const;
-        const bool less(const SyntaxTree_Value& x)const;
+        const bool toBool()const;
+        VM::Variant toVariant()const;
+        VM::Variant toPositive()const;
+        VM::Variant toNegative()const;
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
@@ -68,6 +68,15 @@ namespace QLanguage
             else return value != dynamic_cast<const SyntaxTree_Value*>(&x)->value;
         }
 
+        const bool operator>=(const SyntaxTree_Value& x)const;
+        const bool operator<=(const SyntaxTree_Value& x)const;
+        const bool operator>(const SyntaxTree_Value& x)const;
+        const bool operator<(const SyntaxTree_Value& x)const;
+        const bool operator&&(const SyntaxTree_Value& x)const;
+        const bool operator||(const SyntaxTree_Value& x)const;
+        VM::Variant operator&(const SyntaxTree_Value& x)const;
+        VM::Variant operator|(const SyntaxTree_Value& x)const;
+        VM::Variant operator^(const SyntaxTree_Value& x)const;
         VM::Variant operator+(const SyntaxTree_Value& x)const;
         VM::Variant operator-(const SyntaxTree_Value& x)const;
         VM::Variant operator*(const SyntaxTree_Value& x)const;

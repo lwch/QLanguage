@@ -64,6 +64,11 @@ namespace QLanguage
 
             inline const Type type()const { return _type; }
 
+            inline const bool toBool()const
+            {
+                return number2Type<bool>();
+            }
+
             inline const char toChar()const
             {
                 return number2Type<char>();

@@ -141,7 +141,27 @@ namespace QLanguage
     bool SyntaxTree_Exp::make(Parser* pParser)
     {
         // TODO
-        if (OP1.isValue() && pOP2 && pOP2->isValue())
+        if (_type == TrueFalse)
+        {
+            if (OP1.isValue() && OP1.isConstValue())
+            {
+                if (dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1).toBool())
+                {
+                    if (pOP2->isValue() && pOP2->isConstValue()) // 可提前计算出结果
+                    {
+                        VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1), dynamic_cast<const SyntaxTree_Exp*>(pOP2)->_type);
+                    }
+                }
+                else
+                {
+                    if (pOP3->isValue() && pOP3->isConstValue()) // 可提前计算出结果
+                    {
+                        VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP3)->OP1), dynamic_cast<const SyntaxTree_Exp*>(pOP3)->_type);
+                    }
+                }
+            }
+        }
+        else if (OP1.isValue() && pOP2 && pOP2->isValue())
         {
             bool bConstValue1 = OP1.isConstValue();
             bool bConstValue2 = pOP2->isConstValue();
@@ -151,7 +171,6 @@ namespace QLanguage
                 VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1),
                                      dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1),
                                      _type);
-                cout << v.toInt();
             }
         }
         return true;
@@ -162,35 +181,25 @@ namespace QLanguage
         switch (type)
         {
         case GreaterEqual:
-            return v1.greaterEqual(v2);
+            return v1 >= v2;
         case LessEqual:
-            return v1.lessEqual(v2);
+            return v1 <= v2;
         case Equal:
             return v1.equal(v2);
         case Greater:
-            return v1.greater(v2);
+            return v1 > v2;
         case Less:
-            return v1.less(v2);
-        case QLanguage::SyntaxTree_Exp::Assign:
-            break;
-        case QLanguage::SyntaxTree_Exp::LogicAnd:
-            break;
-        case QLanguage::SyntaxTree_Exp::LogicOr:
-            break;
-        case QLanguage::SyntaxTree_Exp::BitAnd:
-            break;
-        case QLanguage::SyntaxTree_Exp::BitOr:
-            break;
-        case QLanguage::SyntaxTree_Exp::BitXor:
-            break;
-        case QLanguage::SyntaxTree_Exp::TrueFalse:
-            break;
-        case QLanguage::SyntaxTree_Exp::Not:
-            break;
-        case QLanguage::SyntaxTree_Exp::Positive:
-            break;
-        case QLanguage::SyntaxTree_Exp::Negative:
-            break;
+            return v1 < v2;
+        case LogicAnd:
+            return v1 && v2;
+        case LogicOr:
+            return v1 || v2;
+        case BitAnd:
+            return v1 & v2;
+        case BitOr:
+            return v1 | v2;
+        case BitXor:
+            return v1 ^ v2;
         case Add:
             return v1 + v2;
         case Sub:
@@ -201,16 +210,39 @@ namespace QLanguage
             return v1 / v2;
         case Mod:
             return v1 % v2;
-        case QLanguage::SyntaxTree_Exp::Call:
-            break;
-        case QLanguage::SyntaxTree_Exp::ValueAsType:
-            break;
-        case QLanguage::SyntaxTree_Exp::Value:
-            break;
+        case Assign:
+        case Not:
+        case Positive:
+        case Negative:
+        case TrueFalse:
+        case Call:
+        case ValueAsType:
+        case Value:
+            throw error<const char*>("Can't eval with operator", __FILE__, __LINE__); // 两个常量不可能有这些运算符
+            return VM::Variant();
         default:
-            break;
+            return VM::Variant();
         }
-        return false;
+    }
+
+    const VM::Variant SyntaxTree_Exp::eval(const SyntaxTree_Value &v, Type type)
+    {
+        switch (type)
+        {
+        case Not:
+            return !v.toBool();
+        case Positive:
+            return v.toPositive();
+        case Negative:
+            return v.toNegative();
+        case Value:
+            return v.toVariant();
+        default:
+            throw error<const char*>("Can't eval with operator", __FILE__, __LINE__);
+            return VM::Variant();
+        }
+
+        return VM::Variant();
     }
     
     // exp -> exp "?" exp ":" exp

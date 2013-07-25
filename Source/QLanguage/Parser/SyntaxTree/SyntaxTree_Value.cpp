@@ -47,7 +47,7 @@ namespace QLanguage
         return 0; // TODO: hash for call function
     }
 
-    const bool SyntaxTree_Value::greaterEqual(const SyntaxTree_Value& x)const
+    const bool SyntaxTree_Value::operator>=(const SyntaxTree_Value& x)const
     {
         switch (_type)
         {
@@ -59,7 +59,7 @@ namespace QLanguage
             case Real:
                 return value == "true" ? 1 >= atof(x.value.c_str()) : 0 >= atof(x.value.c_str());
             case Digit:
-                return value == "true" ? 1 >= atol(x.value.c_str()) : 0 >= atol(x.value.c_str());
+                return value == "true" ? 1 >= atoi(x.value.c_str()) : 0 >= atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed boolean to string", __FILE__, __LINE__);
                 return false;
@@ -77,7 +77,7 @@ namespace QLanguage
             case Real:
                 return atof(value.c_str()) >= atof(x.value.c_str());
             case Digit:
-                return atof(value.c_str()) >= atol(x.value.c_str());
+                return atof(value.c_str()) >= atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed real to string", __FILE__, __LINE__);
                 return false;
@@ -91,11 +91,11 @@ namespace QLanguage
             switch (x._type)
             {
             case Boolean:
-                return x.value == "true" ? atol(value.c_str()) >= 1 : atol(value.c_str()) >= 0;
+                return x.value == "true" ? atoi(value.c_str()) >= 1 : atoi(value.c_str()) >= 0;
             case Real:
-                return atol(value.c_str()) >= atof(x.value.c_str());
+                return atoi(value.c_str()) >= atof(x.value.c_str());
             case Digit:
-                return atol(value.c_str()) >= atol(x.value.c_str());
+                return atoi(value.c_str()) >= atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed digit to string", __FILE__, __LINE__);
                 return false;
@@ -120,7 +120,7 @@ namespace QLanguage
         }
     }
 
-    const bool SyntaxTree_Value::lessEqual(const SyntaxTree_Value& x)const
+    const bool SyntaxTree_Value::operator<=(const SyntaxTree_Value& x)const
     {
         switch (_type)
         {
@@ -132,7 +132,7 @@ namespace QLanguage
             case Real:
                 return value == "true" ? 1 <= atof(x.value.c_str()) : 0 <= atof(x.value.c_str());
             case Digit:
-                return value == "true" ? 1 <= atol(x.value.c_str()) : 0 <= atol(x.value.c_str());
+                return value == "true" ? 1 <= atoi(x.value.c_str()) : 0 <= atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed boolean to string", __FILE__, __LINE__);
                 return false;
@@ -150,7 +150,7 @@ namespace QLanguage
             case Real:
                 return atof(value.c_str()) <= atof(x.value.c_str());
             case Digit:
-                return atof(value.c_str()) <= atol(x.value.c_str());
+                return atof(value.c_str()) <= atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed real to string", __FILE__, __LINE__);
                 return false;
@@ -164,11 +164,11 @@ namespace QLanguage
             switch (x._type)
             {
             case Boolean:
-                return x.value == "true" ? atol(value.c_str()) <= 1 : atol(value.c_str()) <= 0;
+                return x.value == "true" ? atoi(value.c_str()) <= 1 : atoi(value.c_str()) <= 0;
             case Real:
-                return atol(value.c_str()) <= atof(x.value.c_str());
+                return atoi(value.c_str()) <= atof(x.value.c_str());
             case Digit:
-                return atol(value.c_str()) <= atol(x.value.c_str());
+                return atoi(value.c_str()) <= atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed digit to string", __FILE__, __LINE__);
                 return false;
@@ -205,7 +205,7 @@ namespace QLanguage
             case Real:
                 return value == "true" ? 1 == atof(x.value.c_str()) : 0 == atof(x.value.c_str());
             case Digit:
-                return value == "true" ? 1 == atol(x.value.c_str()) : 0 == atol(x.value.c_str());
+                return value == "true" ? 1 == atoi(x.value.c_str()) : 0 == atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed boolean to string", __FILE__, __LINE__);
                 return false;
@@ -223,7 +223,7 @@ namespace QLanguage
             case Real:
                 return atof(value.c_str()) == atof(x.value.c_str());
             case Digit:
-                return atof(value.c_str()) == atol(x.value.c_str());
+                return atof(value.c_str()) == atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed real to string", __FILE__, __LINE__);
                 return false;
@@ -237,11 +237,11 @@ namespace QLanguage
             switch (x._type)
             {
             case Boolean:
-                return x.value == "true" ? atol(value.c_str()) == 1 : atol(value.c_str()) == 0;
+                return x.value == "true" ? atoi(value.c_str()) == 1 : atoi(value.c_str()) == 0;
             case Real:
-                return atol(value.c_str()) == atof(x.value.c_str());
+                return atoi(value.c_str()) == atof(x.value.c_str());
             case Digit:
-                return atol(value.c_str()) == atol(x.value.c_str());
+                return atoi(value.c_str()) == atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed digit to string", __FILE__, __LINE__);
                 return false;
@@ -266,7 +266,7 @@ namespace QLanguage
         }
     }
 
-    const bool SyntaxTree_Value::greater(const SyntaxTree_Value& x)const
+    const bool SyntaxTree_Value::operator>(const SyntaxTree_Value& x)const
     {
         switch (_type)
         {
@@ -278,7 +278,7 @@ namespace QLanguage
             case Real:
                 return value == "true" ? 1 > atof(x.value.c_str()) : 0 > atof(x.value.c_str());
             case Digit:
-                return value == "true" ? 1 > atol(x.value.c_str()) : 0 > atol(x.value.c_str());
+                return value == "true" ? 1 > atoi(x.value.c_str()) : 0 > atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed boolean to string", __FILE__, __LINE__);
                 return false;
@@ -296,7 +296,7 @@ namespace QLanguage
             case Real:
                 return atof(value.c_str()) > atof(x.value.c_str());
             case Digit:
-                return atof(value.c_str()) > atol(x.value.c_str());
+                return atof(value.c_str()) > atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed real to string", __FILE__, __LINE__);
                 return false;
@@ -310,11 +310,11 @@ namespace QLanguage
             switch (x._type)
             {
             case Boolean:
-                return x.value == "true" ? atol(value.c_str()) > 1 : atol(value.c_str()) > 0;
+                return x.value == "true" ? atoi(value.c_str()) > 1 : atoi(value.c_str()) > 0;
             case Real:
-                return atol(value.c_str()) > atof(x.value.c_str());
+                return atoi(value.c_str()) > atof(x.value.c_str());
             case Digit:
-                return atol(value.c_str()) > atol(x.value.c_str());
+                return atoi(value.c_str()) > atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed digit to string", __FILE__, __LINE__);
                 return false;
@@ -339,7 +339,7 @@ namespace QLanguage
         }
     }
 
-    const bool SyntaxTree_Value::less(const SyntaxTree_Value& x)const
+    const bool SyntaxTree_Value::operator<(const SyntaxTree_Value& x)const
     {
         switch (_type)
         {
@@ -351,7 +351,7 @@ namespace QLanguage
             case Real:
                 return value == "true" ? 1 < atof(x.value.c_str()) : 0 < atof(x.value.c_str());
             case Digit:
-                return value == "true" ? 1 < atol(x.value.c_str()) : 0 < atol(x.value.c_str());
+                return value == "true" ? 1 < atoi(x.value.c_str()) : 0 < atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed boolean to string", __FILE__, __LINE__);
                 return false;
@@ -369,7 +369,7 @@ namespace QLanguage
             case Real:
                 return atof(value.c_str()) < atof(x.value.c_str());
             case Digit:
-                return atof(value.c_str()) < atol(x.value.c_str());
+                return atof(value.c_str()) < atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed real to string", __FILE__, __LINE__);
                 return false;
@@ -383,11 +383,11 @@ namespace QLanguage
             switch (x._type)
             {
             case Boolean:
-                return x.value == "true" ? atol(value.c_str()) < 1 : atol(value.c_str()) < 0;
+                return x.value == "true" ? atoi(value.c_str()) < 1 : atoi(value.c_str()) < 0;
             case Real:
-                return atol(value.c_str()) < atof(x.value.c_str());
+                return atoi(value.c_str()) < atof(x.value.c_str());
             case Digit:
-                return atol(value.c_str()) < atol(x.value.c_str());
+                return atoi(value.c_str()) < atoi(x.value.c_str());
             case String:
                 throw error<const char*>("Can't compare from value typed digit to string", __FILE__, __LINE__);
                 return false;
@@ -412,6 +412,307 @@ namespace QLanguage
         }
     }
 
+    const bool SyntaxTree_Value::operator&&(const SyntaxTree_Value &x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                return value == "true" && x.value == "true";
+            case Real:
+                return value == "true" && atof(x.value.c_str());
+            case Digit:
+                return value == "true" && atoi(x.value.c_str());
+            case String:
+                throw error<const char*>("Can't logicand from value typed bool to string", __FILE__, __LINE__);
+                return false;
+            case Member: // TODO
+                return false;
+            default:
+                return false;
+            }
+            break;
+        case Real:
+            switch (x._type)
+            {
+            case Boolean:
+                return atof(value.c_str()) && x.value == "true";
+            case Real:
+                return atof(value.c_str()) && atof(x.value.c_str());
+            case Digit:
+                return atof(value.c_str()) && atoi(x.value.c_str());
+            case String:
+                throw error<const char*>("Can't logicand from value typed real to string", __FILE__, __LINE__);
+                return false;
+            case Member: // TODO
+                return false;
+            default:
+                return false;
+            }
+            break;
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                return atoi(value.c_str()) && x.value == "true";
+            case Real:
+                return atoi(value.c_str()) && atof(x.value.c_str());
+            case Digit:
+                return atoi(value.c_str()) && atoi(x.value.c_str());
+            case String:
+                throw error<const char*>("Can't logicand from value typed digit to string", __FILE__, __LINE__);
+                return false;
+            case Member: // TODO
+                return false;
+            default:
+                return false;
+            }
+            break;
+        case String:
+            throw error<const char*>("Can't logicand from value typed string to other type", __FILE__, __LINE__);
+            return false;
+        case Member: // TODO
+            return false;
+        default:
+            return false;
+        }
+    }
+
+    const bool SyntaxTree_Value::operator||(const SyntaxTree_Value &x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                return value == "true" || x.value == "true";
+            case Real:
+                return value == "true" || atof(x.value.c_str());
+            case Digit:
+                return value == "true" || atoi(x.value.c_str());
+            case String:
+                throw error<const char*>("Can't logicand from value typed bool to string", __FILE__, __LINE__);
+                return false;
+            case Member: // TODO
+                return false;
+            default:
+                return false;
+            }
+            break;
+        case Real:
+            switch (x._type)
+            {
+            case Boolean:
+                return atof(value.c_str()) || x.value == "true";
+            case Real:
+                return atof(value.c_str()) || atof(x.value.c_str());
+            case Digit:
+                return atof(value.c_str()) || atoi(x.value.c_str());
+            case String:
+                throw error<const char*>("Can't logicand from value typed real to string", __FILE__, __LINE__);
+                return false;
+            case Member: // TODO
+                return false;
+            default:
+                return false;
+            }
+            break;
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                return atoi(value.c_str()) || x.value == "true";
+            case Real:
+                return atoi(value.c_str()) || atof(x.value.c_str());
+            case Digit:
+                return atoi(value.c_str()) || atoi(x.value.c_str());
+            case String:
+                throw error<const char*>("Can't logicand from value typed digit to string", __FILE__, __LINE__);
+                return false;
+            case Member: // TODO
+                return false;
+            default:
+                return false;
+            }
+            break;
+        case String:
+            throw error<const char*>("Can't logicand from value typed string to other type", __FILE__, __LINE__);
+            return false;
+        case Member: // TODO
+            return false;
+        default:
+            return false;
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::operator&(const SyntaxTree_Value& x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(value == "true" && x.value == "true" ? 1 : 0);
+            case Real:
+                throw error<const char*>("Can't bitand from value typed bool to real", __FILE__, __LINE__);
+                return VM::Variant();
+            case Digit:
+                return VM::Variant(value == "true" ? 1 & atoi(x.value.c_str()) : 0);
+            case String:
+                throw error<const char*>("Can't bitand from value typed bool to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Real:
+            throw error<const char*>("Can't bitand from value typed real to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(x.value == "true" ? atoi(value.c_str()) & 1 : 0);
+            case Real:
+                throw error<const char*>("Can't bitand from value typed digit to real", __FILE__, __LINE__);
+                return VM::Variant();
+            case Digit:
+                return VM::Variant(atoi(value.c_str()) & atoi(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't bitand from value typed digit to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case String:
+            throw error<const char*>("Can't bitand from value typed string to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::operator|(const SyntaxTree_Value& x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(value == "false" && x.value == "false" ? 0 : 1);
+            case Real:
+                throw error<const char*>("Can't bitand from value typed bool to real", __FILE__, __LINE__);
+                return VM::Variant();
+            case Digit:
+                return VM::Variant(value == "false" ? atoi(x.value.c_str()) : 1 | atoi(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't bitand from value typed bool to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Real:
+            throw error<const char*>("Can't bitand from value typed real to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(x.value == "false" ? atoi(value.c_str()) : atoi(value.c_str()) | 1);
+            case Real:
+                throw error<const char*>("Can't bitand from value typed digit to real", __FILE__, __LINE__);
+                return VM::Variant();
+            case Digit:
+                return VM::Variant(atoi(value.c_str()) | atoi(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't bitand from value typed digit to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case String:
+            throw error<const char*>("Can't bitand from value typed string to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::operator^(const SyntaxTree_Value& x)const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(value == x.value ? (value == "true" ? 1 : 0) : 1);
+            case Real:
+                throw error<const char*>("Can't bitand from value typed bool to real", __FILE__, __LINE__);
+                return VM::Variant();
+            case Digit:
+                return VM::Variant(value == "true" ? 1 ^ atoi(x.value.c_str()) : atoi(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't bitand from value typed bool to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case Real:
+            throw error<const char*>("Can't bitand from value typed real to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Digit:
+            switch (x._type)
+            {
+            case Boolean:
+                return VM::Variant(x.value == "false" ? atoi(value.c_str()) : atoi(value.c_str()) ^ 1);
+            case Real:
+                throw error<const char*>("Can't bitand from value typed digit to real", __FILE__, __LINE__);
+                return VM::Variant();
+            case Digit:
+                return VM::Variant(atoi(value.c_str()) & atoi(x.value.c_str()));
+            case String:
+                throw error<const char*>("Can't bitand from value typed digit to string", __FILE__, __LINE__);
+                return VM::Variant();
+            case Member: // TODO
+                return VM::Variant();
+            default:
+                return VM::Variant();
+            }
+            break;
+        case String:
+            throw error<const char*>("Can't bitand from value typed string to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
     VM::Variant SyntaxTree_Value::operator+(const SyntaxTree_Value& x)const
     {
         switch (_type)
@@ -424,7 +725,7 @@ namespace QLanguage
             case Real:
                 return VM::Variant(value == "true" ? 1 + atof(x.value.c_str()) : atof(x.value.c_str()));
             case Digit:
-                return VM::Variant(value == "true" ? 1 + atol(x.value.c_str()) : atol(x.value.c_str()));
+                return VM::Variant(value == "true" ? 1 + atoi(x.value.c_str()) : atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't add from value typed bool to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -442,7 +743,7 @@ namespace QLanguage
             case Real:
                 return VM::Variant(atof(value.c_str()) + atof(value.c_str()));
             case Digit:
-                return VM::Variant(atof(value.c_str()) + atol(x.value.c_str()));
+                return VM::Variant(atof(value.c_str()) + atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't add from value typed real to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -456,11 +757,11 @@ namespace QLanguage
             switch (x._type)
             {
             case Boolean:
-                return VM::Variant(atol(value.c_str()) + (x.value == "true" ? 1 : 0));
+                return VM::Variant(atoi(value.c_str()) + (x.value == "true" ? 1 : 0));
             case Real:
-                return VM::Variant(atol(value.c_str()) + atof(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) + atof(x.value.c_str()));
             case Digit:
-                return VM::Variant(atol(value.c_str()) + atol(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) + atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't add from value typed digit to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -497,7 +798,7 @@ namespace QLanguage
             case Real:
                 return VM::Variant(value == "true" ? 1 - atof(x.value.c_str()) : -atof(x.value.c_str()));
             case Digit:
-                return VM::Variant(value == "true" ? 1 - atol(x.value.c_str()) : -atol(x.value.c_str()));
+                return VM::Variant(value == "true" ? 1 - atoi(x.value.c_str()) : -atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't sub from value typed bool to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -515,7 +816,7 @@ namespace QLanguage
             case Real:
                 return VM::Variant(atof(value.c_str()) - atof(value.c_str()));
             case Digit:
-                return VM::Variant(atof(value.c_str()) - atol(x.value.c_str()));
+                return VM::Variant(atof(value.c_str()) - atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't sub from value typed real to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -529,11 +830,11 @@ namespace QLanguage
             switch (x._type)
             {
             case Boolean:
-                return VM::Variant(atol(value.c_str()) - (x.value == "true" ? 1 : 0));
+                return VM::Variant(atoi(value.c_str()) - (x.value == "true" ? 1 : 0));
             case Real:
-                return VM::Variant(atol(value.c_str()) - atof(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) - atof(x.value.c_str()));
             case Digit:
-                return VM::Variant(atol(value.c_str()) - atol(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) - atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't sub from value typed digit to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -565,7 +866,7 @@ namespace QLanguage
             case Real:
                 return VM::Variant(value == "true" ? atof(x.value.c_str()) : 0);
             case Digit:
-                return VM::Variant(value == "true" ? atol(x.value.c_str()) : 0);
+                return VM::Variant(value == "true" ? atoi(x.value.c_str()) : 0);
             case String:
                 throw error<const char*>("Can't mul from value typed bool to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -583,7 +884,7 @@ namespace QLanguage
             case Real:
                 return VM::Variant(atof(value.c_str()) * atof(value.c_str()));
             case Digit:
-                return VM::Variant(atof(value.c_str()) * atol(x.value.c_str()));
+                return VM::Variant(atof(value.c_str()) * atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't mul from value typed real to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -597,11 +898,11 @@ namespace QLanguage
             switch (x._type)
             {
             case Boolean:
-                return VM::Variant(x.value == "true" ? atol(value.c_str()) : 0);
+                return VM::Variant(x.value == "true" ? atoi(value.c_str()) : 0);
             case Real:
-                return VM::Variant(atol(value.c_str()) * atof(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) * atof(x.value.c_str()));
             case Digit:
-                return VM::Variant(atol(value.c_str()) * atol(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) * atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't mul from value typed digit to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -643,12 +944,12 @@ namespace QLanguage
                 }
                 return VM::Variant(value == "true" ? 1 / atof(x.value.c_str()) : 0);
             case Digit:
-                if (atol(x.value.c_str()) == 0)
+                if (atoi(x.value.c_str()) == 0)
                 {
                     throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
                     return VM::Variant();
                 }
-                return VM::Variant(value == "true" ? 1 / atol(x.value.c_str()) : 0);
+                return VM::Variant(value == "true" ? 1 / atoi(x.value.c_str()) : 0);
             case String:
                 throw error<const char*>("Can't div from value typed bool to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -676,12 +977,12 @@ namespace QLanguage
                 }
                 return VM::Variant(atof(value.c_str()) / atof(value.c_str()));
             case Digit:
-                if (atol(x.value.c_str()) == 0)
+                if (atoi(x.value.c_str()) == 0)
                 {
                     throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
                     return VM::Variant();
                 }
-                return VM::Variant(atof(value.c_str()) / atol(x.value.c_str()));
+                return VM::Variant(atof(value.c_str()) / atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't div from value typed real to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -700,21 +1001,21 @@ namespace QLanguage
                     throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
                     return VM::Variant();
                 }
-                return VM::Variant(atol(value.c_str()));
+                return VM::Variant(atoi(value.c_str()));
             case Real:
                 if (atof(x.value.c_str()) == 0)
                 {
                     throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
                     return VM::Variant();
                 }
-                return VM::Variant(atol(value.c_str()) / atof(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) / atof(x.value.c_str()));
             case Digit:
-                if (atol(x.value.c_str()) == 0)
+                if (atoi(x.value.c_str()) == 0)
                 {
                     throw error<const char*>("Can't divide into 0", __FILE__, __LINE__);
                     return VM::Variant();
                 }
-                return VM::Variant(atol(value.c_str()) / atol(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) / atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't div from value typed digit to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -752,12 +1053,12 @@ namespace QLanguage
                 throw error<const char*>("Can't mod from value typed bool to real", __FILE__, __LINE__);
                 return VM::Variant();
             case Digit:
-                if (atol(x.value.c_str()) == 0)
+                if (atoi(x.value.c_str()) == 0)
                 {
                     throw error<const char*>("Can't modulo into 0", __FILE__, __LINE__);
                     return VM::Variant();
                 }
-                return VM::Variant(value == "true" ? 1 % atol(x.value.c_str()) : 0);
+                return VM::Variant(value == "true" ? 1 % atoi(x.value.c_str()) : 0);
             case String:
                 throw error<const char*>("Can't mod from value typed bool to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -793,21 +1094,21 @@ namespace QLanguage
                     throw error<const char*>("Can't modulo into 0", __FILE__, __LINE__);
                     return VM::Variant();
                 }
-                return VM::Variant(atol(value.c_str()) % 1);
+                return VM::Variant(atoi(value.c_str()) % 1);
             case Real:
                 if (atof(x.value.c_str()) == 0)
                 {
                     throw error<const char*>("Can't modulo into 0", __FILE__, __LINE__);
                     return VM::Variant();
                 }
-                return VM::Variant(atol(value.c_str()) / atof(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) / atof(x.value.c_str()));
             case Digit:
-                if (atol(x.value.c_str()) == 0)
+                if (atoi(x.value.c_str()) == 0)
                 {
                     throw error<const char*>("Can't modulo into 0", __FILE__, __LINE__);
                     return VM::Variant();
                 }
-                return VM::Variant(atol(value.c_str()) / atol(x.value.c_str()));
+                return VM::Variant(atoi(value.c_str()) / atoi(x.value.c_str()));
             case String:
                 throw error<const char*>("Can't mod from value typed digit to string", __FILE__, __LINE__);
                 return VM::Variant();
@@ -819,6 +1120,85 @@ namespace QLanguage
             break;
         case String:
             throw error<const char*>("Can't mod from value typed string to other type", __FILE__, __LINE__);
+            return VM::Variant();
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
+    const bool SyntaxTree_Value::toBool()const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            return value == "true" ? true : false;
+        case Real:
+            return atof(value.c_str()) ? true : false;
+        case Digit:
+            return atoi(value.c_str()) ? true : false;
+        case String:
+            throw error<const char*>("Can't convert from value typed string to bool", __FILE__, __LINE__);
+            return false;
+        case Member: // TODO
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::toVariant()const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            return VM::Variant(value == "true" ? true : false);
+        case Real:
+            return VM::Variant(atof(value.c_str()));
+        case Digit:
+            return VM::Variant(atoi(value.c_str()));
+        case String:
+            return VM::Variant(value);
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::toPositive()const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            return VM::Variant(value == "true" ? 1 : 0);
+        case Real:
+            return VM::Variant(+atof(value.c_str()));
+        case Digit:
+            return VM::Variant(+atoi(value.c_str()));
+        case String:
+            throw error<const char*>("string type have no opertor+", __FILE__, __LINE__);
+            return VM::Variant();
+        case Member: // TODO
+            return VM::Variant();
+        default:
+            return VM::Variant();
+        }
+    }
+
+    VM::Variant SyntaxTree_Value::toNegative()const
+    {
+        switch (_type)
+        {
+        case Boolean:
+            return VM::Variant(value == "true" ? -1 : 0);
+        case Real:
+            return VM::Variant(-atof(value.c_str()));
+        case Digit:
+            return VM::Variant(-atoi(value.c_str()));
+        case String:
+            throw error<const char*>("string type have no operator-", __FILE__, __LINE__);
             return VM::Variant();
         case Member: // TODO
             return VM::Variant();
