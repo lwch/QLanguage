@@ -173,6 +173,45 @@ namespace QLanguage
                 return T();
             }
 
+#ifdef MSVC
+            template <>
+#endif
+            const bool number2Type()const
+            {
+                switch (_type)
+                {
+                case Char:
+                    return charValue != 0;
+                case UChar:
+                    return ucharValue != 0;
+                case Short:
+                    return shortValue != 0;
+                case UShort:
+                    return ushortValue != 0;
+                case Int:
+                    return intValue != 0;
+                case UInt:
+                    return uintValue != 0;
+                case Long:
+                    return longValue != 0;
+                case ULong:
+                    return ulongValue != 0;
+                case LLong:
+                    return llongValue != 0;
+                case ULLong:
+                    return ullongValue != 0;
+                case Float:
+                    return floatValue != 0;
+                case Double:
+                    return doubleValue != 0;
+                case String:
+                    throw error<const char*>("Can't cast from string to bool", __FILE__, __LINE__);
+                case Undefined:
+                    throw error<const char*>("Variant has no value", __FILE__, __LINE__);
+                }
+                return bool();
+            }
+
             void initString(const char* x, size_t size, size_t start, size_t count = -1);
         protected:
             union
