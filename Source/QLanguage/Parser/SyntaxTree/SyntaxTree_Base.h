@@ -109,6 +109,9 @@ class SyntaxTree_Do;
 
         inline virtual const bool isValue()const { return false; }
         inline virtual const bool isConstValue()const { return false; }
+        inline virtual const bool toBool()const { return false; }
+        inline virtual const uchar getConstantBlock()const { return -1; }
+        inline virtual const ushort getConstantIndex()const { return -1; }
 
         virtual const bool operator==(const SyntaxTree_Base& x)const=0;
         virtual const bool operator!=(const SyntaxTree_Base& x)const=0;

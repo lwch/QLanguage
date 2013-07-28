@@ -33,6 +33,27 @@ namespace QLanguage
         if (pContent->type() == "SyntaxTree_Exp") stream << ';';
     }
 
+    bool SyntaxTree_Return::make(Parser* pParser)
+    {
+        if (!pContent->make(pParser)) return false;
+
+        bool bConst = pContent->isConstValue();
+        VM::Instruction i;
+        i.op = VM::Ret;
+        i.ot = MAKE_OT(0, bConst, 0);
+        if (bConst)
+        {
+            i.Normal.ob1 = pContent->getConstantBlock();
+            i.Normal.os1 = pContent->getConstantIndex();
+        }
+        else // TODO
+        {
+
+        }
+        pParser->instructions.push_back(i);
+        return true;
+    }
+
     // return_desc -> "return" block
     bool Parser::reduceReturnBlock()
     {

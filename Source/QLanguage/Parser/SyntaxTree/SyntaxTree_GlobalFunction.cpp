@@ -90,8 +90,13 @@ namespace QLanguage
 
     bool SyntaxTree_GlobalFunction::make(Parser* pParser)
     {
-        pParser->makeContext.push(Parser::ContextInfo(Parser::ContextInfo::GlobalFunction, hash()));
-        return const_cast<SyntaxTree_Block&>(block).make(pParser);
+        const HASH_KEY_TYPE h = hash();
+        pParser->functions.push_back(Parser::FunctionInfo(h));
+        pParser->makeContext.push(Parser::ContextInfo(Parser::ContextInfo::GlobalFunction, h, pParser->functions.back().constantTable));
+        pParser->labels.push_back(pair<string, size_t>(string::format("_gf_%ld_%s", h, name.c_str()), pParser->instructions.size()));
+        bool bResult = const_cast<SyntaxTree_Block&>(block).make(pParser);
+        pParser->makeContext.pop();
+        return bResult;
     }
 
     // global_function_desc -> template_desc type_desc "{Letter}" "(" paramter_list ")" block

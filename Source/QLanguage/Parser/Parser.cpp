@@ -31,15 +31,26 @@ namespace QLanguage
         return true;
     }
 
-    Parser::ContextInfo::ContextInfo(Type type, const HASH_KEY_TYPE& hash)
+    const size_t Parser::ConstantTable::size()const
+    {
+        return constants.size();
+    }
+
+    Parser::ContextInfo::ContextInfo(Type type, const HASH_KEY_TYPE& hash, ConstantTable& constantTable)
         : type(type)
         , hash(hash)
+        , constantTable(constantTable)
     {
         for (size_t i = 0; i < maxRegisterCount; ++i)
         {
             reg[i].first  = false;
             reg[i].second = -1;
         }
+    }
+
+    Parser::FunctionInfo::FunctionInfo(const HASH_KEY_TYPE& hash)
+        : hash(hash)
+    {
     }
 
     Parser::Parser(const vector<Production>& productions)
@@ -412,5 +423,19 @@ namespace QLanguage
             if (idx != -1) return pair<int, ushort>(i + 1, idx);
         }
         return pair<int, ushort>(-1, 0);
+    }
+
+    pair<size_t, ushort> Parser::pushConstant(const VM::Variant& v)
+    {
+        if (!constantTable.push(v))
+        {
+            for (size_t i = 0, m = makeContext.size(); i < m; ++i)
+            {
+                if (makeContext[i].constantTable.push(v)) return pair<size_t, ushort>(i + 1, makeContext[i].constantTable.size() - 1);
+            }
+        }
+        else return pair<size_t, ushort>(0, constantTable.size() - 1);
+        throw error<const char*>("Doesn't have enough capacity", __FILE__, __LINE__);
+        return pair<size_t, ushort>(-1, 0);
     }
 }

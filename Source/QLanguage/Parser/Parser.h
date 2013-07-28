@@ -231,7 +231,9 @@ namespace QLanguage
             maxConstantCount = USHRT_MAX + 1
         };
 
+        friend class SyntaxTree_Exp;
         friend class SyntaxTree_GlobalFunction;
+        friend class SyntaxTree_Return;
     public:
         // 每个常量表有0-65535个常量
         class ConstantTable
@@ -239,6 +241,7 @@ namespace QLanguage
         public:
             const int indexOf(const VM::Variant& v)const;
             bool push(const VM::Variant& v);
+            const size_t size()const;
         protected:
             vector<VM::Variant> constants;
         };
@@ -260,9 +263,18 @@ namespace QLanguage
             // 若是一个临时对象则hash为-1
             pair<bool, HASH_KEY_TYPE> reg[maxRegisterCount];
 
+            ConstantTable& constantTable;
+
+            ContextInfo(Type type, const HASH_KEY_TYPE& hash, ConstantTable& constantTable);
+        };
+
+        struct FunctionInfo
+        {
+            HASH_KEY_TYPE hash;
+
             ConstantTable constantTable;
 
-            ContextInfo(Type type, const HASH_KEY_TYPE& hash);
+            FunctionInfo(const HASH_KEY_TYPE& hash);
         };
 
     public:
@@ -423,6 +435,9 @@ namespace QLanguage
             shifts.pop();
             return true;
         }
+
+        // 同indexof
+        pair<size_t, ushort> pushConstant(const VM::Variant& v);
     protected:
         struct
         {
@@ -431,8 +446,10 @@ namespace QLanguage
         stack<SyntaxTree_Base*> syntaxTreeStack;
         stack<string>           shifts;
 
-        list<VM::Instruction>   instructions;
-        stack<ContextInfo>      makeContext;
+        list<VM::Instruction>         instructions;
+        stack<ContextInfo>            makeContext;
+        vector<FunctionInfo>          functions;
+        vector<pair<string, size_t> > labels;
 
         ConstantTable           constantTable;
 #if defined(_DEBUG ) && DEBUG_LEVEL == 3

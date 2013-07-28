@@ -63,7 +63,10 @@ namespace QLanguage
         virtual bool make(Parser *pParser);
 
         inline virtual const bool isValue()const { return _type == Value; }
-        inline virtual const bool isConstValue()const { return OP1.isConstValue(); }
+        inline virtual const bool isConstValue()const { return bConstant; }
+        virtual const bool toBool()const;
+        inline virtual const uchar getConstantBlock()const { return constantBlock; }
+        inline virtual const ushort getConstantIndex()const { return constantIndex; }
 
         static const VM::Variant eval(const SyntaxTree_Value& v, Type type);
         static const VM::Variant eval(const SyntaxTree_Value& v1, const SyntaxTree_Value& v2, Type type);
@@ -98,6 +101,11 @@ namespace QLanguage
         SyntaxTree_Base*       pOP2;
         SyntaxTree_Base*       pOP3;
         Type                   _type;
+
+        // 在make时使用
+        bool                   bConstant;
+        uchar                  constantBlock;
+        ushort                 constantIndex;
     };
 }
 

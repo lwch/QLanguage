@@ -23,6 +23,7 @@ namespace QLanguage
         , pOP2(pOP2)
         , pOP3(pOP3)
         , _type(TrueFalse)
+        , bConstant(false)
     {
     }
     
@@ -32,6 +33,7 @@ namespace QLanguage
         , pOP2(pOP2)
         , pOP3(NULL)
         , _type(type)
+        , bConstant(false)
     {
     }
 
@@ -41,6 +43,7 @@ namespace QLanguage
         , pOP2(NULL)
         , pOP3(NULL)
         , _type(type)
+        , bConstant(false)
     {
     }
 
@@ -138,44 +141,152 @@ namespace QLanguage
         return 0;
     }
 
+    const bool SyntaxTree_Exp::toBool()const
+    {
+        if (_type == Value) return OP1.toBool();
+        return false;
+    }
+
     bool SyntaxTree_Exp::make(Parser* pParser)
     {
         // TODO
-        if (_type == TrueFalse)
+        switch (_type)
         {
-            if (OP1.isValue() && OP1.isConstValue())
+        case Value:
             {
-                if (dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1).toBool())
+                VM::Variant v = dynamic_cast<const SyntaxTree_Value&>(OP1).toVariant();
+                const pair<int, ushort> p = pParser->indexOfConstant(v);
+                if (p.first == -1)
                 {
-                    if (pOP2->isValue() && pOP2->isConstValue()) // 可提前计算出结果
-                    {
-                        VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1), dynamic_cast<const SyntaxTree_Exp*>(pOP2)->_type);
-                    }
+                    const pair<size_t, ushort> pa = pParser->pushConstant(v);
+                    constantBlock = pa.first;
+                    constantIndex = pa.second;
                 }
                 else
                 {
-                    if (pOP3->isValue() && pOP3->isConstValue()) // 可提前计算出结果
+                    constantBlock = p.first;
+                    constantIndex = p.second;
+                }
+                bConstant = true;
+            }
+            break;
+        case TrueFalse:
+            {
+                if (!const_cast<SyntaxTree_Base&>(OP1).make(pParser)) return false;
+                if (!pOP2->make(pParser)) return false;
+                if (!pOP3->make(pParser)) return false;
+                if (OP1.isValue() && OP1.isConstValue())
+                {
+                    if (dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1).toBool())
                     {
-                        VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP3)->OP1), dynamic_cast<const SyntaxTree_Exp*>(pOP3)->_type);
+                        if (pOP2->isValue() && pOP2->isConstValue()) // 可提前计算出结果
+                        {
+                            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1), dynamic_cast<const SyntaxTree_Exp*>(pOP2)->_type);
+                            const pair<int, ushort> p = pParser->indexOfConstant(v);
+                            if (p.first == -1)
+                            {
+                                const pair<size_t, ushort> pa = pParser->pushConstant(v);
+                                constantBlock = pa.first;
+                                constantIndex = pa.second;
+                            }
+                            else
+                            {
+                                constantBlock = p.first;
+                                constantIndex = p.second;
+                            }
+                            bConstant = true;
+                        }
+                    }
+                    else
+                    {
+                        if (pOP3->isValue() && pOP3->isConstValue()) // 可提前计算出结果
+                        {
+                            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP3)->OP1), dynamic_cast<const SyntaxTree_Exp*>(pOP3)->_type);
+                            const pair<int, ushort> p = pParser->indexOfConstant(v);
+                            if (p.first == -1)
+                            {
+                                const pair<size_t, ushort> pa = pParser->pushConstant(v);
+                                constantBlock = pa.first;
+                                constantIndex = pa.second;
+                            }
+                            else
+                            {
+                                constantBlock = p.first;
+                                constantIndex = p.second;
+                            }
+                            bConstant = true;
+                        }
                     }
                 }
             }
-        }
-        else if (OP1.isValue() && pOP2 == NULL)
-        {
-            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1), dynamic_cast<const SyntaxTree_Exp&>(OP1)._type);
-        }
-        else if (OP1.isValue() && pOP2 && pOP2->isValue())
-        {
-            bool bConstValue1 = OP1.isConstValue();
-            bool bConstValue2 = pOP2->isConstValue();
-
-            if (bConstValue1 && bConstValue2) // 两个常量可提前计算出结果
+            break;
+        case Not:
+        case Positive:
+        case Negative:
             {
-                VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1),
-                                     dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1),
-                                     _type);
+                if (!const_cast<SyntaxTree_Base&>(OP1).make(pParser)) return false;
+                if (OP1.isConstValue())
+                {
+                    VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1), dynamic_cast<const SyntaxTree_Exp&>(OP1)._type);
+                    const pair<int, ushort> p = pParser->indexOfConstant(v);
+                    if (p.first == -1)
+                    {
+                        const pair<size_t, ushort> pa = pParser->pushConstant(v);
+                        constantBlock = pa.first;
+                        constantIndex = pa.second;
+                    }
+                    else
+                    {
+                        constantBlock = p.first;
+                        constantIndex = p.second;
+                    }
+                    bConstant = true;
+                }
             }
+            break;
+        case GreaterEqual:
+        case LessEqual:
+        case Equal:
+        case Greater:
+        case Less:
+        case LogicAnd:
+        case LogicOr:
+        case BitAnd:
+        case BitOr:
+        case BitXor:
+        case Add:
+        case Sub:
+        case Mul:
+        case Div:
+        case Mod:
+            {
+                if (!const_cast<SyntaxTree_Base&>(OP1).make(pParser)) return false;
+                if (!pOP2->make(pParser)) return false;
+
+                bool bConstValue1 = OP1.isConstValue();
+                bool bConstValue2 = pOP2->isConstValue();
+
+                if (bConstValue1 && bConstValue2) // 两个常量可提前计算出结果
+                {
+                    VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1),
+                        dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1),
+                        _type);
+                    const pair<int, ushort> p = pParser->indexOfConstant(v);
+                    if (p.first == -1)
+                    {
+                        const pair<size_t, ushort> pa = pParser->pushConstant(v);
+                        constantBlock = pa.first;
+                        constantIndex = pa.second;
+                    }
+                    else
+                    {
+                        constantBlock = p.first;
+                        constantIndex = p.second;
+                    }
+                    bConstant = true;
+                }
+            }
+            break;
         }
         return true;
     }

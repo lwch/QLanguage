@@ -44,18 +44,20 @@ namespace QLanguage
             Ret       = 17  // ret ([a] || [k])
         };
 
+#define MAKE_OT(a, b, c) ((a << 2) | (b << 1) | c)
+
         // 每条指令有8字节
         struct Instruction
         {
             uchar op : 5; // 操作码5位，最多32种
-            uchar ot : 3; // 3个操作数的类型3位，0为常数，1为寄存器
+            uchar ot : 3; // 3个操作数的类型3位，1为常数，0为寄存器
             union
             {
                 struct
                 {
                     uchar  ob1; // 0为全局的寄存器或常数，1为当前块的，2为上一级的......
                     uchar  ob2; // 0为全局的寄存器或常数，1为当前块的，2为上一级的......
-                    uchar  od1; // 目的寄存器 1字节
+                    uchar  od ; // 目的寄存器 1字节
                     ushort os1; // 源寄存器1或常数 2字节
                     ushort os2; // 源寄存器2或常数 2字节
                 }Normal;
