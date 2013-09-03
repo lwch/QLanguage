@@ -24,6 +24,24 @@ namespace QLanguage
     {
         class Variant
         {
+            enum
+            {
+                GreaterEqual,
+                LessEqual,
+                Equal,
+                Greater,
+                Less,
+                LogicAnd,
+                LogicOr,
+                BitAnd,
+                BitOr,
+                BitXor,
+                Add,
+                Sub,
+                Mul,
+                Div,
+                Mod
+            };
         public:
             enum Type
             {
@@ -133,6 +151,21 @@ namespace QLanguage
             const string toString()const;
 
             const bool operator==(const Variant& v)const;
+
+            const Variant operator>=(const Variant& v)const;
+            const Variant operator<=(const Variant& v)const;
+            const Variant operator>(const Variant& v)const;
+            const Variant operator<(const Variant& v)const;
+            const Variant operator&&(const Variant& v)const;
+            const Variant operator||(const Variant& v)const;
+            const Variant operator&(const Variant& v)const;
+            const Variant operator|(const Variant& v)const;
+            const Variant operator^(const Variant& v)const;
+            const Variant operator+(const Variant& v)const;
+            const Variant operator-(const Variant& v)const;
+            const Variant operator*(const Variant& v)const;
+            const Variant operator/(const Variant& v)const;
+            const Variant operator%(const Variant& v)const;
         protected:
             const bool compareString(const char* data, size_t len)const;
         protected:

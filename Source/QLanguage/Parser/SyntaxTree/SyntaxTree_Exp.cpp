@@ -291,7 +291,7 @@ namespace QLanguage
         return true;
     }
 
-    const VM::Variant SyntaxTree_Exp::eval(const SyntaxTree_Value& v1, const SyntaxTree_Value& v2, Type type)
+    const VM::Variant SyntaxTree_Exp::eval(const VM::Variant& v1, const VM::Variant& v2, Type type)
     {
         switch (type)
         {

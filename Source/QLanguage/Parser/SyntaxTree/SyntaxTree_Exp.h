@@ -68,8 +68,8 @@ namespace QLanguage
         inline virtual const uchar getConstantBlock()const { return constantBlock; }
         inline virtual const ushort getConstantIndex()const { return constantIndex; }
 
-        static const VM::Variant eval(const SyntaxTree_Value& v, Type type);
-        static const VM::Variant eval(const SyntaxTree_Value& v1, const SyntaxTree_Value& v2, Type type);
+        static const VM::Variant eval(const VM::Variant& v, Type type);
+        static const VM::Variant eval(const VM::Variant& v1, const VM::Variant& v2, Type type);
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {

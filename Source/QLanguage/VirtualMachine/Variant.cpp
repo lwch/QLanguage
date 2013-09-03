@@ -182,6 +182,11 @@ namespace QLanguage
             return false;
         }
 
+        const Variant Variant::operator>=(const Variant& v)const
+        {
+
+        }
+
         const bool Variant::compareString(const char* data, size_t len)const
         {
             if (stringValue.length != len) return false;
