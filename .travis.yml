@@ -2,7 +2,7 @@ language: cpp
 compiler:
     - gcc
 script: cmake ./Source && make
-after_script: ./Source/QCoreUnitTest/QCoreUnitTest < ./Tools/input.txt
+after_script: ./QCoreUnitTest/QCoreUnitTest < ./Tools/input.txt
 notifications:
     recipients:
         - lwch748@gmail.com
