@@ -463,6 +463,24 @@ namespace QLanguage
                 return *this;
             }
 
+            const_reference operator[](size_type n)const
+            {
+                if(n < 0 || n >= length) throw "out of range";
+                link_type current = NULL;
+                if(n < length / 2)
+                {
+                    current = node->next;
+                    for(size_type i = 0; i < n; i++, current = current->next);
+                }
+                else
+                {
+                    n = length - n - 1;
+                    current = node->prev;
+                    for(size_type i = 0; i < n; i++, current = current->prev);
+                }
+                return current->data;
+            }
+
             reference operator[](size_type n)
             {
                 if(n < 0 || n >= length) throw "out of range";

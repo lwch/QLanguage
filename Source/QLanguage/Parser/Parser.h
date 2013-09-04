@@ -242,6 +242,8 @@ namespace QLanguage
             const int indexOf(const VM::Variant& v)const;
             bool push(const VM::Variant& v);
             const size_t size()const;
+
+            const VM::Variant& operator[](size_t idx)const;
         protected:
             vector<VM::Variant> constants;
         };
@@ -295,6 +297,8 @@ namespace QLanguage
         // block -> index
         // block: -1不存在，0为全局的，1为当前块的，2为上一级的...
         const pair<int, ushort> indexOfConstant(const VM::Variant& v);
+
+        const VM::Variant& getVariant(uchar block, ushort index)const;
     protected:
         bool reduceType1Size(ushort i);
         bool reduceType2Size(ushort i);

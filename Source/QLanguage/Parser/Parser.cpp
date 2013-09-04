@@ -36,6 +36,11 @@ namespace QLanguage
         return constants.size();
     }
 
+    const VM::Variant& Parser::ConstantTable::operator[](size_t idx)const
+    {
+        return constants[idx];
+    }
+
     Parser::ContextInfo::ContextInfo(Type type, const HASH_KEY_TYPE& hash, ConstantTable& constantTable)
         : type(type)
         , hash(hash)
@@ -437,5 +442,14 @@ namespace QLanguage
         else return pair<size_t, ushort>(0, constantTable.size() - 1);
         throw error<const char*>("Doesn't have enough capacity", __FILE__, __LINE__);
         return pair<size_t, ushort>(-1, 0);
+    }
+
+    const VM::Variant& Parser::getVariant(uchar block, ushort index)const
+    {
+        if (block == 0) return constantTable[index];
+        else {
+            const ContextInfo& i = makeContext[block - 1];
+            return makeContext[block - 1].constantTable[index];
+        }
     }
 }

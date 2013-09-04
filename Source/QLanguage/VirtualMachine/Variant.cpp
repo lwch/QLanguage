@@ -184,7 +184,87 @@ namespace QLanguage
 
         const Variant Variant::operator>=(const Variant& v)const
         {
+            return true;
+        }
 
+        const Variant Variant::operator<=(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator>(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator<(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator&&(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator||(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator&(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator|(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator^(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator+(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator-(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator*(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator/(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator%(const Variant& v)const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator!()const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator+()const
+        {
+            return true;
+        }
+
+        const Variant Variant::operator-()const
+        {
+            return true;
         }
 
         const bool Variant::compareString(const char* data, size_t len)const

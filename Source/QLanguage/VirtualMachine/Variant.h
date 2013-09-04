@@ -24,7 +24,7 @@ namespace QLanguage
     {
         class Variant
         {
-            enum
+            enum OperatorType
             {
                 GreaterEqual,
                 LessEqual,
@@ -36,6 +36,9 @@ namespace QLanguage
                 BitAnd,
                 BitOr,
                 BitXor,
+                Not,
+                Positive,
+                Negative,
                 Add,
                 Sub,
                 Mul,
@@ -166,8 +169,13 @@ namespace QLanguage
             const Variant operator*(const Variant& v)const;
             const Variant operator/(const Variant& v)const;
             const Variant operator%(const Variant& v)const;
+            const Variant operator!()const;
+            const Variant operator+()const;
+            const Variant operator-()const;
         protected:
             const bool compareString(const char* data, size_t len)const;
+            const bool grantCheck(OperatorType type)const;
+            const bool grantCheck(const Variant& v, OperatorType type)const;
         protected:
             template <typename T>
             const T number2Type()const

@@ -181,7 +181,7 @@ namespace QLanguage
                     {
                         if (pOP2->isValue() && pOP2->isConstValue()) // 可提前计算出结果
                         {
-                            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1), dynamic_cast<const SyntaxTree_Exp*>(pOP2)->_type);
+                            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->toVariant(pParser), dynamic_cast<const SyntaxTree_Exp*>(pOP2)->_type);
                             const pair<int, ushort> p = pParser->indexOfConstant(v);
                             if (p.first == -1)
                             {
@@ -201,7 +201,7 @@ namespace QLanguage
                     {
                         if (pOP3->isValue() && pOP3->isConstValue()) // 可提前计算出结果
                         {
-                            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP3)->OP1), dynamic_cast<const SyntaxTree_Exp*>(pOP3)->_type);
+                            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Exp*>(pOP3)->toVariant(pParser), dynamic_cast<const SyntaxTree_Exp*>(pOP3)->_type);
                             const pair<int, ushort> p = pParser->indexOfConstant(v);
                             if (p.first == -1)
                             {
@@ -227,7 +227,7 @@ namespace QLanguage
                 if (!const_cast<SyntaxTree_Base&>(OP1).make(pParser)) return false;
                 if (OP1.isConstValue())
                 {
-                    VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1), dynamic_cast<const SyntaxTree_Exp&>(OP1)._type);
+                    VM::Variant v = eval(dynamic_cast<const SyntaxTree_Exp&>(OP1).toVariant(pParser), dynamic_cast<const SyntaxTree_Exp&>(OP1)._type);
                     const pair<int, ushort> p = pParser->indexOfConstant(v);
                     if (p.first == -1)
                     {
@@ -268,9 +268,9 @@ namespace QLanguage
 
                 if (bConstValue1 && bConstValue2) // 两个常量可提前计算出结果
                 {
-                    VM::Variant v = eval(dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1),
-                        dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->OP1),
-                        _type);
+                    VM::Variant v = eval(dynamic_cast<const SyntaxTree_Exp&>(OP1).toVariant(pParser),
+                                         dynamic_cast<const SyntaxTree_Exp*>(pOP2)->toVariant(pParser),
+                                         _type);
                     const pair<int, ushort> p = pParser->indexOfConstant(v);
                     if (p.first == -1)
                     {
@@ -300,7 +300,7 @@ namespace QLanguage
         case LessEqual:
             return v1 <= v2;
         case Equal:
-            return v1.equal(v2);
+            return v1 == v2;
         case Greater:
             return v1 > v2;
         case Less:
@@ -340,18 +340,18 @@ namespace QLanguage
         }
     }
 
-    const VM::Variant SyntaxTree_Exp::eval(const SyntaxTree_Value &v, Type type)
+    const VM::Variant SyntaxTree_Exp::eval(const VM::Variant& v, Type type)
     {
         switch (type)
         {
         case Not:
-            return !v.toBool();
+            return !v;
         case Positive:
-            return v.toPositive();
+            return +v;
         case Negative:
-            return v.toNegative();
+            return -v;
         case Value:
-            return v.toVariant();
+            return v;
         default:
             throw error<const char*>("Can't eval with operator", __FILE__, __LINE__);
             return VM::Variant();

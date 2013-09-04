@@ -67,6 +67,7 @@ namespace QLanguage
         virtual const bool toBool()const;
         inline virtual const uchar getConstantBlock()const { return constantBlock; }
         inline virtual const ushort getConstantIndex()const { return constantIndex; }
+        inline const VM::Variant& toVariant(Parser* pParser)const { return pParser->getVariant(constantBlock, constantIndex); }
 
         static const VM::Variant eval(const VM::Variant& v, Type type);
         static const VM::Variant eval(const VM::Variant& v1, const VM::Variant& v2, Type type);
