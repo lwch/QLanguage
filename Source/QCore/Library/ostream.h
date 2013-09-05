@@ -55,12 +55,14 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         virtual bool write(const void* buffer, size_type size)=0;
         virtual bool flush()=0;
     protected:
-        inline string convert(long l)     { return string::format("%ld", l);  }
-        inline string convert(ulong ul)   { return string::format("%u", ul);  }
-        inline string convert(llong ll)   { return string::format("%ld", ll); }
-        inline string convert(ullong ull) { return string::format("%u", ull); }
-        inline string convert(float f)    { return string::format("%f", f);   }
-        inline string convert(double d)   { return string::format("%f", d);   }
+        inline string convert(typename basic_ios<T>::_signed c)   { return string::format("%d", c);   }
+        inline string convert(typename basic_ios<T>::_unsigned c) { return string::format("%d", c);   }
+        inline string convert(long l)                             { return string::format("%ld", l);  }
+        inline string convert(ulong ul)                           { return string::format("%u", ul);  }
+        inline string convert(llong ll)                           { return string::format("%ld", ll); }
+        inline string convert(ullong ull)                         { return string::format("%u", ull); }
+        inline string convert(float f)                            { return string::format("%f", f);   }
+        inline string convert(double d)                           { return string::format("%f", d);   }
     };
 
     typedef basic_ostream<char> ostream;

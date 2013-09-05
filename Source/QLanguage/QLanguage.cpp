@@ -98,10 +98,10 @@ int main(int argv, char* args[])
                 cout.setColor(cout.lightWith(stdstream::white));
                 cout << string::format("Use of time: %d", c) << endl;
 
-                fstream fs("Source.txt", fstream::out | fstream::text);
-                parser.print(fs);
+                fstream fs("Out.txt", fstream::out | fstream::text);
 
                 parser.make();
+                parser.print(fs);
             }
             else cerr << "parser error" << endl;
         }

@@ -45,6 +45,9 @@ namespace QLanguage
         };
 
 #define MAKE_OT(a, b, c) ((a << 2) | (b << 1) | c)
+#define OT_DST_TYPE(ot) ((ot >> 2) & 1)
+#define OT_SRC1_TYPE(ot) ((ot >> 1) & 1)
+#define OT_SRC2_TYPE(ot) (ot & 1)
 
         // 每条指令有8字节
         struct Instruction

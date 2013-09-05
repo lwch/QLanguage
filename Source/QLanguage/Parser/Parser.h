@@ -242,6 +242,7 @@ namespace QLanguage
             const int indexOf(const VM::Variant& v)const;
             bool push(const VM::Variant& v);
             const size_t size()const;
+            void print(ostream& stream);
 
             const VM::Variant& operator[](size_t idx)const;
         protected:
@@ -287,6 +288,7 @@ namespace QLanguage
         virtual bool reduce(ushort i);
 
         void print(ostream& stream);
+        void printInstructions(ostream& stream);
 
         inline bool make()
         {

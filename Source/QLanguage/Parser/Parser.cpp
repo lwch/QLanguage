@@ -31,6 +31,45 @@ namespace QLanguage
         return true;
     }
 
+    void Parser::ConstantTable::print(ostream& stream)
+    {
+        for (size_t i = 0, m = constants.size(); i < m; ++i)
+        {
+            stream << "| " << i << " | ";
+            switch (constants[i].type())
+            {
+            case VM::Variant::Char:
+            case VM::Variant::Short:
+            case VM::Variant::Int:
+            case VM::Variant::Long:
+            case VM::Variant::LLong:
+                stream << constants[i].toLLong();
+                break;
+            case VM::Variant::UChar:
+            case VM::Variant::UShort:
+            case VM::Variant::UInt:
+            case VM::Variant::ULong:
+            case VM::Variant::ULLong:
+                stream << constants[i].toULLong();
+                break;
+            case VM::Variant::Float:
+            case VM::Variant::Double:
+                stream << constants[i].toDouble();
+                break;
+            case VM::Variant::String:
+                stream << constants[i].toString();
+                break;
+            case VM::Variant::Undefined:
+                stream << "<undefined>";
+                break;
+            default:
+                stream << "<unknown>";
+                break;
+            }
+            stream << "|" << endl;
+        }
+    }
+
     const size_t Parser::ConstantTable::size()const
     {
         return constants.size();
@@ -354,8 +393,8 @@ namespace QLanguage
         case ELSE_DESC_ELSE_STMT:                    // else_desc -> "else" stmt
         case ELSE_DESC_ELSE_BLOCK:                   // else_desc -> "else" block
             return reduceElse(i);
-	    case FOR_DESC_FOR_STMT_EXP_STMT_BLOCK:       // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
-	        return reduceFor();
+        case FOR_DESC_FOR_STMT_EXP_STMT_BLOCK:       // for_desc -> "for" "(" stmt ";" exp ";" stmt ")" block
+            return reduceFor();
         case WHILE_DESC_WHILE_EXP_BLOCK:             // while_desc -> "while" "(" exp ")" block
             return reduceWhile();
         case DO_DESC_DO_BLOCK_WHILE_EXP:             // do_desc -> "do" block "while" "(" exp ")"
@@ -415,7 +454,43 @@ namespace QLanguage
 
     void Parser::print(ostream& stream)
     {
+        cout << "Printing source from syntax tree ..." << endl;
+        stream << "==================== Source ====================" << endl;
         if (syntaxTreeStack.size() == 1) syntaxTreeStack.top()->print(stream, 0);
+        stream << endl;
+        cout << "Printing instruction ..." << endl;
+        stream << "==================== Instruction ====================" << endl;
+        if (instructions.size() > 0) printInstructions(stream);
+        stream << endl;
+        cout << "Printing constanttable ..." << endl;
+        stream << "==================== ConstantTable ====================" << endl;
+        stream << "global:" << endl;
+        constantTable.print(stream);
+        stream << endl;
+    }
+
+    void Parser::printInstructions(ostream& stream)
+    {
+        stream << "|    instruction    |    operationtype    |    block1    |    block2    |    dst    |    src1    |    src2    |" << endl;
+        for (list<VM::Instruction>::const_iterator i = instructions.begin(), m = instructions.end(); i != m; ++i)
+        {
+            switch (i->op)
+            {
+            case VM::Ret:
+                stream << "| Ret | " << (int)i->ot << "(";
+                if (OT_DST_TYPE(i->ot)) stream << "constant, ";
+                else stream << "register, ";
+                if (OT_SRC1_TYPE(i->ot)) stream << "constant, ";
+                else stream << "register, ";
+                if (OT_SRC2_TYPE(i->ot)) stream << "constant";
+                else stream << "register";
+                stream << ") | " << (int)i->Normal.ob1;
+                if (i->Normal.ob1 == 0) stream << "(global)";
+                stream << " | / | / | " << i->Normal.os1 << " | / |";
+                break;
+            }
+            stream << endl;
+        }
     }
 
     const pair<int, ushort> Parser::indexOfConstant(const VM::Variant& v)
