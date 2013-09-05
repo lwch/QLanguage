@@ -67,21 +67,6 @@ namespace QLanguage
             if (_type == Member) return *pContent != *dynamic_cast<const SyntaxTree_Value*>(&x)->pContent;
             else return value != dynamic_cast<const SyntaxTree_Value*>(&x)->value;
         }
-
-        const bool operator>=(const SyntaxTree_Value& x)const;
-        const bool operator<=(const SyntaxTree_Value& x)const;
-        const bool operator>(const SyntaxTree_Value& x)const;
-        const bool operator<(const SyntaxTree_Value& x)const;
-        const bool operator&&(const SyntaxTree_Value& x)const;
-        const bool operator||(const SyntaxTree_Value& x)const;
-        VM::Variant operator&(const SyntaxTree_Value& x)const;
-        VM::Variant operator|(const SyntaxTree_Value& x)const;
-        VM::Variant operator^(const SyntaxTree_Value& x)const;
-        VM::Variant operator+(const SyntaxTree_Value& x)const;
-        VM::Variant operator-(const SyntaxTree_Value& x)const;
-        VM::Variant operator*(const SyntaxTree_Value& x)const;
-        VM::Variant operator/(const SyntaxTree_Value& x)const;
-        VM::Variant operator%(const SyntaxTree_Value& x)const;
     protected:
         string           value;
         Type             _type;

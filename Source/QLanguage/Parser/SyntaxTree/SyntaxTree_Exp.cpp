@@ -287,6 +287,8 @@ namespace QLanguage
                 }
             }
             break;
+        default:
+            break;
         }
         return true;
     }

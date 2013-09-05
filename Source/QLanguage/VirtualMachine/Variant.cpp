@@ -182,88 +182,542 @@ namespace QLanguage
             return false;
         }
 
+/* CHECK2_2* */
+#define CHECK2_2(op, v1, v2) \
+        do \
+        { \
+            switch (v2.type()) \
+            { \
+            case Char: \
+                return Variant(v1 op v2.toChar()); \
+            case UChar: \
+                return Variant(v1 op v2.toUChar()); \
+            case Short: \
+                return Variant(v1 op v2.toShort()); \
+            case UShort: \
+                return Variant(v1 op v2.toUShort()); \
+            case Int: \
+                return Variant(v1 op v2.toInt()); \
+            case UInt: \
+                return Variant(v1 op v2.toUInt()); \
+            case Long: \
+                return Variant(v1 op v2.toLong()); \
+            case ULong: \
+                return Variant(v1 op v2.toULong()); \
+            case LLong: \
+                return Variant(v1 op v2.toLLong()); \
+            case ULLong: \
+                return Variant(v1 op v2.toULLong()); \
+            case Float: \
+                return Variant(v1 op v2.toFloat()); \
+            case Double: \
+                return Variant(v1 op v2.toDouble()); \
+            case String: \
+                break; \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+#define CHECK2_2_SIGNED(op, v1, v2) \
+        do \
+        { \
+            switch (v2.type()) \
+            { \
+            case Char: \
+                return Variant(v1 op v2.toChar()); \
+            case Short: \
+                return Variant(v1 op v2.toShort()); \
+            case Int: \
+                return Variant(v1 op v2.toInt()); \
+            case Long: \
+                return Variant(v1 op v2.toLong()); \
+            case LLong: \
+                return Variant(v1 op v2.toLLong()); \
+            case Float: \
+                return Variant(v1 op v2.toFloat()); \
+            case Double: \
+                return Variant(v1 op v2.toDouble()); \
+            case String: \
+                break; \
+            case UChar: \
+            case UShort: \
+            case UInt: \
+            case ULong: \
+            case ULLong: \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+#define CHECK2_2_UNSIGNED(op, v1, v2) \
+        do \
+        { \
+            switch (v2.type()) \
+            { \
+            case UChar: \
+                return Variant(v1 op v2.toUChar()); \
+            case UShort: \
+                return Variant(v1 op v2.toUShort()); \
+            case UInt: \
+                return Variant(v1 op v2.toUInt()); \
+            case ULong: \
+                return Variant(v1 op v2.toULong()); \
+            case ULLong: \
+                return Variant(v1 op v2.toULLong()); \
+            case Float: \
+                return Variant(v1 op v2.toFloat()); \
+            case Double: \
+                return Variant(v1 op v2.toDouble()); \
+            case String: \
+                break; \
+            case Char: \
+            case Short: \
+            case Int: \
+            case Long: \
+            case LLong: \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+#define CHECK2_2_NODECIMAL(op, v1, v2) \
+        do \
+        { \
+            switch (v2.type()) \
+            { \
+            case Char: \
+                return Variant(v1 op v2.toChar()); \
+            case UChar: \
+                return Variant(v1 op v2.toUChar()); \
+            case Short: \
+                return Variant(v1 op v2.toShort()); \
+            case UShort: \
+                return Variant(v1 op v2.toUShort()); \
+            case Int: \
+                return Variant(v1 op v2.toInt()); \
+            case UInt: \
+                return Variant(v1 op v2.toUInt()); \
+            case Long: \
+                return Variant(v1 op v2.toLong()); \
+            case ULong: \
+                return Variant(v1 op v2.toULong()); \
+            case LLong: \
+                return Variant(v1 op v2.toLLong()); \
+            case ULLong: \
+                return Variant(v1 op v2.toULLong()); \
+            case String: \
+                break; \
+            case Float: \
+            case Double: \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+#define CHECK2_2_NODECIMAL_SIGNED(op, v1, v2) \
+        do \
+        { \
+            switch (v2.type()) \
+            { \
+            case Char: \
+                return Variant(v1 op v2.toChar()); \
+            case Short: \
+                return Variant(v1 op v2.toShort()); \
+            case Int: \
+                return Variant(v1 op v2.toInt()); \
+            case UInt: \
+            case Long: \
+                return Variant(v1 op v2.toLong()); \
+            case LLong: \
+                return Variant(v1 op v2.toLLong()); \
+            case String: \
+                break; \
+            case UChar: \
+            case UShort: \
+            case ULong: \
+            case ULLong: \
+            case Float: \
+            case Double: \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+#define CHECK2_2_NODECIMAL_UNSIGNED(op, v1, v2) \
+        do \
+        { \
+            switch (v2.type()) \
+            { \
+            case UChar: \
+                return Variant(v1 op v2.toUChar()); \
+            case UShort: \
+                return Variant(v1 op v2.toUShort()); \
+            case Int: \
+            case UInt: \
+                return Variant(v1 op v2.toUInt()); \
+            case ULong: \
+                return Variant(v1 op v2.toULong()); \
+            case ULLong: \
+                return Variant(v1 op v2.toULLong()); \
+            case String: \
+                break; \
+            case Char: \
+            case Short: \
+            case Long: \
+            case LLong: \
+            case Float: \
+            case Double: \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+/* CHECK2_1* */
+#define CHECK2_1(op, v) \
+        do \
+        { \
+            switch (_type) \
+            { \
+            case Char: \
+                CHECK2_2(op, toChar(), v); \
+                break; \
+            case UChar: \
+                CHECK2_2(op, toUChar(), v); \
+                break; \
+            case Short: \
+                CHECK2_2(op, toShort(), v); \
+                break; \
+            case UShort: \
+                CHECK2_2(op, toUShort(), v); \
+                break; \
+            case Int: \
+                CHECK2_2(op, toInt(), v); \
+                break; \
+            case UInt: \
+                CHECK2_2(op, toUInt(), v); \
+                break; \
+            case Long: \
+                CHECK2_2(op, toLong(), v); \
+                break; \
+            case ULong: \
+                CHECK2_2(op, toULong(), v); \
+                break; \
+            case LLong: \
+                CHECK2_2(op, toLLong(), v); \
+                break; \
+            case ULLong: \
+                CHECK2_2(op, toULLong(), v); \
+                break; \
+            case Float: \
+                CHECK2_2(op, toFloat(), v); \
+                break; \
+            case Double: \
+                CHECK2_2(op, toDouble(), v); \
+                break; \
+            case String: \
+                break; \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+#define CHECK2_1_S(op, v) \
+        do \
+        { \
+            switch (_type) \
+            { \
+            case Char: \
+                CHECK2_2_SIGNED(op, toChar(), v); \
+                break; \
+            case UChar: \
+                CHECK2_2_UNSIGNED(op, toUChar(), v); \
+                break; \
+            case Short: \
+                CHECK2_2_SIGNED(op, toShort(), v); \
+                break; \
+            case UShort: \
+                CHECK2_2_UNSIGNED(op, toUShort(), v); \
+                break; \
+            case Int: \
+                CHECK2_2_SIGNED(op, toInt(), v); \
+                break; \
+            case UInt: \
+                CHECK2_2_UNSIGNED(op, toUInt(), v); \
+                break; \
+            case Long: \
+                CHECK2_2_SIGNED(op, toLong(), v); \
+                break; \
+            case ULong: \
+                CHECK2_2_UNSIGNED(op, toULong(), v); \
+                break; \
+            case LLong: \
+                CHECK2_2_SIGNED(op, toLLong(), v); \
+                break; \
+            case ULLong: \
+                CHECK2_2_UNSIGNED(op, toULLong(), v); \
+                break; \
+            case Float: \
+                CHECK2_2(op, toFloat(), v); \
+                break; \
+            case Double: \
+                CHECK2_2(op, toDouble(), v); \
+                break; \
+            case String: \
+                break; \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+#define CHECK2_1_NODECIMAL(op, v) \
+        do \
+        { \
+            switch (_type) \
+            { \
+            case Char: \
+                CHECK2_2_NODECIMAL(op, toChar(), v); \
+                break; \
+            case UChar: \
+                CHECK2_2_NODECIMAL(op, toUChar(), v); \
+                break; \
+            case Short: \
+                CHECK2_2_NODECIMAL(op, toShort(), v); \
+                break; \
+            case UShort: \
+                CHECK2_2_NODECIMAL(op, toUShort(), v); \
+                break; \
+            case Int: \
+                CHECK2_2_NODECIMAL(op, toInt(), v); \
+                break; \
+            case UInt: \
+                CHECK2_2_NODECIMAL(op, toUInt(), v); \
+                break; \
+            case Long: \
+                CHECK2_2_NODECIMAL(op, toLong(), v); \
+                break; \
+            case ULong: \
+                CHECK2_2_NODECIMAL(op, toULong(), v); \
+                break; \
+            case LLong: \
+                CHECK2_2_NODECIMAL(op, toLLong(), v); \
+                break; \
+            case ULLong: \
+                CHECK2_2_NODECIMAL(op, toULLong(), v); \
+                break; \
+            case String: \
+                break; \
+            case Float: \
+            case Double: \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+#define CHECK2_1_NODECIMAL_S(op, v) \
+        do \
+        { \
+            switch (_type) \
+            { \
+            case Char: \
+                CHECK2_2_NODECIMAL_SIGNED(op, toChar(), v); \
+                break; \
+            case UChar: \
+                CHECK2_2_NODECIMAL_UNSIGNED(op, toUChar(), v); \
+                break; \
+            case Short: \
+                CHECK2_2_NODECIMAL_SIGNED(op, toShort(), v); \
+                break; \
+            case UShort: \
+                CHECK2_2_NODECIMAL_UNSIGNED(op, toUShort(), v); \
+                break; \
+            case Int: \
+                CHECK2_2_NODECIMAL_SIGNED(op, toInt(), v); \
+                break; \
+            case UInt: \
+                CHECK2_2_NODECIMAL_UNSIGNED(op, toUInt(), v); \
+                break; \
+            case Long: \
+                CHECK2_2_NODECIMAL_SIGNED(op, toLong(), v); \
+                break; \
+            case ULong: \
+                CHECK2_2_NODECIMAL_UNSIGNED(op, toULong(), v); \
+                break; \
+            case LLong: \
+                CHECK2_2_NODECIMAL_SIGNED(op, toLLong(), v); \
+                break; \
+            case ULLong: \
+                CHECK2_2_NODECIMAL_UNSIGNED(op, toULLong(), v); \
+                break; \
+            case String: \
+                break; \
+            case Float: \
+            case Double: \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+/* CHECK2* */
+#define CHECK2(op, v) CHECK2_1(op, v)
+#define CHECK2_S(op, v) CHECK2_1_S(op, v)
+#define CHECK2_NODECIMAL(op, v) CHECK2_1_NODECIMAL(op, v)
+#define CHECK2_NODECIMAL_S(op, v) CHECK2_1_NODECIMAL_S(op, v)
+
+/* CHECK1 */
+#define CHECK1(op) \
+        do \
+        { \
+            switch (_type) \
+            { \
+            case Char: \
+                return Variant(op(toChar())); \
+            case UChar: \
+                return Variant(op(toUChar())); \
+            case Short: \
+                return Variant(op(toShort())); \
+            case UShort: \
+                return Variant(op(toUShort())); \
+            case Int: \
+                return Variant(op(toInt())); \
+            case UInt: \
+                return Variant(op(toUInt())); \
+            case Long: \
+                return Variant(op(toLong())); \
+            case ULong: \
+                return Variant(op(toULong())); \
+            case LLong: \
+                return Variant(op(toLLong())); \
+            case ULLong: \
+                return Variant(op(toULLong())); \
+            case Float: \
+                return Variant(op(toFloat())); \
+            case Double: \
+                return Variant(op(toDouble())); \
+            case String: \
+                break; \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
+
         const Variant Variant::operator>=(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, GreaterEqual)) return false;
+            CHECK2_S(>=, v);
+            return Variant();
         }
 
         const Variant Variant::operator<=(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, LessEqual)) return false;
+            CHECK2_S(<=, v);
+            return Variant();
         }
 
         const Variant Variant::operator>(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, Greater)) return false;
+            CHECK2_S(>, v);
+            return Variant();
         }
 
         const Variant Variant::operator<(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, Less)) return false;
+            CHECK2_S(<, v);
+            return Variant();
         }
 
         const Variant Variant::operator&&(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, LogicAnd)) return false;
+            CHECK2(&&, v);
+            return Variant();
         }
 
         const Variant Variant::operator||(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, LogicOr)) return false;
+            CHECK2(||, v);
+            return Variant();
         }
 
         const Variant Variant::operator&(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, BitAnd)) return false;
+            CHECK2_NODECIMAL_S(&, v);
+            return Variant();
         }
 
         const Variant Variant::operator|(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, BitOr)) return false;
+            CHECK2_NODECIMAL(|, v);
+            return Variant();
         }
 
         const Variant Variant::operator^(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, BitXor)) return false;
+            CHECK2_NODECIMAL(^, v);
+            return Variant();
         }
 
         const Variant Variant::operator+(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, Add)) return false;
+            CHECK2(+, v);
+            return Variant();
         }
 
         const Variant Variant::operator-(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, Sub)) return false;
+            CHECK2(-, v);
+            return Variant();
         }
 
         const Variant Variant::operator*(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, Mul)) return false;
+            CHECK2(*, v);
+            return Variant();
         }
 
         const Variant Variant::operator/(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, Div)) return false;
+            CHECK2(/, v);
+            return Variant();
         }
 
         const Variant Variant::operator%(const Variant& v)const
         {
-            return true;
+            if (!grantCheck(v, Mod)) return false;
+            CHECK2_NODECIMAL(%, v);
+            return Variant();
         }
 
         const Variant Variant::operator!()const
         {
-            return true;
+            if (!grantCheck(Not)) return false;
+            CHECK1(!);
+            return Variant();
         }
 
         const Variant Variant::operator+()const
         {
+            if (!grantCheck(Positive)) return false;
+            CHECK1(+);
             return true;
         }
 
         const Variant Variant::operator-()const
         {
+            if (!grantCheck(Negative)) return false;
+            CHECK1(-);
             return true;
         }
 

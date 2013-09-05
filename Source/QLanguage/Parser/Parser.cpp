@@ -448,7 +448,6 @@ namespace QLanguage
     {
         if (block == 0) return constantTable[index];
         else {
-            const ContextInfo& i = makeContext[block - 1];
             return makeContext[block - 1].constantTable[index];
         }
     }
