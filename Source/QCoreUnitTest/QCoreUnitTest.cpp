@@ -69,7 +69,7 @@ int main()
         TEST_ASSERT(iResult != (iCount - iSpeedCaseCount), "some error!");
 #endif
         cout.setColor(cout.lightWith(stdstream::green));
-        cout << string::format("Run %d cases with time %.03f seconds successed!", iResult, (double)t / 1000) << endl;
+        cout << string::format("Run %d cases with time %.03f seconds successed!", iResult, (double)t / CLOCKS_PER_SEC) << endl;
         cout.setColor(stdstream::white);
     }
     catch (const error<const char*>& e)

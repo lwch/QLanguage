@@ -278,11 +278,7 @@ namespace QLanguage
 
         inline void printCostTimeSeconds(clock_t n)
         {
-#ifdef WIN32
             PrintInformation(string::format("time cost: %f seconds", (double)n / CLOCKS_PER_SEC));
-#else
-            PrintInformation(string::format("time cost: %f seconds", (double)n / sysconf(_SC_CLK_TCK)));
-#endif
         }
 
         #define TIME_START { clock_t _clock_start_ = clock()
