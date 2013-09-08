@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/lwch/QLanguage.png)](https://travis-ci.org/lwch/QLanguage)
 
-一、文件目录结构
+# 文件目录结构
 + Demos ------------------------------------------------------ QLanguage的一些Demo
     - normal.txt --------------------------------------------- 一个基本的示例
 + Documents -------------------------------------------------- 一些开发文档
@@ -256,14 +256,14 @@
     - update.sh ---------------------------------------------- 从GoogleCode拉代码并提交到GitHub的脚本
 - README ----------------------------------------------------- 本文件
 
-二、编译
+# 编译
 见CMake相关文档
 
-三、源代码获取
+# 源代码获取
 1.https://code.google.com/p/qlanguage/
 2.https://github.com/lwch/QLanguage
 
-四、关于
+# 关于
 1.所有代码遵循GPL协议，转载请注明原作者
 2.QQ:510134884
 3.QQ群:38843264
