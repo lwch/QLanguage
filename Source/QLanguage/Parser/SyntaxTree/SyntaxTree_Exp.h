@@ -62,7 +62,6 @@ namespace QLanguage
 
         virtual bool make(Parser *pParser);
 
-        inline virtual const bool isValue()const { return _type == Value; }
         inline virtual const bool isConstValue()const { return bConstant; }
         virtual const bool toBool()const;
         inline virtual const uchar getConstantBlock()const { return constantBlock; }

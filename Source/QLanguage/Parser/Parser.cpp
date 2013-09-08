@@ -66,7 +66,7 @@ namespace QLanguage
                 stream << "<unknown>";
                 break;
             }
-            stream << "|" << endl;
+            stream << " |" << endl;
         }
     }
 

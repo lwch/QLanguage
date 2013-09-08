@@ -116,12 +116,17 @@ namespace QLanguage
             initString(x.c_str(), x.size(), start, count);
         }
 
+        Variant::Variant(const Variant& v)
+        {
+            copyFrom(v);
+        }
+
         Variant::~Variant()
         {
             if (_type == String)
             {
-                destruct_range(stringValue.value, stringValue.value + stringValue.length);
-                allocator<char>::deallocate(stringValue.value, stringValue.length);
+                destruct_range(stringValue.value, stringValue.value + stringValue.length + 1);
+                allocator<char>::deallocate(stringValue.value, stringValue.length + 1);
             }
         }
 
@@ -135,6 +140,56 @@ namespace QLanguage
         {
             if (_type != String) throw error<const char*>("Can't cast to const string&", __FILE__, __LINE__);
             return string(stringValue.value, stringValue.length);
+        }
+
+        void Variant::copyFrom(const Variant& v)
+        {
+            _type = v._type;
+            switch (_type)
+            {
+            case Char:
+                charValue = v.charValue;
+                break;
+            case UChar:
+                ucharValue = v.ucharValue;
+                break;
+            case Short:
+                shortValue = v.shortValue;
+                break;
+            case UShort:
+                ushortValue = v.ushortValue;
+                break;
+            case Int:
+                intValue = v.intValue;
+                break;
+            case UInt:
+                uintValue = v.uintValue;
+                break;
+            case Long:
+                longValue = v.longValue;
+                break;
+            case ULong:
+                ulongValue = v.ulongValue;
+                break;
+            case LLong:
+                llongValue = v.llongValue;
+                break;
+            case ULLong:
+                ullongValue = v.ullongValue;
+                break;
+            case Float:
+                floatValue = v.floatValue;
+                break;
+            case Double:
+                doubleValue = v.doubleValue;
+                break;
+            case String:
+                initString(v.stringValue.value, v.stringValue.length, 0);
+                break;
+            case Undefined:
+            default:
+                break;
+            }
         }
 
         void Variant::initString(const char* x, size_t size, size_t start, size_t count /* = -1 */)
@@ -565,6 +620,37 @@ namespace QLanguage
 #define CHECK2_NODECIMAL_S(op, v) CHECK2_1_NODECIMAL_S(op, v)
 
 /* CHECK1 */
+#define CHECK1_S(op) \
+        do \
+        { \
+            switch (_type) \
+            { \
+            case Char: \
+                return Variant(op(toChar())); \
+            case Short: \
+                return Variant(op(toShort())); \
+            case Int: \
+                return Variant(op(toInt())); \
+            case Long: \
+                return Variant(op(toLong())); \
+            case LLong: \
+                return Variant(op(toLLong())); \
+            case Float: \
+                return Variant(op(toFloat())); \
+            case Double: \
+                return Variant(op(toDouble())); \
+            case String: \
+                break; \
+            case UChar: \
+            case UShort: \
+            case UInt: \
+            case ULong: \
+            case ULLong: \
+            case Undefined: \
+            default: \
+                return Variant(); \
+            } \
+        } while (0)
 #define CHECK1(op) \
         do \
         { \
@@ -717,8 +803,22 @@ namespace QLanguage
         const Variant Variant::operator-()const
         {
             if (!grantCheck(Negative)) return false;
-            CHECK1(-);
+            CHECK1_S(-);
             return true;
+        }
+
+        Variant& Variant::operator=(const Variant& v)
+        {
+            if (&v != this)
+            {
+                if (_type == String)
+                {
+                    destruct_range(stringValue.value, stringValue.value + stringValue.length + 1);
+                    allocator<char>::deallocate(stringValue.value, stringValue.length + 1);
+                }
+                copyFrom(v);
+            }
+            return *this;
         }
 
         const bool Variant::compareString(const char* data, size_t len)const

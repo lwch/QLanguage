@@ -81,6 +81,7 @@ namespace QLanguage
             Variant(const char* x, size_t start, size_t count = -1);
             Variant(const string& x);
             Variant(const string& x, size_t start, size_t count = -1);
+            Variant(const Variant& v);
             ~Variant();
 
             inline const Type type()const { return _type; }
@@ -153,6 +154,8 @@ namespace QLanguage
             const char* toCharPointer()const;
             const string toString()const;
 
+            void copyFrom(const Variant& v);
+
             const bool operator==(const Variant& v)const;
 
             const Variant operator>=(const Variant& v)const;
@@ -172,6 +175,8 @@ namespace QLanguage
             const Variant operator!()const;
             const Variant operator+()const;
             const Variant operator-()const;
+
+            Variant& operator=(const Variant& v);
         protected:
             const bool compareString(const char* data, size_t len)const;
             const bool grantCheck(OperatorType type)const;

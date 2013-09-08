@@ -85,6 +85,8 @@ namespace QLanguage
             Variant::ULLong, \
         }
 
+#define vGrantTable_Empty {-1}
+
         // 一元操作符权限
         // vGrantTable_Not_*
         uchar vGrantTable_Not[] = vGrantTable_Normal1;
@@ -109,8 +111,8 @@ namespace QLanguage
         uchar vGrantTable_GreaterEqual_ULLong[] = vGrantTable_Normal2;
         uchar vGrantTable_GreaterEqual_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_GreaterEqual_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_GreaterEqual_String[] = {};
-        uchar vGrantTable_GreaterEqual_Undefined[] = {};
+        uchar vGrantTable_GreaterEqual_String[] = vGrantTable_Empty;
+        uchar vGrantTable_GreaterEqual_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_LessEqual_*
         uchar vGrantTable_LessEqual_Char[] = vGrantTable_Normal2;
@@ -125,8 +127,8 @@ namespace QLanguage
         uchar vGrantTable_LessEqual_ULLong[] = vGrantTable_Normal2;
         uchar vGrantTable_LessEqual_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_LessEqual_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_LessEqual_String[] = {};
-        uchar vGrantTable_LessEqual_Undefined[] = {};
+        uchar vGrantTable_LessEqual_String[] = vGrantTable_Empty;
+        uchar vGrantTable_LessEqual_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_Equal_*
         uchar vGrantTable_Equal_Char[] = vGrantTable_Normal2;
@@ -142,7 +144,7 @@ namespace QLanguage
         uchar vGrantTable_Equal_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_Equal_Double[] = vGrantTable_Normal2;
         uchar vGrantTable_Equal_String[] = {Variant::String};
-        uchar vGrantTable_Equal_Undefined[] = {};
+        uchar vGrantTable_Equal_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_Greater_*
         uchar vGrantTable_Greater_Char[] = vGrantTable_Normal2;
@@ -157,8 +159,8 @@ namespace QLanguage
         uchar vGrantTable_Greater_ULLong[] = vGrantTable_Normal2;
         uchar vGrantTable_Greater_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_Greater_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_Greater_String[] = {};
-        uchar vGrantTable_Greater_Undefined[] = {};
+        uchar vGrantTable_Greater_String[] = vGrantTable_Empty;
+        uchar vGrantTable_Greater_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_Less_*
         uchar vGrantTable_Less_Char[] = vGrantTable_Normal2_Signed;
@@ -173,8 +175,8 @@ namespace QLanguage
         uchar vGrantTable_Less_ULLong[] = vGrantTable_Normal2_Unsigned;
         uchar vGrantTable_Less_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_Less_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_Less_String[] = {};
-        uchar vGrantTable_Less_Undefined[] = {};
+        uchar vGrantTable_Less_String[] = vGrantTable_Empty;
+        uchar vGrantTable_Less_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_LogicAnd_*
         uchar vGrantTable_LogicAnd_Char[] = vGrantTable_Normal2;
@@ -189,8 +191,8 @@ namespace QLanguage
         uchar vGrantTable_LogicAnd_ULLong[] = vGrantTable_Normal2;
         uchar vGrantTable_LogicAnd_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_LogicAnd_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_LogicAnd_String[] = {};
-        uchar vGrantTable_LogicAnd_Undefined[] = {};
+        uchar vGrantTable_LogicAnd_String[] = vGrantTable_Empty;
+        uchar vGrantTable_LogicAnd_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_LogicOr_*
         uchar vGrantTable_LogicOr_Char[] = vGrantTable_Normal2;
@@ -205,8 +207,8 @@ namespace QLanguage
         uchar vGrantTable_LogicOr_ULLong[] = vGrantTable_Normal2;
         uchar vGrantTable_LogicOr_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_LogicOr_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_LogicOr_String[] = {};
-        uchar vGrantTable_LogicOr_Undefined[] = {};
+        uchar vGrantTable_LogicOr_String[] = vGrantTable_Empty;
+        uchar vGrantTable_LogicOr_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_BitAnd_*
         uchar vGrantTable_BitAnd_Char[] = vGrantTable_Normal2_Nodecimal;
@@ -219,10 +221,10 @@ namespace QLanguage
         uchar vGrantTable_BitAnd_ULong[] = vGrantTable_Normal2_Nodecimal;
         uchar vGrantTable_BitAnd_LLong[] = vGrantTable_Normal2_Nodecimal;
         uchar vGrantTable_BitAnd_ULLong[] = vGrantTable_Normal2_Nodecimal;
-        uchar vGrantTable_BitAnd_Float[] = {};
-        uchar vGrantTable_BitAnd_Double[] = {};
-        uchar vGrantTable_BitAnd_String[] = {};
-        uchar vGrantTable_BitAnd_Undefined[] = {};
+        uchar vGrantTable_BitAnd_Float[] = vGrantTable_Empty;
+        uchar vGrantTable_BitAnd_Double[] = vGrantTable_Empty;
+        uchar vGrantTable_BitAnd_String[] = vGrantTable_Empty;
+        uchar vGrantTable_BitAnd_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_BitOr_*
         uchar vGrantTable_BitOr_Char[] = vGrantTable_Normal2_Nodecimal;
@@ -235,10 +237,10 @@ namespace QLanguage
         uchar vGrantTable_BitOr_ULong[] = vGrantTable_Normal2_Nodecimal;
         uchar vGrantTable_BitOr_LLong[] = vGrantTable_Normal2_Nodecimal;
         uchar vGrantTable_BitOr_ULLong[] = vGrantTable_Normal2_Nodecimal;
-        uchar vGrantTable_BitOr_Float[] = {};
-        uchar vGrantTable_BitOr_Double[] = {};
-        uchar vGrantTable_BitOr_String[] = {};
-        uchar vGrantTable_BitOr_Undefined[] = {};
+        uchar vGrantTable_BitOr_Float[] = vGrantTable_Empty;
+        uchar vGrantTable_BitOr_Double[] = vGrantTable_Empty;
+        uchar vGrantTable_BitOr_String[] = vGrantTable_Empty;
+        uchar vGrantTable_BitOr_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_BitXor_*
         uchar vGrantTable_BitXor_Char[] = vGrantTable_Normal2_Nodecimal;
@@ -251,10 +253,10 @@ namespace QLanguage
         uchar vGrantTable_BitXor_ULong[] = vGrantTable_Normal2_Nodecimal;
         uchar vGrantTable_BitXor_LLong[] = vGrantTable_Normal2_Nodecimal;
         uchar vGrantTable_BitXor_ULLong[] = vGrantTable_Normal2_Nodecimal;
-        uchar vGrantTable_BitXor_Float[] = {};
-        uchar vGrantTable_BitXor_Double[] = {};
-        uchar vGrantTable_BitXor_String[] = {};
-        uchar vGrantTable_BitXor_Undefined[] = {};
+        uchar vGrantTable_BitXor_Float[] = vGrantTable_Empty;
+        uchar vGrantTable_BitXor_Double[] = vGrantTable_Empty;
+        uchar vGrantTable_BitXor_String[] = vGrantTable_Empty;
+        uchar vGrantTable_BitXor_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_Add_*
         uchar vGrantTable_Add_Char[] = vGrantTable_Normal2;
@@ -269,8 +271,8 @@ namespace QLanguage
         uchar vGrantTable_Add_ULLong[] = vGrantTable_Normal2;
         uchar vGrantTable_Add_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_Add_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_Add_String[] = {};
-        uchar vGrantTable_Add_Undefined[] = {};
+        uchar vGrantTable_Add_String[] = vGrantTable_Empty;
+        uchar vGrantTable_Add_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_Sub_*
         uchar vGrantTable_Sub_Char[] = vGrantTable_Normal2;
@@ -285,8 +287,8 @@ namespace QLanguage
         uchar vGrantTable_Sub_ULLong[] = vGrantTable_Normal2;
         uchar vGrantTable_Sub_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_Sub_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_Sub_String[] = {};
-        uchar vGrantTable_Sub_Undefined[] = {};
+        uchar vGrantTable_Sub_String[] = vGrantTable_Empty;
+        uchar vGrantTable_Sub_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_Mul_*
         uchar vGrantTable_Mul_Char[] = vGrantTable_Normal2;
@@ -301,8 +303,8 @@ namespace QLanguage
         uchar vGrantTable_Mul_ULLong[] = vGrantTable_Normal2;
         uchar vGrantTable_Mul_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_Mul_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_Mul_String[] = {};
-        uchar vGrantTable_Mul_Undefined[] = {};
+        uchar vGrantTable_Mul_String[] = vGrantTable_Empty;
+        uchar vGrantTable_Mul_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_Div_*
         uchar vGrantTable_Div_Char[] = vGrantTable_Normal2;
@@ -317,8 +319,8 @@ namespace QLanguage
         uchar vGrantTable_Div_ULLong[] = vGrantTable_Normal2;
         uchar vGrantTable_Div_Float[] = vGrantTable_Normal2;
         uchar vGrantTable_Div_Double[] = vGrantTable_Normal2;
-        uchar vGrantTable_Div_String[] = {};
-        uchar vGrantTable_Div_Undefined[] = {};
+        uchar vGrantTable_Div_String[] = vGrantTable_Empty;
+        uchar vGrantTable_Div_Undefined[] = vGrantTable_Empty;
 
         // vGrantTable_Mod_*
         uchar vGrantTable_Mod_Char[] = vGrantTable_Normal2_Nodecimal;
@@ -331,10 +333,10 @@ namespace QLanguage
         uchar vGrantTable_Mod_ULong[] = vGrantTable_Normal2_Nodecimal;
         uchar vGrantTable_Mod_LLong[] = vGrantTable_Normal2_Nodecimal;
         uchar vGrantTable_Mod_ULLong[] = vGrantTable_Normal2_Nodecimal;
-        uchar vGrantTable_Mod_Float[] = {};
-        uchar vGrantTable_Mod_Double[] = {};
-        uchar vGrantTable_Mod_String[] = {};
-        uchar vGrantTable_Mod_Undefined[] = {};
+        uchar vGrantTable_Mod_Float[] = vGrantTable_Empty;
+        uchar vGrantTable_Mod_Double[] = vGrantTable_Empty;
+        uchar vGrantTable_Mod_String[] = vGrantTable_Empty;
+        uchar vGrantTable_Mod_Undefined[] = vGrantTable_Empty;
 
 #define GRANTTABLE_LOOKUP(table, type, out) \
         do \

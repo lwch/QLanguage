@@ -175,45 +175,23 @@ namespace QLanguage
                 if (!const_cast<SyntaxTree_Base&>(OP1).make(pParser)) return false;
                 if (!pOP2->make(pParser)) return false;
                 if (!pOP3->make(pParser)) return false;
-                if (OP1.isValue() && OP1.isConstValue())
+                if (OP1.isConstValue())
                 {
-                    if (dynamic_cast<const SyntaxTree_Value&>(dynamic_cast<const SyntaxTree_Exp&>(OP1).OP1).toBool())
+                    if (dynamic_cast<const SyntaxTree_Exp&>(OP1).toVariant(pParser).toBool())
                     {
-                        if (pOP2->isValue() && pOP2->isConstValue()) // 可提前计算出结果
+                        if (pOP2->isConstValue()) // 可提前计算出结果
                         {
-                            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->toVariant(pParser), dynamic_cast<const SyntaxTree_Exp*>(pOP2)->_type);
-                            const pair<int, ushort> p = pParser->indexOfConstant(v);
-                            if (p.first == -1)
-                            {
-                                const pair<size_t, ushort> pa = pParser->pushConstant(v);
-                                constantBlock = pa.first;
-                                constantIndex = pa.second;
-                            }
-                            else
-                            {
-                                constantBlock = p.first;
-                                constantIndex = p.second;
-                            }
+                            constantBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->constantBlock;
+                            constantIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->constantIndex;
                             bConstant = true;
                         }
                     }
                     else
                     {
-                        if (pOP3->isValue() && pOP3->isConstValue()) // 可提前计算出结果
+                        if (pOP3->isConstValue()) // 可提前计算出结果
                         {
-                            VM::Variant v = eval(dynamic_cast<const SyntaxTree_Exp*>(pOP3)->toVariant(pParser), dynamic_cast<const SyntaxTree_Exp*>(pOP3)->_type);
-                            const pair<int, ushort> p = pParser->indexOfConstant(v);
-                            if (p.first == -1)
-                            {
-                                const pair<size_t, ushort> pa = pParser->pushConstant(v);
-                                constantBlock = pa.first;
-                                constantIndex = pa.second;
-                            }
-                            else
-                            {
-                                constantBlock = p.first;
-                                constantIndex = p.second;
-                            }
+                            constantBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->constantBlock;
+                            constantIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->constantIndex;
                             bConstant = true;
                         }
                     }
