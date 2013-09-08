@@ -260,12 +260,12 @@
 见CMake相关文档
 
 # 源代码获取
-1.https://code.google.com/p/qlanguage/
-2.https://github.com/lwch/QLanguage
+1. https://code.google.com/p/qlanguage/
+2. https://github.com/lwch/QLanguage
 
 # 关于
-1.所有代码遵循GPL协议，转载请注明原作者
-2.QQ:510134884
-3.QQ群:38843264
-4.Email:lwch748@gmail.com
-5.微博:http://weibo.com/qlanguagecompiler
+1. 所有代码遵循GPL协议，转载请注明原作者
+2. QQ:510134884
+3. QQ群:38843264
+4. Email:lwch748@gmail.com
+5. 微博:http://weibo.com/qlanguagecompiler
