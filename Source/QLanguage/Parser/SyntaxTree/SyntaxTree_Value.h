@@ -37,16 +37,11 @@ namespace QLanguage
         virtual void print(ostream& stream, uint indent)const;
         
         inline virtual string type()const { return "SyntaxTree_Value"; }
+        inline virtual const bool isConstValue()const { return _type != Member; }
 
         virtual const HASH_KEY_TYPE hash()const;
 
-        inline virtual const bool isConstValue()const { return _type != Member; }
-
-        const bool equal(const SyntaxTree_Value& x)const;
-        const bool toBool()const;
         VM::Variant toVariant()const;
-        VM::Variant toPositive()const;
-        VM::Variant toNegative()const;
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {

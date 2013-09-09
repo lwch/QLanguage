@@ -307,7 +307,7 @@ namespace QLanguage
 
         // block -> index
         // block: -1不存在，0为全局的，1为当前块的，2为上一级的...
-        const pair<int, ushort> indexOfConstant(const VM::Variant& v);
+        const pair<int, ushort> indexOfConstant(const VM::Variant& v)const;
 
         const VM::Variant& getVariant(uchar block, ushort index)const;
     protected:

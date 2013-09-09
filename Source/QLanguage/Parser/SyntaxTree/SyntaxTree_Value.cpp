@@ -47,26 +47,6 @@ namespace QLanguage
         return 0; // TODO: hash for call function
     }
 
-    const bool SyntaxTree_Value::toBool()const
-    {
-        switch (_type)
-        {
-        case Boolean:
-            return value == "true" ? true : false;
-        case Real:
-            return atof(value.c_str()) ? true : false;
-        case Digit:
-            return atoi(value.c_str()) ? true : false;
-        case String:
-            throw error<const char*>("Can't convert from value typed string to bool", __FILE__, __LINE__);
-            return false;
-        case Member: // TODO
-            return true;
-        default:
-            return false;
-        }
-    }
-
     VM::Variant SyntaxTree_Value::toVariant()const
     {
         switch (_type)
@@ -79,46 +59,6 @@ namespace QLanguage
             return VM::Variant(atoi(value.c_str()));
         case String:
             return VM::Variant(value);
-        case Member: // TODO
-            return VM::Variant();
-        default:
-            return VM::Variant();
-        }
-    }
-
-    VM::Variant SyntaxTree_Value::toPositive()const
-    {
-        switch (_type)
-        {
-        case Boolean:
-            return VM::Variant(value == "true" ? 1 : 0);
-        case Real:
-            return VM::Variant(+atof(value.c_str()));
-        case Digit:
-            return VM::Variant(+atoi(value.c_str()));
-        case String:
-            throw error<const char*>("string type have no opertor+", __FILE__, __LINE__);
-            return VM::Variant();
-        case Member: // TODO
-            return VM::Variant();
-        default:
-            return VM::Variant();
-        }
-    }
-
-    VM::Variant SyntaxTree_Value::toNegative()const
-    {
-        switch (_type)
-        {
-        case Boolean:
-            return VM::Variant(value == "true" ? -1 : 0);
-        case Real:
-            return VM::Variant(-atof(value.c_str()));
-        case Digit:
-            return VM::Variant(-atoi(value.c_str()));
-        case String:
-            throw error<const char*>("string type have no operator-", __FILE__, __LINE__);
-            return VM::Variant();
         case Member: // TODO
             return VM::Variant();
         default:

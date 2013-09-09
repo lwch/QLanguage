@@ -154,20 +154,23 @@ namespace QLanguage
         {
         case Value:
             {
-                VM::Variant v = dynamic_cast<const SyntaxTree_Value&>(OP1).toVariant();
-                const pair<int, ushort> p = pParser->indexOfConstant(v);
-                if (p.first == -1)
+                if (dynamic_cast<const SyntaxTree_Value&>(OP1).isConstValue())
                 {
-                    const pair<size_t, ushort> pa = pParser->pushConstant(v);
-                    constantBlock = pa.first;
-                    constantIndex = pa.second;
+                    VM::Variant v = dynamic_cast<const SyntaxTree_Value&>(OP1).toVariant();
+                    const pair<int, ushort> p = pParser->indexOfConstant(v);
+                    if (p.first == -1)
+                    {
+                        const pair<size_t, ushort> pa = pParser->pushConstant(v);
+                        constantBlock = pa.first;
+                        constantIndex = pa.second;
+                    }
+                    else
+                    {
+                        constantBlock = p.first;
+                        constantIndex = p.second;
+                    }
+                    bConstant = true;
                 }
-                else
-                {
-                    constantBlock = p.first;
-                    constantIndex = p.second;
-                }
-                bConstant = true;
             }
             break;
         case TrueFalse:

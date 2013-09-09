@@ -505,7 +505,7 @@ namespace QLanguage
         }
     }
 
-    const pair<int, ushort> Parser::indexOfConstant(const VM::Variant& v)
+    const pair<int, ushort> Parser::indexOfConstant(const VM::Variant& v)const
     {
         int idx = constantTable.indexOf(v);
         if (idx != -1) return pair<int, ushort>(0, idx);
