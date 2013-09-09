@@ -85,7 +85,7 @@ namespace QLanguage
             Variant::ULLong, \
         }
 
-#define vGrantTable_Empty {0x1}
+#define vGrantTable_Empty {(uchar)-1U}
 
         // 一元操作符权限
         // vGrantTable_Not_*
