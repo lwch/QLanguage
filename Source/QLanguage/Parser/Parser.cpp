@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 	created:	2013/05/05
 	created:	5:5:2013   20:35
 	filename: 	\QLanguage\Parser\Parser.cpp
@@ -94,6 +94,13 @@ namespace QLanguage
 
     Parser::FunctionInfo::FunctionInfo(const HASH_KEY_TYPE& hash)
         : hash(hash)
+    {
+    }
+
+    Parser::LabelInfo::LabelInfo(const string& name, size_t idx)
+        : name(name)
+        , startIdx(idx)
+        , endIdx(idx)
     {
     }
 
@@ -472,24 +479,29 @@ namespace QLanguage
     void Parser::printInstructions(ostream& stream)
     {
         stream << "|    instruction    |    operationtype    |    block1    |    block2    |    dst    |    src1    |    src2    |" << endl;
-        for (list<VM::Instruction>::const_iterator i = instructions.begin(), m = instructions.end(); i != m; ++i)
+        for (vector<LabelInfo>::const_iterator i = labels.begin(), m = labels.end(); i != m; ++i)
         {
-            switch (i->op)
+            stream << i->name << ":" << endl;
+            for (size_t j = i->startIdx, n = i->endIdx; j < n; ++j)
             {
-            case VM::Ret:
-                stream << "| Ret | " << (int)i->ot << "(";
-                if (OT_DST_TYPE(i->ot)) stream << "constant, ";
-                else stream << "register, ";
-                if (OT_SRC1_TYPE(i->ot)) stream << "constant, ";
-                else stream << "register, ";
-                if (OT_SRC2_TYPE(i->ot)) stream << "constant";
-                else stream << "register";
-                stream << ") | " << (int)i->Normal.ob1;
-                if (i->Normal.ob1 == 0) stream << "(global)";
-                stream << " | / | / | " << i->Normal.os1 << " | / |";
-                break;
+                const VM::Instruction& instruction = instructions[j];
+                switch (instruction.op)
+                {
+                case VM::Ret:
+                    stream << "| Ret | " << (int)instruction.ot << "(";
+                    if (OT_DST_TYPE(instruction.ot)) stream << "constant, ";
+                    else stream << "register, ";
+                    if (OT_SRC1_TYPE(instruction.ot)) stream << "constant, ";
+                    else stream << "register, ";
+                    if (OT_SRC2_TYPE(instruction.ot)) stream << "constant";
+                    else stream << "register";
+                    stream << ") | " << (int)instruction.Normal.ob1;
+                    if (instruction.Normal.ob1 == 0) stream << "(global)";
+                    stream << " | / | / | " << instruction.Normal.os1 << " | / |";
+                    break;
+                }
+                stream << endl;
             }
-            stream << endl;
         }
     }
 

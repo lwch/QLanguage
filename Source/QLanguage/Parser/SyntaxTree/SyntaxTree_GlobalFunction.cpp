@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 	created:	2013/05/31
 	created:	31:5:2013   17:28
 	filename: 	\QLanguage\Parser\SyntaxTree\SyntaxTree_GlobalFunction.cpp
@@ -93,9 +93,12 @@ namespace QLanguage
         const HASH_KEY_TYPE h = hash();
         pParser->functions.push_back(Parser::FunctionInfo(h));
         pParser->makeContext.push(Parser::ContextInfo(Parser::ContextInfo::GlobalFunction, h, pParser->functions.back().constantTable));
-        pParser->labels.push_back(pair<string, size_t>(string::format("_gf_%ld_%s", h, name.c_str()), pParser->instructions.size()));
+        Parser::LabelInfo label(string::format("_gf_%ld_%s", h, name.c_str()), pParser->instructions.size());
+        pParser->labels.push_back(label);
+        Parser::LabelInfo& ref = pParser->labels.back();
         bool bResult = const_cast<SyntaxTree_Block&>(block).make(pParser);
         pParser->makeContext.pop();
+        ref.endIdx = pParser->instructions.size();
         return bResult;
     }
 

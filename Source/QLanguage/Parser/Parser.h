@@ -1,4 +1,4 @@
-﻿/********************************************************************
+/********************************************************************
 	created:	2013/05/05
 	created:	5:5:2013   20:35
 	filename: 	\QLanguage\Parser\Parser.h
@@ -280,6 +280,15 @@ namespace QLanguage
             FunctionInfo(const HASH_KEY_TYPE& hash);
         };
 
+        struct LabelInfo
+        {
+            string name;
+            size_t startIdx;
+            size_t endIdx;
+
+            LabelInfo(const string& name, size_t idx);
+        };
+
     public:
         Parser(const vector<Production>& productions);
         virtual ~Parser();
@@ -452,10 +461,10 @@ namespace QLanguage
         stack<SyntaxTree_Base*> syntaxTreeStack;
         stack<string>           shifts;
 
-        list<VM::Instruction>         instructions;
-        stack<ContextInfo>            makeContext;
-        vector<FunctionInfo>          functions;
-        vector<pair<string, size_t> > labels;
+        list<VM::Instruction>   instructions;
+        stack<ContextInfo>      makeContext;
+        vector<FunctionInfo>    functions;
+        vector<LabelInfo>       labels;
 
         ConstantTable           constantTable;
 #if defined(_DEBUG ) && DEBUG_LEVEL == 3
