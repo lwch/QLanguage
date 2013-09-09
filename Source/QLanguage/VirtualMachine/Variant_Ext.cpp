@@ -85,11 +85,7 @@ namespace QLanguage
             Variant::ULLong, \
         }
 
-#ifdef GNUC
-#define vGrantTable_Empty {-1U}
-#else
-#define vGrantTable_Empty {-1}
-#endif
+#define vGrantTable_Empty {0x1}
 
         // 一元操作符权限
         // vGrantTable_Not_*
