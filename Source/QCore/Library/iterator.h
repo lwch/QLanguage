@@ -47,6 +47,219 @@ namespace QLanguage
             typedef __const_iterator<T, Size, Distance> self;
         };
 
+        template <typename T, typename Size, typename Distance>
+        class __vector_iterator : public __iterator<T, Size, Distance>
+        {
+        protected:
+            template <typename C, typename S, typename D>
+            friend class __vector_const_iterator;
+
+            typedef __iterator<T, Size, Distance>        parent;
+            typedef __vector_iterator<T, Size, Distance> self;
+            typedef T*                                   link_type;
+
+            link_type node;
+        public:
+            __vector_iterator() : node(NULL)
+            {
+            }
+
+            __vector_iterator(link_type x) : node(x)
+            {
+            }
+
+            static const self null()
+            {
+                static self tmp;
+                return tmp;
+            }
+
+            inline typename parent::reference operator*()const
+            {
+                return *node;
+            }
+
+            inline self& operator++()
+            {
+                ++node;
+                return *this;
+            }
+
+            inline self operator++(int)
+            {
+                self tmp = *this;
+                ++*this;
+                return tmp;
+            }
+
+            inline self& operator--()
+            {
+                --node;
+                return *this;
+            }
+
+            inline self operator--(int)
+            {
+                self tmp = *this;
+                --*this;
+                return tmp;
+            }
+
+            inline self operator+(Distance n)const
+            {
+                return node + n;
+            }
+
+            inline self& operator+=(Distance n)
+            {
+                node += n;
+                return *this;
+            }
+
+            inline self operator-(Distance n)const
+            {
+                return node - n;
+            }
+
+            inline self& operator-=(Distance n)
+            {
+                node -= n;
+                return *this;
+            }
+
+            inline const bool operator==(const self& x)const
+            {
+                return node == x.node;
+            }
+
+            inline const bool operator!=(const self& x)const
+            {
+                return node != x.node;
+            }
+
+            inline typename parent::value_type& operator[](Distance n)
+            {
+                return node[n];
+            }
+
+            inline operator link_type()const
+            {
+                return node;
+            }
+
+            inline link_type operator->()const
+            {
+                return node;
+            }
+        };
+
+        template <typename T, typename Size, typename Distance>
+        class __vector_const_iterator : public __const_iterator<T, Size, Distance>
+        {
+        protected:
+            typedef __const_iterator<T, Size, Distance>        parent;
+            typedef __vector_const_iterator<T, Size, Distance> self;
+            typedef const T*                                   link_type;
+
+            link_type node;
+        public:
+            __vector_const_iterator() : node(NULL)
+            {
+            }
+
+            __vector_const_iterator(link_type x) : node(x)
+            {
+            }
+
+            __vector_const_iterator(const __vector_iterator<T, Size, Distance>& x) : node(x.node)
+            {
+            }
+
+            static const self null()
+            {
+                static self tmp;
+                return tmp;
+            }
+
+            inline typename parent::reference operator*()const
+            {
+                return *node;
+            }
+
+            inline self& operator++()
+            {
+                ++node;
+                return *this;
+            }
+
+            inline self operator++(int)
+            {
+                self tmp = *this;
+                ++*this;
+                return tmp;
+            }
+
+            inline self& operator--()
+            {
+                --node;
+                return *this;
+            }
+
+            inline self operator--(int)
+            {
+                self tmp = *this;
+                --*this;
+                return tmp;
+            }
+
+            inline self operator+(Distance n)const
+            {
+                return self(node + n);
+            }
+
+            inline self& operator+=(Distance n)
+            {
+                node += n;
+                return *this;
+            }
+
+            inline self operator-(Distance n)const
+            {
+                return self(node - n);
+            }
+
+            inline self& operator-=(Distance n)
+            {
+                node -= n;
+                return *this;
+            }
+
+            inline const bool operator==(const self& x)const
+            {
+                return node == x.node;
+            }
+
+            inline const bool operator!=(const self& x)const
+            {
+                return node != x.node;
+            }
+
+            inline typename parent::value_type& operator[](Distance n)
+            {
+                return node[n];
+            }
+
+            inline operator link_type()const
+            {
+                return node;
+            }
+
+            inline link_type operator->()const
+            {
+                return node;
+            }
+        };
+
         template <typename Iterator, typename T, typename Size = size_t, typename Distance = ptrdiff_t>
         struct __reverse_iterator
         {
@@ -134,6 +347,11 @@ namespace QLanguage
             inline bool operator!=(const self& x)const
             {
                 return pThis != x.pThis;
+            }
+
+            inline pointer operator->()const
+            {
+                return pThis - 1;
             }
         };
 
@@ -229,6 +447,11 @@ namespace QLanguage
             inline bool operator!=(const self& x)const
             {
                 return pThis != x.pThis;
+            }
+
+            inline pointer operator->()const
+            {
+                return pThis - 1;
             }
         };
 

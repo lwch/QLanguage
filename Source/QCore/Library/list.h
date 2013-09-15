@@ -56,10 +56,6 @@ namespace QLanguage
             {
             }
 
-            __list_iterator(const __list_const_iterator<T, Size, Distance>& x) : node(x.node)
-            {
-            }
-
             __list_iterator() : node(NULL)
             {
             }
@@ -120,6 +116,11 @@ namespace QLanguage
             }
 
             inline typename __iterator<T, Size, Distance>::pointer operator->()const
+            {
+                return &node->data;
+            }
+
+            inline operator __iterator<T, Size, Distance>::pointer()const
             {
                 return &node->data;
             }
@@ -205,6 +206,11 @@ namespace QLanguage
             {
                 return &node->data;
             }
+
+            inline operator __const_iterator<T, Size, Distance>::pointer()const
+            {
+                return &node->data;
+            }
         };
 
         template <typename T>
@@ -252,7 +258,7 @@ namespace QLanguage
                 insert(begin(), count, x);
             }
 
-            list(const T* first, const T* last) : length(0)
+            list(__vector_const_iterator<T, size_type, distance_type> first, __vector_const_iterator<T, size_type, distance_type> last) : length(0)
             {
                 node = Node_Alloc::allocate();
                 node->next = node;
@@ -260,7 +266,7 @@ namespace QLanguage
                 insert(begin(), first, last);
             }
 
-            list(const iterator& first, const iterator& last) : length(0)
+            list(const_iterator first, const_iterator last) : length(0)
             {
                 node = Node_Alloc::allocate();
                 node->next = node;
@@ -367,7 +373,7 @@ namespace QLanguage
                 length = 0;
             }
 
-            iterator insert(const iterator& position, const T& x)
+            iterator insert(iterator position, const T& x)
             {
                 link_type tmp = Node_Alloc::allocate();
                 construct(tmp, x);
@@ -379,20 +385,19 @@ namespace QLanguage
                 return tmp;
             }
 
-            void insert(const iterator& position, size_type count, const T& x)
+            void insert(iterator position, size_type count, const T& x)
             {
                 while(count--) insert(position, x);
             }
 
-            void insert(const iterator& position, const T* first, const T* last)
+            void insert(iterator position, __vector_const_iterator<T, size_type, distance_type> first, __vector_const_iterator<T, size_type, distance_type> last)
             {
                 while(first != last) insert(position, *first++);
             }
 
-            void insert(const iterator& position, const iterator& first, const iterator& last)
+            void insert(iterator position, const_iterator first, const_iterator last)
             {
-                iterator i = first;
-                while(i != last) insert(position, *i++);
+                while(first != last) insert(position, *first++);
             }
 
             inline void push_front(const T& x)
