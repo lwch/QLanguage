@@ -120,7 +120,7 @@ namespace QLanguage
                 return &node->data;
             }
 
-            inline operator __iterator<T, Size, Distance>::pointer()const
+            inline operator typename __iterator<T, Size, Distance>::pointer()const
             {
                 return &node->data;
             }
@@ -207,7 +207,7 @@ namespace QLanguage
                 return &node->data;
             }
 
-            inline operator __const_iterator<T, Size, Distance>::pointer()const
+            inline operator typename __const_iterator<T, Size, Distance>::pointer()const
             {
                 return &node->data;
             }

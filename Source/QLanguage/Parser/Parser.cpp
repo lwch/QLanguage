@@ -83,8 +83,8 @@ namespace QLanguage
     Parser::ContextInfo::ContextInfo(Type type, const HASH_KEY_TYPE& hash, ConstantTable& constantTable)
         : type(type)
         , hash(hash)
-        , constantTable(constantTable)
         , regCount(0)
+        , constantTable(constantTable)
     {
     }
 
@@ -102,6 +102,7 @@ namespace QLanguage
 
     Parser::Parser(const vector<Production>& productions)
         : BasicParser(productions)
+        , regCount(0)
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
         , result("Result.txt", fstream::out | fstream::text)
 #endif
