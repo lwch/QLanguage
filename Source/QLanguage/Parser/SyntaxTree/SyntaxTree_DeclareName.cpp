@@ -70,7 +70,7 @@ namespace QLanguage
     bool SyntaxTree_DeclareName::make(Parser* pParser)
     {
         bool bResult = true;
-        // TODO: 分配寄存器
+        if (pParser->getRegister(name) == -1) throw error<const char*>("have no register", __FILE__, __LINE__);
         if (pExp) bResult = pExp->make(pParser);
         return bResult;
     }

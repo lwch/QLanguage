@@ -84,12 +84,8 @@ namespace QLanguage
         : type(type)
         , hash(hash)
         , constantTable(constantTable)
+        , regCount(0)
     {
-        for (size_t i = 0; i < maxRegisterCount; ++i)
-        {
-            reg[i].first  = false;
-            reg[i].second = -1;
-        }
     }
 
     Parser::FunctionInfo::FunctionInfo(const HASH_KEY_TYPE& hash)
@@ -534,8 +530,39 @@ namespace QLanguage
     const VM::Variant& Parser::getVariant(uchar block, ushort index)const
     {
         if (block == 0) return constantTable[index];
-        else {
+        else
+        {
             return makeContext[block - 1].constantTable[index];
         }
+    }
+
+    short Parser::getRegister(const string& name)
+    {
+        string*& tmpReg = reinterpret_cast<string*&>(reg);
+        ushort& tmpRegCount = regCount;
+        if (makeContext.size() > 0)
+        {
+            tmpReg = makeContext.top().reg;
+            tmpRegCount = makeContext.top().regCount;
+        }
+        if (regCount >= maxRegisterCount) return -1;
+        reg[regCount++] = name;
+        return regCount - 1;
+    }
+
+    const pair<short, ushort> Parser::indexOfRegister(const string& name)const
+    {
+        for (size_t i = 0, m = makeContext.size(); i < m; ++i)
+        {
+            const ContextInfo& info = makeContext[i];
+            for (ushort j = 0; j < info.regCount; ++j)
+            {
+                if (info.reg[j] == name) return pair<short, ushort>(i + 1, j);
+            }
+        }
+        for (ushort j = 0; j < regCount; ++j)
+        {
+        }
+        return pair<short, ushort>(-1, 0);
     }
 }

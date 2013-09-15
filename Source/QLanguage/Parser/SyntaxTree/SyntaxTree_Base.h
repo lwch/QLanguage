@@ -105,12 +105,10 @@ class SyntaxTree_Do;
 
         inline virtual const HASH_KEY_TYPE hash()const { return 0; }
 
-        inline virtual const short getRegister(Parser* pParser)const { return -1; }
-
         inline virtual const bool isConstValue()const { return false; }
         inline virtual const bool toBool()const { return false; }
-        inline virtual const uchar getConstantBlock()const { return -1; }
-        inline virtual const ushort getConstantIndex()const { return -1; }
+        inline virtual const ushort getBlock()const { return -1; }
+        inline virtual const ushort getIndex()const { return -1; }
 
         virtual const bool operator==(const SyntaxTree_Base& x)const=0;
         virtual const bool operator!=(const SyntaxTree_Base& x)const=0;

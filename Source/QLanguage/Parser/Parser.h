@@ -231,6 +231,7 @@ namespace QLanguage
             maxConstantCount = USHRT_MAX + 1
         };
 
+        friend class SyntaxTree_DeclareName;
         friend class SyntaxTree_Exp;
         friend class SyntaxTree_GlobalFunction;
         friend class SyntaxTree_Return;
@@ -261,10 +262,9 @@ namespace QLanguage
 
             HASH_KEY_TYPE hash;
 
-            // 每个语句块或函数都有0-255个寄存器
-            // used && hash的索引
-            // 若是一个临时对象则hash为-1
-            pair<bool, HASH_KEY_TYPE> reg[maxRegisterCount];
+            // 每个语句块有0-255个寄存器
+            string reg[maxRegisterCount];
+            ushort regCount;
 
             ConstantTable& constantTable;
 
@@ -308,8 +308,6 @@ namespace QLanguage
         // block -> index
         // block: -1不存在，0为全局的，1为当前块的，2为上一级的...
         const pair<int, ushort> indexOfConstant(const VM::Variant& v)const;
-
-        const VM::Variant& getVariant(uchar block, ushort index)const;
     protected:
         bool reduceType1Size(ushort i);
         bool reduceType2Size(ushort i);
@@ -451,8 +449,13 @@ namespace QLanguage
             return true;
         }
 
-        // 同indexof
+        // Constant
         pair<size_t, ushort> pushConstant(const VM::Variant& v);
+        const VM::Variant& getVariant(uchar block, ushort index)const;
+
+        // Register
+        short getRegister(const string& name);
+        const pair<short, ushort> indexOfRegister(const string& name)const;
     protected:
         struct
         {
@@ -467,6 +470,8 @@ namespace QLanguage
         vector<LabelInfo>       labels;
 
         ConstantTable           constantTable;
+        string                  reg[maxRegisterCount];
+        ushort                  regCount;
 #if defined(_DEBUG ) && DEBUG_LEVEL == 3
         fstream                  result;
 #endif

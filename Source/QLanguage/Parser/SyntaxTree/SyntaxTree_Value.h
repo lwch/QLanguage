@@ -20,6 +20,8 @@ namespace QLanguage
     class SyntaxTree_Value : public SyntaxTree_Base
     {
         typedef SyntaxTree_Base parent;
+
+        friend class SyntaxTree_Exp;
     public:
         enum Type
         {

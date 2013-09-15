@@ -149,7 +149,6 @@ namespace QLanguage
 
     bool SyntaxTree_Exp::make(Parser* pParser)
     {
-        // TODO
         switch (_type)
         {
         case Value:
@@ -161,15 +160,26 @@ namespace QLanguage
                     if (p.first == -1)
                     {
                         const pair<size_t, ushort> pa = pParser->pushConstant(v);
-                        constantBlock = pa.first;
-                        constantIndex = pa.second;
+                        usBlock = pa.first;
+                        usIndex = pa.second;
                     }
                     else
                     {
-                        constantBlock = p.first;
-                        constantIndex = p.second;
+                        usBlock = p.first;
+                        usIndex = p.second;
                     }
                     bConstant = true;
+                }
+                else
+                {
+                    pair<short, ushort> p = pParser->indexOfRegister(dynamic_cast<const SyntaxTree_Value&>(OP1).value);
+                    if (p.first == -1)
+                    {
+                        string str = string::format("undefined variable %s", dynamic_cast<const SyntaxTree_Value&>(OP1).value.c_str());
+                        throw error<const char*>(str.c_str(), __FILE__, __LINE__);
+                    }
+                    usBlock = p.first;
+                    usIndex = p.second;
                 }
             }
             break;
@@ -184,20 +194,29 @@ namespace QLanguage
                     {
                         if (pOP2->isConstValue()) // 可提前计算出结果
                         {
-                            constantBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->constantBlock;
-                            constantIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->constantIndex;
+                            usBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->usBlock;
+                            usIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->usIndex;
                             bConstant = true;
+                        }
+                        else // TODO
+                        {
                         }
                     }
                     else
                     {
                         if (pOP3->isConstValue()) // 可提前计算出结果
                         {
-                            constantBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->constantBlock;
-                            constantIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->constantIndex;
+                            usBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->usBlock;
+                            usIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->usIndex;
                             bConstant = true;
                         }
+                        else // TODO
+                        {
+                        }
                     }
+                }
+                else // TODO
+                {
                 }
             }
             break;
@@ -213,15 +232,18 @@ namespace QLanguage
                     if (p.first == -1)
                     {
                         const pair<size_t, ushort> pa = pParser->pushConstant(v);
-                        constantBlock = pa.first;
-                        constantIndex = pa.second;
+                        usBlock = pa.first;
+                        usIndex = pa.second;
                     }
                     else
                     {
-                        constantBlock = p.first;
-                        constantIndex = p.second;
+                        usBlock = p.first;
+                        usIndex = p.second;
                     }
                     bConstant = true;
+                }
+                else // TODO
+                {
                 }
             }
             break;
@@ -256,15 +278,18 @@ namespace QLanguage
                     if (p.first == -1)
                     {
                         const pair<size_t, ushort> pa = pParser->pushConstant(v);
-                        constantBlock = pa.first;
-                        constantIndex = pa.second;
+                        usBlock = pa.first;
+                        usIndex = pa.second;
                     }
                     else
                     {
-                        constantBlock = p.first;
-                        constantIndex = p.second;
+                        usBlock = p.first;
+                        usIndex = p.second;
                     }
                     bConstant = true;
+                }
+                else // TODO
+                {
                 }
             }
             break;

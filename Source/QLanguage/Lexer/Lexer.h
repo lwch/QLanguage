@@ -42,6 +42,7 @@ namespace QLanguage
 
             Token() {}
             Token(Type type, const string& data) : type(type), data(data) {}
+            Token(const Token& x) : type(x.type), data(x.data) {}
         };
     public:
         Lexer(bool bSkipSpace = true, bool bSkipEnter = true);

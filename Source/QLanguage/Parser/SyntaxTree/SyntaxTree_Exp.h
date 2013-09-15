@@ -64,9 +64,9 @@ namespace QLanguage
 
         inline virtual const bool isConstValue()const { return bConstant; }
         virtual const bool toBool()const;
-        inline virtual const uchar getConstantBlock()const { return constantBlock; }
-        inline virtual const ushort getConstantIndex()const { return constantIndex; }
-        inline const VM::Variant& toVariant(Parser* pParser)const { return pParser->getVariant(constantBlock, constantIndex); }
+        inline virtual const ushort getBlock()const { return usBlock; }
+        inline virtual const ushort getIndex()const { return usIndex; }
+        inline const VM::Variant& toVariant(Parser* pParser)const { return pParser->getVariant((uchar)usBlock, usIndex); }
 
         static const VM::Variant eval(const VM::Variant& v, Type type);
         static const VM::Variant eval(const VM::Variant& v1, const VM::Variant& v2, Type type);
@@ -104,8 +104,8 @@ namespace QLanguage
 
         // 在make时使用
         bool                   bConstant;
-        uchar                  constantBlock;
-        ushort                 constantIndex;
+        ushort                 usBlock;
+        ushort                 usIndex;
     };
 }
 

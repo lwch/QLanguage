@@ -43,8 +43,8 @@ namespace QLanguage
         i.ot = MAKE_OT(0, bConst, 0);
         if (bConst)
         {
-            i.Normal.ob1 = pContent->getConstantBlock();
-            i.Normal.os1 = pContent->getConstantIndex();
+            i.Normal.ob1 = (uchar)pContent->getBlock();
+            i.Normal.os1 = pContent->getIndex();
         }
         else // TODO
         {
