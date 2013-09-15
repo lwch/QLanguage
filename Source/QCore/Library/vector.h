@@ -48,7 +48,7 @@ public:
         return tmp;
     }
 
-    inline typename parent::reference operator*()
+    inline typename parent::reference operator*()const
     {
         return *node;
     }
@@ -81,7 +81,7 @@ public:
 
     inline self operator+(Distance n)const
     {
-        return self(node + n);
+        return node + n;
     }
 
     inline self& operator+=(Distance n)
@@ -92,7 +92,7 @@ public:
 
     inline self operator-(Distance n)const
     {
-        return self(node - n);
+        return node - n;
     }
 
     inline self& operator-=(Distance n)
@@ -155,7 +155,7 @@ public:
         return tmp;
     }
 
-    inline typename parent::reference operator*()
+    inline typename parent::reference operator*()const
     {
         return *node;
     }
@@ -245,7 +245,7 @@ public:
     typedef size_t    size_type;
     typedef ptrdiff_t distance_type;
     typedef __vector_const_iterator<value_type, size_type, distance_type> const_iterator;
-    typedef __reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
+    typedef __const_reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
     typedef __vector_iterator<value_type, size_type, distance_type> iterator;
     typedef __reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
 protected:
@@ -335,12 +335,12 @@ public:
 
     inline reverse_iterator rbegin()
     {
-        return reverse_iterator(end());
+        return end();
     }
 
     inline const_reverse_iterator rbegin()const
     {
-        return const_reverse_iterator(end());
+        return end();
     }
 
     inline iterator end()
@@ -355,12 +355,12 @@ public:
 
     inline reverse_iterator rend()
     {
-        return reverse_iterator(begin());
+        return begin();
     }
 
     inline const_reverse_iterator rend()const
     {
-        return const_reverse_iterator(begin());
+        return begin();
     }
 
     inline reference front()

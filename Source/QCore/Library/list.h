@@ -66,7 +66,7 @@ namespace QLanguage
 
             inline iterator& operator++()
             {
-                node = ((link_type)node)->next;
+                node = node->next;
                 return *this;
             }
 
@@ -79,7 +79,7 @@ namespace QLanguage
 
             inline iterator& operator--()
             {
-                node = ((link_type)node)->prev;
+                node = node->prev;
                 return *this;
             }
 
@@ -88,6 +88,20 @@ namespace QLanguage
                 iterator tmp = *this;
                 --*this;
                 return tmp;
+            }
+
+            iterator operator+(Distance n)const
+            {
+                link_type ptr = node;
+                while (n--) ptr = ptr->next;
+                return ptr;
+            }
+
+            iterator operator-(Distance n)const
+            {
+                link_type ptr = node;
+                while (n--) ptr = ptr->prev;
+                return ptr;
             }
 
             inline typename __iterator<T, Size, Distance>::reference operator*()const
@@ -134,7 +148,7 @@ namespace QLanguage
 
             inline const_iterator& operator++()
             {
-                node = ((link_type)node)->next;
+                node = node->next;
                 return *this;
             }
 
@@ -147,7 +161,7 @@ namespace QLanguage
 
             inline const_iterator& operator--()
             {
-                node = ((link_type)node)->prev;
+                node = node->prev;
                 return *this;
             }
 
@@ -156,6 +170,20 @@ namespace QLanguage
                 const_iterator tmp = *this;
                 --*this;
                 return tmp;
+            }
+
+            const_iterator operator+(Distance n)const
+            {
+                link_type ptr = node;
+                while (n--) ptr = ptr->next;
+                return ptr;
+            }
+
+            const_iterator operator-(Distance n)const
+            {
+                link_type ptr = node;
+                while (n--) ptr = ptr->prev;
+                return ptr;
             }
 
             inline typename __const_iterator<T, Size, Distance>::const_reference operator*()const
@@ -191,7 +219,7 @@ namespace QLanguage
             typedef ptrdiff_t                distance_type;
             typedef __list_iterator<T, size_type, distance_type> iterator;
             typedef __list_const_iterator<T, size_type, distance_type> const_iterator;
-            typedef __reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
+            typedef __const_reverse_iterator<const_iterator, value_type, size_type, distance_type> const_reverse_iterator;
             typedef __reverse_iterator<iterator, value_type, size_type, distance_type> reverse_iterator;
         protected:
             typedef __list_node<T>*            link_type;

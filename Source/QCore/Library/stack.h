@@ -29,10 +29,10 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         typedef typename Container::const_reference        const_reference;
         typedef typename Container::size_type              size_type;
         typedef typename Container::distance_type          distance_type;
-        typedef typename Container::iterator               iterator;
-        typedef typename Container::const_iterator         const_iterator;
-        typedef typename Container::reverse_iterator       reverse_iterator;
-        typedef typename Container::const_reverse_iterator const_reverse_iterator;
+        typedef typename Container::reverse_iterator       iterator;
+        typedef typename Container::const_reverse_iterator const_iterator;
+        typedef typename Container::iterator               reverse_iterator;
+        typedef typename Container::const_iterator         const_reverse_iterator;
 
         stack() {}
         ~stack() {}
@@ -80,6 +80,26 @@ NAMESPACE_QLANGUAGE_LIBRARY_START
         inline void pop()
         {
             container.pop_back();
+        }
+
+        inline iterator begin()
+        {
+            return container.rbegin();
+        }
+
+        inline const_iterator begin()const
+        {
+            return container.rbegin();
+        }
+
+        inline iterator end()
+        {
+            return container.rend();
+        }
+
+        inline const_iterator end()const
+        {
+            return container.rend();
         }
 
         inline const_reference operator[](size_type n)const

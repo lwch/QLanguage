@@ -68,8 +68,98 @@ namespace QLanguage
             {
             }
 
+            inline Iterator base()const
+            {
+                return pThis;
+            }
+
+            inline reference operator*()const
+            {
+                return *(pThis - 1);
+            }
+
+            inline self& operator++()
+            {
+                --pThis;
+                return *this;
+            }
+
+            inline self operator++(int)
+            {
+                self tmp = *this;
+                --pThis;
+                return tmp;
+            }
+
+            inline self& operator--()
+            {
+                ++pThis;
+                return *this;
+            }
+
+            inline self operator--(int)
+            {
+                self tmp = *this;
+                ++pThis;
+                return tmp;
+            }
+
+            inline self operator+(Distance count)const
+            {
+                return self(pThis - count);
+            }
+
+            inline self& operator+=(Distance count)
+            {
+                pThis -= count;
+                return *this;
+            }
+
+            inline self operator-(Distance count)const
+            {
+                return self(pThis + count);
+            }
+
+            inline self& operator-=(Distance count)
+            {
+                pThis += count;
+                return *this;
+            }
+
+            inline bool operator==(const self& x)const
+            {
+                return pThis == x.pThis;
+            }
+
+            inline bool operator!=(const self& x)const
+            {
+                return pThis != x.pThis;
+            }
+        };
+
+        template <typename Iterator, typename T, typename Size = size_t, typename Distance = ptrdiff_t>
+        struct __const_reverse_iterator
+        {
+            typedef T                                                     value_type;
+            typedef Distance                                              distance_type;
+            typedef const T*                                              pointer;
+            typedef const T&                                              reference;
+            typedef const T*                                              const_pointer;
+            typedef const T&                                              const_reference;
+            typedef __const_reverse_iterator<Iterator, T, Size, Distance> self;
+        protected:
+            Iterator pThis;
+        public:
+            __const_reverse_iterator()
+            {
+            }
+
+            __const_reverse_iterator(Iterator x) : pThis(x)
+            {
+            }
+
             template <typename OtherIterator>
-            __reverse_iterator(const __reverse_iterator<OtherIterator, T, Size, Distance>& x) : pThis(x.base())
+            __const_reverse_iterator(const __reverse_iterator<OtherIterator, T, Size, Distance>& x) : pThis(x.base())
             {
             }
 
