@@ -160,7 +160,7 @@ namespace QLanguage
                     if (p.first == -1)
                     {
                         const pair<short, ushort> pa = pParser->pushConstant(v);
-                        ucBlock = pa.first;
+                        ucBlock = (uchar)pa.first;
                         usIndex = pa.second;
                     }
                     else
@@ -178,7 +178,7 @@ namespace QLanguage
                         string str = string::format("undefined variable %s", dynamic_cast<const SyntaxTree_Value&>(OP1).value.c_str());
                         throw error<const char*>(str.c_str(), __FILE__, __LINE__);
                     }
-                    ucBlock = p.first;
+                    ucBlock = (uchar)p.first;
                     usIndex = p.second;
                 }
             }
@@ -232,7 +232,7 @@ namespace QLanguage
                     if (p.first == -1)
                     {
                         const pair<short, ushort> pa = pParser->pushConstant(v);
-                        ucBlock = pa.first;
+                        ucBlock = (uchar)pa.first;
                         usIndex = pa.second;
                     }
                     else
@@ -278,7 +278,7 @@ namespace QLanguage
                     if (p.first == -1)
                     {
                         const pair<short, ushort> pa = pParser->pushConstant(v);
-                        ucBlock = pa.first;
+                        ucBlock = (uchar)pa.first;
                         usIndex = pa.second;
                     }
                     else
@@ -379,11 +379,11 @@ namespace QLanguage
         i.Normal.os1 = op1.second;
         i.Normal.ob2 = op2.ucBlock;
         i.Normal.os2 = op2.usIndex;
-        i.Normal.obd = p.first;
+        i.Normal.obd = (uchar)p.first;
         i.Normal.od  = p.second;
         fill_op2(type, i);
         pParser->instructions.push_back(i);
-        ucBlock = p.first;
+        ucBlock = (uchar)p.first;
         usIndex = p.second;
         return true;
     }
@@ -402,11 +402,11 @@ namespace QLanguage
         i.Normal.os1 = op1.usIndex;
         i.Normal.ob2 = op2.first;
         i.Normal.os2 = op2.second;
-        i.Normal.obd = p.first;
+        i.Normal.obd = (uchar)p.first;
         i.Normal.od  = p.second;
         fill_op2(type, i);
         pParser->instructions.push_back(i);
-        ucBlock = p.first;
+        ucBlock = (uchar)p.first;
         usIndex = p.second;
         return true;
     }
@@ -425,11 +425,11 @@ namespace QLanguage
         i.Normal.os1 = op1.usIndex;
         i.Normal.ob2 = op2.ucBlock;
         i.Normal.os2 = op2.usIndex;
-        i.Normal.obd = p.first;
+        i.Normal.obd = (uchar)p.first;
         i.Normal.od  = p.second;
         fill_op2(type, i);
         pParser->instructions.push_back(i);
-        ucBlock = p.first;
+        ucBlock = (uchar)p.first;
         usIndex = p.second;
         return true;
     }
