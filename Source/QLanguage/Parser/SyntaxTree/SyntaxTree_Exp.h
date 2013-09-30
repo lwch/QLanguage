@@ -64,9 +64,9 @@ namespace QLanguage
 
         inline virtual const bool isConstValue()const { return bConstant; }
         virtual const bool toBool()const;
-        inline virtual const ushort getBlock()const { return usBlock; }
+        inline virtual const uchar  getBlock()const { return ucBlock; }
         inline virtual const ushort getIndex()const { return usIndex; }
-        inline const VM::Variant& toVariant(Parser* pParser)const { return pParser->getVariant((uchar)usBlock, usIndex); }
+        inline const VM::Variant& toVariant(Parser* pParser)const { return pParser->getVariant(ucBlock, usIndex); }
 
         static const VM::Variant eval(const VM::Variant& v, Type type);
         static const VM::Variant eval(const VM::Variant& v1, const VM::Variant& v2, Type type);
@@ -97,6 +97,11 @@ namespace QLanguage
                    (pOP3 == NULL && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP3));
         }
     protected:
+        void fill_op2(Type type, VM::Instruction& i);
+        bool make_op2(Parser* pParser, const pair<uchar, ushort>& op1, const SyntaxTree_Exp& op2, Type type);
+        bool make_op2(Parser* pParser, const SyntaxTree_Exp& op1, const pair<uchar, ushort>& op2, Type type);
+        bool make_op2(Parser* pParser, const SyntaxTree_Exp& op1, const SyntaxTree_Exp& op2, Type type);
+    protected:
         const SyntaxTree_Base& OP1;
         SyntaxTree_Base*       pOP2;
         SyntaxTree_Base*       pOP3;
@@ -104,7 +109,7 @@ namespace QLanguage
 
         // 在make时使用
         bool                   bConstant;
-        ushort                 usBlock;
+        uchar                  ucBlock;
         ushort                 usIndex;
     };
 }

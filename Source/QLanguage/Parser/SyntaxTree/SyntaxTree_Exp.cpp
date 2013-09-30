@@ -159,26 +159,26 @@ namespace QLanguage
                     const pair<int, ushort> p = pParser->indexOfConstant(v);
                     if (p.first == -1)
                     {
-                        const pair<size_t, ushort> pa = pParser->pushConstant(v);
-                        usBlock = pa.first;
+                        const pair<short, ushort> pa = pParser->pushConstant(v);
+                        ucBlock = pa.first;
                         usIndex = pa.second;
                     }
                     else
                     {
-                        usBlock = p.first;
+                        ucBlock = p.first;
                         usIndex = p.second;
                     }
                     bConstant = true;
                 }
                 else
                 {
-                    pair<short, ushort> p = pParser->indexOfRegister(dynamic_cast<const SyntaxTree_Value&>(OP1).value);
+                    pair<short, ushort> p = pParser->indexOfRegister(dynamic_cast<const SyntaxTree_Value&>(OP1).name());
                     if (p.first == -1)
                     {
                         string str = string::format("undefined variable %s", dynamic_cast<const SyntaxTree_Value&>(OP1).value.c_str());
                         throw error<const char*>(str.c_str(), __FILE__, __LINE__);
                     }
-                    usBlock = p.first;
+                    ucBlock = p.first;
                     usIndex = p.second;
                 }
             }
@@ -194,7 +194,7 @@ namespace QLanguage
                     {
                         if (pOP2->isConstValue()) // 可提前计算出结果
                         {
-                            usBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->usBlock;
+                            ucBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->ucBlock;
                             usIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->usIndex;
                             bConstant = true;
                         }
@@ -206,7 +206,7 @@ namespace QLanguage
                     {
                         if (pOP3->isConstValue()) // 可提前计算出结果
                         {
-                            usBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->usBlock;
+                            ucBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->ucBlock;
                             usIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->usIndex;
                             bConstant = true;
                         }
@@ -231,13 +231,13 @@ namespace QLanguage
                     const pair<int, ushort> p = pParser->indexOfConstant(v);
                     if (p.first == -1)
                     {
-                        const pair<size_t, ushort> pa = pParser->pushConstant(v);
-                        usBlock = pa.first;
+                        const pair<short, ushort> pa = pParser->pushConstant(v);
+                        ucBlock = pa.first;
                         usIndex = pa.second;
                     }
                     else
                     {
-                        usBlock = p.first;
+                        ucBlock = p.first;
                         usIndex = p.second;
                     }
                     bConstant = true;
@@ -277,25 +277,160 @@ namespace QLanguage
                     const pair<int, ushort> p = pParser->indexOfConstant(v);
                     if (p.first == -1)
                     {
-                        const pair<size_t, ushort> pa = pParser->pushConstant(v);
-                        usBlock = pa.first;
+                        const pair<short, ushort> pa = pParser->pushConstant(v);
+                        ucBlock = pa.first;
                         usIndex = pa.second;
                     }
                     else
                     {
-                        usBlock = p.first;
+                        ucBlock = p.first;
                         usIndex = p.second;
                     }
                     bConstant = true;
                 }
-                else // TODO
+                else
                 {
+                    if (bConstValue1)
+                        return make_op2(pParser,
+                                        pair<uchar, ushort>(dynamic_cast<const SyntaxTree_Exp&>(OP1).ucBlock, dynamic_cast<const SyntaxTree_Exp&>(OP1).usIndex),
+                                        *dynamic_cast<const SyntaxTree_Exp*>(pOP2),
+                                        _type);
+                    else if (bConstValue2)
+                        return make_op2(pParser,
+                                        dynamic_cast<const SyntaxTree_Exp&>(OP1),
+                                        pair<uchar, ushort>(dynamic_cast<const SyntaxTree_Exp*>(pOP2)->ucBlock, dynamic_cast<const SyntaxTree_Exp*>(pOP2)->usIndex),
+                                        _type);
+                    else return make_op2(pParser, dynamic_cast<const SyntaxTree_Exp&>(OP1), *dynamic_cast<const SyntaxTree_Exp*>(pOP2), _type);
                 }
             }
             break;
         default:
             break;
         }
+        return true;
+    }
+
+    void SyntaxTree_Exp::fill_op2(Type type, VM::Instruction& i)
+    {
+        switch (type)
+        {
+        case GreaterEqual:
+            i.op = VM::OpCode::MoreEqual;
+            break;
+        case LessEqual:
+            i.op = VM::OpCode::LessEqual;
+            break;
+        case Equal:
+            i.op = VM::OpCode::Equal;
+            break;
+        case Greater:
+            i.op = VM::OpCode::More;
+            break;
+        case Less:
+            i.op = VM::OpCode::Less;
+            break;
+        case LogicAnd:
+            i.op = VM::OpCode::LogicAnd;
+            break;
+        case LogicOr:
+            i.op = VM::OpCode::LogicOr;
+            break;
+        case BitAnd:
+            i.op = VM::OpCode::BitAnd;
+            break;
+        case BitOr:
+            i.op = VM::OpCode::BitOr;
+            break;
+        case BitXor:
+            i.op = VM::OpCode::BitXor;
+            break;
+        case Add:
+            i.op = VM::OpCode::Add;
+            break;
+        case Sub:
+            i.op = VM::OpCode::Sub;
+            break;
+        case Mul:
+            i.op = VM::OpCode::Mul;
+            break;
+        case Div:
+            i.op = VM::OpCode::Div;
+            break;
+        case Mod:
+            i.op = VM::OpCode::Mod;
+            break;
+        default:
+            throw error<const char*>("can't do here", __FILE__, __LINE__);
+            break;
+        }
+    }
+
+    bool SyntaxTree_Exp::make_op2(Parser* pParser, const pair<uchar, ushort> &op1, const SyntaxTree_Exp &op2, Type type)
+    {
+        pair<short, ushort> p = pParser->tmpRegister();
+        if (p.first == -1)
+        {
+            throw error<const char*>("have no register", __FILE__, __LINE__);
+            return false;
+        }
+        VM::Instruction i;
+        i.ot = MAKE_OT(1, 0, 0);
+        i.Normal.ob1 = op1.first;
+        i.Normal.os1 = op1.second;
+        i.Normal.ob2 = op2.ucBlock;
+        i.Normal.os2 = op2.usIndex;
+        i.Normal.obd = p.first;
+        i.Normal.od  = p.second;
+        fill_op2(type, i);
+        pParser->instructions.push_back(i);
+        ucBlock = p.first;
+        usIndex = p.second;
+        return true;
+    }
+
+    bool SyntaxTree_Exp::make_op2(Parser* pParser, const SyntaxTree_Exp &op1, const pair<uchar, ushort> &op2, Type type)
+    {
+        pair<short, ushort> p = pParser->tmpRegister();
+        if (p.first == -1)
+        {
+            throw error<const char*>("have no register", __FILE__, __LINE__);
+            return false;
+        }
+        VM::Instruction i;
+        i.ot = MAKE_OT(0, 1, 0);
+        i.Normal.ob1 = op1.ucBlock;
+        i.Normal.os1 = op1.usIndex;
+        i.Normal.ob2 = op2.first;
+        i.Normal.os2 = op2.second;
+        i.Normal.obd = p.first;
+        i.Normal.od  = p.second;
+        fill_op2(type, i);
+        pParser->instructions.push_back(i);
+        ucBlock = p.first;
+        usIndex = p.second;
+        return true;
+    }
+
+    bool SyntaxTree_Exp::make_op2(Parser* pParser, const SyntaxTree_Exp &op1, const SyntaxTree_Exp &op2, Type type)
+    {
+        pair<short, ushort> p = pParser->tmpRegister();
+        if (p.first == -1)
+        {
+            throw error<const char*>("have no register", __FILE__, __LINE__);
+            return false;
+        }
+        VM::Instruction i;
+        i.ot = MAKE_OT(0, 0, 0);
+        i.Normal.ob1 = op1.ucBlock;
+        i.Normal.os1 = op1.usIndex;
+        i.Normal.ob2 = op2.ucBlock;
+        i.Normal.os2 = op2.usIndex;
+        i.Normal.obd = p.first;
+        i.Normal.od  = p.second;
+        fill_op2(type, i);
+        pParser->instructions.push_back(i);
+        ucBlock = p.first;
+        usIndex = p.second;
         return true;
     }
 

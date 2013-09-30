@@ -13,6 +13,8 @@
 #define _QLANGUAGE_SYNTAX_TREE_VALUE_H_
 
 #include "../../VirtualMachine/Variant.h"
+
+#include "SyntaxTree_MemberList.h"
 #include "SyntaxTree_Base.h"
 
 namespace QLanguage
@@ -42,6 +44,11 @@ namespace QLanguage
         inline virtual const bool isConstValue()const { return _type != Member; }
 
         virtual const HASH_KEY_TYPE hash()const;
+
+        inline const string name()const
+        {
+            return dynamic_cast<SyntaxTree_MemberList*>(pContent)->name();
+        }
 
         VM::Variant toVariant()const;
 

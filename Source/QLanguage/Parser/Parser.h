@@ -227,7 +227,7 @@ namespace QLanguage
     {
         enum
         {
-            maxRegisterCount = UCHAR_MAX + 1,
+            maxRegisterCount = USHRT_MAX + 1,
             maxConstantCount = USHRT_MAX + 1
         };
 
@@ -450,12 +450,16 @@ namespace QLanguage
         }
 
         // Constant
-        pair<size_t, ushort> pushConstant(const VM::Variant& v);
+        pair<short, ushort> pushConstant(const VM::Variant& v);
         const VM::Variant& getVariant(uchar block, ushort index)const;
 
         // Register
-        short getRegister(const string& name);
+        int getRegister(const string& name);
         const pair<short, ushort> indexOfRegister(const string& name)const;
+        pair<short, ushort> tmpRegister();
+    protected:
+        void printInstructionOperatorType(const VM::Instruction& i, ostream& stream);
+        void printInstructionSrcsAndDst(const VM::Instruction& i, ostream& stream);
     protected:
         struct
         {

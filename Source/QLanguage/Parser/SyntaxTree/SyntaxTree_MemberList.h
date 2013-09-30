@@ -42,6 +42,8 @@ namespace QLanguage
 #endif
             return childs.size() != x.childs.size();
         }
+
+        const string name()const;
     };
 }
 

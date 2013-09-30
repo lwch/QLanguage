@@ -763,6 +763,13 @@ public:
 };
 
 typedef basic_string<char> string;
+
+template <typename T>
+string operator+(const T* a, const string& b)
+{
+    return string(a) + b;
+}
+
 NAMESPACE_QLANGUAGE_LIBRARY_END
 
 #endif

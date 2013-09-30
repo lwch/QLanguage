@@ -33,6 +33,17 @@ namespace QLanguage
         }
     }
 
+    const string SyntaxTree_MemberList::name()const
+    {
+        if (childs.size() == 1) return dynamic_cast<SyntaxTree_Name*>(childs[0])->name;
+        string result = dynamic_cast<SyntaxTree_Name*>(childs[0])->name;
+        for (size_t i = 1, m = childs.size(); i < m; ++i)
+        {
+            result += "." + dynamic_cast<SyntaxTree_Name*>(childs[i])->name;
+        }
+        return result;
+    }
+
     // member_desc -> member_desc "." "{Letter}"
     bool Parser::reduceMember2Size()
     {

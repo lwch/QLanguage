@@ -41,15 +41,8 @@ namespace QLanguage
         VM::Instruction i;
         i.op = VM::Ret;
         i.ot = MAKE_OT(0, bConst, 0);
-        if (bConst)
-        {
-            i.Normal.ob1 = (uchar)pContent->getBlock();
-            i.Normal.os1 = pContent->getIndex();
-        }
-        else // TODO
-        {
-
-        }
+        i.Normal.ob1 = (uchar)pContent->getBlock();
+        i.Normal.os1 = pContent->getIndex();
         pParser->instructions.push_back(i);
         return true;
     }

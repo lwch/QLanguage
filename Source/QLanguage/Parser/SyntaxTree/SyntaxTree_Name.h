@@ -18,6 +18,8 @@ namespace QLanguage
 {
     class SyntaxTree_Name : public SyntaxTree_Base
     {
+        friend class SyntaxTree_MemberList;
+
         typedef SyntaxTree_Base parent;
     public:
         SyntaxTree_Name(const string& name);

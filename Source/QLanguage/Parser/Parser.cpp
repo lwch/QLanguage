@@ -473,9 +473,32 @@ namespace QLanguage
         stream << endl;
     }
 
+    void Parser::printInstructionOperatorType(const VM::Instruction &i, ostream &stream)
+    {
+        stream << (int)i.ot << "(";
+        if (OT_SRC1_TYPE(i.ot)) stream << "constant, ";
+        else stream << "register, ";
+        if (OT_SRC2_TYPE(i.ot)) stream << "constant, ";
+        else stream << "register, ";
+        if (OT_DST_TYPE(i.ot)) stream << "constant)";
+        else stream << "register)";
+    }
+
+    void Parser::printInstructionSrcsAndDst(const VM::Instruction &i, ostream &stream)
+    {
+        stream << " | " << (int)i.Normal.ob1;
+        if (i.Normal.ob1 == 0) stream << "(global)";
+        stream << " | " << (int)i.Normal.ob2;
+        if (i.Normal.ob2 == 0) stream << "(global)";
+        stream << " | " << i.Normal.os1 << " | " << i.Normal.os2;
+        stream << " | " << (int)i.Normal.obd;
+        if (i.Normal.obd == 0) stream << "(global)";
+        stream << " | " << i.Normal.od << " |";
+    }
+
     void Parser::printInstructions(ostream& stream)
     {
-        stream << "|    instruction    |    operationtype    |    block1    |    block2    |    dst    |    src1    |    src2    |" << endl;
+        stream << "|    instruction    |    operationtype    |    block1    |    block2    |    src1    |    src2    |    blockdst    |    dst    |" << endl;
         for (vector<LabelInfo>::const_iterator i = labels.begin(), m = labels.end(); i != m; ++i)
         {
             stream << i->name << ":" << endl;
@@ -485,16 +508,91 @@ namespace QLanguage
                 switch (instruction.op)
                 {
                 case VM::Ret:
-                    stream << "| Ret | " << (int)instruction.ot << "(";
-                    if (OT_DST_TYPE(instruction.ot)) stream << "constant, ";
-                    else stream << "register, ";
-                    if (OT_SRC1_TYPE(instruction.ot)) stream << "constant, ";
-                    else stream << "register, ";
-                    if (OT_SRC2_TYPE(instruction.ot)) stream << "constant";
-                    else stream << "register";
-                    stream << ") | " << (int)instruction.Normal.ob1;
+                    stream << "| Ret | ";
+                    printInstructionOperatorType(instruction, stream);
+                    stream << " | " << (int)instruction.Normal.ob1;
                     if (instruction.Normal.ob1 == 0) stream << "(global)";
                     stream << " | / | / | " << instruction.Normal.os1 << " | / |";
+                    break;
+                case VM::Less:
+                    stream << "| Less | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::More:
+                    stream << "| More | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::LessEqual:
+                    stream << "| LessEqual | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::MoreEqual:
+                    stream << "| MoreEqual | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::Equal:
+                    stream << "| Equal | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::Add:
+                    stream << "| Add | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::Sub:
+                    stream << "| Sub | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::Mul:
+                    stream << "| Mul | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::Div:
+                    stream << "| Div | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::Mod:
+                    stream << "| Mod | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::LogicAnd:
+                    stream << "| LogicAnd | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::LogicOr:
+                    stream << "| LogicOr | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::Not:
+                    stream << "| Not | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::BitAnd:
+                    stream << "| BitAnd | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::BitOr:
+                    stream << "| BitOr | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
+                    break;
+                case VM::BitXor:
+                    stream << "| BitXor | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrcsAndDst(instruction, stream);
                     break;
                 }
                 stream << endl;
@@ -514,18 +612,18 @@ namespace QLanguage
         return pair<int, ushort>(-1, 0);
     }
 
-    pair<size_t, ushort> Parser::pushConstant(const VM::Variant& v)
+    pair<short, ushort> Parser::pushConstant(const VM::Variant& v)
     {
         if (!constantTable.push(v))
         {
             for (size_t i = 0, m = makeContext.size(); i < m; ++i)
             {
-                if (makeContext[i].constantTable.push(v)) return pair<size_t, ushort>(i + 1, makeContext[i].constantTable.size() - 1);
+                if (makeContext[i].constantTable.push(v)) return pair<short, ushort>(i + 1, makeContext[i].constantTable.size() - 1);
             }
         }
-        else return pair<size_t, ushort>(0, constantTable.size() - 1);
+        else return pair<short, ushort>(0, constantTable.size() - 1);
         throw error<const char*>("Doesn't have enough capacity", __FILE__, __LINE__);
-        return pair<size_t, ushort>(-1, 0);
+        return pair<short, ushort>(-1, 0);
     }
 
     const VM::Variant& Parser::getVariant(uchar block, ushort index)const
@@ -537,16 +635,15 @@ namespace QLanguage
         }
     }
 
-    short Parser::getRegister(const string& name)
+    int Parser::getRegister(const string& name)
     {
-        string*& tmpReg = reinterpret_cast<string*&>(reg);
-        ushort& tmpRegCount = regCount;
         if (makeContext.size() > 0)
         {
-            tmpReg = makeContext.top().reg;
-            tmpRegCount = makeContext.top().regCount;
+            ContextInfo& info = makeContext.top();
+            if (info.regCount >= maxRegisterCount) return -1;
+            info.reg[info.regCount++] = name;
+            return info.regCount - 1;
         }
-        if (regCount >= maxRegisterCount) return -1;
         reg[regCount++] = name;
         return regCount - 1;
     }
@@ -563,6 +660,25 @@ namespace QLanguage
         }
         for (ushort j = 0; j < regCount; ++j)
         {
+            if (reg[j] == name) return pair<short, ushort>(0, j);
+        }
+        return pair<short, ushort>(-1, 0);
+    }
+
+    pair<short, ushort> Parser::tmpRegister()
+    {
+        for (size_t i = 0, m = makeContext.size(); i < m; ++i)
+        {
+            if (makeContext[i].regCount < maxRegisterCount)
+            {
+                makeContext[i].reg[makeContext[i].regCount++] = "";
+                return pair<short, ushort>(i + 1, makeContext[i].regCount - 1);
+            }
+        }
+        if (regCount < maxRegisterCount)
+        {
+            reg[regCount++] = "";
+            return pair<short, ushort>(0, regCount - 1);
         }
         return pair<short, ushort>(-1, 0);
     }
