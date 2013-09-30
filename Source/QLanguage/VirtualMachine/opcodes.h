@@ -24,12 +24,12 @@ namespace QLanguage
         // 操作码
         enum OpCode
         {
-            Mov       = 0,  // R[a] = k || R[a] = R[b]
-            Less      = 1,  // R[a] < k || R[a] < R[b]
-            More      = 2,  // R[a] > k || R[a] > R[b]
-            LessEqual = 3,  // R[a] <= k || R[a] <= R[b]
-            MoreEqual = 4,  // R[a] >= k || R[a] >= R[b]
-            Equal     = 5,  // R[a] == k || R[a] == R[b]
+            Mov       = 0,  // R[a] = k  || R[a] = R[b]
+            Less      = 1,  // R[a] < k  || k < R[b]  || R[a] < R[b]
+            More      = 2,  // R[a] > k  || k > R[b]  || R[a] > R[b]
+            LessEqual = 3,  // R[a] <= k || k <= R[b] || R[a] <= R[b]
+            MoreEqual = 4,  // R[a] >= k || k >= R[b] || R[a] >= R[b]
+            Equal     = 5,  // R[a] == k || k == R[b] || R[a] == R[b]
             Add       = 6,  // R[a] = R[b] + k  || R[a] = k + R[c]  || R[a] = R[b] + R[c]
             Sub       = 7,  // R[a] = R[b] - k  || R[a] = k - R[c]  || R[a] = R[b] - R[c]
             Mul       = 8,  // R[a] = R[b] * k  || R[a] = k * R[c]  || R[a] = R[b] * R[c]
