@@ -1,0 +1,9 @@
+.gitignore
+Makefile
+cmake_install.cmake
+*.cbp
+*.a
+*.user
+/Source/QCore/CMakeFiles
+/Source/QLanguage/CMakeFiles
+/Source/QLanguage-build
