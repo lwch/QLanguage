@@ -83,7 +83,6 @@ namespace QLanguage
     Parser::ContextInfo::ContextInfo(Type type, const HASH_KEY_TYPE& hash, ConstantTable& constantTable)
         : type(type)
         , hash(hash)
-        , regCount(0)
         , constantTable(constantTable)
     {
     }
@@ -102,7 +101,6 @@ namespace QLanguage
 
     Parser::Parser(const vector<Production>& productions)
         : BasicParser(productions)
-        , regCount(0)
 #if defined(_DEBUG) && DEBUG_LEVEL == 3
         , result("Result.txt", fstream::out | fstream::text)
 #endif
@@ -484,6 +482,17 @@ namespace QLanguage
         else stream << "register)";
     }
 
+    void Parser::printInstructionSrc1AndDst(const VM::Instruction& i, ostream& stream)
+    {
+        stream << " | " << (int)i.Normal.ob1;
+        if (i.Normal.ob1 == 0) stream << "(global)";
+        stream << " | / | ";
+        stream << i.Normal.os1 << " | /";
+        stream << " | " << (int)i.Normal.obd;
+        if (i.Normal.obd == 0) stream << "(global)";
+        stream << " | " << i.Normal.od << " |";
+    }
+
     void Parser::printInstructionSrcsAndDst(const VM::Instruction &i, ostream &stream)
     {
         stream << " | " << (int)i.Normal.ob1;
@@ -512,7 +521,22 @@ namespace QLanguage
                     printInstructionOperatorType(instruction, stream);
                     stream << " | " << (int)instruction.Normal.ob1;
                     if (instruction.Normal.ob1 == 0) stream << "(global)";
-                    stream << " | / | / | " << instruction.Normal.os1 << " | / |";
+                    stream << " | / | " << instruction.Normal.os1 << " | / | / | / |";
+                    break;
+                case VM::Not:
+                    stream << "| Not | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrc1AndDst(instruction, stream);
+                    break;
+                case VM::Pos:
+                    stream << "| Pos | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrc1AndDst(instruction, stream);
+                    break;
+                case VM::Neg:
+                    stream << "| Neg | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrc1AndDst(instruction, stream);
                     break;
                 case VM::Less:
                     stream << "| Less | ";
@@ -571,11 +595,6 @@ namespace QLanguage
                     break;
                 case VM::LogicOr:
                     stream << "| LogicOr | ";
-                    printInstructionOperatorType(instruction, stream);
-                    printInstructionSrcsAndDst(instruction, stream);
-                    break;
-                case VM::Not:
-                    stream << "| Not | ";
                     printInstructionOperatorType(instruction, stream);
                     printInstructionSrcsAndDst(instruction, stream);
                     break;
@@ -640,12 +659,14 @@ namespace QLanguage
         if (makeContext.size() > 0)
         {
             ContextInfo& info = makeContext.top();
-            if (info.regCount >= maxRegisterCount) return -1;
-            info.reg[info.regCount++] = name;
-            return info.regCount - 1;
+            const size_t size = info.reg.size();
+            if (size >= maxRegisterCount) return -1;
+            info.reg.push_back(name);
+            return size;
         }
-        reg[regCount++] = name;
-        return regCount - 1;
+        if (reg.size() >= maxRegisterCount) return -1;
+        reg.push_back(name);
+        return reg.size() - 1;
     }
 
     const pair<short, ushort> Parser::indexOfRegister(const string& name)const
@@ -653,12 +674,12 @@ namespace QLanguage
         for (size_t i = 0, m = makeContext.size(); i < m; ++i)
         {
             const ContextInfo& info = makeContext[i];
-            for (ushort j = 0; j < info.regCount; ++j)
+            for (ushort j = 0, n = info.reg.size(); j < n; ++j)
             {
                 if (info.reg[j] == name) return pair<short, ushort>(i + 1, j);
             }
         }
-        for (ushort j = 0; j < regCount; ++j)
+        for (ushort j = 0, m = reg.size(); j < m; ++j)
         {
             if (reg[j] == name) return pair<short, ushort>(0, j);
         }
@@ -669,16 +690,17 @@ namespace QLanguage
     {
         for (size_t i = 0, m = makeContext.size(); i < m; ++i)
         {
-            if (makeContext[i].regCount < maxRegisterCount)
+            const size_t size = makeContext[i].reg.size();
+            if (size < maxRegisterCount)
             {
-                makeContext[i].reg[makeContext[i].regCount++] = "";
-                return pair<short, ushort>(i + 1, makeContext[i].regCount - 1);
+                makeContext[i].reg.push_back("");
+                return pair<short, ushort>(i + 1, size);
             }
         }
-        if (regCount < maxRegisterCount)
+        if (reg.size() < maxRegisterCount)
         {
-            reg[regCount++] = "";
-            return pair<short, ushort>(0, regCount - 1);
+            reg.push_back("");
+            return pair<short, ushort>(0, reg.size() - 1);
         }
         return pair<short, ushort>(-1, 0);
     }

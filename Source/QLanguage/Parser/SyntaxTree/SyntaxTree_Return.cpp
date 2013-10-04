@@ -40,7 +40,7 @@ namespace QLanguage
         bool bConst = pContent->isConstValue();
         VM::Instruction i;
         i.op = VM::Ret;
-        i.ot = MAKE_OT(0, bConst, 0);
+        i.ot = MAKE_OT(bConst, 0, 0);
         i.Normal.ob1 = (uchar)pContent->getBlock();
         i.Normal.os1 = pContent->getIndex();
         pParser->instructions.push_back(i);

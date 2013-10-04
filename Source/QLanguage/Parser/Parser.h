@@ -263,8 +263,7 @@ namespace QLanguage
             HASH_KEY_TYPE hash;
 
             // 每个语句块有0-255个寄存器
-            string reg[maxRegisterCount];
-            ushort regCount;
+            vector<string> reg;
 
             ConstantTable& constantTable;
 
@@ -459,6 +458,7 @@ namespace QLanguage
         pair<short, ushort> tmpRegister();
     protected:
         void printInstructionOperatorType(const VM::Instruction& i, ostream& stream);
+        void printInstructionSrc1AndDst(const VM::Instruction& i, ostream& stream);
         void printInstructionSrcsAndDst(const VM::Instruction& i, ostream& stream);
     protected:
         struct
@@ -474,8 +474,7 @@ namespace QLanguage
         vector<LabelInfo>       labels;
 
         ConstantTable           constantTable;
-        string                  reg[maxRegisterCount];
-        ushort                  regCount;
+        vector<string>          reg;
 #if defined(_DEBUG ) && DEBUG_LEVEL == 3
         fstream                  result;
 #endif

@@ -56,14 +56,20 @@ namespace QLanguage
         switch (_type)
         {
         case Not:
-            stream << "!";
-            break;
+            stream << "!(";
+            OP1.print(stream, indent);
+            stream << ')';
+            return;
         case Positive:
-            stream << "+";
-            break;
+            stream << "+(";
+            OP1.print(stream, indent);
+            stream << ')';
+            return;
         case Negative:
-            stream << "-";
-            break;
+            stream << "-(";
+            OP1.print(stream, indent);
+            stream << ')';
+            return;
         default:
             break;
         }
@@ -198,9 +204,7 @@ namespace QLanguage
                             usIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->usIndex;
                             bConstant = true;
                         }
-                        else // TODO
-                        {
-                        }
+                        else return pOP2->make(pParser);
                     }
                     else
                     {
@@ -210,9 +214,7 @@ namespace QLanguage
                             usIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->usIndex;
                             bConstant = true;
                         }
-                        else // TODO
-                        {
-                        }
+                        else return pOP3->make(pParser);
                     }
                 }
                 else // TODO
@@ -227,7 +229,7 @@ namespace QLanguage
                 if (!const_cast<SyntaxTree_Base&>(OP1).make(pParser)) return false;
                 if (OP1.isConstValue())
                 {
-                    VM::Variant v = eval(dynamic_cast<const SyntaxTree_Exp&>(OP1).toVariant(pParser), dynamic_cast<const SyntaxTree_Exp&>(OP1)._type);
+                    VM::Variant v = eval(dynamic_cast<const SyntaxTree_Exp&>(OP1).toVariant(pParser), _type);
                     const pair<int, ushort> p = pParser->indexOfConstant(v);
                     if (p.first == -1)
                     {
@@ -242,9 +244,7 @@ namespace QLanguage
                     }
                     bConstant = true;
                 }
-                else // TODO
-                {
-                }
+                else return make_op1(pParser, pair<uchar, ushort>(dynamic_cast<const SyntaxTree_Exp&>(OP1).ucBlock, dynamic_cast<const SyntaxTree_Exp&>(OP1).usIndex), _type);
             }
             break;
         case GreaterEqual:
@@ -307,6 +307,35 @@ namespace QLanguage
         default:
             break;
         }
+        return true;
+    }
+
+    bool SyntaxTree_Exp::make_op1(Parser* pParser, const pair<uchar, ushort>& op, Type type)
+    {
+        VM::Instruction i;
+        i.ot = MAKE_OT(0, 0, 0);
+        i.Normal.ob1 = op.first;
+        i.Normal.os1 = op.second;
+        i.Normal.obd = 0;
+        i.Normal.od  = 65534;
+        switch (type)
+        {
+        case Not:
+            i.op = VM::OpCode::Not;
+            break;
+        case Positive:
+            i.op = VM::OpCode::Pos;
+            break;
+        case Negative:
+            i.op = VM::OpCode::Neg;
+            break;
+        default:
+            throw error<const char*>("can't do here", __FILE__, __LINE__);
+            return false;
+        }
+        pParser->instructions.push_back(i);
+        ucBlock = op.first;
+        usIndex = op.second;
         return true;
     }
 

@@ -97,6 +97,7 @@ namespace QLanguage
                    (pOP3 == NULL && dynamic_cast<const SyntaxTree_Exp*>(&x)->pOP3));
         }
     protected:
+        bool make_op1(Parser* pParser, const pair<uchar, ushort>& op, Type type);
         void fill_op2(Type type, VM::Instruction& i);
         bool make_op2(Parser* pParser, const pair<uchar, ushort>& op1, const SyntaxTree_Exp& op2, Type type);
         bool make_op2(Parser* pParser, const SyntaxTree_Exp& op1, const pair<uchar, ushort>& op2, Type type);
