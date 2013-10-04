@@ -482,6 +482,13 @@ namespace QLanguage
         else stream << "register)";
     }
 
+    void Parser::printInstructionSrc1(const VM::Instruction& i, ostream& stream)
+    {
+        stream << " | " << (int)i.Normal.ob1;
+        if (i.Normal.ob1 == 0) stream << "(global)";
+        stream << " | / | " << i.Normal.os1 << " | / | / | / |";
+    }
+
     void Parser::printInstructionSrc1AndDst(const VM::Instruction& i, ostream& stream)
     {
         stream << " | " << (int)i.Normal.ob1;
@@ -516,27 +523,43 @@ namespace QLanguage
                 const VM::Instruction& instruction = instructions[j];
                 switch (instruction.op)
                 {
+                case VM::Mov:
+                    stream << "| Mov | ";
+                    printInstructionOperatorType(instruction, stream);
+                    printInstructionSrc1AndDst(instruction, stream);
+                    break;
                 case VM::Ret:
                     stream << "| Ret | ";
                     printInstructionOperatorType(instruction, stream);
-                    stream << " | " << (int)instruction.Normal.ob1;
-                    if (instruction.Normal.ob1 == 0) stream << "(global)";
-                    stream << " | / | " << instruction.Normal.os1 << " | / | / | / |";
+                    printInstructionSrc1(instruction, stream);
+                    break;
+                case VM::Jmp:
+                    stream << "| Jmp | ";
+                    printInstructionOperatorType(instruction, stream);
+                    stream << " | ";
+                    if (instruction.Jmp.ext)
+                    {
+                        stream << (int)instruction.Jmp.ob;
+                        if (instruction.Jmp.ob == 0) stream << "(global)";
+                        stream << " | / | " << instruction.Jmp.os << " | / | / | ";
+                    }
+                    else stream << "/ | / | / | / | / | ";
+                    stream << instruction.Jmp.addr << " |";
                     break;
                 case VM::Not:
                     stream << "| Not | ";
                     printInstructionOperatorType(instruction, stream);
-                    printInstructionSrc1AndDst(instruction, stream);
+                    printInstructionSrc1(instruction, stream);
                     break;
                 case VM::Pos:
                     stream << "| Pos | ";
                     printInstructionOperatorType(instruction, stream);
-                    printInstructionSrc1AndDst(instruction, stream);
+                    printInstructionSrc1(instruction, stream);
                     break;
                 case VM::Neg:
                     stream << "| Neg | ";
                     printInstructionOperatorType(instruction, stream);
-                    printInstructionSrc1AndDst(instruction, stream);
+                    printInstructionSrc1(instruction, stream);
                     break;
                 case VM::Less:
                     stream << "| Less | ";

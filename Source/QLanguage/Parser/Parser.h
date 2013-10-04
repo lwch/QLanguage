@@ -458,6 +458,7 @@ namespace QLanguage
         pair<short, ushort> tmpRegister();
     protected:
         void printInstructionOperatorType(const VM::Instruction& i, ostream& stream);
+        void printInstructionSrc1(const VM::Instruction& i, ostream& stream);
         void printInstructionSrc1AndDst(const VM::Instruction& i, ostream& stream);
         void printInstructionSrcsAndDst(const VM::Instruction& i, ostream& stream);
     protected:

@@ -192,33 +192,88 @@ namespace QLanguage
         case TrueFalse:
             {
                 if (!const_cast<SyntaxTree_Base&>(OP1).make(pParser)) return false;
-                if (!pOP2->make(pParser)) return false;
-                if (!pOP3->make(pParser)) return false;
                 if (OP1.isConstValue())
                 {
                     if (dynamic_cast<const SyntaxTree_Exp&>(OP1).toVariant(pParser).toBool())
                     {
+                        if (!pOP2->make(pParser)) return false;
                         if (pOP2->isConstValue()) // 可提前计算出结果
                         {
                             ucBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->ucBlock;
                             usIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP2)->usIndex;
                             bConstant = true;
                         }
-                        else return pOP2->make(pParser);
                     }
                     else
                     {
+                        if (!pOP3->make(pParser)) return false;
                         if (pOP3->isConstValue()) // 可提前计算出结果
                         {
                             ucBlock = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->ucBlock;
                             usIndex = dynamic_cast<const SyntaxTree_Exp*>(pOP3)->usIndex;
                             bConstant = true;
                         }
-                        else return pOP3->make(pParser);
                     }
                 }
-                else // TODO
+                else
                 {
+                    // | op1 code              |
+                    // | jmp lb1 when false    |
+                    // | op2 code              |
+                    // | end mov to register p |
+                    // | jmp lb2               |
+                    // | lb1:                  |
+                    // | op3 code              |
+                    // | end mov to register p |
+                    // | lb2:                  |
+                    // | ...                   |
+                    pair<short, ushort> p = pParser->tmpRegister();
+                    if (p.first == -1)
+                    {
+                        throw error<const char*>("have no register", __FILE__, __LINE__);
+                        return false;
+                    }
+                    VM::Instruction i;
+                    i.op = VM::OpCode::Jmp;
+                    i.ot = MAKE_OT(0, 0, 0);
+                    i.Jmp.ob  = dynamic_cast<const SyntaxTree_Exp&>(OP1).ucBlock;
+                    i.Jmp.os  = dynamic_cast<const SyntaxTree_Exp&>(OP1).usIndex;
+                    i.Jmp.ext = true;
+                    pParser->instructions.push_back(i); // 判断表达式是否为false并跳转
+                    size_t ri = pParser->instructions.size() - 1; // 地址需回填
+                    size_t addr = pParser->instructions.size();
+                    if (!pOP2->make(pParser)) return false;
+                    if (pOP2->isConstValue())
+                    {
+                        if (!make_constant(pParser, *dynamic_cast<const SyntaxTree_Exp*>(pOP2), p)) return false;
+                    }
+                    else
+                    {
+                        if (!make_register(pParser, *dynamic_cast<const SyntaxTree_Exp*>(pOP2), p)) return false;
+                    }
+                    if (!insert_flag_register(pParser, p)) return false; // mov本身并不设置flag寄存器，应此需要手动设置
+                    addr = pParser->instructions.size() - addr;
+                    pParser->instructions[ri].Jmp.addr = addr;
+
+                    i.op = VM::OpCode::Jmp;
+                    i.Jmp.ext = false;
+                    pParser->instructions.push_back(i);
+                    ri = pParser->instructions.size() - 1;
+                    addr = pParser->instructions.size();
+                    if (!pOP3->make(pParser)) return false;
+                    if (pOP3->isConstValue())
+                    {
+                        if (!make_constant(pParser, *dynamic_cast<const SyntaxTree_Exp*>(pOP3), p)) return false;
+                    }
+                    else
+                    {
+                        if (!make_register(pParser, *dynamic_cast<const SyntaxTree_Exp*>(pOP3), p)) return false;
+                    }
+                    if (!insert_flag_register(pParser, p)) return false; // mov本身并不设置flag寄存器，应此需要手动设置
+                    addr = pParser->instructions.size() - addr;
+                    pParser->instructions[ri].Jmp.addr = addr;
+                    ucBlock = (uchar)p.first;
+                    usIndex = p.second;
                 }
             }
             break;
@@ -310,14 +365,51 @@ namespace QLanguage
         return true;
     }
 
+    bool SyntaxTree_Exp::make_register(Parser* pParser, const SyntaxTree_Exp& op, const pair<uchar, ushort>& reg)
+    {
+        VM::Instruction i;
+        i.op = VM::OpCode::Mov;
+        i.ot = MAKE_OT(0, 0, 0);
+        i.Normal.ob1 = op.ucBlock;
+        i.Normal.os1 = op.usIndex;
+        i.Normal.obd = reg.first;
+        i.Normal.od  = reg.second;
+        pParser->instructions.push_back(i);
+        return true;
+    }
+
+    bool SyntaxTree_Exp::make_constant(Parser* pParser, const SyntaxTree_Exp& op, const pair<uchar, ushort>& reg)
+    {
+        VM::Instruction i;
+        i.op = VM::OpCode::Mov;
+        i.ot = MAKE_OT(1, 0, 0);
+        i.Normal.ob1 = op.ucBlock;
+        i.Normal.os1 = op.usIndex;
+        i.Normal.obd = reg.first;
+        i.Normal.od  = reg.second;
+        pParser->instructions.push_back(i);
+        return true;
+    }
+
+    bool SyntaxTree_Exp::insert_flag_register(Parser* pParser, const pair<uchar, ushort>& reg)
+    {
+        VM::Instruction i;
+        i.op = VM::OpCode::Mov;
+        i.ot = MAKE_OT(0, 0, 0);
+        i.Normal.ob1 = reg.first;
+        i.Normal.os1 = reg.second;
+        i.Normal.obd = 0;
+        i.Normal.od  = 65534;
+        pParser->instructions.push_back(i);
+        return true;
+    }
+
     bool SyntaxTree_Exp::make_op1(Parser* pParser, const pair<uchar, ushort>& op, Type type)
     {
         VM::Instruction i;
         i.ot = MAKE_OT(0, 0, 0);
         i.Normal.ob1 = op.first;
         i.Normal.os1 = op.second;
-        i.Normal.obd = 0;
-        i.Normal.od  = 65534;
         switch (type)
         {
         case Not:

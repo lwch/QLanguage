@@ -38,6 +38,21 @@ namespace QLanguage
             {
             }
 
+            template <typename T>
+            pair(const pair<T, T2>& p) : first(static_cast<T1>(p.first)), second(p.second)
+            {
+            }
+
+            template <typename T>
+            pair(const pair<T1, T>& p) : first(p.first), second(static_cast<T2>(p.second))
+            {
+            }
+
+            template <typename AT1, typename AT2>
+            pair(const pair<AT1, AT2>& p) : first(static_cast<T1>(p.first)), second(static_cast<T2>(p.second))
+            {
+            }
+
             inline const bool operator<(const pair<T1, T2>& x)const
             {
                 return first < x.first && second < x.second;

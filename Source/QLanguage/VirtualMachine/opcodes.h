@@ -73,10 +73,17 @@ namespace QLanguage
                 }Normal;
                 struct
                 {
-                    int    addr;   // 跳转或函数位置
-                    uchar  ext;    // 未使用或参数个数
-                    uint   unused; // 未使用
-                }JmpCall;
+                    int    addr; // 跳转位置
+                    uchar  ob;   // 0为全局的寄存器或常数，1为当前块的，2为上一级的......
+                    ushort os;   // 源寄存器或常数 2字节
+                    ushort ext;  // 是否有附加参数
+                }Jmp;
+                struct 
+                {
+                    int   addr;   // 函数位置
+                    uchar params; // 参数个数
+                    uint  unused; // 未使用
+                }Call;
             };
         };
 #pragma pack()
