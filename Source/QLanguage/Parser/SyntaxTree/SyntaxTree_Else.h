@@ -20,12 +20,17 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_Else(const SyntaxTree_Base& content);
+        SyntaxTree_Else(SyntaxTree_Base& content);
         virtual ~SyntaxTree_Else();
 
         virtual void print(ostream& stream, uint indent)const;
 
         inline virtual string type()const { return "SyntaxTree_Else"; }
+
+        inline virtual bool make(Parser* pParser)
+        {
+            return content.make(pParser);
+        }
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
@@ -43,7 +48,7 @@ namespace QLanguage
             return content != dynamic_cast<const SyntaxTree_Else*>(&x)->content;
         }
     protected:
-        const SyntaxTree_Base& content;
+        SyntaxTree_Base& content;
     };
 }
 

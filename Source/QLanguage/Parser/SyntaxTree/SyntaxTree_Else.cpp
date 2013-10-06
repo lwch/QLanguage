@@ -16,7 +16,7 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Else::SyntaxTree_Else(const SyntaxTree_Base& content)
+    SyntaxTree_Else::SyntaxTree_Else(SyntaxTree_Base& content)
         : parent(sizeof(SyntaxTree_Else))
         , content(content)
     {
@@ -29,7 +29,14 @@ namespace QLanguage
     void SyntaxTree_Else::print(ostream& stream, uint indent)const
     {
         stream << "else ";
-        content.print(stream, indent + parent::indent);
+        if (content.type() == "SyntaxTree_Stmt") content.print(stream, 0);
+        else content.print(stream, indent + parent::indent);
+    }
+
+    template <typename T1, typename T2>
+    inline void construct(T1* p, T2& value)
+    {
+        new (p) T1(value);
     }
 
     // else_desc -> "else" stmt

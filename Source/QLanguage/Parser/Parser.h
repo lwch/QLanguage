@@ -234,6 +234,7 @@ namespace QLanguage
         friend class SyntaxTree_DeclareName;
         friend class SyntaxTree_Exp;
         friend class SyntaxTree_GlobalFunction;
+        friend class SyntaxTree_If;
         friend class SyntaxTree_Return;
     public:
         // 每个常量表有0-65535个常量

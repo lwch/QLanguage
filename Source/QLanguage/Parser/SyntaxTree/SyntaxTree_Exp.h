@@ -49,9 +49,9 @@ namespace QLanguage
             Value
         };
     public:
-        SyntaxTree_Exp(const SyntaxTree_Base& OP1, SyntaxTree_Base* pOP2, SyntaxTree_Base* pOP3);
-        SyntaxTree_Exp(Type type, const SyntaxTree_Base& OP1, SyntaxTree_Base* pOP2);
-        SyntaxTree_Exp(Type type, const SyntaxTree_Base& OP);
+        SyntaxTree_Exp(SyntaxTree_Base& OP1, SyntaxTree_Base* pOP2, SyntaxTree_Base* pOP3);
+        SyntaxTree_Exp(Type type, SyntaxTree_Base& OP1, SyntaxTree_Base* pOP2);
+        SyntaxTree_Exp(Type type, SyntaxTree_Base& OP);
         virtual ~SyntaxTree_Exp();
 
         virtual void print(ostream& stream, uint indent)const;
@@ -106,10 +106,10 @@ namespace QLanguage
         bool make_op2(Parser* pParser, const SyntaxTree_Exp& op1, const pair<uchar, ushort>& op2, Type type);
         bool make_op2(Parser* pParser, const SyntaxTree_Exp& op1, const SyntaxTree_Exp& op2, Type type);
     protected:
-        const SyntaxTree_Base& OP1;
-        SyntaxTree_Base*       pOP2;
-        SyntaxTree_Base*       pOP3;
-        Type                   _type;
+        SyntaxTree_Base& OP1;
+        SyntaxTree_Base* pOP2;
+        SyntaxTree_Base* pOP3;
+        Type             _type;
 
         // 在make时使用
         bool                   bConstant;

@@ -22,13 +22,15 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_If(const SyntaxTree_Exp& exp, const SyntaxTree_Base& op1, SyntaxTree_Else* pElse);
-        SyntaxTree_If(const SyntaxTree_Exp& exp, const SyntaxTree_Base& op1);
+        SyntaxTree_If(SyntaxTree_Exp& exp, SyntaxTree_Base& op1, SyntaxTree_Else* pElse);
+        SyntaxTree_If(SyntaxTree_Exp& exp, SyntaxTree_Base& op1);
         virtual ~SyntaxTree_If();
 
         virtual void print(ostream& stream, uint indent)const;
         
         inline virtual string type()const { return "SyntaxTree_If"; }
+
+        virtual bool make(Parser* pParser);
 
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
@@ -50,9 +52,9 @@ namespace QLanguage
                    parent::checkNotEqual(pElse, dynamic_cast<const SyntaxTree_If*>(&x)->pElse);
         }
     protected:
-        const SyntaxTree_Exp&  exp;
-        const SyntaxTree_Base& op1;
-        SyntaxTree_Else*       pElse;
+        SyntaxTree_Exp&  exp;
+        SyntaxTree_Base& op1;
+        SyntaxTree_Else* pElse;
     };
 }
 
