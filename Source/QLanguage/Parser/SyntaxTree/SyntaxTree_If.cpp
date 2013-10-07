@@ -60,8 +60,16 @@ namespace QLanguage
     bool SyntaxTree_If::make(Parser* pParser)
     {
         if (!exp.make(pParser)) return false;
-        if (exp.isConstValue()) // TODO
+        if (exp.isConstValue())
         {
+            if (exp.toVariant(pParser).toBool())
+            {
+                return op1.make(pParser);
+            }
+            else if (pElse)
+            {
+                return pElse->make(pParser);
+            }
         }
         else
         {
