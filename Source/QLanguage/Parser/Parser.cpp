@@ -80,9 +80,10 @@ namespace QLanguage
         return constants[idx];
     }
 
-    Parser::ContextInfo::ContextInfo(Type type, const HASH_KEY_TYPE& hash, ConstantTable& constantTable)
+    Parser::ContextInfo::ContextInfo(Type type, const HASH_KEY_TYPE& hash, vector<string>& regs, ConstantTable& constantTable)
         : type(type)
         , hash(hash)
+        , regs(regs)
         , constantTable(constantTable)
     {
     }
@@ -682,9 +683,9 @@ namespace QLanguage
         if (makeContext.size() > 0)
         {
             ContextInfo& info = makeContext.top();
-            const size_t size = info.reg.size();
+            const size_t size = info.regs.size();
             if (size >= maxRegisterCount) return -1;
-            info.reg.push_back(name);
+            info.regs.push_back(name);
             return size;
         }
         if (reg.size() >= maxRegisterCount) return -1;
@@ -697,9 +698,9 @@ namespace QLanguage
         for (size_t i = 0, m = makeContext.size(); i < m; ++i)
         {
             const ContextInfo& info = makeContext[i];
-            for (ushort j = 0, n = info.reg.size(); j < n; ++j)
+            for (ushort j = 0, n = info.regs.size(); j < n; ++j)
             {
-                if (info.reg[j] == name) return pair<short, ushort>(i + 1, j);
+                if (info.regs[j] == name) return pair<short, ushort>(i + 1, j);
             }
         }
         for (ushort j = 0, m = reg.size(); j < m; ++j)
@@ -713,10 +714,10 @@ namespace QLanguage
     {
         for (size_t i = 0, m = makeContext.size(); i < m; ++i)
         {
-            const size_t size = makeContext[i].reg.size();
+            const size_t size = makeContext[i].regs.size();
             if (size < maxRegisterCount)
             {
-                makeContext[i].reg.push_back("");
+                makeContext[i].regs.push_back("");
                 return pair<short, ushort>(i + 1, size);
             }
         }

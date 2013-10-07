@@ -231,6 +231,7 @@ namespace QLanguage
             maxConstantCount = USHRT_MAX + 1
         };
 
+        friend class SyntaxTree_Assign;
         friend class SyntaxTree_DeclareName;
         friend class SyntaxTree_Exp;
         friend class SyntaxTree_GlobalFunction;
@@ -263,12 +264,10 @@ namespace QLanguage
 
             HASH_KEY_TYPE hash;
 
-            // 每个语句块有0-255个寄存器
-            vector<string> reg;
-
+            vector<string>& regs;
             ConstantTable& constantTable;
 
-            ContextInfo(Type type, const HASH_KEY_TYPE& hash, ConstantTable& constantTable);
+            ContextInfo(Type type, const HASH_KEY_TYPE& hash, vector<string>& regs, ConstantTable& constantTable);
         };
 
         struct FunctionInfo
@@ -276,6 +275,7 @@ namespace QLanguage
             HASH_KEY_TYPE hash;
 
             ConstantTable constantTable;
+            vector<string> regs;
 
             FunctionInfo(const HASH_KEY_TYPE& hash);
         };

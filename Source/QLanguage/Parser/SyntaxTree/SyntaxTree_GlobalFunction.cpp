@@ -92,7 +92,7 @@ namespace QLanguage
     {
         const HASH_KEY_TYPE h = hash();
         pParser->functions.push_back(Parser::FunctionInfo(h));
-        pParser->makeContext.push(Parser::ContextInfo(Parser::ContextInfo::GlobalFunction, h, pParser->functions.back().constantTable));
+        pParser->makeContext.push(Parser::ContextInfo(Parser::ContextInfo::GlobalFunction, h, pParser->functions.back().regs, pParser->functions.back().constantTable));
         Parser::LabelInfo label(string::format("_gf_%ld_%s", h, name.c_str()), pParser->instructions.size());
         pParser->labels.push_back(label);
         Parser::LabelInfo& ref = pParser->labels.back();

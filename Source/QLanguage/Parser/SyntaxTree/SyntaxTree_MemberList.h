@@ -27,6 +27,8 @@ namespace QLanguage
         
         inline virtual string type()const { return "SyntaxTree_MemberList"; }
 
+        virtual const HASH_KEY_TYPE hash()const;
+
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
 #ifdef _DEBUG
@@ -42,7 +44,7 @@ namespace QLanguage
 #endif
             return childs.size() != x.childs.size();
         }
-
+    public:
         const string name()const;
     };
 }

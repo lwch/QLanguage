@@ -44,6 +44,16 @@ namespace QLanguage
         return result;
     }
 
+    const HASH_KEY_TYPE SyntaxTree_MemberList::hash()const
+    {
+        HASH_KEY_TYPE result = 0;
+        for (vector<SyntaxTree_Base*>::const_iterator i = childs.begin(), m = childs.end(); i != m; ++i)
+        {
+            result += (*i)->hash();
+        }
+        return result;
+    }
+
     // member_desc -> member_desc "." "{Letter}"
     bool Parser::reduceMember2Size()
     {

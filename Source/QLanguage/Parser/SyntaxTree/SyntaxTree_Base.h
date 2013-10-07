@@ -35,6 +35,7 @@ class SyntaxTree_Do;
         enum { indent = 4 };
 
         friend class SyntaxTree_ArrayLst;
+        friend class SyntaxTree_Assign;
         friend class SyntaxTree_Block;
         friend class SyntaxTree_CallList;
         friend class SyntaxTree_ClassContentList;
