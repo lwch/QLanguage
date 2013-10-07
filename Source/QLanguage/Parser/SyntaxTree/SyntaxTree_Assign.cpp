@@ -70,7 +70,7 @@ namespace QLanguage
             }
             else
             {
-                string str = string::format("undefined variable %s", memberList.name());
+                string str = string::format("undefined variable %s", memberList.name().c_str());
                 throw error<const char*>(str.c_str(), __FILE__, __LINE__);
             }
         }
