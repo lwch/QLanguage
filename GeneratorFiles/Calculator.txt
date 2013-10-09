@@ -4,16 +4,16 @@
 
 value_type -> "{Real}"
            |  "{Digit}"
-		   ;
+           ;
 
 sym -> "+" exp
-	|  "-" exp
-	|  exp
-	;
+    |  "-" exp
+    |  exp
+    ;
 
 exp -> exp "+" term
     |  exp "-" term
-	|  term
+    |  term
     ;
 
 term -> term "*" factor
@@ -24,9 +24,9 @@ term -> term "*" factor
 factor -> "sin" bracket
        |  "cos" bracket
        |  "log" bracket
-	   |  bracket
-	   |  value_type
-	   ;
+       |  bracket
+       |  value_type
+       ;
 
 bracket -> "(" sym ")"
         ;
