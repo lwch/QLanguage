@@ -238,6 +238,7 @@ namespace QLanguage
         friend class SyntaxTree_GlobalFunction;
         friend class SyntaxTree_If;
         friend class SyntaxTree_Return;
+        friend class SyntaxTree_While;
     public:
         // 每个常量表有0-65535个常量
         class ConstantTable

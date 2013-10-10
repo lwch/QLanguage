@@ -145,6 +145,12 @@ MemoryPool::~MemoryPool()
         if (!v.released)
         {
 #if DEBUG_LEVEL == 3
+#ifdef unix
+            for (DWORD i = 0; i < v.dwCallStackDepth; ++i)
+            {
+                cerr << string::format("MemoryLeaked Addr: %p", v.callStack[i]) << endl;
+            }
+#else
             for (DWORD i = 0; i < v.dwCallStackDepth; ++i)
             {
                 CallStack::FuncInfo funcInfo;
@@ -152,6 +158,7 @@ MemoryPool::~MemoryPool()
                 cerr << string::format("MemoryLeaked: %s", funcInfo.szFuncName) << endl;
                 cerr << string::format("File: %s on line %d", funcInfo.szFilePath, funcInfo.dwLineNumber) << endl;
             }
+#endif
 #endif
             throw error<const char*>("chunk leaked", __FILE__, __LINE__);
         }

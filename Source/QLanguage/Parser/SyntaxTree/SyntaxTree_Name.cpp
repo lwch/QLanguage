@@ -13,7 +13,9 @@
 
 namespace QLanguage
 {
-    SyntaxTree_Name::SyntaxTree_Name(const string& name) : parent(sizeof(SyntaxTree_Name)), name(name)
+    SyntaxTree_Name::SyntaxTree_Name(const string& name)
+        : parent(sizeof(SyntaxTree_Name))
+        , name(name)
     {
     }
 
