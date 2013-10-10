@@ -234,6 +234,7 @@ namespace QLanguage
         friend class SyntaxTree_Assign;
         friend class SyntaxTree_DeclareName;
         friend class SyntaxTree_Exp;
+        friend class SyntaxTree_For;
         friend class SyntaxTree_GlobalFunction;
         friend class SyntaxTree_If;
         friend class SyntaxTree_Return;

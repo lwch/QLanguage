@@ -20,41 +20,43 @@ namespace QLanguage
 {
     class SyntaxTree_For : public SyntaxTree_Base
     {
-	typedef SyntaxTree_Base parent;
+        typedef SyntaxTree_Base parent;
     public:
-	SyntaxTree_For(const SyntaxTree_Base& stmt1, const SyntaxTree_Exp& exp, const SyntaxTree_Base& stmt2, const SyntaxTree_Block& block);
-	virtual ~SyntaxTree_For();
-	
-	virtual void print(ostream& stream, uint indent)const;
-        
+        SyntaxTree_For(SyntaxTree_Base& stmt1, SyntaxTree_Exp& exp, SyntaxTree_Base& stmt2, SyntaxTree_Block& block);
+        virtual ~SyntaxTree_For();
+
+        virtual void print(ostream& stream, uint indent)const;
+
         inline virtual string type()const { return "SyntaxTree_For"; }
-	
-	inline virtual const bool operator==(const SyntaxTree_Base& x)const
-	{
+
+        virtual bool make(Parser *pParser);
+
+        inline virtual const bool operator==(const SyntaxTree_Base& x)const
+        {
 #ifdef _DEBUG
-	    TRY_CAST(const SyntaxTree_For*, &x);
+            TRY_CAST(const SyntaxTree_For*, &x);
 #endif
-	    return stmt1 == dynamic_cast<const SyntaxTree_For*>(&x)->stmt1 &&
-	           exp == dynamic_cast<const SyntaxTree_For*>(&x)->exp &&
-	           stmt2 == dynamic_cast<const SyntaxTree_For*>(&x)->stmt2 &&
-	           block == dynamic_cast<const SyntaxTree_For*>(&x)->block;
-	}
-	
-	inline virtual const bool operator!=(const SyntaxTree_Base& x)const
-	{
+            return stmt1 == dynamic_cast<const SyntaxTree_For*>(&x)->stmt1 &&
+                   exp == dynamic_cast<const SyntaxTree_For*>(&x)->exp &&
+                   stmt2 == dynamic_cast<const SyntaxTree_For*>(&x)->stmt2 &&
+                   block == dynamic_cast<const SyntaxTree_For*>(&x)->block;
+        }
+
+        inline virtual const bool operator!=(const SyntaxTree_Base& x)const
+        {
 #ifdef _DEBUG
-	    TRY_CAST(const SyntaxTree_For*, &x);
+            TRY_CAST(const SyntaxTree_For*, &x);
 #endif
-	    return stmt1 != dynamic_cast<const SyntaxTree_For*>(&x)->stmt1 ||
-	           exp != dynamic_cast<const SyntaxTree_For*>(&x)->exp ||
-	           stmt2 != dynamic_cast<const SyntaxTree_For*>(&x)->stmt2 ||
-	           block != dynamic_cast<const SyntaxTree_For*>(&x)->block;
-	}
+            return stmt1 != dynamic_cast<const SyntaxTree_For*>(&x)->stmt1 ||
+                   exp != dynamic_cast<const SyntaxTree_For*>(&x)->exp ||
+                   stmt2 != dynamic_cast<const SyntaxTree_For*>(&x)->stmt2 ||
+                   block != dynamic_cast<const SyntaxTree_For*>(&x)->block;
+        }
     protected:
-	const SyntaxTree_Base&  stmt1;
-	const SyntaxTree_Exp&   exp;
-	const SyntaxTree_Base&  stmt2;
-	const SyntaxTree_Block& block;
+        SyntaxTree_Base&  stmt1;
+        SyntaxTree_Exp&   exp;
+        SyntaxTree_Base&  stmt2;
+        SyntaxTree_Block& block;
     };
 }
 

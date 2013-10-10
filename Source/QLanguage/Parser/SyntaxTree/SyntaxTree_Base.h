@@ -19,7 +19,8 @@
 namespace QLanguage
 {
 
-class SyntaxTree_Do;
+    class SyntaxTree_Do;
+
     using namespace Library;
 
 #define TRY_CAST(type, value) \

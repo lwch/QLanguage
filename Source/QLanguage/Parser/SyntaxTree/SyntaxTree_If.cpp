@@ -10,6 +10,9 @@
 	purpose:	
 *********************************************************************/
 #include "../Parser.h"
+
+#include "SyntaxTree_Ext.h"
+
 #include "SyntaxTree_Stmt.h"
 #include "SyntaxTree_Block.h"
 #include "SyntaxTree_If.h"
@@ -40,17 +43,15 @@ namespace QLanguage
     {
         stream << "if (";
         exp.print(stream, indent);
-        stream << ")";
+        stream << ") ";
         if (op1.type() == "SyntaxTree_Stmt")
         {
-            stream << ' ';
             op1.print(stream, 0);
             stream << endl;
             this->printIndent(stream, indent);
         }
         else
         {
-            stream << endl;
             op1.print(stream, indent + parent::indent);
             stream << ' ';
         }
@@ -59,49 +60,44 @@ namespace QLanguage
 
     bool SyntaxTree_If::make(Parser* pParser)
     {
-        if (!exp.make(pParser)) return false;
-        if (exp.isConstValue())
-        {
-            if (exp.toVariant(pParser).toBool())
-            {
+        return make_exp(pParser, exp,
+            [this](Parser* pParser) {
                 return op1.make(pParser);
-            }
-            else if (pElse)
-            {
-                return pElse->make(pParser);
-            }
-        }
-        else
-        {
-            // | exp                |
-            // | jmp lb1 when false |
-            // | op1                |
-            // | jmp lb2            |
-            // | lb1:               |
-            // | [else]             |
-            // | lb2:               |
-            // | ...                |
-            VM::Instruction i;
-            i.op = VM::OpCode::Jmp;
-            i.ot = MAKE_OT(0, 0, 0);
-            i.Jmp.ext = true;
-            i.Jmp.ob  = 0;
-            i.Jmp.os  = 65534;
-            pParser->instructions.push_back(i); // 判断表达式是否为false并跳转
-            size_t ri = pParser->instructions.size() - 1; // 地址需回填
-            if (!op1.make(pParser)) return false;
+            },
+            [this](Parser* pParser) {
+                if (pElse) return pElse->make(pParser);
+                return true;
+            },
+            [this](Parser* pParser) {
+                // | exp                |
+                // | jmp lb1 when false |
+                // | op1                |
+                // | jmp lb2            |
+                // | lb1:               |
+                // | [else]             |
+                // | lb2:               |
+                // | ...                |
+                VM::Instruction i;
+                i.op = VM::OpCode::Jmp;
+                i.ot = MAKE_OT(0, 0, 0);
+                i.Jmp.ext = true;
+                i.Jmp.ob  = 0;
+                i.Jmp.os  = 65534;
+                pParser->instructions.push_back(i); // 判断表达式是否为false并跳转
+                size_t ri = pParser->instructions.size() - 1; // 地址需回填
+                if (!op1.make(pParser)) return false;
 
-            if (pElse)
-            {
-                i.Jmp.ext = false;
-                pParser->instructions.push_back(i); // true条件的代码执行完毕，跳转到else的代码之后
-                size_t r = pParser->instructions.size() - 1; // 地址需回填
-                if (!pElse->make(pParser)) return false;
-                pParser->instructions[r].Jmp.addr = pParser->instructions.size() - r - 1;
-            }
-            pParser->instructions[ri].Jmp.addr = pParser->instructions.size() - ri - 1;
-        }
-        return true;
+                if (pElse)
+                {
+                    i.Jmp.ext = false;
+                    pParser->instructions.push_back(i); // true条件的代码执行完毕，跳转到else的代码之后
+                    size_t r = pParser->instructions.size() - 1; // 地址需回填
+                    if (!pElse->make(pParser)) return false;
+                    pParser->instructions[r].Jmp.addr = pParser->instructions.size() - r - 1;
+                }
+                pParser->instructions[ri].Jmp.addr = pParser->instructions.size() - ri - 1;
+                return true;
+            });
     }
 
     template <typename T1, typename T2, typename T3>
