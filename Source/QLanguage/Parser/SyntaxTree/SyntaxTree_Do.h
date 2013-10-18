@@ -22,12 +22,14 @@ namespace QLanguage
     {
         typedef SyntaxTree_Base parent;
     public:
-        SyntaxTree_Do(const SyntaxTree_Block& block, const SyntaxTree_Exp& exp);
+        SyntaxTree_Do(SyntaxTree_Block& block, SyntaxTree_Exp& exp);
         virtual ~SyntaxTree_Do();
         
         virtual void print(ostream& stream, uint indent)const;
         
         inline virtual string type()const { return "SyntaxTree_Do"; }
+
+        virtual bool make(Parser *pParser);
         
         inline virtual const bool operator==(const SyntaxTree_Base& x)const
         {
@@ -47,8 +49,8 @@ namespace QLanguage
                    exp != dynamic_cast<const SyntaxTree_Do*>(&x)->exp;
         }
     protected:
-        const SyntaxTree_Block& block;
-        const SyntaxTree_Exp&   exp;
+        SyntaxTree_Block& block;
+        SyntaxTree_Exp&   exp;
     };
 }
 
